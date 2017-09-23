@@ -22,52 +22,52 @@ var colr = require('colr');
 
 exports.handleSync = function (request, response) {
 	let authToken = request.headers.authorization ? request.headers.authorization.split(' ')[1] : null;
-	
-    // Creating the final SYNC response back to Google Assistant platform.
-    // This will include all the device types and traits.
-    syncAndDiscoverDevices(authToken, function (devs) { 	
-    	 // The response payload will be an array of discovered devices with attributes and traits.
-        var payload = {
-            devices: devs
-        };
-        var result = {
-        	requestId: request.body.requestId,
-            payload: payload
-        };
-        console.log('openhabGoogleAssistant - SYNC result: ' + JSON.stringify(result));
-        response.status(200).json(result);
-        },
-        function (error) {
-        	console.error("openhabGoogleAssistant - syncAndDiscoverDevices failed: " + error.message);
-        	response.status(500).set({
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-              }).json({error: "failed"});
-        });	
+
+	// Creating the final SYNC response back to Google Assistant platform.
+	// This will include all the device types and traits.
+	syncAndDiscoverDevices(authToken, function (devs) { 	
+		// The response payload will be an array of discovered devices with attributes and traits.
+		var payload = {
+				devices: devs
+		};
+		var result = {
+				requestId: request.body.requestId,
+				payload: payload
+		};
+		console.log('openhabGoogleAssistant - SYNC result: ' + JSON.stringify(result));
+		response.status(200).json(result);
+	},
+	function (error) {
+		console.error("openhabGoogleAssistant - syncAndDiscoverDevices failed: " + error.message);
+		response.status(500).set({
+			'Access-Control-Allow-Origin': '*',
+			'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+		}).json({error: "failed"});
+	});	
 }
 
 exports.handleQueryAndExecute = function (request, response) {
-    let requestCommands = request.body.inputs[0].payload.commands;
+	let requestCommands = request.body.inputs[0].payload.commands;
 
-    for (let i = 0; i < requestCommands.length; i++) {
-        let currentCommand = requestCommands[i];
-        for (let j = 0; j < currentCommand.execution.length; j++) {
-            let currentExecutionCommand = currentCommand.execution[j];
+	for (let i = 0; i < requestCommands.length; i++) {
+		let currentCommand = requestCommands[i];
+		for (let j = 0; j < currentCommand.execution.length; j++) {
+			let currentExecutionCommand = currentCommand.execution[j];
 
-        	switch (currentExecutionCommand.command) {
-            case 'action.devices.commands.OnOff':
-                turnOnOff(request, response);
-                break;
-            case 'action.devices.commands.ChangeColor':
-            case 'action.devices.commands.ColorAbsolute':
-                adjustColor(request, response);
-                break;
-            case 'action.devices.commands.ThermostatTemperatureSetpoint':
-                adjustTemperature(request, response);
-                break;
-            }
-        }
-    }	
+			switch (currentExecutionCommand.command) {
+			case 'action.devices.commands.OnOff':
+				turnOnOff(request, response);
+				break;
+			case 'action.devices.commands.ChangeColor':
+			case 'action.devices.commands.ColorAbsolute':
+				adjustColor(request, response);
+				break;
+			case 'action.devices.commands.ThermostatTemperatureSetpoint':
+				adjustTemperature(request, response);
+				break;
+			}
+		}
+	}	
 }
 
 
@@ -176,21 +176,21 @@ function adjustTemperature(request, response) {
 	let params = reqCommand.execution[0].params;
 
 	console.log('openhabGoogleAssistant - adjustTemperature reqCommand:' + JSON.stringify(reqCommand));
-	
-    var success = function (resp) {
-        var items = getThermostatItems(resp.members);
-        adjustTemperatureWithItems(authToken, params, items.currentTemperature, items.targetTemperature, items.heatingCoolingMode);
-    };
 
-    var failure = function (error) {
-    	console.error("openhabGoogleAssistant - adjustTemperature failed: " + error.message);
+	var success = function (resp) {
+		var items = getThermostatItems(resp.members);
+		adjustTemperatureWithItems(authToken, params, items.currentTemperature, items.targetTemperature, items.heatingCoolingMode);
+	};
+
+	var failure = function (error) {
+		console.error("openhabGoogleAssistant - adjustTemperature failed: " + error.message);
 		response.status(500).set({
 			'Access-Control-Allow-Origin': '*',
 			'Access-Control-Allow-Headers': 'Content-Type, Authorization'
 		}).json({error: "failed"});
-    };
+	};
 
-    rest.getItem(authToken, deviceId, success, failure);
+	rest.getItem(authToken, deviceId, success, failure);
 }
 
 
@@ -220,22 +220,22 @@ function getThermostatItems(thermoGroup) {
  * Adjust a thermostat's temperature based on its current actual readings.
  **/
 function adjustTemperatureWithItems(authToken, params, currentTemperature, targetTemperature, heatingCoolingMode) {
-    if (!targetTemperature) {
-    	console.error("openhabGoogleAssistant - adjustTemperatureWithItems failed: " + error.message);
-        return;
-    }
-    
-    // Google Assistant needs (like Alexa) everything in Celsius, we will need to respect what a user has set
-    var isF = utils.isEventFahrenheit(event);
+	if (!targetTemperature) {
+		console.error("openhabGoogleAssistant - adjustTemperatureWithItems failed: " + error.message);
+		return;
+	}
 
-    var setValue;
-    setValue = isF ? utils.toF(params.thermostatTemperatureSetpoint) : params.thermostatTemperatureSetpoint;
+	// Google Assistant needs (like Alexa) everything in Celsius, we will need to respect what a user has set
+	var isF = utils.isEventFahrenheit(event);
 
-    log.debug('openhabGoogleAssistant - adjustTemperatureWithItems setValue: ' + setValue);
+	var setValue;
+	setValue = isF ? utils.toF(params.thermostatTemperatureSetpoint) : params.thermostatTemperatureSetpoint;
 
-    var curMode = utils.normalizeThermostatMode(heatingCoolingMode ? heatingCoolingMode.state : 'AUTO');
+	log.debug('openhabGoogleAssistant - adjustTemperatureWithItems setValue: ' + setValue);
 
-    var success = function (resp) {
+	var curMode = utils.normalizeThermostatMode(heatingCoolingMode ? heatingCoolingMode.state : 'AUTO');
+
+	var success = function (resp) {
 		var payload = {};
 		let result = {
 				requestId: request.body.requestId,
@@ -245,16 +245,16 @@ function adjustTemperatureWithItems(authToken, params, currentTemperature, targe
 						status: "SUCCESS",
 						states: {
 							"thermostatMode": curMode,
-					        "thermostatTemperatureSetpoint": isF ? utils.toC(setValue) : setValue
+							"thermostatTemperatureSetpoint": isF ? utils.toC(setValue) : setValue
 						}
 					}
 				}
 		}
 		console.log('openhabGoogleAssistant - adjustColor done with result:' + JSON.stringify(result));
 		response.status(200).json(result);
-    };
+	};
 
-    var failure = function (error) {
+	var failure = function (error) {
 		console.error("openhabGoogleAssistant - adjustTemperatureWithItems failed: " + error.message);
 		response.status(500).set({
 			'Access-Control-Allow-Origin': '*',
@@ -262,7 +262,7 @@ function adjustTemperatureWithItems(authToken, params, currentTemperature, targe
 		}).json({error: "failed"});
 	};
 
-    rest.postItemCommand(authToken, targetTemperature.name, setValue.toString(), success, failure);
+	rest.postItemCommand(authToken, targetTemperature.name, setValue.toString(), success, failure);
 }
 
 
@@ -273,171 +273,171 @@ function adjustTemperatureWithItems(authToken, params, currentTemperature, targe
  **/
 function syncAndDiscoverDevices(token, success, failure) {
 
-    //return true if a value in the first group is contained in the second group
-    var matchesGroup = function(groups1, groups2){
-      for(var num in groups1 ){
-        if(groups2.indexOf(groups1[num]) >= 0 )
-          return true;
-      }
-      return false;
-    };
+	//return true if a value in the first group is contained in the second group
+	var matchesGroup = function(groups1, groups2){
+		for(var num in groups1 ){
+			if(groups2.indexOf(groups1[num]) >= 0 )
+				return true;
+		}
+		return false;
+	};
 
-    // Checks for a Fahrenheit tag and sets the righ property on the
-    // attributeDetails response object
-    var setTempFormat = function(item, attributeDetails){
-      if (item.tags.indexOf('Fahrenheit') > -1 || item.tags.indexOf('fahrenheit') > -1) {
-    	  attributeDetails.thermostatTemperatureUnit = 'F';
-      } else {
-    	  attributeDetails.thermostatTemperatureUnit = 'C';
-      }
-    };
+	// Checks for a Fahrenheit tag and sets the righ property on the
+	// attributeDetails response object
+	var setTempFormat = function(item, attributeDetails){
+		if (item.tags.indexOf('Fahrenheit') > -1 || item.tags.indexOf('fahrenheit') > -1) {
+			attributeDetails.thermostatTemperatureUnit = 'F';
+		} else {
+			attributeDetails.thermostatTemperatureUnit = 'C';
+		}
+	};
 
-    // Callback for successfully retrieving items from rest call
-    var getSuccess = function (items) {
-        // console.log('openhabGoogleAssistant - syncAndDiscoverDevices getSuccess: ' + JSON.stringify(items));
-        var discoveredDevicesList = [];
-        var thermostatGroups = [];
+	// Callback for successfully retrieving items from rest call
+	var getSuccess = function (items) {
+		// console.log('openhabGoogleAssistant - syncAndDiscoverDevices getSuccess: ' + JSON.stringify(items));
+		var discoveredDevicesList = [];
+		var thermostatGroups = [];
 
-        // First retrieve any thermostat Groups
-        (function () {
-          for (var itemNum in items) {
-            var item = items[itemNum];
-            for (var tagNum in item.tags) {
-              var tag = item.tags[tagNum];
-              if(tag == 'Thermostat' && item.type === 'Group'){
-                thermostatGroups.push(item.name);
-              }
-            }
-          }
-        })();
+		// First retrieve any thermostat Groups
+		(function () {
+			for (var itemNum in items) {
+				var item = items[itemNum];
+				for (var tagNum in item.tags) {
+					var tag = item.tags[tagNum];
+					if(tag == 'Thermostat' && item.type === 'Group'){
+						thermostatGroups.push(item.name);
+					}
+				}
+			}
+		})();
 
-        // Now retrieve all other items
-        (function () {
-          for (var itemNum in items) {
-              var item = items[itemNum];
-              for (var tagNum in item.tags) {
-                  var tag = item.tags[tagNum];
+		// Now retrieve all other items
+		(function () {
+			for (var itemNum in items) {
+				var item = items[itemNum];
+				for (var tagNum in item.tags) {
+					var tag = item.tags[tagNum];
 
-                  // An array of traits that this device supports.
-                  var traits = null;
+					// An array of traits that this device supports.
+					var traits = null;
 
-                 
-                  // A special object defined by the partner (openHAB) which will be attached to future QUERY and EXECUTE requests.
-                  // Partners (openHAB) can use this object to store additional information about the device to improve performance or routing
-                  // within their cloud, such as the global region of the device.
-                  // 
-                  // Data in this object has a few constraints:
-				  // - No Personally Identifiable Information.
-				  // - Data should change rarely, akin to other attributes -- so this should not contain real-time state.
-				  // - The total object is limited to 512 bytes per device.
-                  var customDataDetails = {};
-                  var attributeDetails = {};
 
-                  // The hardware type of device. Current types include:
-                  //	  action.devices.types.THERMOSTAT
-                  //	   - Traditional thermostat devices
-                  //	  action.devices.types.LIGHT
-                  //	  action.devices.types.OUTLET
-                  //	  action.devices.types.SWITCH
-                  //	  action.devices.types.SCENE
-                  //	   - This is in essence a locked type ­­ as a virtual device it can't be switched by the user to something else.
-                  var deviceTypes = [];
+					// A special object defined by the partner (openHAB) which will be attached to future QUERY and EXECUTE requests.
+					// Partners (openHAB) can use this object to store additional information about the device to improve performance or routing
+					// within their cloud, such as the global region of the device.
+					// 
+					// Data in this object has a few constraints:
+					// - No Personally Identifiable Information.
+					// - Data should change rarely, akin to other attributes -- so this should not contain real-time state.
+					// - The total object is limited to 512 bytes per device.
+					var customDataDetails = {};
+					var attributeDetails = {};
 
-                  switch (tag) {
-                  
-                  case 'Lighting':
-                      deviceTypes = ['action.devices.types.LIGHT'];
-                  case 'Switchable':
-                      deviceTypes = ['action.devices.types.SWITCH'];
-                      traits = getSwitchableTraits(item);
-                      break;
-                  case 'CurrentTemperature':
-                    //if this is not part of a thermostatGroup then add it
-                    //standalone otherwise it will be available as a thermostat
-                    if(!matchesGroup(thermostatGroups, item.groupNames)){
-                      traits = [
-                          'action.devices.traits.TemperatureSetting'
-                      ];
-                      setTempFormat(item,attributeDetails);
-                    }
-                    break;
-                  case 'Thermostat':
-                      //only group items are allowed to have a Temperature tag
-                      if (item.type === 'Group') {
-                          traits = [
-                              'action.devices.traits.TemperatureSetting'
-                          ];
-                          setTempFormat(item,attributeDetails);
-                          deviceTypes = ['action.devices.types.THERMOSTAT'];
-                      }
-                      break;
-                  default:
-                      break;
-                  }
-                  if (traits !== null) {
-                      console.log('openhabGoogleAssistant - syncAndDiscoverDevices - SYNC is adding: ' + item.name + ' with tag: ' + tag);
-                      customDataDetails.itemType = item.type;
-                      customDataDetails.itemTag = tag;
-                      customDataDetails.openhabVersion = '2.1';
-                      
-                      var discoveredDevice = {                   
-                          id: item.name,
-                          type: deviceTypes,
-                          traits: traits,
-                          name: {
-                              name: item.label
-                          },
-                          willReportState: true,
-                          attributes: attributeDetails,
-                          deviceInfo: {
-                              manufacturer: 'openHAB',
-                              model: tag,  
-                              hwVersion: "2.1",  
-                              swVersion: "2.1"  
-                            },  
-                          customData: customDataDetails
-                      };
-                      discoveredDevicesList.push(discoveredDevice);
-                  }
-              }
-          }
-        })();
-        success(discoveredDevicesList);
-    };
-    rest.getItems(token, getSuccess, failure);
+					// The hardware type of device. Current types include:
+					//	  action.devices.types.THERMOSTAT
+					//	   - Traditional thermostat devices
+					//	  action.devices.types.LIGHT
+					//	  action.devices.types.OUTLET
+					//	  action.devices.types.SWITCH
+					//	  action.devices.types.SCENE
+					//	   - This is in essence a locked type ­­ as a virtual device it can't be switched by the user to something else.
+					var deviceTypes = [];
+
+					switch (tag) {
+
+					case 'Lighting':
+						deviceTypes = ['action.devices.types.LIGHT'];
+					case 'Switchable':
+						deviceTypes = ['action.devices.types.SWITCH'];
+						traits = getSwitchableTraits(item);
+						break;
+					case 'CurrentTemperature':
+						//if this is not part of a thermostatGroup then add it
+						//standalone otherwise it will be available as a thermostat
+						if(!matchesGroup(thermostatGroups, item.groupNames)){
+							traits = [
+								'action.devices.traits.TemperatureSetting'
+								];
+							setTempFormat(item,attributeDetails);
+						}
+						break;
+					case 'Thermostat':
+						//only group items are allowed to have a Temperature tag
+						if (item.type === 'Group') {
+							traits = [
+								'action.devices.traits.TemperatureSetting'
+								];
+							setTempFormat(item,attributeDetails);
+							deviceTypes = ['action.devices.types.THERMOSTAT'];
+						}
+						break;
+					default:
+						break;
+					}
+					if (traits !== null) {
+						console.log('openhabGoogleAssistant - syncAndDiscoverDevices - SYNC is adding: ' + item.name + ' with tag: ' + tag);
+						customDataDetails.itemType = item.type;
+						customDataDetails.itemTag = tag;
+						customDataDetails.openhabVersion = '2.1';
+
+						var discoveredDevice = {                   
+								id: item.name,
+								type: deviceTypes,
+								traits: traits,
+								name: {
+									name: item.label
+								},
+								willReportState: true,
+								attributes: attributeDetails,
+								deviceInfo: {
+									manufacturer: 'openHAB',
+									model: tag,  
+									hwVersion: "2.1",  
+									swVersion: "2.1"  
+								},  
+								customData: customDataDetails
+						};
+						discoveredDevicesList.push(discoveredDevice);
+					}
+				}
+			}
+		})();
+		success(discoveredDevicesList);
+	};
+	rest.getItems(token, getSuccess, failure);
 }
 
 /**
-* Given an item, returns an array of traits that are supported.
-**/
+ * Given an item, returns an array of traits that are supported.
+ **/
 function getSwitchableTraits(item) {
-    var traits = null;
-    if (item.type === 'Switch' ||
-        (item.type === 'Group' && item.groupType && item.groupType === 'Switch')) {
-        traits = [
-            'action.devices.traits.OnOff'
-        ];
-    } else if (item.type === 'Dimmer' ||
-        (item.type === 'Group' && item.groupType && item.groupType === 'Dimmer')) {
-        traits = [
-            'action.devices.traits.Brightness',
-            //'setPercentage',
-            'action.devices.traits.OnOff'
-        ];
-    } else if (item.type === 'Color' ||
-        (item.type === 'Group' && item.groupType && item.groupType === 'Color')) {
-        traits = [
-            'action.devices.traits.Brightness',
-            //'setPercentage',
-            'action.devices.traits.OnOff',
-            'action.devices.traits.ColorSpectrum'
-        ];
-    } else if (item.type === 'Rollershutter' ||
-        (item.type === 'Group' && item.groupType && item.groupType === 'Rollershutter')) {
-        traits = [
-            //'setPercentage',
-            'action.devices.traits.Brightness'
-        ];
-    }
-    return traits;
+	var traits = null;
+	if (item.type === 'Switch' ||
+			(item.type === 'Group' && item.groupType && item.groupType === 'Switch')) {
+		traits = [
+			'action.devices.traits.OnOff'
+			];
+	} else if (item.type === 'Dimmer' ||
+			(item.type === 'Group' && item.groupType && item.groupType === 'Dimmer')) {
+		traits = [
+			'action.devices.traits.Brightness',
+			//'setPercentage',
+			'action.devices.traits.OnOff'
+			];
+	} else if (item.type === 'Color' ||
+			(item.type === 'Group' && item.groupType && item.groupType === 'Color')) {
+		traits = [
+			'action.devices.traits.Brightness',
+			//'setPercentage',
+			'action.devices.traits.OnOff',
+			'action.devices.traits.ColorSpectrum'
+			];
+	} else if (item.type === 'Rollershutter' ||
+			(item.type === 'Group' && item.groupType && item.groupType === 'Rollershutter')) {
+		traits = [
+			//'setPercentage',
+			'action.devices.traits.Brightness'
+			];
+	}
+	return traits;
 }

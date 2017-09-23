@@ -31,7 +31,7 @@
  **/
 module.exports = {
 		//userpass: 'user@foo.com:Password1',
-		host: 'myopenhab.org',
+		host: '<YOUR-CLOUD-HOST>',
 		port: 443,
-		path: '/rest/items/',
+		path: '/YOUR/REST/ENDPOINT',
 };
