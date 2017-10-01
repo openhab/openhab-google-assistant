@@ -17,11 +17,14 @@ The Google Smart Home apps/actions rely on Google Home Graph, a database that st
 
 
 ## Google Cloud Functions
+
 * Enable the Cloud Functions API and install the Google Cloud SDK by following this [quickstart](https://cloud.google.com/functions/docs/quickstart) 
 * Deploy the `openhabGoogleAssistant` (openhab home automation) function with the following command
+
 ```
 cd openhab-google-assistant/functions
 gcloud beta functions deploy openhabGoogleAssistant --stage-bucket staging.<PROJECT ID>.appspot.com --trigger-http
+```
 
 * This commands will deploy the function to Google Cloud and give you the endpoint address. Keep the address somewhere, you'll need it (something like `https://us-central1-<PROJECT ID>.cloudfunctions.net/openhabGoogleAssistant`).
 
@@ -30,6 +33,7 @@ gcloud beta functions deploy openhabGoogleAssistant --stage-bucket staging.<PROJ
 
 When you ask your assistant to “Turn on the light”, it will use the auth bearer Token and call the specified endpoint. To specify which endpoint the Google Assistant should call, you need to create an action.json similar to the one below, with your endpoint URL
 * Update the `openhab-google-assistant/action.json` file and specify the Google Cloud Functions endpoint to the `url variable
+
 ```
 {
   "actions": [{
