@@ -19,38 +19,43 @@ The Google Smart Home apps/actions rely on Google Home Graph, a database that st
 ## Google Cloud Functions
 * Enable the Cloud Functions API and install the Google Cloud SDK by following this [quickstart](https://cloud.google.com/functions/docs/quickstart) 
 * Deploy the `openhabGoogleAssistant` (openhab home automation) function with the following command
-`cd openhab-google-assistant/functions`
-`gcloud beta functions deploy openhabGoogleAssistant --stage-bucket staging.<PROJECT ID>.appspot.com --trigger-http`
-* This commands will deploy the function to Google Cloud and give you the endpoint address. Keep the address somewhere, you'll need it (something like https://us-central1-<PROJECT ID>.cloudfunctions.net/openhabGoogleAssistant).
+```
+cd openhab-google-assistant/functions
+gcloud beta functions deploy openhabGoogleAssistant --stage-bucket staging.<PROJECT ID>.appspot.com --trigger-http
+
+* This commands will deploy the function to Google Cloud and give you the endpoint address. Keep the address somewhere, you'll need it (something like `https://us-central1-<PROJECT ID>.cloudfunctions.net/openhabGoogleAssistant`).
 
 
 ## Actions on Google
 
-When you ask your assistant to “Turn on the light”, it will use the auth bearer Token and call a specific endpoint. To specify which endpoint the Google Assistant should call, you need to create an action.json similar to the one below, with your endpoint URL
+When you ask your assistant to “Turn on the light”, it will use the auth bearer Token and call the specified endpoint. To specify which endpoint the Google Assistant should call, you need to create an action.json similar to the one below, with your endpoint URL
 * Update the `openhab-google-assistant/action.json` file and specify the Google Cloud Functions endpoint to the `url variable
-
-`{`
-`  "actions": [{`
-`    "name": "actions.devices",`
-`    "deviceControl": {`
-`    },`
-`    "fulfillment": {`
-`      "conversationName": "automation"`
-`    }`
-`  }],`
-`  "conversations": {`
-`    "automation" :`
-`    {`
-`     "name": "automation",`
-`     "url": "https://YOUR-URL/openhabGoogleAssistant"`
-`    }`
-`  }`
-`}`
+```
+{
+  "actions": [{
+    "name": "actions.devices",
+    "deviceControl": {
+    },
+    "fulfillment": {
+      "conversationName": "automation"
+    }
+  }],
+  "conversations": {
+    "automation" :
+    {
+     "name": "automation",
+     "url": "https://YOUR-URL/openhabGoogleAssistant"
+    }
+  }
+}
+```
 
 * Afterwards upload this action file using the following command:
-`gactions update --action_package action.json --project <YOUR-GOOGLE-CLOUD-PROJECT-ID>`
+```
+gactions update --action_package action.json --project <YOUR-GOOGLE-CLOUD-PROJECT-ID>
+```
 
-Google Assistant will call the service endpoint: `https://YOUR-URL/openhabGoogleAssistant.
+Google Assistant will call the service endpoint: `https://YOUR-URL/openhabGoogleAssistant`.
 This web service will receive parameters (intents) from Google and will query/modify openHAB items through openHAB-cloud depending on those parameters.
 
 ## oAuth2 Server
