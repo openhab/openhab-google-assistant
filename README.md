@@ -87,6 +87,20 @@ Set up account linking:
 
 Save all changes and click on the Test button
 
+## Item configuration
+
+* In openHAB 2 Items are exposed via Homekit tags, the following is taken from the homekit binding in openHAB2:
+
+  ```
+  Switch KitchenLights "Kitchen Lights" <light> (gKitchen) [ "Lighting" ]
+  Dimmer BedroomLights "Bedroom Lights" <light> (gBedroom) [ "Lighting" ]
+  ```
+
+Currently the follwoing Tags are supported (also depending on Googles API capabilities):
+* ["Lighting"]
+* ["Switchable"]
+* ["CurrentTemperature"] (will be added soon)
+* ["Thermostat"] (will be added soon)
 
 ## Testing & Usage on Google App
 
