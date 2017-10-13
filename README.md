@@ -73,16 +73,18 @@ This web service will receive parameters (intents) from Google and will query/mo
 gactions test --action_package PACKAGE_NAME --project AGENT_ID
 ```
 
-# Account Linkage & OAuth2:
+### Account Linkage & OAuth2:
 
 To enable the OAuth account linkage you need to setup the according values in the Actions Console: 
 
-Set up account linking
+Set up account linking:
+
 * Grant type: Autorization code
-* Client ID: <YOUR-ID>
-* Client secret: <YOUR-SECRET>
-* Authorization URL: https://<YOUR-URL>/oauth
-* Token URL: https://<YOUR-URL>/token
+* Client ID: `<YOUR-ID>`
+* Client secret: `<YOUR-SECRET>`
+* Authorization URL: `https://<YOUR-URL>/oauth`
+* Token URL: `https://<YOUR-URL>/token`
+
 Save all changes and click on the Test button
 
 
@@ -98,7 +100,9 @@ Save all changes and click on the Test button
 * You will now be able to see your previously tagged items and devices
 * You can now control those devices from the Google assistant
 
+
 ![openHAB Google App](/docs/openhab_google_app.png)
+
 
 ## Example Voice Commands
 
@@ -128,6 +132,6 @@ gcloud beta functions logs read openhabGoogleAssistant
 
 ## References
 
-https://developers.google.com/actions/extending-the-assistant
-https://developers.google.com/actions/smarthome/
-https://cloud.google.com/functions/docs/how-to
+* https://developers.google.com/actions/extending-the-assistant
+* https://developers.google.com/actions/smarthome/
+* https://cloud.google.com/functions/docs/how-to
