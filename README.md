@@ -31,8 +31,13 @@ gcloud beta functions deploy openhabGoogleAssistant --stage-bucket staging.<PROJ
 
 ## Actions on Google
 
+Actions on Google is Googles platform for developers to extend Google Assistant. Here you need to develop your actions to engage users on Google Home, Pixel, and other surfaces where the Google Assistant is available
+
+* Create and setup an Actions on Google project on the Actions Console using the Actions SDK described [here](https://developers.google.com/actions/sdk/create-a-project).
+
 When you ask your assistant to “Turn on the light”, it will use the auth bearer Token and call the specified endpoint. To specify which endpoint the Google Assistant should call, you need to create an action.json similar to the one below, with your endpoint URL
-* Update the `openhab-google-assistant/action.json` file and specify the Google Cloud Functions endpoint to the `url variable
+
+* Update the `openhab-google-assistant/action.json` file and specify the Google Cloud Functions endpoint to the ```url``` variable
 
 ```
 {
@@ -62,4 +67,67 @@ gactions update --action_package action.json --project <YOUR-GOOGLE-CLOUD-PROJEC
 Google Assistant will call the service endpoint: `https://YOUR-URL/openhabGoogleAssistant`.
 This web service will receive parameters (intents) from Google and will query/modify openHAB items through openHAB-cloud depending on those parameters.
 
-## oAuth2 Server
+* You need to Add "App information”, including name and account linking details to the Actions Console
+* Afterwards please run the following command in the gaction CLI:
+```
+gactions test --action_package PACKAGE_NAME --project AGENT_ID
+```
+
+# Account Linkage & OAuth2:
+
+To enable the OAuth account linkage you need to setup the according values in the Actions Console: 
+
+Set up account linking
+* Grant type: Autorization code
+* Client ID: <YOUR-ID>
+* Client secret: <YOUR-SECRET>
+* Authorization URL: https://<YOUR-URL>/oauth
+* Token URL: https://<YOUR-URL>/token
+Save all changes and click on the Test button
+
+
+## Testing & Usage on Google App
+
+* Make sure Google Play Services is up to date
+* Visit "Google" app entry in Google Play Store on Android
+* Set up the voice-activated speaker, Pixel, or Android phone (version 6+) with the *same test account*
+* Make sure you're the correct user
+* Start the updated Google Home app on your phone
+* Go to the devices Settings > Home control > Add device and select the [test] open hab
+* Login at your Backend (e.g. myopenhab.org) with your username and password
+* You will now be able to see your previously tagged items and devices
+* You can now control those devices from the Google assistant
+
+![openHAB Google App](/docs/openhab_google_app.png)
+
+## Example Voice Commands
+
+Here are some example voice commands:
+
+ * Turn on Office Lights
+ * Turn off Pool Waterfall
+ * Turn on House Fan
+ * Turn on Home Theater Scene
+
+
+## Logging & Debugging
+
+To check your deployed openhHAB Google Cloud function app logs and debugging use the follwoing command:
+```
+gcloud beta functions logs read openhabGoogleAssistant
+```
+
+## Limitations & Known Issues
+
+* Sometimes the Account Linkage needs to be done twice and repeated
+* Currently there is support for any switchable device (light, plug etc.)
+* Setting light colors works, but has some known Bug in the adapter (transformation problem with Hex value)
+* Thermostats are not fully implemented
+* More Unit Test & Integration Test will be added soon
+
+
+## References
+
+https://developers.google.com/actions/extending-the-assistant
+https://developers.google.com/actions/smarthome/
+https://cloud.google.com/functions/docs/how-to
