@@ -95,11 +95,12 @@ Save all changes and click on the Test button
 * Set up the voice-activated speaker, Pixel, or Android phone (version 6+) with the *same test account*
 * Make sure you're the correct user
 * Start the updated Google Home app on your phone
-* Go to the devices Settings > Home control > Add device and select the [test] open hab
+* Go to the devices `Settings > Home control > Add device` and select the `[test] open hab`
 * Login at your Backend (e.g. myopenhab.org) with your username and password
 * You will now be able to see your previously tagged items and devices
 * You can now control those devices from the Google assistant
 
+The following screenshots show the setup and the service linkage (myopenhab.org) procedure within the Google App:  
 
 ![openHAB Google App](/docs/openhab_google_app.png)
 
