@@ -347,6 +347,8 @@ function syncAndDiscoverDevices(token, success, failure) {
 
 					case 'Lighting':
 						deviceTypes = ['action.devices.types.LIGHT'];
+						traits = getSwitchableTraits(item);
+						break;
 					case 'Switchable':
 						deviceTypes = ['action.devices.types.SWITCH'];
 						traits = getSwitchableTraits(item);
