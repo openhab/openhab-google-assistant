@@ -58,6 +58,9 @@ exports.handleQueryAndExecute = function (request, response) {
 			case 'action.devices.commands.OnOff':
 				turnOnOff(request, response);
 				break;
+			case 'action.devices.commands.BrightnessAbsolute':
+				adjustBrightness(request, response);
+				break;
 			case 'action.devices.commands.ChangeColor':
 			case 'action.devices.commands.ColorAbsolute':
 				adjustColor(request, response);
@@ -113,6 +116,46 @@ function turnOnOff(request, response) {
 	}  
 }
 
+/**
+ * Brightness control
+ */
+function adjustBrightness(request, response) {
+	let authToken = request.headers.authorization ? request.headers.authorization.split(' ')[1] : null;
+	let reqCommand = request.body.inputs[0].payload.commands[0];
+	let params = reqCommand.execution[0].params;
+
+	console.log('openhabGoogleAssistant - adjustBrightness reqCommand:' + JSON.stringify(reqCommand));
+
+	for (let i = 0; i < reqCommand.devices.length; i++) {
+		let deviceId = reqCommand.devices[i].id;
+
+		var success = function (resp) {
+			var payload = {};
+			let result = {
+					requestId: request.body.requestId,
+					payload: {
+						commands: {
+							ids: [ deviceId ], 
+							status: "SUCCESS"
+						}
+					}
+			}
+			console.log('openhabGoogleAssistant - adjustBrightness done with result:' + JSON.stringify(result));
+			response.status(200).json(result);
+		};
+
+		var failure = function (error) {
+			console.error("openhabGoogleAssistant - adjustBrightness failed: " + error.message);
+			response.status(500).set({
+				'Access-Control-Allow-Origin': '*',
+				'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+			}).json({error: "failed"});
+		};
+
+		var state = params.brightness.toString();
+		rest.postItemCommand(authToken, deviceId, state, success, failure);
+	}
+}
 
 
 /**
