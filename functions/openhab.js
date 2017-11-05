@@ -151,12 +151,10 @@ function adjustColor(request, response) {
 			}).json({error: "failed"});
 		};
 
-		var hexColorRGB = params.color.spectrumRGB.toString(16).toUpperCase();
-		if(hexColorRGB.length <= 4){
-			hexColorRGB = hexColorRGB + "00";
-		}	
-		console.log('openhabGoogleAssistant - adjustColor hexColorRGB:' + hexColorRGB);
-		var rgbColor = colr.fromHex('#'+hexColorRGB);
+		let red = Math.floor(params.color.spectrumRGB / (256*256));
+		let green = Math.floor((params.color.spectrumRGB % (256*256)) / 256);
+		let blue = params.color.spectrumRGB % 256;
+		var rgbColor = colr.fromRgb(red, green, blue);
 		console.log('openhabGoogleAssistant - adjustColor rgbColor:' + rgbColor);
 		var state = rgbColor.toHsvArray();
 		console.log('openhabGoogleAssistant - adjustColor state:' + state);
@@ -347,6 +345,8 @@ function syncAndDiscoverDevices(token, success, failure) {
 
 					case 'Lighting':
 						deviceTypes = ['action.devices.types.LIGHT'];
+						traits = getSwitchableTraits(item);
+						break;
 					case 'Switchable':
 						deviceTypes = ['action.devices.types.SWITCH'];
 						traits = getSwitchableTraits(item);
