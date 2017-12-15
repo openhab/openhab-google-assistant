@@ -140,7 +140,6 @@ gcloud beta functions logs read openhabGoogleAssistant
 
 * Sometimes the Account Linkage needs to be done twice and repeated
 * Currently there is support for any switchable device (light, plug etc.)
-* Setting light colors works, but has some known Bug in the adapter (transformation problem with Hex value)
 * Thermostats are not fully implemented
 * More Unit Test & Integration Test will be added soon
 
