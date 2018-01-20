@@ -97,35 +97,58 @@ function getItemsState(request,response) {
 
 	console.log('openhabGoogleAssistant - getItemsState devices:' + JSON.stringify(devices));
 
-	for(let i = 0; i < devices.length; i++) {
-		let deviceId = devices[i].id;
-
-		// TODO: this returns a response for every device.  Think we should bundle up responses for all devices.
-		var success = function(resp) {
-			var state = resp.state === 'ON' ? true : false;
-			let result = {
-				requestId: request.body.requestId,
-				payload: {
-					devices: {
-						deviceId: {
-							on: state,
-							online: true
-						}
-					}
-				}
-			}
+	// template for result.
+	let result = {
+		requestId: request.body.requestId,
+		payload: {
+			devices: {}
 		}
+	}
 
-		var failure = function (error) {
-			console.error("openhabGoogleAssistant - turnOnOff failed: " + error.message);
+	// Wrap async call in promise
+	var getItemAsync = function(token, deviceId){		
+		return new Promise(function(success,failure){
+			rest.getItem(token,deviceId,success,failure);
+		});
+	}
+
+	// Get status for all devices, and return array of promises... one for each device.
+	let promises = devices.map(function(device) {	
+		return getItemAsync(authToken, device.id).then(function(res){ // success
+			console.log('result for ' + device.id + ': ' + JSON.stringify(res))
+			return {
+				id: device.id,
+				data: {
+					on: res.state === 'ON' ? true : false,
+					online: true
+				}
+			};
+		},function(res){ // failure
+			return {
+				id: device.id,
+				data: {
+					online: false
+				}
+			};
+		})
+	})
+
+	// Wait for all requests to complete ...
+	Promise.all(promises)
+		.then(res => { 		// ... and process the results.
+			console.log("Got all results: " + JSON.stringify(res))
+			for (var i = 0; i < res.length; i++) {
+				result.payload.devices[res[i].id] = res[i].data;
+			}
+			console.log('openhabGoogleAssistant - getItemsState done with result:' + JSON.stringify(result));
+			response.status(200).json(result);		
+		}).catch(e => {
+			console.error("openhabGoogleAssistant - getItemsState failed: " + e.message);
 			response.status(500).set({
 				'Access-Control-Allow-Origin': '*',
 				'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-			}).json({error: "failed"});
-		};
-
-		rest.getItem(authToken, deviceId, success, failure);
-	}
+			}).json({error: "failed"});			
+		})
 }
 
 /**
