@@ -47,33 +47,109 @@ exports.handleSync = function (request, response) {
 }
 
 exports.handleQueryAndExecute = function (request, response) {
-	let requestCommands = request.body.inputs[0].payload.commands;
+	let requestIntent = request.body.inputs[0].intent;
+	switch (requestIntent) {
+		case 'action.devices.QUERY':
+			getItemsState(request,response);
+			
+			break;
+		case 'action.devices.EXECUTE':
 
-	for (let i = 0; i < requestCommands.length; i++) {
-		let currentCommand = requestCommands[i];
-		for (let j = 0; j < currentCommand.execution.length; j++) {
-			let currentExecutionCommand = currentCommand.execution[j];
+			let requestCommands = request.body.inputs[0].payload.commands;
 
-			switch (currentExecutionCommand.command) {
-			case 'action.devices.commands.OnOff':
-				turnOnOff(request, response);
-				break;
-			case 'action.devices.commands.BrightnessAbsolute':
-				adjustBrightness(request, response);
-				break;
-			case 'action.devices.commands.ChangeColor':
-			case 'action.devices.commands.ColorAbsolute':
-				adjustColor(request, response);
-				break;
-			case 'action.devices.commands.ThermostatTemperatureSetpoint':
-				adjustTemperature(request, response);
-				break;
-			}
-		}
-	}	
+			for (let i = 0; i < requestCommands.length; i++) {
+				let currentCommand = requestCommands[i];
+				for (let j = 0; j < currentCommand.execution.length; j++) {
+					let currentExecutionCommand = currentCommand.execution[j];
+		
+					switch (currentExecutionCommand.command) {
+					case 'action.devices.commands.OnOff':
+						turnOnOff(request, response);
+						break;
+					case 'action.devices.commands.BrightnessAbsolute':
+						adjustBrightness(request, response);
+						break;
+					case 'action.devices.commands.ChangeColor':
+					case 'action.devices.commands.ColorAbsolute':
+						adjustColor(request, response);
+						break;
+					case 'action.devices.commands.ThermostatTemperatureSetpoint':
+						adjustTemperature(request, response);
+						break;
+					}
+				}
+			}	
+
+			break;
+		default:
+			// TODO: handle error.
+			break;
+	}
+
 }
 
+/**
+ * Returns state for devices in the request 
+ */
+function getItemsState(request,response) {
+	let authToken = request.headers.authorization ? request.headers.authorization.split(' ')[1] : null;
+	let devices = request.body.inputs[0].payload.devices;
 
+	console.log('openhabGoogleAssistant - getItemsState devices:' + JSON.stringify(devices));
+
+	// template for result.
+	let result = {
+		requestId: request.body.requestId,
+		payload: {
+			devices: {}
+		}
+	}
+
+	// Wrap async call in promise
+	var getItemAsync = function(token, deviceId){		
+		return new Promise(function(success,failure){
+			rest.getItem(token,deviceId,success,failure);
+		});
+	}
+
+	// Get status for all devices, and return array of promises... one for each device.
+	let promises = devices.map(function(device) {	
+		return getItemAsync(authToken, device.id).then(function(res){ // success
+			console.log('result for ' + device.id + ': ' + JSON.stringify(res))
+			return {
+				id: device.id,
+				data: {
+					on: res.state === 'ON' ? true : false,
+					online: true
+				}
+			};
+		},function(res){ // failure
+			return {
+				id: device.id,
+				data: {
+					online: false
+				}
+			};
+		})
+	})
+
+	// Wait for all requests to complete ...
+	Promise.all(promises)
+		.then(res => { 		// ... and process the results.
+			console.log("Got all results: " + JSON.stringify(res))
+			for (var i = 0; i < res.length; i++) {
+				result.payload.devices[res[i].id] = res[i].data;
+			}
+			console.log('openhabGoogleAssistant - getItemsState done with result:' + JSON.stringify(result));
+			response.status(200).json(result);		
+		}).catch(e => {
+			console.error("openhabGoogleAssistant - getItemsState failed: " + e.message);
+			response.status(500).set({
+				'Access-Control-Allow-Origin': '*',
+				'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+			}).json({error: "failed"});			
+		})
+}
 
 /**
  * Turns a Switch Item on or off
