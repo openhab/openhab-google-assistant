@@ -20,8 +20,8 @@ The Google related parts of any Smart Home action rely on Google Home Graph, a d
 
 * Enable the Cloud Functions API and install the Google Cloud SDK by following this [quickstart](https://cloud.google.com/functions/docs/quickstart)
 * Modify `functions\config.js`.
-  1. Change `host` to point to your openhab cloud instance, for example: `https:\\openhab.myserver.com`
-  1. Change `path` to the rest API. Defaults to `rest`.
+  1. Change `host` to point to your openhab cloud instance, for example: `openhab.myserver.com`. Do not include `https`, if you do you'll get DNS errors.
+  1. Change `path` to the rest API. Defaults to `rest\item`. The trailing slash is important, you'll get a 404 if you leave it off.
 * Deploy the `openhabGoogleAssistant` (openhab home automation) function with the following command
 
 ```
@@ -122,7 +122,7 @@ db.oauth2scopes.insert( { name : "google-assistant", description: "Access to myo
 * You will now be able to see your previously tagged items and devices
 * You can now control those devices from the Google assistant
 
-If you're lucky this works! You'll need to configure your items (below) and then sync again. If it didn't work, 
+If you're lucky this works! You'll need to configure your items (below) and then sync again. If it didn't work,
 try the workaround below.
 
 
