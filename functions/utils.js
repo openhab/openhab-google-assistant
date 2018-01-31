@@ -49,7 +49,7 @@ function generateControlError(messageId, name, code, description) {
 	return result;
 }
 
-//Normilizes numeric/string thermostat modes to Alexa friendly ones
+//Normilizes numeric/string thermostat modes to Google Assistant friendly ones
 function normalizeThermostatMode(mode){
 	//if state returns as a decimal type, convert to string, this is a very common thermo pattern
 	var m = mode;
@@ -67,10 +67,13 @@ function normalizeThermostatMode(mode){
 		m = 'heatcool'
 		break;
 	case '3': //auto
-		m = 'heatcool';
+		m = 'on';
 		break;
+    default:
+        m = 'off';
+        break;
 	}
-	return m.toUpperCase();
+	return m.toLowerCase();
 }
 
 //Should this be removed? JSON format appears to be Alexa Skill format, not Google Assistant
