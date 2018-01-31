@@ -517,8 +517,8 @@ function syncAndDiscoverDevices(token, success, failure) {
 							traits = [
 								'action.devices.traits.TemperatureSetting'
 								];
-                          	deviceTypes = 'action.devices.types.THERMOSTAT';
 							setTempFormat(item,attributeDetails);
+                          				deviceTypes = 'action.devices.types.THERMOSTAT';
 						}
 						break;
 					case 'Thermostat':
