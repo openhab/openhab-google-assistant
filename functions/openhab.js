@@ -115,24 +115,36 @@ function getItemsState(request,response) {
 	// Get status for all devices, and return array of promises... one for each device.
 	let promises = devices.map(function(device) {	
 		return getItemAsync(authToken, device.id).then(function(res){ // success
-			console.log('result for ' + device.id + ': ' + JSON.stringify(res))
-			var thermoTag = res.tags[0]; //Is this device a Thermostat?		
-       if (thermoTag === "Thermostat") {
-         	var tempUnit = res.tags[1]; //Is it C or F?
-			var isF = tempUnit ? (tempUnit.toLowerCase() == 'fahrenheit') : 'false';
-         	return {
-				id: device.id,
-					data: {
-						on: true,
-						online: true,
-						//this method of manually pulling values is "guessing" and requires items to be in a specific order
-                     	thermostatMode: res.members[0].state != 'NULL' ? res.members[0].state : 'heat',
-						thermostatTemperatureAmbient: isF ? Number(utils.toC(res.members[1].state)) : Number(res.members[1].state),
-						thermostatTemperatureSetpoint: isF ? Number(utils.toC(res.members[2].state)) : Number(res.members[2].state)						
-                    }
-			};
-		}
-		else {
+			console.log('openhabGoogleAssistant - getItemsState - result for ' + device.id + ': ' + JSON.stringify(res))
+          	var thermoTag = res.tags.indexOf('Thermostat') > -1; //Is this device a Thermostat?
+          	var	tempTag = res.tags.indexOf('CurrentTemperature') > -1; //or is it just temperature?
+       if (thermoTag || tempTag) {
+			
+         	var items = thermoTag ? getThermostatItems(res.members) : getThermostatItems([res]);		
+		
+         	var tempUnit = res.tags.indexOf('Fahrenheit'); //Is it C or F?
+          	var isF = tempUnit ? tempUnit > -1 : 'false';
+         	
+         	//store long json variables in easier variables to work with
+			var tstatMode = items.hasOwnProperty('heatingCoolingMode') ? (items.heatingCoolingMode.state.length == 1 ? utils.normalizeThermostatMode(items.heatingCoolingMode.state) : items.heatingCoolingMode.state) : ''
+            var currTemp =  items.hasOwnProperty('currentTemperature') ? (isF ? utils.toC(items.currentTemperature.state) : items.currentTemperature.state) : '';
+         	var tarTemp = items.hasOwnProperty('targetTemperature') ? (isF ? utils.toC(items.targetTemperature.state) : items.targetTemperature.state) : '';
+         	var curHum = items.hasOwnProperty('currentHumidity') ? items.currentHumidity.state : '';
+
+            var values = {}
+
+            //populate json values
+            values.id = device.id;
+            values.data = {};
+            values.data.online = true;
+         	if (items.hasOwnProperty('heatingCoolingMode')) values.data.thermostatMode = tstatMode;
+         	if (items.hasOwnProperty('currentTemperature')) values.data.thermostatTemperatureAmbient = Number(parseFloat(currTemp).toFixed(1));
+         	if (items.hasOwnProperty('targetTemperature')) values.data.thermostatTemperatureSetpoint = Number(parseFloat(tarTemp).toFixed(1));
+            if (items.hasOwnProperty('currentHumidity')) values.data.thermostatHumidityAmbient = Number(parseFloat(curHum).toFixed(0));
+            
+            return values;
+        }
+   		else {
 			return {
 				id: device.id,
 					data: {
@@ -347,6 +359,9 @@ function getThermostatItems(thermoGroup) {
 			if (tag === 'homekit:HeatingCoolingMode') {
 				values.heatingCoolingMode = member;
 			}
+          	if (tag === 'CurrentHumidity') {
+              	values.currentHumidity = member;
+            }
 		});
 	});
 	return values;
@@ -371,8 +386,8 @@ function adjustTemperatureWithItems(authToken, request, response, params, curren
 	var setValue;
 	setValue = isF ? utils.toF(params.thermostatTemperatureSetpoint) : params.thermostatTemperatureSetpoint;
 
-  	//this needs fixing
-	var curMode = utils.normalizeThermostatMode(heatingCoolingMode ? heatingCoolingMode.state : 'heat');
+  	//if heatingCoolingMode has a length of 1 (*should* be number...), then convert to something GA can read (off, heat, cool, on, heatcool)
+	var curMode = heatingCoolingMode.state.length == 1 ? utils.normalizeThermostatMode(heatingCoolingMode.state) : heatingCoolingMode.state;
 
 	var success = function (resp) {
 		var payload = {};
@@ -425,10 +440,10 @@ function syncAndDiscoverDevices(token, success, failure) {
 	// attributeDetails response object
 	var setTempFormat = function(item, attributeDetails) {
       	if (item.tags.indexOf('Fahrenheit') > -1 || item.tags.indexOf('fahrenheit') > -1) {
-			attributeDetails.availableThermostatModes = 'heat';
+			attributeDetails.availableThermostatModes = 'off, cool, heat, on, heatcool';
           	attributeDetails.thermostatTemperatureUnit = 'F';
 		} else {
-          	attributeDetails.availableThermostatModes = 'heat';
+          	attributeDetails.availableThermostatModes = 'off, cool, heat, on, heatcool';
 			attributeDetails.thermostatTemperatureUnit = 'C';
 		}
 	};
@@ -501,6 +516,7 @@ function syncAndDiscoverDevices(token, success, failure) {
 							traits = [
 								'action.devices.traits.TemperatureSetting'
 								];
+                          	deviceTypes = 'action.devices.types.THERMOSTAT';
 							setTempFormat(item,attributeDetails);
 						}
 						break;
