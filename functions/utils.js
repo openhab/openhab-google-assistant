@@ -55,22 +55,25 @@ function normalizeThermostatMode(mode){
 	var m = mode;
 	switch (mode) {
 	case '0': //off, not supported! Weird. But nothing else todo.
-		m = 'OFF';
+		m = 'off';
 		break;
 	case '1': //heating
-		m = 'HEAT';
+		m = 'heat';
 		break;
 	case '2': //cooling
-		m = 'COOL';
+		m = 'cool';
 		break;
 	case 'heat-cool': //nest auto
+		m = 'heatcool'
+		break;
 	case '3': //auto
-		m = 'AUTO';
+		m = 'heatcool';
 		break;
 	}
 	return m.toUpperCase();
 }
 
+//Should this be removed? JSON format appears to be Alexa Skill format, not Google Assistant
 function isEventFahrenheit(event){
 	return event.payload.appliance.additionalApplianceDetails.temperatureFormat &&
 	event.payload.appliance.additionalApplianceDetails.temperatureFormat === 'fahrenheit';
