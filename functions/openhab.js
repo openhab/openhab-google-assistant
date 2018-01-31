@@ -115,35 +115,36 @@ function getItemsState(request,response) {
 	// Get status for all devices, and return array of promises... one for each device.
 	let promises = devices.map(function(device) {	
 		return getItemAsync(authToken, device.id).then(function(res){ // success
-			console.log('openhabGoogleAssistant - getItemsState - result for ' + device.id + ': ' + JSON.stringify(res))
-          	var thermoTag = res.tags.indexOf('Thermostat') > -1; //Is this device a Thermostat?
-          	var	tempTag = res.tags.indexOf('CurrentTemperature') > -1; //or is it just temperature?
-       if (thermoTag || tempTag) {
-			
-         	var items = thermoTag ? getThermostatItems(res.members) : getThermostatItems([res]);		
+		console.log('openhabGoogleAssistant - getItemsState - result for ' + device.id + ': ' + JSON.stringify(res))
+          	
+		//check tags from rest command
+		var thermoTag = res.tags.indexOf('Thermostat') > -1; //Is this device a Thermostat?
+          	var tempTag = res.tags.indexOf('CurrentTemperature') > -1; //or is it just temperature?
 		
-         	var tempUnit = res.tags.indexOf('Fahrenheit'); //Is it C or F?
-          	var isF = tempUnit ? tempUnit > -1 : 'false';
+		if (thermoTag || tempTag) {
+			var items = thermoTag ? getThermostatItems(res.members) : getThermostatItems([res]);		
+	         	var tempUnit = res.tags.indexOf('Fahrenheit'); //Is it C or F?
+        	  	var isF = tempUnit ? tempUnit > -1 : 'false';
          	
-         	//store long json variables in easier variables to work with
+			//store long json variables in easier variables to work with
 			var tstatMode = items.hasOwnProperty('heatingCoolingMode') ? (items.heatingCoolingMode.state.length == 1 ? utils.normalizeThermostatMode(items.heatingCoolingMode.state) : items.heatingCoolingMode.state) : ''
-            var currTemp =  items.hasOwnProperty('currentTemperature') ? (isF ? utils.toC(items.currentTemperature.state) : items.currentTemperature.state) : '';
-         	var tarTemp = items.hasOwnProperty('targetTemperature') ? (isF ? utils.toC(items.targetTemperature.state) : items.targetTemperature.state) : '';
-         	var curHum = items.hasOwnProperty('currentHumidity') ? items.currentHumidity.state : '';
+			var currTemp =  items.hasOwnProperty('currentTemperature') ? (isF ? utils.toC(items.currentTemperature.state) : items.currentTemperature.state) : '';
+			var tarTemp = items.hasOwnProperty('targetTemperature') ? (isF ? utils.toC(items.targetTemperature.state) : items.targetTemperature.state) : '';
+			var curHum = items.hasOwnProperty('currentHumidity') ? items.currentHumidity.state : '';
 
-            var values = {}
+			var values = {}
 
-            //populate json values
-            values.id = device.id;
-            values.data = {};
-            values.data.online = true;
-         	if (items.hasOwnProperty('heatingCoolingMode')) values.data.thermostatMode = tstatMode;
-         	if (items.hasOwnProperty('currentTemperature')) values.data.thermostatTemperatureAmbient = Number(parseFloat(currTemp).toFixed(1));
-         	if (items.hasOwnProperty('targetTemperature')) values.data.thermostatTemperatureSetpoint = Number(parseFloat(tarTemp).toFixed(1));
-            if (items.hasOwnProperty('currentHumidity')) values.data.thermostatHumidityAmbient = Number(parseFloat(curHum).toFixed(0));
-            
-            return values;
-        }
+			//populate json values
+			values.id = device.id;
+			values.data = {};
+			values.data.online = true;
+			if (items.hasOwnProperty('heatingCoolingMode')) values.data.thermostatMode = tstatMode;
+			if (items.hasOwnProperty('currentTemperature')) values.data.thermostatTemperatureAmbient = Number(parseFloat(currTemp).toFixed(1));
+			if (items.hasOwnProperty('targetTemperature')) values.data.thermostatTemperatureSetpoint = Number(parseFloat(tarTemp).toFixed(1));
+			if (items.hasOwnProperty('currentHumidity')) values.data.thermostatHumidityAmbient = Number(parseFloat(curHum).toFixed(0));
+		
+			return values;
+		}
    		else {
 			return {
 				id: device.id,
