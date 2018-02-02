@@ -166,25 +166,24 @@ function getItemsState(request,response) {
  */
 function getTempData(item) {
 			
-  			//If request has a Thermostat group in the tags, then it should sent only the members, otherwise send it to getThermostatItems Function
-         	var thermItems = item.tags.indexOf('Thermostat') > -1 ? getThermostatItems(item.members) : getThermostatItems([item]);		
-			console.log(thermItems);
-  			//Are we dealing with Fahrenheit?
-          	var isF = item.tags.indexOf('Fahrenheit') >= 0 ? true : false;
-         	
-         	//store long json variables in easier variables to work with below
-			var tstatMode = thermItems.hasOwnProperty('heatingCoolingMode') ? (thermItems.heatingCoolingMode.state.length == 1 ? utils.normalizeThermostatMode(thermItems.heatingCoolingMode.state) : items.heatingCoolingMode.state) : ''
-            var currTemp =  thermItems.hasOwnProperty('currentTemperature') ? (isF ? utils.toC(thermItems.currentTemperature.state) : thermItems.currentTemperature.state) : '';
-         	var tarTemp = thermItems.hasOwnProperty('targetTemperature') ? (isF ? utils.toC(thermItems.targetTemperature.state) : thermItems.targetTemperature.state) : '';
-         	var curHum = thermItems.hasOwnProperty('currentHumidity') ? thermItems.currentHumidity.state : '';
+	//If request has a Thermostat group in the tags, then it should sent only the members, otherwise send it to getThermostatItems Function
+	var thermItems = item.tags.indexOf('Thermostat') > -1 ? getThermostatItems(item.members) : getThermostatItems([item]);		
 
-            //populate only the necessary json values
-         	if (thermItems.hasOwnProperty('heatingCoolingMode')) item.thermostatMode = tstatMode;
-         	if (thermItems.hasOwnProperty('currentTemperature')) item.thermostatTemperatureAmbient = Number(parseFloat(currTemp).toFixed(1));
-         	if (thermItems.hasOwnProperty('targetTemperature')) item.thermostatTemperatureSetpoint = Number(parseFloat(tarTemp).toFixed(1));
-            if (thermItems.hasOwnProperty('currentHumidity')) item.thermostatHumidityAmbient = Number(parseFloat(curHum).toFixed(0));
-            
-            return item;
+	//Are we dealing with Fahrenheit?
+	var isF = item.tags.indexOf('Fahrenheit') >= 0 ? true : false;
+	//store long json variables in easier variables to work with below
+	var tstatMode = thermItems.hasOwnProperty('heatingCoolingMode') ? (thermItems.heatingCoolingMode.state.length == 1 ? utils.normalizeThermostatMode(thermItems.heatingCoolingMode.state) : thermItems.heatingCoolingMode.state) : ''
+	var currTemp =  thermItems.hasOwnProperty('currentTemperature') ? (isF ? utils.toC(thermItems.currentTemperature.state) : thermItems.currentTemperature.state) : '';
+	var tarTemp = thermItems.hasOwnProperty('targetTemperature') ? (isF ? utils.toC(thermItems.targetTemperature.state) : thermItems.targetTemperature.state) : '';
+	var curHum = thermItems.hasOwnProperty('currentHumidity') ? thermItems.currentHumidity.state : '';
+	
+	//populate only the necessary json values
+	if (thermItems.hasOwnProperty('heatingCoolingMode')) item.thermostatMode = tstatMode;
+	if (thermItems.hasOwnProperty('currentTemperature')) item.thermostatTemperatureAmbient = Number(parseFloat(currTemp).toFixed(1));
+	if (thermItems.hasOwnProperty('targetTemperature')) item.thermostatTemperatureSetpoint = Number(parseFloat(tarTemp).toFixed(1));
+	if (thermItems.hasOwnProperty('currentHumidity')) item.thermostatHumidityAmbient = Number(parseFloat(curHum).toFixed(0));
+	
+	return item;
 }
 
 
