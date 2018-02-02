@@ -119,18 +119,16 @@ function getItemsState(request,response) {
           	console.log('openhabGoogleAssistant - getItemsState - result for ' + device.id + ': '  + JSON.stringify(res));
           	
           	var data = {};
-          
-          	switch (res.type) {
-              case 'Switch' :
-                data = getSwitchData(res);
-                break;
-              case 'Group' :
-                var checkTags = res.tags.toString();
-				if (checkTags.includes("Thermostat") || checkTags.includes("CurrentTemperature")) data = getTempData(res);
-              default:
-                break;
-            }
-
+          switch (res.type) {
+		case 'Switch' :
+			data = getSwitchData(res);
+			break;
+		case 'Group' :
+			var checkTags = res.tags.toString();
+			if (checkTags.includes("Thermostat") || checkTags.includes("CurrentTemperature")) data = getTempData(res);
+		default :
+			break;
+	  }
 			return {
 				id: device.id,
 					data: data
