@@ -402,6 +402,7 @@ function getThermostatItems(thermoGroup) {
 function adjustTemperatureWithItems(authToken, request, response, params, currentTemperature, targetTemperature, heatingCoolingMode, tempUnit) {
 	let reqCommand = request.body.inputs[0].payload.commands[0];
 	let deviceId = reqCommand.devices[0].id;
+	var curMode = "heat";
   
   	if (!targetTemperature) {
 		console.error("openhabGoogleAssistant - adjustTemperatureWithItems failed: " + error.message);
@@ -409,13 +410,14 @@ function adjustTemperatureWithItems(authToken, request, response, params, curren
 	}
 	
   	// Google Assistant needs (like Alexa) everything in Celsius, we will need to respect what a user has set
-  	var isF = tempUnit ? (tempUnit.toLowerCase() == 'fahrenheit') : 'false';
+  	var isF = tempUnit ? (tempUnit.toLowerCase() == 'fahrenheit') : false;
   
 	var setValue;
 	setValue = isF ? utils.toF(params.thermostatTemperatureSetpoint) : params.thermostatTemperatureSetpoint;
 
   	//if heatingCoolingMode has a length of 1 (*should* be number...), then convert to something GA can read (off, heat, cool, on, heatcool)
-	var curMode = heatingCoolingMode.state.length == 1 ? utils.normalizeThermostatMode(heatingCoolingMode.state) : heatingCoolingMode.state;
+	if(heatingCoolingMode && heatingCoolingMode.state )
+		curMode = heatingCoolingMode.state.length == 1 ? utils.normalizeThermostatMode(heatingCoolingMode.state) : heatingCoolingMode.state;
 
 	var success = function (resp) {
 		var payload = {};
