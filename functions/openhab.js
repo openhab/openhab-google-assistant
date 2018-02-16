@@ -127,8 +127,10 @@ function getItemsState(request,response) {
 			case 'Group' :
 				var checkTags = res.tags.toString(); //future proof in case Groups are used for other invocations
 				if (checkTags.includes("Thermostat")) data = getTempData(res);
+				break;
 			case 'Dimmer':
 				data = getLightData(res);
+				break;
 			default:
 				var checkTags = res.tags.toString();
 				if (checkTags.includes("CurrentTemperature")) data = getTempData(res);
