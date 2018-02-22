@@ -510,8 +510,10 @@ function syncAndDiscoverDevices(token, success, failure) {
 
 		// Now retrieve all other items
 		(function () {
+			itemLoop:
 			for (var itemNum in items) {
 				var item = items[itemNum];
+				tagLoop:
 				for (var tagNum in item.tags) {
 					var tag = item.tags[tagNum];
 
@@ -578,7 +580,7 @@ function syncAndDiscoverDevices(token, success, failure) {
 						}
 						break;
 					default:
-						break;
+						break tagLoop;
 					}
 					if (traits !== null) {
 						console.log('openhabGoogleAssistant - syncAndDiscoverDevices - SYNC is adding: ' + item.name + ' with tag: ' + tag);
