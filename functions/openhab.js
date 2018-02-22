@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2014-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,7 +10,7 @@
 /**
  * openHAB handler for incoming intents from Google Assistant platform,
  * based on the approach of the opanHAB Alexa Skill
- * 
+ *
  * @author Mehmet Arziman - Initial contribution
  * @author Dan Cunningham - Foundations
  *
@@ -25,7 +25,7 @@ exports.handleSync = function (request, response) {
 
 	// Creating the final SYNC response back to Google Assistant platform.
 	// This will include all the device types and traits.
-	syncAndDiscoverDevices(authToken, function (devs) { 	
+	syncAndDiscoverDevices(authToken, function (devs) {
 		// The response payload will be an array of discovered devices with attributes and traits.
 		var payload = {
 				devices: devs
@@ -43,7 +43,7 @@ exports.handleSync = function (request, response) {
 			'Access-Control-Allow-Origin': '*',
 			'Access-Control-Allow-Headers': 'Content-Type, Authorization'
 		}).json({error: "failed"});
-	});	
+	});
 }
 
 exports.handleQueryAndExecute = function (request, response) {
@@ -164,13 +164,13 @@ function turnOnOff(request, response) {
 	for (let i = 0; i < reqCommand.devices.length; i++) {
 		let deviceId = reqCommand.devices[i].id;
 
-		var success = function (resp) {	
+		var success = function (resp) {
 			var payload = {};
 			let result = {
 					requestId: request.body.requestId,
 					payload: {
 						commands: {
-							ids: [ deviceId ], 
+							ids: [ deviceId ],
 							status: "SUCCESS"
 						}
 					}
@@ -188,8 +188,8 @@ function turnOnOff(request, response) {
 		};
 
 		var state = params.on ? 'ON' : 'OFF';
-		rest.postItemCommand(authToken, deviceId, state, success, failure);	
-	}  
+		rest.postItemCommand(authToken, deviceId, state, success, failure);
+	}
 }
 
 /**
@@ -247,13 +247,13 @@ function adjustColor(request, response) {
 	for (let i = 0; i < reqCommand.devices.length; i++) {
 		let deviceId = reqCommand.devices[i].id;
 
-		var success = function (resp) {	
+		var success = function (resp) {
 			var payload = {};
 			let result = {
 					requestId: request.body.requestId,
 					payload: {
 						commands: {
-							ids: [ deviceId ], 
+							ids: [ deviceId ],
 							status: "SUCCESS"
 						}
 					}
@@ -278,7 +278,7 @@ function adjustColor(request, response) {
 		var state = rgbColor.toHsvArray();
 		console.log('openhabGoogleAssistant - adjustColor state:' + state);
 		rest.postItemCommand(authToken, deviceId, state.toString(), success, failure);
-	}  
+	}
 
 }
 
@@ -358,7 +358,7 @@ function adjustTemperatureWithItems(authToken, params, currentTemperature, targe
 				requestId: request.body.requestId,
 				payload: {
 					commands: {
-						ids: [ deviceId ], 
+						ids: [ deviceId ],
 						status: "SUCCESS",
 						states: {
 							"thermostatMode": curMode,
@@ -386,7 +386,7 @@ function adjustTemperatureWithItems(authToken, params, currentTemperature, targe
 
 /**
  * Add all devices that have been tagged
- * 
+ *
  **/
 function syncAndDiscoverDevices(token, success, failure) {
 
@@ -442,7 +442,7 @@ function syncAndDiscoverDevices(token, success, failure) {
 					// A special object defined by the partner (openHAB) which will be attached to future QUERY and EXECUTE requests.
 					// Partners (openHAB) can use this object to store additional information about the device to improve performance or routing
 					// within their cloud, such as the global region of the device.
-					// 
+					//
 					// Data in this object has a few constraints:
 					// - No Personally Identifiable Information.
 					// - Data should change rarely, akin to other attributes -- so this should not contain real-time state.
@@ -499,7 +499,7 @@ function syncAndDiscoverDevices(token, success, failure) {
 						customDataDetails.itemTag = tag;
 						customDataDetails.openhabVersion = '2.1';
 
-						var discoveredDevice = {                   
+						var discoveredDevice = {
 								id: item.name,
 								type: deviceTypes,
 								traits: traits,
@@ -510,10 +510,10 @@ function syncAndDiscoverDevices(token, success, failure) {
 								attributes: attributeDetails,
 								deviceInfo: {
 									manufacturer: 'openHAB',
-									model: tag,  
-									hwVersion: "2.1",  
-									swVersion: "2.1"  
-								},  
+									model: tag,
+									hwVersion: "2.1",
+									swVersion: "2.1"
+								},
 								customData: customDataDetails
 						};
 						discoveredDevicesList.push(discoveredDevice);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2014-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,8 +15,8 @@
  * @author Dan Cunningham - Foundations
  *
  */
-var https = require('https');
-var config = require('./config.js');
+const https = require('https');
+const config = require('./config.js');
 
 /**
  * Returns all items
@@ -29,9 +29,9 @@ function getItems(token, success, failure) {
  * Returns a single item
  */
 function getItem(token, itemName, success, failure) {
-	var options = httpItemOptions(token, itemName);
+	let options = httpItemOptions(token, itemName);
 	https.get(options, function (response) {
-		var body = '';
+		let body = '';
 
 		response.on('data', function (data) {
 			body += data.toString('utf-8');
@@ -45,7 +45,7 @@ function getItem(token, itemName, success, failure) {
 					message: 'Error response ' + response.statusCode
 				});
 			}
-			var resp = JSON.parse(body);
+			let resp = JSON.parse(body);
 			success(resp);
 		});
 
@@ -60,10 +60,9 @@ function getItem(token, itemName, success, failure) {
  * POST a command to a item
  **/
 function postItemCommand(token, itemName, value, success, failure) {
-	var options = httpItemOptions(token, itemName, 'POST', value.length);
-	var req = https.request(options, function (response) {
-		var body = '';
-		if (response.statusCode == 200 || response.statusCode == 201) {
+	let options = httpItemOptions(token, itemName, 'POST', value.length);
+	let req = https.request(options, function (response) {
+		if (response.statusCode === 200 || response.statusCode === 201) {
 			success(response);
 		} else {
 			failure({
@@ -83,7 +82,7 @@ function postItemCommand(token, itemName, value, success, failure) {
  * Returns a HTTP option object suitable for item commands
  */
 function httpItemOptions(token, itemname, method, length) {
-	var options = {
+	let options = {
 			hostname: config.host,
 			port: config.port,
 			path: config.path + (itemname || ''),
@@ -104,6 +103,8 @@ function httpItemOptions(token, itemname, method, length) {
 	return options;
 }
 
-module.exports.getItems = getItems;
-module.exports.getItem = getItem;
-module.exports.postItemCommand = postItemCommand;
+module.exports = {
+	getItems,
+	getItem,
+	postItemCommand
+}
