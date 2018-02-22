@@ -115,13 +115,30 @@ function getItemsState(request,response) {
 	// Get status for all devices, and return array of promises... one for each device.
 	let promises = devices.map(function(device) {	
 		return getItemAsync(authToken, device.id).then(function(res){ // success
-			console.log('result for ' + device.id + ': ' + JSON.stringify(res))
+			
+          	console.log('openhabGoogleAssistant - getItemsState - result for ' + device.id + ': '  + JSON.stringify(res));
+          	
+          	var data = {};
+          
+          	switch (res.type) {
+			case 'Switch' :
+				data = getSwitchData(res);
+				break;
+			case 'Group' :
+				var checkTags = res.tags.toString(); //future proof in case Groups are used for other invocations
+				if (checkTags.includes("Thermostat")) data = getTempData(res);
+				break;
+			case 'Dimmer':
+				data = getLightData(res);
+				break;
+			default:
+				var checkTags = res.tags.toString();
+				if (checkTags.includes("CurrentTemperature")) data = getTempData(res);
+				break;
+		}
 			return {
 				id: device.id,
-				data: {
-					on: res.state === 'ON' ? true : false,
-					online: true
-				}
+				data: data
 			};
 		},function(res){ // failure
 			return {
@@ -136,7 +153,7 @@ function getItemsState(request,response) {
 	// Wait for all requests to complete ...
 	Promise.all(promises)
 		.then(res => { 		// ... and process the results.
-			console.log("Got all results: " + JSON.stringify(res))
+			console.log("Got all results: " + JSON.stringify(res));
 			for (var i = 0; i < res.length; i++) {
 				result.payload.devices[res[i].id] = res[i].data;
 			}
@@ -150,6 +167,59 @@ function getItemsState(request,response) {
 			}).json({error: "failed"});			
 		})
 }
+
+/**
+ * Gets Temperature or Thermostat Data
+ */
+function getTempData(item) {
+	var thermData = {};
+	var thermItems = item.tags.toString().includes("Thermostat") ? getThermostatItems(item.members) : getThermostatItems([item]);
+	
+	//Are we dealing with Fahrenheit?
+	var isF = item.tags.indexOf('Fahrenheit') >= 0 ? true : false;
+	
+	//store long json variables in easier variables to work with below
+	var tstatMode = thermItems.hasOwnProperty('heatingCoolingMode') ? (thermItems.heatingCoolingMode.state.length == 1 ? utils.normalizeThermostatMode(thermItems.heatingCoolingMode.state) : thermItems.heatingCoolingMode.state) : 'heat'
+	var currTemp =  thermItems.hasOwnProperty('currentTemperature') ? (isF ? utils.toC(thermItems.currentTemperature.state) : thermItems.currentTemperature.state) : '';
+	var tarTemp = thermItems.hasOwnProperty('targetTemperature') ? (isF ? utils.toC(thermItems.targetTemperature.state) : thermItems.targetTemperature.state) : '';
+	var curHum = thermItems.hasOwnProperty('currentHumidity') ? thermItems.currentHumidity.state : '';
+
+	//We will always report device as "online", not sure what this does, but per docs it seems necessary
+	thermData.online = true;
+
+	//populate only the necessary json values, otherwise GA will get confused if keys are empty
+	if (item.tags.toString().includes("Thermostat")) {
+		thermData.thermostatMode = tstatMode;
+		if (thermItems.hasOwnProperty('currentTemperature')) thermData.thermostatTemperatureAmbient = Number(parseFloat(currTemp).toFixed(1));
+		if (thermItems.hasOwnProperty('targetTemperature')) thermData.thermostatTemperatureSetpoint = Number(parseFloat(tarTemp).toFixed(1));
+		if (thermItems.hasOwnProperty('currentHumidity')) thermData.thermostatHumidityAmbient = Number(parseFloat(curHum).toFixed(0));              
+	}
+	else if (item.tags.toString().includes("CurrentTemperature")) {
+		thermData.thermostatMode = "heat"; // doesn't matter, GA will only state the number (since we force Ambient and Setpoint to match)
+		if (thermItems.hasOwnProperty('currentTemperature')) thermData.thermostatTemperatureAmbient = Number(parseFloat(currTemp).toFixed(1));
+		thermData.thermostatTemperatureSetpoint = thermData.thermostatTemperatureAmbient;
+	}
+	
+	return thermData;
+}
+
+function getLightData(item) {
+  console.log(item.name + " State: " + item.state);
+  return {
+	on: item.state === 'ON' ? true : (item.state > 0 ? true : false),
+	online: true,
+    	brightness: Number(item.state)
+	};
+}
+
+function getSwitchData(item) {
+  console.log(item.name + " State: " + item.state);
+  return {
+ 		on: item.state === 'ON' ? true : (item.state > 0 ? true : false),
+ 		online: true
+	};
+}
+          
 
 /**
  * Turns a Switch Item on or off
@@ -291,12 +361,14 @@ function adjustTemperature(request, response) {
 	let authToken = request.headers.authorization ? request.headers.authorization.split(' ')[1] : null;
 	let reqCommand = request.body.inputs[0].payload.commands[0];
 	let params = reqCommand.execution[0].params;
-
+	let deviceId = reqCommand.devices[0].id;
+  
 	console.log('openhabGoogleAssistant - adjustTemperature reqCommand:' + JSON.stringify(reqCommand));
 
 	var success = function (resp) {
 		var items = getThermostatItems(resp.members);
-		adjustTemperatureWithItems(authToken, params, items.currentTemperature, items.targetTemperature, items.heatingCoolingMode);
+		console.log('openhabGoogleAssistant - adjustTemperature Retrieved Items:' + JSON.stringify(items));
+		adjustTemperatureWithItems(authToken, request, response, params, items.currentTemperature, items.targetTemperature, items.heatingCoolingMode, resp.tags[1]);
 	};
 
 	var failure = function (error) {
@@ -327,6 +399,9 @@ function getThermostatItems(thermoGroup) {
 			if (tag === 'homekit:HeatingCoolingMode') {
 				values.heatingCoolingMode = member;
 			}
+          	if (tag === 'CurrentHumidity') {
+              	values.currentHumidity = member;
+            }
 		});
 	});
 	return values;
@@ -336,21 +411,25 @@ function getThermostatItems(thermoGroup) {
 /**
  * Adjust a thermostat's temperature based on its current actual readings.
  **/
-function adjustTemperatureWithItems(authToken, params, currentTemperature, targetTemperature, heatingCoolingMode) {
-	if (!targetTemperature) {
+function adjustTemperatureWithItems(authToken, request, response, params, currentTemperature, targetTemperature, heatingCoolingMode, tempUnit) {
+	let reqCommand = request.body.inputs[0].payload.commands[0];
+	let deviceId = reqCommand.devices[0].id;
+	var curMode = "heat";
+  
+  	if (!targetTemperature) {
 		console.error("openhabGoogleAssistant - adjustTemperatureWithItems failed: " + error.message);
 		return;
 	}
-
-	// Google Assistant needs (like Alexa) everything in Celsius, we will need to respect what a user has set
-	var isF = utils.isEventFahrenheit(event);
-
+	
+  	// Google Assistant needs (like Alexa) everything in Celsius, we will need to respect what a user has set
+  	var isF = tempUnit ? (tempUnit.toLowerCase() == 'fahrenheit') : false;
+  
 	var setValue;
 	setValue = isF ? utils.toF(params.thermostatTemperatureSetpoint) : params.thermostatTemperatureSetpoint;
 
-	log.debug('openhabGoogleAssistant - adjustTemperatureWithItems setValue: ' + setValue);
-
-	var curMode = utils.normalizeThermostatMode(heatingCoolingMode ? heatingCoolingMode.state : 'AUTO');
+  	//if heatingCoolingMode has a length of 1 (*should* be number...), then convert to something GA can read (off, heat, cool, on, heatcool)
+	if(heatingCoolingMode && heatingCoolingMode.state )
+		curMode = heatingCoolingMode.state.length == 1 ? utils.normalizeThermostatMode(heatingCoolingMode.state) : heatingCoolingMode.state;
 
 	var success = function (resp) {
 		var payload = {};
@@ -367,7 +446,7 @@ function adjustTemperatureWithItems(authToken, params, currentTemperature, targe
 					}
 				}
 		}
-		console.log('openhabGoogleAssistant - adjustColor done with result:' + JSON.stringify(result));
+		console.log('openhabGoogleAssistant - adjustTemperatureWithItems done with result:' + JSON.stringify(result));
 		response.status(200).json(result);
 	};
 
@@ -401,10 +480,12 @@ function syncAndDiscoverDevices(token, success, failure) {
 
 	// Checks for a Fahrenheit tag and sets the righ property on the
 	// attributeDetails response object
-	var setTempFormat = function(item, attributeDetails){
+	var setTempFormat = function(item, attributeDetails) {
 		if (item.tags.indexOf('Fahrenheit') > -1 || item.tags.indexOf('fahrenheit') > -1) {
+			attributeDetails.availableThermostatModes = 'off, cool, heat, on, heatcool';
 			attributeDetails.thermostatTemperatureUnit = 'F';
 		} else {
+			attributeDetails.availableThermostatModes = 'off, cool, heat, on, heatcool';
 			attributeDetails.thermostatTemperatureUnit = 'C';
 		}
 	};
@@ -430,14 +511,16 @@ function syncAndDiscoverDevices(token, success, failure) {
 
 		// Now retrieve all other items
 		(function () {
+			itemLoop:
 			for (var itemNum in items) {
 				var item = items[itemNum];
+				tagLoop:
 				for (var tagNum in item.tags) {
 					var tag = item.tags[tagNum];
 
 					// An array of traits that this device supports.
 					var traits = null;
-
+					
 
 					// A special object defined by the partner (openHAB) which will be attached to future QUERY and EXECUTE requests.
 					// Partners (openHAB) can use this object to store additional information about the device to improve performance or routing
@@ -463,11 +546,11 @@ function syncAndDiscoverDevices(token, success, failure) {
 					switch (tag) {
 
 					case 'Lighting':
-						deviceTypes = ['action.devices.types.LIGHT'];
+						deviceTypes = 'action.devices.types.LIGHT';
 						traits = getSwitchableTraits(item);
 						break;
 					case 'Switchable':
-						deviceTypes = ['action.devices.types.SWITCH'];
+						deviceTypes = 'action.devices.types.SWITCH';
 						traits = getSwitchableTraits(item);
 						break;
 					case 'CurrentTemperature':
@@ -477,6 +560,7 @@ function syncAndDiscoverDevices(token, success, failure) {
 							traits = [
 								'action.devices.traits.TemperatureSetting'
 								];
+                          	deviceTypes = 'action.devices.types.THERMOSTAT';
 							setTempFormat(item,attributeDetails);
 						}
 						break;
@@ -487,11 +571,11 @@ function syncAndDiscoverDevices(token, success, failure) {
 								'action.devices.traits.TemperatureSetting'
 								];
 							setTempFormat(item,attributeDetails);
-							deviceTypes = ['action.devices.types.THERMOSTAT'];
+							deviceTypes = 'action.devices.types.THERMOSTAT';
 						}
 						break;
 					default:
-						break;
+						break tagLoop;
 					}
 					if (traits !== null) {
 						console.log('openhabGoogleAssistant - syncAndDiscoverDevices - SYNC is adding: ' + item.name + ' with tag: ' + tag);
