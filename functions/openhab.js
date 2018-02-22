@@ -46,52 +46,7 @@ exports.handleSync = function (request, response) {
 	});	
 }
 
-exports.handleQueryAndExecute = function (request, response) {
-	let requestIntent = request.body.inputs[0].intent;
-	switch (requestIntent) {
-		case 'action.devices.QUERY':
-			getItemsState(request,response);
-			
-			break;
-		case 'action.devices.EXECUTE':
-
-			let requestCommands = request.body.inputs[0].payload.commands;
-
-			for (let i = 0; i < requestCommands.length; i++) {
-				let currentCommand = requestCommands[i];
-				for (let j = 0; j < currentCommand.execution.length; j++) {
-					let currentExecutionCommand = currentCommand.execution[j];
-		
-					switch (currentExecutionCommand.command) {
-					case 'action.devices.commands.OnOff':
-						turnOnOff(request, response);
-						break;
-					case 'action.devices.commands.BrightnessAbsolute':
-						adjustBrightness(request, response);
-						break;
-					case 'action.devices.commands.ChangeColor':
-					case 'action.devices.commands.ColorAbsolute':
-						adjustColor(request, response);
-						break;
-					case 'action.devices.commands.ThermostatTemperatureSetpoint':
-						adjustTemperature(request, response);
-						break;
-					}
-				}
-			}	
-
-			break;
-		default:
-			// TODO: handle error.
-			break;
-	}
-
-}
-
-/**
- * Returns state for devices in the request 
- */
-function getItemsState(request,response) {
+exports.handleQuery = function (request, response) {
 	let authToken = request.headers.authorization ? request.headers.authorization.split(' ')[1] : null;
 	let devices = request.body.inputs[0].payload.devices;
 
@@ -149,6 +104,33 @@ function getItemsState(request,response) {
 				'Access-Control-Allow-Headers': 'Content-Type, Authorization'
 			}).json({error: "failed"});			
 		})
+}
+
+exports.handleExecute = function (request, response) {
+	let requestCommands = request.body.inputs[0].payload.commands;
+
+	for (let i = 0; i < requestCommands.length; i++) {
+		let currentCommand = requestCommands[i];
+		for (let j = 0; j < currentCommand.execution.length; j++) {
+			let currentExecutionCommand = currentCommand.execution[j];
+
+			switch (currentExecutionCommand.command) {
+			case 'action.devices.commands.OnOff':
+				turnOnOff(request, response);
+				break;
+			case 'action.devices.commands.BrightnessAbsolute':
+				adjustBrightness(request, response);
+				break;
+			case 'action.devices.commands.ChangeColor':
+			case 'action.devices.commands.ColorAbsolute':
+				adjustColor(request, response);
+				break;
+			case 'action.devices.commands.ThermostatTemperatureSetpoint':
+				adjustTemperature(request, response);
+				break;
+			}
+		}
+	}	
 }
 
 /**
