@@ -206,7 +206,8 @@ function getTempData(item) {
 function getLightData(item) {
   console.log(item.name + " State: " + item.state);
   return {
- 		online: true,
+	on: item.state === 'ON' ? true : (item.state > 0 ? true : false),
+	online: true,
     	brightness: Number(item.state)
 	};
 }
@@ -214,7 +215,7 @@ function getLightData(item) {
 function getSwitchData(item) {
   console.log(item.name + " State: " + item.state);
   return {
- 		on: item.state === 'ON' ? true : false,
+ 		on: item.state === 'ON' ? true : (item.state > 0 ? true : false),
  		online: true
 	};
 }
