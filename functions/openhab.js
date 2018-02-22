@@ -520,12 +520,6 @@ function syncAndDiscoverDevices(token, success, failure) {
 					// An array of traits that this device supports.
 					var traits = null;
 					
-					//needs to be maintained to ensure no erroneous tags crash the sync
-					var validTags = ['Lighting', 'Switchable', 'CurrentTemperature', 'Thermostat'];
-					if (validTags.includes(tag.toString()) === false) {
-						console.log('openhabGoogleAssistant - syncAndDiscoverDevices - SYNC is not adding: ' + item.name + ' with tag: ' + tag +'. Reason: Tag not supported');
-						break;
-					}  
 
 					// A special object defined by the partner (openHAB) which will be attached to future QUERY and EXECUTE requests.
 					// Partners (openHAB) can use this object to store additional information about the device to improve performance or routing
