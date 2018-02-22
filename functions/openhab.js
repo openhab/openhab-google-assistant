@@ -71,13 +71,28 @@ exports.handleQuery = function (request, response) {
 	let promises = devices.map(function(device) {	
 		return getItemAsync(authToken, device.id).then(function(res){ // success
 			console.log('result for ' + device.id + ': ' + JSON.stringify(res))
-			return {
+			let retValue = {
 				id: device.id,
 				data: {
-					on: res.state === 'ON' ? true : false,
 					online: true
 				}
 			};
+
+			let traits = getSwitchableTraits(res);
+			for (let i = 0; i < traits.length; i++) {
+				switch (traits[i]) {
+					case 'action.devices.traits.OnOff':
+						retValue.data.on = res.state === 'ON' ? true : false;
+						break; 
+					case 'action.devices.traits.Brightness':
+						retValue.data.brightness = parseInt(res.state) || 0;
+						break; 
+					case 'action.devices.traits.ColorSpectrum':
+						// retValue.data.color = { "name": "cerulean", "spectrumRGB": 31655 };
+						break; 
+				}
+			}
+			return retValue;
 		},function(res){ // failure
 			return {
 				id: device.id,
