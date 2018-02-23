@@ -82,7 +82,7 @@ exports.handleQuery = function (request, response) {
 			for (let i = 0; i < traits.length; i++) {
 				switch (traits[i]) {
 					case 'action.devices.traits.OnOff':
-						retValue.data.on = res.state === 'ON' ? true : false;
+						retValue.data.on = res.state === 'ON' ? true : (res.state > 0 ? true : false);
 						break; 
 					case 'action.devices.traits.Brightness':
 						retValue.data.brightness = parseInt(res.state) || 0;
