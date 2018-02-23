@@ -25,25 +25,25 @@ exports.handleSync = function (request, response) {
 
 	// Creating the final SYNC response back to Google Assistant platform.
 	// This will include all the device types and traits.
-	syncAndDiscoverDevices(authToken, function (devs) { 	
+	syncAndDiscoverDevices(authToken, function (devs) {
 		// The response payload will be an array of discovered devices with attributes and traits.
 		var payload = {
-				devices: devs
+			devices: devs
 		};
 		var result = {
-				requestId: request.body.requestId,
-				payload: payload
+			requestId: request.body.requestId,
+			payload: payload
 		};
 		console.log('openhabGoogleAssistant - SYNC result: ' + JSON.stringify(result));
 		response.status(200).json(result);
 	},
-	function (error) {
-		console.error("openhabGoogleAssistant - syncAndDiscoverDevices failed: " + error.message);
-		response.status(500).set({
-			'Access-Control-Allow-Origin': '*',
-			'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-		}).json({error: "failed"});
-	});	
+		function (error) {
+			console.error("openhabGoogleAssistant - syncAndDiscoverDevices failed: " + error.message);
+			response.status(500).set({
+				'Access-Control-Allow-Origin': '*',
+				'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+			}).json({ error: "failed" });
+		});
 }
 
 exports.handleQuery = function (request, response) {
@@ -61,16 +61,18 @@ exports.handleQuery = function (request, response) {
 	}
 
 	// Wrap async call in promise
-	var getItemAsync = function(token, deviceId){		
-		return new Promise(function(success,failure){
-			rest.getItem(token,deviceId,success,failure);
+	var getItemAsync = function (token, deviceId) {
+		return new Promise(function (success, failure) {
+			rest.getItem(token, deviceId, success, failure);
 		});
 	}
 
 	// Get status for all devices, and return array of promises... one for each device.
-	let promises = devices.map(function(device) {	
-		return getItemAsync(authToken, device.id).then(function(res){ // success
+	let promises = devices.map(function (device) {
+		return getItemAsync(authToken, device.id).then(function (res) { // success
 			console.log('result for ' + device.id + ': ' + JSON.stringify(res))
+
+			//device is always marked as online / available
 			let retValue = {
 				id: device.id,
 				data: {
@@ -78,22 +80,47 @@ exports.handleQuery = function (request, response) {
 				}
 			};
 
+			//get the data from the device
+			switch (res.type) {
+				case 'Switch':
+					itemData = getSwitchData(res);
+					break;
+				case 'Group':
+					var checkTags = res.tags.toString(); //future proof in case Groups are used for other invocations
+					if (checkTags.includes("Thermostat")) itemData = getTempData(res);
+					break;
+				case 'Dimmer':
+					itemData = getLightData(res);
+					break;
+				default:
+					var checkTags = res.tags.toString();
+					if (checkTags.includes("CurrentTemperature")) itemData = getTempData(res);
+					break;
+			}
+
+			//find out, which data needs to be delivered to google
 			let traits = getSwitchableTraits(res);
 			for (let i = 0; i < traits.length; i++) {
 				switch (traits[i]) {
 					case 'action.devices.traits.OnOff':
-						retValue.data.on = res.state === 'ON' ? true : (res.state > 0 ? true : false);
-						break; 
+						retValue.data.on = itemData.on;
+						break;
 					case 'action.devices.traits.Brightness':
-						retValue.data.brightness = parseInt(res.state) || 0;
-						break; 
+						retValue.data.brightness = itemData.brightness;
+						break;
 					case 'action.devices.traits.ColorSpectrum':
-						// retValue.data.color = { "name": "cerulean", "spectrumRGB": 31655 };
-						break; 
+						retValue.data.color = itemData.color;
+						break;
+					case 'action.devices.traits.TemperatureSetting':
+						retValue.data.thermostatMode = itemdata.thermostatMode
+						retValue.data.thermostatTemperatureAmbient = itemdata.thermostatTemperatureAmbient 
+						retValue.data.thermostatTemperatureSetpoint  = itemdata.thermostatTemperatureSetpoint
+						retValue.data.thermostatHumidityAmbient  = itemdata.thermostatHumidityAmbient
+						break;
 				}
 			}
 			return retValue;
-		},function(res){ // failure
+		}, function (res) { // failure
 			return {
 				id: device.id,
 				data: {
@@ -111,13 +138,13 @@ exports.handleQuery = function (request, response) {
 				result.payload.devices[res[i].id] = res[i].data;
 			}
 			console.log('openhabGoogleAssistant - getItemsState done with result:' + JSON.stringify(result));
-			response.status(200).json(result);		
+			response.status(200).json(result);
 		}).catch(e => {
 			console.error("openhabGoogleAssistant - getItemsState failed: " + e.message);
 			response.status(500).set({
 				'Access-Control-Allow-Origin': '*',
 				'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-			}).json({error: "failed"});			
+			}).json({ error: "failed" });
 		})
 }
 
@@ -130,22 +157,67 @@ exports.handleExecute = function (request, response) {
 			let currentExecutionCommand = currentCommand.execution[j];
 
 			switch (currentExecutionCommand.command) {
-			case 'action.devices.commands.OnOff':
-				turnOnOff(request, response);
-				break;
-			case 'action.devices.commands.BrightnessAbsolute':
-				adjustBrightness(request, response);
-				break;
-			case 'action.devices.commands.ChangeColor':
-			case 'action.devices.commands.ColorAbsolute':
-				adjustColor(request, response);
-				break;
-			case 'action.devices.commands.ThermostatTemperatureSetpoint':
-				adjustTemperature(request, response);
-				break;
+				case 'action.devices.commands.OnOff':
+					turnOnOff(request, response);
+					break;
+				case 'action.devices.commands.BrightnessAbsolute':
+					adjustBrightness(request, response);
+					break;
+				case 'action.devices.commands.ChangeColor':
+				case 'action.devices.commands.ColorAbsolute':
+					adjustColor(request, response);
+					break;
+				case 'action.devices.commands.ThermostatTemperatureSetpoint':
+					adjustTemperature(request, response);
+					break;
 			}
 		}
-	}	
+	}
+}
+
+/**
+ * Gets Temperature or Thermostat Data
+ */
+function getTempData(item) {
+	var thermData = {};
+	var thermItems = item.tags.toString().includes("Thermostat") ? getThermostatItems(item.members) : getThermostatItems([item]);
+
+	//Are we dealing with Fahrenheit?
+	const isF = item.tags.toString().toLowerCase().includes('fahrenheit');
+
+	//store long json variables in easier variables to work with below
+	var tstatMode = thermItems.hasOwnProperty('heatingCoolingMode') ? (thermItems.heatingCoolingMode.state.length == 1 ? utils.normalizeThermostatMode(thermItems.heatingCoolingMode.state) : thermItems.heatingCoolingMode.state) : 'heat'
+	var currTemp = thermItems.hasOwnProperty('currentTemperature') ? (isF ? utils.toC(thermItems.currentTemperature.state) : thermItems.currentTemperature.state) : '';
+	var tarTemp = thermItems.hasOwnProperty('targetTemperature') ? (isF ? utils.toC(thermItems.targetTemperature.state) : thermItems.targetTemperature.state) : '';
+	var curHum = thermItems.hasOwnProperty('currentHumidity') ? thermItems.currentHumidity.state : '';
+
+	//populate only the necessary json values, otherwise GA will get confused if keys are empty
+	if (item.tags.toString().toLowerCase().includes("thermostat")) {
+		thermData.thermostatMode = tstatMode;
+		if (thermItems.hasOwnProperty('currentTemperature')) thermData.thermostatTemperatureAmbient = Number(parseFloat(currTemp).toFixed(1));
+		if (thermItems.hasOwnProperty('targetTemperature')) thermData.thermostatTemperatureSetpoint = Number(parseFloat(tarTemp).toFixed(1));
+		if (thermItems.hasOwnProperty('currentHumidity')) thermData.thermostatHumidityAmbient = Number(parseFloat(curHum).toFixed(0));
+	}
+	else if (item.tags.toString().toLowerCase().includes("currenttemperature")) {
+		thermData.thermostatMode = "heat"; // doesn't matter, GA will only state the number (since we force Ambient and Setpoint to match)
+		if (thermItems.hasOwnProperty('currentTemperature')) thermData.thermostatTemperatureAmbient = Number(parseFloat(currTemp).toFixed(1));
+		thermData.thermostatTemperatureSetpoint = thermData.thermostatTemperatureAmbient;
+	}
+
+	return thermData;
+}
+
+function getLightData(item) {
+	return {
+		on: item.state === 'ON' ? true : (Number(item.state) > 0 ? true : false),
+		brightness: Number(item.state)
+	};
+}
+
+function getSwitchData(item) {
+	return {
+		on: item.state === 'ON' ? true : false,
+	};
 }
 
 /**
@@ -161,16 +233,16 @@ function turnOnOff(request, response) {
 	for (let i = 0; i < reqCommand.devices.length; i++) {
 		let deviceId = reqCommand.devices[i].id;
 
-		var success = function (resp) {	
+		var success = function (resp) {
 			var payload = {};
 			let result = {
-					requestId: request.body.requestId,
-					payload: {
-						commands: {
-							ids: [ deviceId ], 
-							status: "SUCCESS"
-						}
+				requestId: request.body.requestId,
+				payload: {
+					commands: {
+						ids: [deviceId],
+						status: "SUCCESS"
 					}
+				}
 			}
 			console.log('openhabGoogleAssistant - turnOnOff done with result:' + JSON.stringify(result));
 			response.status(200).json(result);
@@ -181,12 +253,12 @@ function turnOnOff(request, response) {
 			response.status(500).set({
 				'Access-Control-Allow-Origin': '*',
 				'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-			}).json({error: "failed"});
+			}).json({ error: "failed" });
 		};
 
 		var state = params.on ? 'ON' : 'OFF';
-		rest.postItemCommand(authToken, deviceId, state, success, failure);	
-	}  
+		rest.postItemCommand(authToken, deviceId, state, success, failure);
+	}
 }
 
 /**
@@ -205,13 +277,13 @@ function adjustBrightness(request, response) {
 		var success = function (resp) {
 			var payload = {};
 			let result = {
-					requestId: request.body.requestId,
-					payload: {
-						commands: {
-							ids: [ deviceId ], 
-							status: "SUCCESS"
-						}
+				requestId: request.body.requestId,
+				payload: {
+					commands: {
+						ids: [deviceId],
+						status: "SUCCESS"
 					}
+				}
 			}
 			console.log('openhabGoogleAssistant - adjustBrightness done with result:' + JSON.stringify(result));
 			response.status(200).json(result);
@@ -222,14 +294,13 @@ function adjustBrightness(request, response) {
 			response.status(500).set({
 				'Access-Control-Allow-Origin': '*',
 				'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-			}).json({error: "failed"});
+			}).json({ error: "failed" });
 		};
 
 		var state = params.brightness.toString();
 		rest.postItemCommand(authToken, deviceId, state, success, failure);
 	}
 }
-
 
 /**
  * Color control
@@ -244,16 +315,16 @@ function adjustColor(request, response) {
 	for (let i = 0; i < reqCommand.devices.length; i++) {
 		let deviceId = reqCommand.devices[i].id;
 
-		var success = function (resp) {	
+		var success = function (resp) {
 			var payload = {};
 			let result = {
-					requestId: request.body.requestId,
-					payload: {
-						commands: {
-							ids: [ deviceId ], 
-							status: "SUCCESS"
-						}
+				requestId: request.body.requestId,
+				payload: {
+					commands: {
+						ids: [deviceId],
+						status: "SUCCESS"
 					}
+				}
 			}
 			console.log('openhabGoogleAssistant - adjustColor done with result:' + JSON.stringify(result));
 			response.status(200).json(result);
@@ -264,18 +335,18 @@ function adjustColor(request, response) {
 			response.status(500).set({
 				'Access-Control-Allow-Origin': '*',
 				'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-			}).json({error: "failed"});
+			}).json({ error: "failed" });
 		};
 
-		let red = Math.floor(params.color.spectrumRGB / (256*256));
-		let green = Math.floor((params.color.spectrumRGB % (256*256)) / 256);
+		let red = Math.floor(params.color.spectrumRGB / (256 * 256));
+		let green = Math.floor((params.color.spectrumRGB % (256 * 256)) / 256);
 		let blue = params.color.spectrumRGB % 256;
 		var rgbColor = colr.fromRgb(red, green, blue);
 		console.log('openhabGoogleAssistant - adjustColor rgbColor:' + rgbColor);
 		var state = rgbColor.toHsvArray();
 		console.log('openhabGoogleAssistant - adjustColor state:' + state);
 		rest.postItemCommand(authToken, deviceId, state.toString(), success, failure);
-	}  
+	}
 
 }
 
@@ -301,7 +372,7 @@ function adjustTemperature(request, response) {
 		response.status(500).set({
 			'Access-Control-Allow-Origin': '*',
 			'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-		}).json({error: "failed"});
+		}).json({ error: "failed" });
 	};
 
 	rest.getItem(authToken, deviceId, success, failure);
@@ -313,8 +384,8 @@ function adjustTemperature(request, response) {
  **/
 function getThermostatItems(thermoGroup) {
 	var values = {};
-	thermoGroup.forEach(function(member){
-		member.tags.forEach(function(tag){
+	thermoGroup.forEach(function (member) {
+		member.tags.forEach(function (tag) {
 			if (tag === 'CurrentTemperature') {
 				values.currentTemperature = member;
 			}
@@ -352,17 +423,17 @@ function adjustTemperatureWithItems(authToken, params, currentTemperature, targe
 	var success = function (resp) {
 		var payload = {};
 		let result = {
-				requestId: request.body.requestId,
-				payload: {
-					commands: {
-						ids: [ deviceId ], 
-						status: "SUCCESS",
-						states: {
-							"thermostatMode": curMode,
-							"thermostatTemperatureSetpoint": isF ? utils.toC(setValue) : setValue
-						}
+			requestId: request.body.requestId,
+			payload: {
+				commands: {
+					ids: [deviceId],
+					status: "SUCCESS",
+					states: {
+						"thermostatMode": curMode,
+						"thermostatTemperatureSetpoint": isF ? utils.toC(setValue) : setValue
 					}
 				}
+			}
 		}
 		console.log('openhabGoogleAssistant - adjustColor done with result:' + JSON.stringify(result));
 		response.status(200).json(result);
@@ -373,7 +444,7 @@ function adjustTemperatureWithItems(authToken, params, currentTemperature, targe
 		response.status(500).set({
 			'Access-Control-Allow-Origin': '*',
 			'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-		}).json({error: "failed"});
+		}).json({ error: "failed" });
 	};
 
 	rest.postItemCommand(authToken, targetTemperature.name, setValue.toString(), success, failure);
@@ -388,9 +459,9 @@ function adjustTemperatureWithItems(authToken, params, currentTemperature, targe
 function syncAndDiscoverDevices(token, success, failure) {
 
 	//return true if a value in the first group is contained in the second group
-	var matchesGroup = function(groups1, groups2){
-		for(var num in groups1 ){
-			if(groups2.indexOf(groups1[num]) >= 0 )
+	var matchesGroup = function (groups1, groups2) {
+		for (var num in groups1) {
+			if (groups2.indexOf(groups1[num]) >= 0)
 				return true;
 		}
 		return false;
@@ -398,7 +469,7 @@ function syncAndDiscoverDevices(token, success, failure) {
 
 	// Checks for a Fahrenheit tag and sets the righ property on the
 	// attributeDetails response object
-	var setTempFormat = function(item, attributeDetails){
+	var setTempFormat = function (item, attributeDetails) {
 		if (item.tags.indexOf('Fahrenheit') > -1 || item.tags.indexOf('fahrenheit') > -1) {
 			attributeDetails.thermostatTemperatureUnit = 'F';
 		} else {
@@ -418,7 +489,7 @@ function syncAndDiscoverDevices(token, success, failure) {
 				var item = items[itemNum];
 				for (var tagNum in item.tags) {
 					var tag = item.tags[tagNum];
-					if(tag == 'Thermostat' && item.type === 'Group'){
+					if (tag == 'Thermostat' && item.type === 'Group') {
 						thermostatGroups.push(item.name);
 					}
 				}
@@ -459,36 +530,36 @@ function syncAndDiscoverDevices(token, success, failure) {
 
 					switch (tag) {
 
-					case 'Lighting':
-						deviceTypes = ['action.devices.types.LIGHT'];
-						traits = getSwitchableTraits(item);
-						break;
-					case 'Switchable':
-						deviceTypes = ['action.devices.types.SWITCH'];
-						traits = getSwitchableTraits(item);
-						break;
-					case 'CurrentTemperature':
-						//if this is not part of a thermostatGroup then add it
-						//standalone otherwise it will be available as a thermostat
-						if(!matchesGroup(thermostatGroups, item.groupNames)){
-							traits = [
-								'action.devices.traits.TemperatureSetting'
+						case 'Lighting':
+							deviceTypes = ['action.devices.types.LIGHT'];
+							traits = getSwitchableTraits(item);
+							break;
+						case 'Switchable':
+							deviceTypes = ['action.devices.types.SWITCH'];
+							traits = getSwitchableTraits(item);
+							break;
+						case 'CurrentTemperature':
+							//if this is not part of a thermostatGroup then add it
+							//standalone otherwise it will be available as a thermostat
+							if (!matchesGroup(thermostatGroups, item.groupNames)) {
+								traits = [
+									'action.devices.traits.TemperatureSetting'
 								];
-							setTempFormat(item,attributeDetails);
-						}
-						break;
-					case 'Thermostat':
-						//only group items are allowed to have a Temperature tag
-						if (item.type === 'Group') {
-							traits = [
-								'action.devices.traits.TemperatureSetting'
+								setTempFormat(item, attributeDetails);
+							}
+							break;
+						case 'Thermostat':
+							//only group items are allowed to have a Temperature tag
+							if (item.type === 'Group') {
+								traits = [
+									'action.devices.traits.TemperatureSetting'
 								];
-							setTempFormat(item,attributeDetails);
-							deviceTypes = ['action.devices.types.THERMOSTAT'];
-						}
-						break;
-					default:
-						break;
+								setTempFormat(item, attributeDetails);
+								deviceTypes = ['action.devices.types.THERMOSTAT'];
+							}
+							break;
+						default:
+							break;
 					}
 					if (traits !== null) {
 						console.log('openhabGoogleAssistant - syncAndDiscoverDevices - SYNC is adding: ' + item.name + ' with tag: ' + tag);
@@ -496,22 +567,22 @@ function syncAndDiscoverDevices(token, success, failure) {
 						customDataDetails.itemTag = tag;
 						customDataDetails.openhabVersion = '2.1';
 
-						var discoveredDevice = {                   
-								id: item.name,
-								type: deviceTypes,
-								traits: traits,
-								name: {
-									name: item.label
-								},
-								willReportState: true,
-								attributes: attributeDetails,
-								deviceInfo: {
-									manufacturer: 'openHAB',
-									model: tag,  
-									hwVersion: "2.1",  
-									swVersion: "2.1"  
-								},  
-								customData: customDataDetails
+						var discoveredDevice = {
+							id: item.name,
+							type: deviceTypes,
+							traits: traits,
+							name: {
+								name: item.label
+							},
+							willReportState: true,
+							attributes: attributeDetails,
+							deviceInfo: {
+								manufacturer: 'openHAB',
+								model: tag,
+								hwVersion: "2.1",
+								swVersion: "2.1"
+							},
+							customData: customDataDetails
 						};
 						discoveredDevicesList.push(discoveredDevice);
 					}
@@ -529,31 +600,31 @@ function syncAndDiscoverDevices(token, success, failure) {
 function getSwitchableTraits(item) {
 	var traits = null;
 	if (item.type === 'Switch' ||
-			(item.type === 'Group' && item.groupType && item.groupType === 'Switch')) {
+		(item.type === 'Group' && item.groupType && item.groupType === 'Switch')) {
 		traits = [
 			'action.devices.traits.OnOff'
-			];
+		];
 	} else if (item.type === 'Dimmer' ||
-			(item.type === 'Group' && item.groupType && item.groupType === 'Dimmer')) {
+		(item.type === 'Group' && item.groupType && item.groupType === 'Dimmer')) {
 		traits = [
 			'action.devices.traits.Brightness',
 			//'setPercentage',
 			'action.devices.traits.OnOff'
-			];
+		];
 	} else if (item.type === 'Color' ||
-			(item.type === 'Group' && item.groupType && item.groupType === 'Color')) {
+		(item.type === 'Group' && item.groupType && item.groupType === 'Color')) {
 		traits = [
 			'action.devices.traits.Brightness',
 			//'setPercentage',
 			'action.devices.traits.OnOff',
 			'action.devices.traits.ColorSpectrum'
-			];
+		];
 	} else if (item.type === 'Rollershutter' ||
-			(item.type === 'Group' && item.groupType && item.groupType === 'Rollershutter')) {
+		(item.type === 'Group' && item.groupType && item.groupType === 'Rollershutter')) {
 		traits = [
 			//'setPercentage',
 			'action.devices.traits.Brightness'
-			];
+		];
 	}
 	return traits;
 }
