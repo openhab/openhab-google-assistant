@@ -92,6 +92,9 @@ exports.handleQuery = function (request, response) {
 				case 'Dimmer':
 					itemData = getLightData(res);
 					break;
+				case 'Color':
+					itemData = getColorData(res);
+					break;
 				default:
 					var checkTags = res.tags.toString();
 					if (checkTags.includes("CurrentTemperature")) itemData = getTempData(res);
@@ -113,9 +116,9 @@ exports.handleQuery = function (request, response) {
 						break;
 					case 'action.devices.traits.TemperatureSetting':
 						retValue.data.thermostatMode = itemdata.thermostatMode
-						retValue.data.thermostatTemperatureAmbient = itemdata.thermostatTemperatureAmbient 
-						retValue.data.thermostatTemperatureSetpoint  = itemdata.thermostatTemperatureSetpoint
-						retValue.data.thermostatHumidityAmbient  = itemdata.thermostatHumidityAmbient
+						retValue.data.thermostatTemperatureAmbient = itemdata.thermostatTemperatureAmbient
+						retValue.data.thermostatTemperatureSetpoint = itemdata.thermostatTemperatureSetpoint
+						retValue.data.thermostatHumidityAmbient = itemdata.thermostatHumidityAmbient
 						break;
 				}
 			}
@@ -209,7 +212,7 @@ function getTempData(item) {
 
 function getLightData(item) {
 	return {
-		on: item.state === 'ON' ? true : (Number(item.state) > 0 ? true : false),
+		on: item.state === 'ON' ? true : (item.state === 0 ? false : true),
 		brightness: Number(item.state)
 	};
 }
@@ -217,6 +220,22 @@ function getLightData(item) {
 function getSwitchData(item) {
 	return {
 		on: item.state === 'ON' ? true : false,
+	};
+}
+
+function getColorData(item) {
+	var hsvArray = item.state.split(",").map(function (val) {
+		return Number(val);
+	});
+	var color = colr.fromHsvArray(hsvArray);
+	var rgbColor = parseInt(color.toHex().replace('#', ''), 16);
+
+	return {
+		color: {
+			"spectrumRGB": rgbColor
+		},
+		"brightness": hsvArray[2],
+		"on": hsvArray[2] === 0 ? false : true,
 	};
 }
 
