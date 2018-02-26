@@ -49,28 +49,34 @@ function generateControlError(messageId, name, code, description) {
 	return result;
 }
 
-//Normilizes numeric/string thermostat modes to Alexa friendly ones
+//Normilizes numeric/string thermostat modes to Google Assistant friendly ones
 function normalizeThermostatMode(mode){
 	//if state returns as a decimal type, convert to string, this is a very common thermo pattern
 	var m = mode;
 	switch (mode) {
 	case '0': //off, not supported! Weird. But nothing else todo.
-		m = 'OFF';
+		m = 'off';
 		break;
 	case '1': //heating
-		m = 'HEAT';
+		m = 'heat';
 		break;
 	case '2': //cooling
-		m = 'COOL';
+		m = 'cool';
 		break;
 	case 'heat-cool': //nest auto
-	case '3': //auto
-		m = 'AUTO';
+		m = 'heatcool'
 		break;
+	case '3': //auto
+		m = 'on';
+		break;
+    default:
+        m = 'off';
+        break;
 	}
-	return m.toUpperCase();
+	return m.toLowerCase();
 }
 
+//Should this be removed? JSON format appears to be Alexa Skill format, not Google Assistant
 function isEventFahrenheit(event){
 	return event.payload.appliance.additionalApplianceDetails.temperatureFormat &&
 	event.payload.appliance.additionalApplianceDetails.temperatureFormat === 'fahrenheit';
