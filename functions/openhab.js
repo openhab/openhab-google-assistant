@@ -217,7 +217,7 @@ function getTempData(item) {
  **/
 function getLightData(item) {
 	return {
-		on: item.state === 'ON' ? true : (item.state === 0 ? false : true),
+		on: item.state === 'ON' ? true : (Number(item.state) === 0 ? false : true),
 		brightness: Number(item.state)
 	};
 }
