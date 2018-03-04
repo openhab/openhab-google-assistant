@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/openhab/openhab-google-assistant",
   "dependencies": {
-	"colr": "^1.2.2",  
+    "colr": "^1.2.2",
     "chai": "^4.1.1",
     "mocha": "^3.5.0"
   }
