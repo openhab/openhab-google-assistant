@@ -116,12 +116,24 @@ function getItemsState(request,response) {
 	let promises = devices.map(function(device) {	
 		return getItemAsync(authToken, device.id).then(function(res){ // success
 			console.log('result for ' + device.id + ': ' + JSON.stringify(res))
+			
+			var data = {};
+			switch (res.type) {
+				case 'Switch' :
+					data = getSwitchData(res);
+					break;
+
+				case 'Color' :
+					data = getColorData(res);
+					break;
+
+				default :
+					break;
+			}
+			
 			return {
 				id: device.id,
-				data: {
-					on: res.state === 'ON' ? true : false,
-					online: true
-				}
+				data: data
 			};
 		},function(res){ // failure
 			return {
@@ -149,6 +161,30 @@ function getItemsState(request,response) {
 				'Access-Control-Allow-Headers': 'Content-Type, Authorization'
 			}).json({error: "failed"});			
 		})
+}
+
+function getSwitchData(item) {
+	return {
+		on: item.state === 'ON' ? true : false,
+		online: true
+	};
+}
+
+function getColorData(item) {
+	var hsvArray = item.state.split(",").map(function (val) {
+		  return Number(val);
+	});
+	var color = colr.fromHsvArray(hsvArray);
+	var rgbColor =  parseInt(color.toHex().replace('#', ''), 16);
+	
+	return {
+		color: {
+			"spectrumRGB": rgbColor
+		},
+		"brightness": hsvArray[2],
+		"on": hsvArray[2] === 0 ? false : true,
+		online : true
+	};
 }
 
 /**
