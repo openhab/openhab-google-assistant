@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2014-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -27,21 +27,21 @@ function toC(value) {
 }
 
 function generateControlError(messageId, name, code, description) {
-	var header = {
+	const header = {
 			namespace: 'Alexa.ConnectedHome.Control',
 			name: name,
 			payloadVersion: '2',
 			messageId: messageId
 	};
 
-	var payload = {
+	const payload = {
 			exception: {
 				code: code,
 				description: description
 			}
 	};
 
-	var result = {
+	const result = {
 			header: header,
 			payload: payload
 	};
@@ -138,11 +138,12 @@ function hexToRgb(hex) {
 	} : null;
 }
 
-
-module.exports.toF = toF;
-module.exports.toC = toC;
-module.exports.generateControlError = generateControlError;
-module.exports.normalizeThermostatMode = normalizeThermostatMode;
-module.exports.isEventFahrenheit = isEventFahrenheit;
-module.exports.rgb2hsv = rgb2hsv;
-module.exports.hexToRgb = hexToRgb;
+module.exports = {
+	toF,
+	toC,
+	generateControlError,
+	normalizeThermostatMode,
+	isEventFahrenheit,
+	rgb2hsv,
+	hexToRgb
+}

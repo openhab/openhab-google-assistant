@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2014-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,7 +10,7 @@
 /**
  * openHAB handler for incoming intents from Google Assistant platform,
  * based on the approach of the opanHAB Alexa Skill
- * 
+ *
  * @author Mehmet Arziman - Initial contribution
  * @author Dan Cunningham - Foundations
  *
@@ -80,15 +80,15 @@ exports.handleQuery = function (request, response) {
 				}
 			};
 			
-          	let itemData = {};
-          	
+      let itemData = {};
+      let checkTags = res.tags.toString();   	
 			//get the data from the device
 			switch (res.type) {
 				case 'Switch':
 					itemData = getSwitchData(res);
 					break;
 				case 'Group':
-					var checkTags = res.tags.toString(); //future proof in case Groups are used for other invocations
+					 //future proof in case Groups are used for other invocations
 					if (checkTags.includes("Thermostat")) itemData = getTempData(res);
 					break;
 				case 'Dimmer':
@@ -98,7 +98,6 @@ exports.handleQuery = function (request, response) {
 					itemData = getColorData(res);
 					break;
 				default:
-					var checkTags = res.tags.toString();
 					if (checkTags.includes("CurrentTemperature")) itemData = getTempData(res);
 					break;
 			}
@@ -266,13 +265,13 @@ function turnOnOff(request, response) {
 		var success = function (resp) {
 			var payload = {};
 			let result = {
-				requestId: request.body.requestId,
-				payload: {
-					commands: {
-						ids: [deviceId],
-						status: "SUCCESS"
+					requestId: request.body.requestId,
+					payload: {
+						commands: {
+							ids: [ deviceId ],
+							status: "SUCCESS"
+						}
 					}
-				}
 			}
 			console.log('openhabGoogleAssistant - turnOnOff done with result:' + JSON.stringify(result));
 			response.status(200).json(result);
@@ -329,7 +328,7 @@ function adjustBrightness(request, response) {
 
 		var state = params.brightness.toString();
 		rest.postItemCommand(authToken, deviceId, state, success, failure);
-	}
+    }
 }
 
 /**
@@ -348,13 +347,13 @@ function adjustColor(request, response) {
 		var success = function (resp) {
 			var payload = {};
 			let result = {
-				requestId: request.body.requestId,
-				payload: {
-					commands: {
-						ids: [deviceId],
-						status: "SUCCESS"
+					requestId: request.body.requestId,
+					payload: {
+						commands: {
+							ids: [ deviceId ],
+							status: "SUCCESS"
+						}
 					}
-				}
 			}
 			console.log('openhabGoogleAssistant - adjustColor done with result:' + JSON.stringify(result));
 			response.status(200).json(result);
@@ -460,7 +459,7 @@ function adjustTemperatureWithItems(authToken, request, response, params, curren
 				requestId: request.body.requestId,
 				payload: {
 					commands: {
-						ids: [ deviceId ], 
+						ids: [ deviceId ],
 						status: "SUCCESS",
 						states: {
 							"thermostatMode": curMode,
@@ -488,7 +487,7 @@ function adjustTemperatureWithItems(authToken, request, response, params, curren
 
 /**
  * Add all devices that have been tagged
- * 
+ *
  **/
 function syncAndDiscoverDevices(token, success, failure) {
 
@@ -549,7 +548,7 @@ function syncAndDiscoverDevices(token, success, failure) {
 					// A special object defined by the partner (openHAB) which will be attached to future QUERY and EXECUTE requests.
 					// Partners (openHAB) can use this object to store additional information about the device to improve performance or routing
 					// within their cloud, such as the global region of the device.
-					// 
+					//
 					// Data in this object has a few constraints:
 					// - No Personally Identifiable Information.
 					// - Data should change rarely, akin to other attributes -- so this should not contain real-time state.
@@ -608,21 +607,21 @@ function syncAndDiscoverDevices(token, success, failure) {
 						customDataDetails.openhabVersion = '2.1';
 
 						var discoveredDevice = {
-							id: item.name,
-							type: deviceTypes,
-							traits: traits,
-							name: {
-								name: item.label
-							},
-							willReportState: true,
-							attributes: attributeDetails,
-							deviceInfo: {
-								manufacturer: 'openHAB',
-								model: tag,
-								hwVersion: "2.1",
-								swVersion: "2.1"
-							},
-							customData: customDataDetails
+								id: item.name,
+								type: deviceTypes,
+								traits: traits,
+								name: {
+									name: item.label
+								},
+								willReportState: true,
+								attributes: attributeDetails,
+								deviceInfo: {
+									manufacturer: 'openHAB',
+									model: tag,
+									hwVersion: "2.1",
+									swVersion: "2.1"
+								},
+								customData: customDataDetails
 						};
 						discoveredDevicesList.push(discoveredDevice);
 					}
