@@ -19,16 +19,19 @@ The Google related parts of any Smart Home action rely on Google Home Graph, a d
 ## Google Cloud Functions
 
 * Enable the Cloud Functions API and install the Google Cloud SDK by following this [quickstart](https://cloud.google.com/functions/docs/quickstart)
-* Modify `functions\config.js`.
+* gactions CLI (https://developers.google.com/actions/tools/gactions-cli)
+```
+curl -O https://dl.google.com/gactions/updates/bin/linux/amd64/gactions/gactions
+chmod +x gactions
+```
+* Modify `functions\config.js`
   1. Change `host` to point to your openhab cloud instance, for example: `openhab.myserver.com`. Do not include `https`, if you do you'll get DNS errors.
-  1. Change `path` to the rest API. Defaults to `rest\item`. The trailing slash is important, you'll get a 404 if you leave it off.
-* Deploy the `openhabGoogleAssistant` (openhab home automation) function with the following command
+  1. Change `path` to the rest API. Defaults to `/rest/items/`.
 
-```
-cd openhab-google-assistant/functions
-gcloud beta functions deploy openhabGoogleAssistant --stage-bucket staging.<PROJECT ID>.appspot.com --trigger-http
-```
-
+Deploy the `openhabGoogleAssistant` (openhab home automation) function:
+* Create a storage bucket (https://console.cloud.google.com/storage/browser)
+* cd openhab-google-assistant/functions
+* gcloud beta functions deploy openhabGoogleAssistant --stage-bucket <BUCKET_NAME> --trigger-http
 * This commands will deploy the function to Google Cloud and give you the endpoint address. Keep the address somewhere, you'll need it (something like `https://us-central1-<PROJECT ID>.cloudfunctions.net/openhabGoogleAssistant`).
 
 
@@ -88,7 +91,7 @@ When you ask your assistant to “Turn on the light”, it will use the auth bea
 
 * Afterwards deploy this action file using the following command:
 ```
-gactions update --action_package action.json --project <YOUR-APPLICATION>
+gactions update --action_package action.json --project <PROJECT ID>
 ```
 
 Google Assistant will call the service endpoint: `https://YOUR-OPENHAB-CLOUD-URL/openhabGoogleAssistant`.
@@ -97,7 +100,7 @@ This web service will receive parameters (intents) from Google and will query/mo
 * You need to Add "App information”, including name and account linking details to the Actions Console
 * Afterwards please run the following command in the gaction CLI:
 ```
-gactions test --action_package action.json --project <YOUR-APPLICATION>
+gactions test --action_package action.json --project <PROJECT ID>
 ```
 
 ## Setup your Database
