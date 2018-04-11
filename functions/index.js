@@ -36,8 +36,10 @@ exports.openhabGoogleAssistant = function(request, response) {
 			openhab.handleSync(request, response);
 			return;
 		case "action.devices.QUERY":
+			openhab.handleQuery(request, response);
+			return;
 		case "action.devices.EXECUTE":
-			openhab.handleQueryAndExecute(request, response);
+			openhab.handleExecute(request, response);
 			return;
 		}
 	}
