@@ -424,6 +424,9 @@ function getThermostatItems(thermoGroup) {
 			if (tag === 'homekit:HeatingCoolingMode') {
 				values.heatingCoolingMode = member;
 			}
+			if (tag === 'CurrentHumidity') {
+				values.currentHumidity = member;
+			}
 		});
 	});
 	return values;
