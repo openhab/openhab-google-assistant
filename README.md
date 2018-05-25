@@ -147,14 +147,31 @@ If you're getting error messages about an unknown scope, you can try this:
   ```
   Switch KitchenLights "Kitchen Lights" <light> (gKitchen) [ "Lighting" ]
   Dimmer BedroomLights "Bedroom Lights" <light> (gBedroom) [ "Lighting" ]
+  
+  //Standalone Thermostat Sensor (just reports current ambient temperature)
+  Number HK_SF_Bedroom_Temp "Bedroom Temperature [%.1f]" [ "CurrentTemperature", "Fahrenheit"]
+  
+  //Thermostat Setup (Google requires a mode, even if you manually set it up in Openhab)
+  Group g_HK_Basement_TSTAT "Basement Thermostat" [ "Thermostat", "Fahrenheit" ]
+  Number HK_Basement_Mode "Basement Heating/Cooling Mode" (g_HK_Basement_TSTAT) [ "homekit:HeatingCoolingMode" ]
+  Number HK_Basement_Temp	"Basement Temperature" (g_HK_Basement_TSTAT) [ "CurrentTemperature" ]
+  Number HK_Basement_Setpoint "Basement Setpoint" (g_HK_Basement_TSTAT) [ "TargetTemperature" ]
   ```
 
 Currently the follwoing Tags are supported (also depending on Googles API capabilities):
 * ["Lighting"]
 * ["Switchable"]
-* ["CurrentTemperature"] (will be added soon)
-* ["Thermostat"] (will be added soon)
+* ["CurrentTemperature"]
+* ["Thermostat"] 
 
+Notes Regarding Thermostat Items:
+- Thermostat requires a group to be properly setup with Google Assistant, default format is Celsius
+- There must be 3 elements:
+  * Mode: May be Number (Zwave THERMOSTAT_MODE Format) or String (off, heat, cool, on)
+  * Current Temperature: Number
+  * TargetTemperature: Number
+- If your thermostat does not have a mode, you should create one and manually assign a value (e.g. heat, cool, on, etc.) to have proper functionality
+- See also HomeKit Addon for further formatting details: https://docs.openhab.org/addons/ios/homekit/readme.html
 
 
 The following screenshots show the setup and the service linkage (myopenhab.org) procedure within the Google App:
@@ -167,9 +184,13 @@ The following screenshots show the setup and the service linkage (myopenhab.org)
 Here are some example voice commands:
 
  * Turn on Office Lights
+ * Dim/Brighten Office Lights (increments 15%)
+ * Set Office Lights to 35%
  * Turn off Pool Waterfall
  * Turn on House Fan
  * Turn on Home Theater Scene
+ * Set Basement Thermostat to 15 degrees
+ * What is the current Basement Thermostat Temperature?
 
 
 ## Logging & Debugging
@@ -183,7 +204,8 @@ gcloud beta functions logs read openhabGoogleAssistant
 
 * Sometimes the Account Linkage needs to be done twice and repeated
 * Currently there is support for any switchable device (light, plug etc.)
-* Thermostats are not fully implemented
+* Thermostats are implemented and further functionality is being added
+* Google Assistant does not respond to querying the current brightness of an item
 * More Unit Test & Integration Test will be added soon
 
 
@@ -192,3 +214,4 @@ gcloud beta functions logs read openhabGoogleAssistant
 * https://developers.google.com/actions/extending-the-assistant
 * https://developers.google.com/actions/smarthome/
 * https://cloud.google.com/functions/docs/how-to
+* https://docs.openhab.org/addons/ios/homekit/readme.html
