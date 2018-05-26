@@ -203,8 +203,6 @@ gcloud beta functions logs read openhabGoogleAssistant
 ## Limitations & Known Issues
 
 * Sometimes the Account Linkage needs to be done twice and repeated
-* Currently there is support for any switchable device (light, plug etc.)
-* Thermostats are implemented and further functionality is being added
 * Google Assistant does not respond to querying the current brightness of an item
 * More Unit Test & Integration Test will be added soon
 
