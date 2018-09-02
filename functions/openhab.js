@@ -113,7 +113,7 @@ exports.handleQuery = function (request, response) {
 						retValue.data.on = itemData.on;
 						break;
 					case 'action.devices.traits.Scene':
-						retValue.data.on = itemData.on;
+						retValue.data.on = itemData.on; //scene's are stateless in google home graph
 						break;
 					case 'action.devices.traits.Brightness':
 						retValue.data.brightness = itemData.brightness;
