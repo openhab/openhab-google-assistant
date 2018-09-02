@@ -715,9 +715,9 @@ function syncAndDiscoverDevices(token, success, failure) {
 							break;
 						case 'Scene':
 							deviceTypes = 'action.devices.types.SCENE';
-							traits = [
-								"action.devices.traits.Scene"
-							];
+							// traits = [
+							// 	"action.devices.traits.Scene"
+							// ];
 							attributeDetails.sceneReversible = true;
 							break;
 						case 'CurrentTemperature':
