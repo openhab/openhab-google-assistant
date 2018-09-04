@@ -757,7 +757,7 @@ function syncAndDiscoverDevices(token, success, failure) {
 								name: {
 									name: item.label
 								},
-								willReportState: true,
+								willReportState: false,
 								attributes: attributeDetails,
 								deviceInfo: {
 									manufacturer: 'openHAB',
