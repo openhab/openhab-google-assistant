@@ -147,13 +147,15 @@ If you're getting error messages about an unknown scope, you can try this:
   ```
   Switch KitchenLights "Kitchen Lights" <light> (gKitchen) [ "Lighting" ]
   Dimmer BedroomLights "Bedroom Lights" <light> (gBedroom) [ "Lighting" ]
+  Switch PartyMode "Party Mode" <light> (gLivingroom) [ "Scene" ]
   ```
 
 Currently the follwoing Tags are supported (also depending on Googles API capabilities):
 * ["Lighting"]
 * ["Switchable"]
-* ["CurrentTemperature"] (will be added soon)
-* ["Thermostat"] (will be added soon)
+* ["CurrentTemperature"]
+* ["Thermostat"] 
+* ["Scene"]
 
 
 
