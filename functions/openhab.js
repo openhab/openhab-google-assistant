@@ -87,6 +87,9 @@ exports.handleQuery = function (request, response) {
 				case 'Switch':
 					itemData = getSwitchData(res);
 					break;
+				case 'Outlet':
+					itemData = getSwitchData(res);
+					break;
 				case 'Scene':
 					itemData = getSwitchData(res);
 					break;
@@ -711,6 +714,10 @@ function syncAndDiscoverDevices(token, success, failure) {
 							break;
 						case 'Switchable':
 							deviceTypes = 'action.devices.types.SWITCH';
+							traits = getSwitchableTraits(item);
+							break;
+						case 'Outlet':
+							deviceTypes = 'action.devices.types.OUTLET';
 							traits = getSwitchableTraits(item);
 							break;
 						case 'Scene':
