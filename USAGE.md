@@ -31,7 +31,7 @@ With the Action you can voice control your openHAB items and it supports lights,
   Number HK_Basement_Setpoint "Basement Setpoint" (g_HK_Basement_TSTAT) [ "TargetTemperature" ]
   ```
 
-Currently the follwoing Tags are supported (also depending on Googles API capabilities):
+Currently the following Tags are supported (also depending on Googles API capabilities):
 * ["Lighting"]
 * ["Switchable"]
 * ["CurrentTemperature"]
