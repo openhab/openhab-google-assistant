@@ -147,6 +147,9 @@ If you're getting error messages about an unknown scope, you can try this:
   ```
   Switch KitchenLights "Kitchen Lights" <light> (gKitchen) [ "Lighting" ]
   Dimmer BedroomLights "Bedroom Lights" <light> (gBedroom) [ "Lighting" ]
+  Switch PartyMode "Party Mode" <light> (gLivingroom) [ "Scene" ]
+  Switch Computer "Computer" (gLivingroom) [ "Outlet" ]
+
   
   //Standalone Thermostat Sensor (just reports current ambient temperature)
   Number HK_SF_Bedroom_Temp "Bedroom Temperature [%.1f]" [ "CurrentTemperature", "Fahrenheit"]
@@ -156,6 +159,7 @@ If you're getting error messages about an unknown scope, you can try this:
   Number HK_Basement_Mode "Basement Heating/Cooling Mode" (g_HK_Basement_TSTAT) [ "homekit:HeatingCoolingMode" ]
   Number HK_Basement_Temp	"Basement Temperature" (g_HK_Basement_TSTAT) [ "CurrentTemperature" ]
   Number HK_Basement_Setpoint "Basement Setpoint" (g_HK_Basement_TSTAT) [ "TargetTemperature" ]
+
   ```
 
 Currently the follwoing Tags are supported (also depending on Googles API capabilities):
@@ -163,6 +167,8 @@ Currently the follwoing Tags are supported (also depending on Googles API capabi
 * ["Switchable"]
 * ["CurrentTemperature"]
 * ["Thermostat"] 
+* ["Scene"]
+* ["Outlet"]
 
 Notes Regarding Thermostat Items:
 - Thermostat requires a group to be properly setup with Google Assistant, default format is Celsius
