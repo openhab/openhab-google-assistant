@@ -37,6 +37,18 @@ Currently the following Tags are supported (also depending on Googles API capabi
 * ["CurrentTemperature"]
 * ["Thermostat"] 
 
+It is the "label text" (e.g. "Basement Heating/Cooling Mode" for example above)  and not the item's name that will be available to you via vocal commands or  in the Google Home app, so make it unique and easy to say!
+
+NOTA : tags are not (yet?) available via paperUI. Either you create your items via ".items" files, or you can 
+- assign tags via REST api :
+ ```
+ curl -X PUT --header “Content-Type: application/json” --header “Accept: application/json” “http://localhost:8080/rest/items/[itemname]/tags/Lighting
+  ```
+- assign tags via console :
+ ```
+ smarthome:items addTag MickTest Lighting
+ ```
+
 Notes Regarding Thermostat Items:
 - Thermostat requires a group to be properly setup with Google Assistant, default format is Celsius
 - There must be 3 elements:
