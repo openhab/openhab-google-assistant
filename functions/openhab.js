@@ -87,6 +87,9 @@ exports.handleQuery = function (request, response) {
 				case 'Switch':
 					itemData = getSwitchData(res);
 					break;
+				case 'Outlet':
+					itemData = getSwitchData(res);
+					break;
 				case 'Group':
 					 //future proof in case Groups are used for other invocations
 					if (checkTags.includes("Thermostat")) itemData = getTempData(res);
@@ -649,7 +652,7 @@ function syncAndDiscoverDevices(token, success, failure) {
 					//	  action.devices.types.OUTLET
 					//	  action.devices.types.SWITCH
 					//	  action.devices.types.SCENE
-					//	   - This is in essence a locked type ­­ as a virtual device it can't be switched by the user to something else.
+					//	   - This is in essence a locked type as a virtual device it can't be switched by the user to something else.
 					var deviceTypes = [];
 
 					switch (tag) {
@@ -660,6 +663,10 @@ function syncAndDiscoverDevices(token, success, failure) {
 							break;
 						case 'Switchable':
 							deviceTypes = 'action.devices.types.SWITCH';
+							traits = getSwitchableTraits(item);
+							break;
+						case 'Outlet':
+							deviceTypes = 'action.devices.types.OUTLET';
 							traits = getSwitchableTraits(item);
 							break;
 						case 'CurrentTemperature':
