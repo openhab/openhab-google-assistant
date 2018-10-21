@@ -87,6 +87,9 @@ exports.handleQuery = function (request, response) {
 				case 'Switch':
 					itemData = getSwitchData(res);
 					break;
+				case 'Scene':
+					itemData = getSwitchData(res);
+					break;
 				case 'Group':
 					 //future proof in case Groups are used for other invocations
 					if (checkTags.includes("Thermostat")) itemData = getTempData(res);
@@ -108,6 +111,9 @@ exports.handleQuery = function (request, response) {
 				switch (traits[i]) {
 					case 'action.devices.traits.OnOff':
 						retValue.data.on = itemData.on;
+						break;
+					case 'action.devices.traits.Scene':
+						retValue.data.on = itemData.on; //scene's are stateless in google home graph
 						break;
 					case 'action.devices.traits.Brightness':
 						retValue.data.brightness = itemData.brightness;
@@ -171,6 +177,9 @@ exports.handleExecute = function (request, response) {
 				case 'action.devices.commands.ColorAbsolute':
 					adjustColor(request, response, i, j);
 					break;
+				case 'action.devices.commands.ActivateScene':
+					adjustScene(request, response, i, j);
+					break
 				case 'action.devices.commands.ThermostatTemperatureSetpoint':
 					adjustThermostatTemperature(request, response, i, j);
 					break;
@@ -380,6 +389,47 @@ function adjustColor(request, response, i, j) {
 		rest.postItemCommand(authToken, deviceId, state.toString(), success, failure);
 	}
 
+}
+
+/**
+ * Turns a Scene Item on or off
+ */
+function adjustScene(request, response, i, j) {
+	let authToken = request.headers.authorization ? request.headers.authorization.split(' ')[1] : null;
+	let reqCommand = request.body.inputs[0].payload.commands[i];
+	let params = reqCommand.execution[j].params;
+
+	console.log('openhabGoogleAssistant - adjustScene reqCommand:' + JSON.stringify(reqCommand));
+
+	for (let k = 0; k < reqCommand.devices.length; k++) {
+		let deviceId = reqCommand.devices[k].id;
+
+		var success = function (resp) {
+			var payload = {};
+			let result = {
+					requestId: request.body.requestId,
+					payload: {
+						commands: {
+							ids: [ deviceId ],
+							status: "SUCCESS"
+						}
+					}
+			}
+			console.log('openhabGoogleAssistant - adjustScene done with result:' + JSON.stringify(result));
+			response.status(200).json(result);
+		};
+
+		var failure = function (error) {
+			console.error("openhabGoogleAssistant - asjustScene failed: " + error.message);
+			response.status(500).set({
+				'Access-Control-Allow-Origin': '*',
+				'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+			}).json({ error: "failed" });
+		};
+
+		var state = params.deactivate ? 'OFF' : 'ON';
+		rest.postItemCommand(authToken, deviceId, state, success, failure);
+	}
 }
 
 /**
@@ -649,7 +699,7 @@ function syncAndDiscoverDevices(token, success, failure) {
 					//	  action.devices.types.OUTLET
 					//	  action.devices.types.SWITCH
 					//	  action.devices.types.SCENE
-					//	   - This is in essence a locked type ­­ as a virtual device it can't be switched by the user to something else.
+					//	   - This is in essence a locked type as a virtual device it can't be switched by the user to something else.
 					var deviceTypes = [];
 
 					switch (tag) {
@@ -661,6 +711,13 @@ function syncAndDiscoverDevices(token, success, failure) {
 						case 'Switchable':
 							deviceTypes = 'action.devices.types.SWITCH';
 							traits = getSwitchableTraits(item);
+							break;
+						case 'Scene':
+							deviceTypes = 'action.devices.types.SCENE';
+							traits = [
+								"action.devices.traits.Scene"
+							];
+							attributeDetails.sceneReversible = true;
 							break;
 						case 'CurrentTemperature':
 							//if this is not part of a thermostatGroup then add it
