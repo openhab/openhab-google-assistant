@@ -1,3 +1,10 @@
+---
+layout: documentation
+title: Google Assistant
+source: https://github.com/openhab/openhab-google-assistant/blob/master/USAGE.md
+description: "Google Assistant is Google's virtual personal assistant and uses Actions on Google as the platform for \"Actions\" (software applications) to extend the functionality of the Google Assistant."
+---
+
 # Google Assistant Action
 
 Google Assistant is Google’s virtual personal assistant and uses Actions on Google as the platform for "Actions" (software applications) to extend the functionality of the Google Assistant. Users engage Google Assistant in conversation to get things done, like controlling their devices and things at home. You can use the officially certified openHAB Action for Google Assistant to easily manage and control your smart home by conversational experiences between you and your openHAB smart home powered by voiced commands.
