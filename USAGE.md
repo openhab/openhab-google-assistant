@@ -48,6 +48,7 @@ Currently the following Tags are supported (also depending on Googles API capabi
 * ["Outlet"]
 * ["CurrentTemperature"]
 * ["Thermostat"] 
+
 It is the "label text" (e.g. "Basement Heating/Cooling Mode" for example above)  and not the item's name that will be available to you via vocal commands or  in the Google Home app, so make it unique and easy to say!
 
 NOTA : tags are not (yet?) available via paperUI. Either you create your items via ".items" files, or you can 
