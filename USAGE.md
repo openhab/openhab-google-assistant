@@ -25,8 +25,11 @@ With the Action you can voice control your openHAB items and it supports lights,
 * In openHAB 2 Items are exposed via Homekit tags, the following is taken from the homekit binding in openHAB2:
 
   ```
-  Switch KitchenLights "Kitchen Lights" <light> (gKitchen) [ "Lighting" ]
+  Switch KitchenLights "Kitchen Lights" <light> (gKitchen) [ "Switchable" ]
   Dimmer BedroomLights "Bedroom Lights" <light> (gBedroom) [ "Lighting" ]
+  Color LivingroomLights "Livingroom Lights" <light> (gLivingroom) [ "Lighting" ]
+  Switch SceneMovie "Livingroom Scene Movie" (gLivingroom) [ "Scene" ]
+  Switch CristmasTree "Cristmas Tree" (gLivingroom) [ "Outlet" ]
   
   //Standalone Thermostat Sensor (just reports current ambient temperature)
   Number HK_SF_Bedroom_Temp "Bedroom Temperature [%.1f]" [ "CurrentTemperature", "Fahrenheit"]
@@ -41,6 +44,8 @@ With the Action you can voice control your openHAB items and it supports lights,
 Currently the following Tags are supported (also depending on Googles API capabilities):
 * ["Lighting"]
 * ["Switchable"]
+* ["Scene"]
+* ["Outlet"]
 * ["CurrentTemperature"]
 * ["Thermostat"] 
 
