@@ -88,6 +88,7 @@ exports.handleQuery = function (request, response) {
 					itemData = getSwitchData(res);
 					break;
 				case 'Scene':
+				case 'Outlet':
 					itemData = getSwitchData(res);
 					break;
 				case 'Group':
@@ -718,6 +719,9 @@ function syncAndDiscoverDevices(token, success, failure) {
 								"action.devices.traits.Scene"
 							];
 							attributeDetails.sceneReversible = true;
+						case 'Outlet':
+							deviceTypes = 'action.devices.types.OUTLET';
+							traits = getSwitchableTraits(item);
 							break;
 						case 'CurrentTemperature':
 							//if this is not part of a thermostatGroup then add it
