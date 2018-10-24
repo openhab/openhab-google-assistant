@@ -17,18 +17,27 @@ With the Action you can voice control your openHAB items and it supports lights,
 
 ## Requirements
 
-* [openHAB Cloud Connector](http://docs.openhab.org/addons/ios/openhabcloud/readme.html) configured using myopenHAB.org
-* Google account
-* Google Home or Google Home mini 
+* [openHAB Cloud Connector](http://docs.openhab.org/addons/ios/openhabcloud/readme.html) configured using myopenHAB.org.
+* Google account.
+* Google Home or Google Home mini.
 
 ## Item configuration
-* In openHAB 2 Items are exposed via Homekit tags, the following is taken from the homekit binding in openHAB2:
+In openHAB 2 Items are exposed via [tags](https://www.openhab.org/docs/configuration/items.html#item-definition-and-syntax). Currently the following Tags are supported (also depending on Googles API capabilities):
+* ["Lighting"]
+* ["Switchable"]
+* ["Scene"]
+* ["Outlet"]
+* ["Thermostat"] 
+* ["CurrentTemperature"] as part of Thermostat or standalone.
+* ["CurrentHumidity"] as part of Thermostat.
+* ["TargetTemperature"] as part of Thermostat.
+* ["homekit:HeatingCoolingMode"] as part of Thermostat.
 
   ```
   Switch KitchenLights "Kitchen Lights" <light> (gKitchen) [ "Switchable" ]
   Dimmer BedroomLights "Bedroom Lights" <light> (gBedroom) [ "Lighting" ]
   Color LivingroomLights "Livingroom Lights" <light> (gLivingroom) [ "Lighting" ]
-  Switch SceneMovie "Livingroom Scene Movie" (gLivingroom) [ "Scene" ]
+  Switch SceneMovie "Scene Movie" (gLivingroom) [ "Scene" ]
   Switch CristmasTree "Cristmas Tree" (gLivingroom) [ "Outlet" ]
   
   //Standalone Thermostat Sensor (just reports current ambient temperature)
@@ -36,22 +45,17 @@ With the Action you can voice control your openHAB items and it supports lights,
   
   //Thermostat Setup (Google requires a mode, even if you manually set it up in Openhab)
   Group g_HK_Basement_TSTAT "Basement Thermostat" [ "Thermostat", "Fahrenheit" ]
-  Number HK_Basement_Mode "Basement Heating/Cooling Mode" (g_HK_Basement_TSTAT) [ "homekit:HeatingCoolingMode" ]
-  Number HK_Basement_Temp	"Basement Temperature" (g_HK_Basement_TSTAT) [ "CurrentTemperature" ]
-  Number HK_Basement_Setpoint "Basement Setpoint" (g_HK_Basement_TSTAT) [ "TargetTemperature" ]
+    Number HK_Basement_Mode "Basement Heating/Cooling Mode" (g_HK_Basement_TSTAT) [ "homekit:HeatingCoolingMode" ]
+    Number HK_Basement_Temp "Basement Temperature" (g_HK_Basement_TSTAT) [ "CurrentTemperature" ]
+    Number HK_Basement_Temp "Basement Humidity" (g_HK_Basement_TSTAT) [ "CurrentHumidity" ]
+    Number HK_Basement_Setpoint "Basement Setpoint" (g_HK_Basement_TSTAT) [ "TargetTemperature" ]
   ```
 
-Currently the following Tags are supported (also depending on Googles API capabilities):
-* ["Lighting"]
-* ["Switchable"]
-* ["Scene"]
-* ["Outlet"]
-* ["CurrentTemperature"]
-* ["Thermostat"] 
+Item labels are not mandatory in openhab, but for the Google Assistant Action they are absolutely necessary!
 
-It is the "label text" (e.g. "Basement Heating/Cooling Mode" for example above)  and not the item's name that will be available to you via vocal commands or  in the Google Home app, so make it unique and easy to say!
+It is the "label text" (e.g. "Kitchen Lights" for example above) and not the item's name that will be available to you via vocal commands or in the Google Home app, so make it unique and easy to say!
 
-NOTA : tags are not (yet?) available via paperUI. Either you create your items via ".items" files, or you can 
+NOTA : tags are not (yet?) available via paperUI. Either you create your items via ".items" files, or you can:
 - assign tags via REST api :
  ```
  curl -X PUT --header “Content-Type: application/json” --header “Accept: application/json” “http://localhost:8080/rest/items/[itemname]/tags/Lighting
@@ -62,40 +66,97 @@ NOTA : tags are not (yet?) available via paperUI. Either you create your items v
  ```
 
 Notes Regarding Thermostat Items:
-- Thermostat requires a group to be properly setup with Google Assistant, default format is Celsius
-- There must be 3 elements:
-  * Mode: May be Number (Zwave THERMOSTAT_MODE Format) or String (off, heat, cool, on)
-  * Current Temperature: Number
-  * TargetTemperature: Number
-- If your thermostat does not have a mode, you should create one and manually assign a value (e.g. heat, cool, on, etc.) to have proper functionality
-- See also HomeKit Addon for further formatting details
+- Thermostat requires a group to be properly setup with Google Assistant, default format is Celsius.
+- There must be at least 3 elements:
+  * (Mandatory) Mode: Number (Zwave THERMOSTAT_MODE Format) or String (off, heat, cool, on).
+  * (Mandatory) Current Temperature: Number.
+  * (Mandatory) Target Temperature: Number.
+  * (Optional) Current Humidity: Number.
+- If your thermostat does not have a mode, you should create one and manually assign a value (e.g. heat, cool, on, etc.) to have proper functionality.
+- See also HomeKit Addon for further formatting details.
 
 ## Setup & Usage on Google Assistant App
-* Make sure Google Play Services is up to date
-* Visit "Google Assistant" app entry in Google Play Store on Android
-* Set up the voice-activated speaker, Pixel, or Android phone (version 6+) with the *same test account*
-* Make sure you're the correct user
-* Start the updated Google Assistant app on your phone
-* Go to the devices `Settings > Home control > Add device` and select the `openHAB` action
-* Login at myopenhab.org with your username and password
-* You will now be able to see your previously tagged items and devices
-* You can now control those devices from the Google assistant
+* Make sure Google Play Services is up to date.
+* Visit "Google Home" app entry in Google Play Store on Android.
+* Set up the voice-activated speaker, Pixel, or Android phone (version 6+) with the same  account.
+* Make sure you're the correct user.
+* Start the updated Google Home app on your phone.
+* Go to the settings part: `Account > Settings`.
 
-The following screenshots show the setup and the service linkage
-at myopenhab.org within the Google Assistant App:
+![openHAB Google App](/docs/Screenshot_1.png)
 
-![openHAB Google App](/docs/openhab_google_app.png)
+* Go to the home control part: `Assistant > Home control`.
+
+![openHAB Google App](/docs/Screenshot_2.png)
+
+* Press the `+` button.
+
+![openHAB Google App](/docs/Screenshot_3.png)
+
+* Select `openHAB`.
+
+![openHAB Google App](/docs/Screenshot_4.png)
+
+* Login at myopenhab.org with your username and password.
+
+![openHAB Google App](/docs/Screenshot_5.png)
+
+* Allow Google access to your account.
+
+![openHAB Google App](/docs/Screenshot_6.png)
+![openHAB Google App](/docs/Screenshot_7.png)
+
+* You will now be able to see your previously tagged items and devices. Assign them to a room. Press Done.
+
+![openHAB Google App](/docs/Screenshot_8.png)
+![openHAB Google App](/docs/Screenshot_9.png)
+
+* You can now control those devices from the Google Assistant.
+
+![openHAB Google App](/docs/Screenshot_10.png)
+![openHAB Google App](/docs/Screenshot_11.png)
 
 
 ## Example Voice Commands
 
 Here are some example voice commands:
 
- * Turn on Office Lights
- * Dim/Brighten Office Lights (increments 15%)
- * Set Office Lights to 35%
- * Turn off Pool Waterfall
- * Turn on House Fan
- * Turn on Home Theater Scene
- * Set Basement Thermostat to 15 degrees
+ * Turn on Office Lights.
+ * Dim/Brighten Office Lights (increments 15%).
+ * Set Office Lights to 35%.
+ * Turn off Pool Waterfall.
+ * Turn on House Fan.
+ * Turn on Home Theater Scene.
+ * Set Basement Thermostat to 15 degrees.
  * What is the current Basement Thermostat Temperature?
+
+ ## Frequently Asked Question
+
+ My New items did not appear in the Google Home app.
+ 
+ * Say: Hey Google, sync my devices.
+
+ I'm not able to connect OpenHAB to Google Home.
+
+* Check, recheck and after that check again your items!
+* The items that you want to expose to Google Assistant should have the right tags.
+* The items that you want to expose to Google Assistant must have a item label! [Item Definition and Syntax](https://www.openhab.org/docs/configuration/items.html#item-definition-and-syntax)
+* If you expose thermostats make sure than you have:
+  * A group item with the tag [ "Thermostat" ]
+  * A number or string item with the tag [ "homekit:HeatingCoolingMode" ]
+  * A number item with the tag [ "CurrentTemperature" ]
+  * A number ityem with the tag [ "TargetTemperature" ]
+  ```
+  Group g_HK_Basement_TSTAT "Basement Thermostat" [ "Thermostat", "Fahrenheit" ]
+    Number HK_Basement_Mode "Basement Heating/Cooling Mode" (g_HK_Basement_TSTAT) [ "homekit:HeatingCoolingMode" ]
+    Number HK_Basement_Temp "Basement Temperature" (g_HK_Basement_TSTAT) [ "CurrentTemperature" ]
+    Number HK_Basement_Setpoint "Basement Setpoint" (g_HK_Basement_TSTAT) [ "TargetTemperature" ]
+  ```
+* If none of the above solutions works for you: 
+  * Remove all the tags.
+  * Make a new .item file with 1 item to expose.
+  ```
+  Switch TestLight "Test Light" [ "Switchable" ]
+  ```
+  * Relink your account.
+
