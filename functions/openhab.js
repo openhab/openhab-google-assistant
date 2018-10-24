@@ -85,8 +85,6 @@ exports.handleQuery = function (request, response) {
 			//get the data from the device
 			switch (res.type) {
 				case 'Switch':
-					itemData = getSwitchData(res);
-					break;
 				case 'Scene':
 				case 'Outlet':
 					itemData = getSwitchData(res);
@@ -113,8 +111,7 @@ exports.handleQuery = function (request, response) {
 					case 'action.devices.traits.OnOff':
 						retValue.data.on = itemData.on;
 						break;
-					case 'action.devices.traits.Scene':
-						retValue.data.on = itemData.on; //scene's are stateless in google home graph
+					case 'action.devices.traits.Scene': //scene's are stateless in google home graph
 						break;
 					case 'action.devices.traits.Brightness':
 						retValue.data.brightness = itemData.brightness;
@@ -719,6 +716,7 @@ function syncAndDiscoverDevices(token, success, failure) {
 								"action.devices.traits.Scene"
 							];
 							attributeDetails.sceneReversible = true;
+							break;
 						case 'Outlet':
 							deviceTypes = 'action.devices.types.OUTLET';
 							traits = getSwitchableTraits(item);
