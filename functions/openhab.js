@@ -79,9 +79,9 @@ exports.handleQuery = function (request, response) {
 					online: true
 				}
 			};
-			
+
       let itemData = {};
-      let checkTags = res.tags.toString();   	
+      let checkTags = res.tags.toString();
 			//get the data from the device
 			switch (res.type) {
 				case 'Switch':
@@ -99,11 +99,14 @@ exports.handleQuery = function (request, response) {
 				case 'Color':
 					itemData = getColorData(res);
 					break;
+        case 'Rollershutter':
+          itemData = getRollerShutterData(res);
+          break;
 				default:
 					if (checkTags.includes("CurrentTemperature")) itemData = getTempData(res);
 					break;
 			}
-			         
+
 			//find out, which data needs to be delivered to google
 			let traits = getSwitchableTraits(res);
 			for (let i = 0; i < traits.length; i++) {
@@ -125,6 +128,10 @@ exports.handleQuery = function (request, response) {
 						retValue.data.thermostatTemperatureSetpoint = itemData.thermostatTemperatureSetpoint
 						retValue.data.thermostatHumidityAmbient = itemData.thermostatHumidityAmbient
 						break;
+          case 'action.devices.traits.OpenClose':
+            retValue.data.openPercent = itemData.openPercent;
+            retValue.data.on = itemData.on;
+            break;
 				}
 			}
 			return retValue;
@@ -184,9 +191,25 @@ exports.handleExecute = function (request, response) {
 				case 'action.devices.commands.ThermostatSetMode':
 					adjustThermostatMode(request, response, i, j);
 					break;
+        case 'action.devices.commands.OpenClose':
+          changeOpenClose(request, response, i, j);
+          break;
+        case 'action.devices.commands.StartStop':
+          changeStartStop(request, response, i, j);
+          break;
 			}
 		}
 	}
+}
+
+
+/**
+ * Gets Rollershutter Data
+ */
+function getRollerShutterData(item) {
+  return {
+    openPercent: Number(item.state)
+  };
 }
 
 /**
@@ -298,6 +321,88 @@ function turnOnOff(request, response, i, j) {
 		var state = params.on ? 'ON' : 'OFF';
 		rest.postItemCommand(authToken, deviceId, state, success, failure);
 	}
+}
+
+/**
+ * Change a Item open or close
+ */
+function changeOpenClose(request, response, i, j) {
+	let authToken = request.headers.authorization ? request.headers.authorization.split(' ')[1] : null;
+	let reqCommand = request.body.inputs[0].payload.commands[i];
+	let params = reqCommand.execution[j].params;
+
+	console.log('openhabGoogleAssistant - turnOpenClose reqCommand:' + JSON.stringify(reqCommand));
+
+	for (let k = 0; k < reqCommand.devices.length; k++) {
+		let deviceId = reqCommand.devices[k].id;
+
+		var success = function (resp) {
+			var payload = {};
+			let result = {
+				requestId: request.body.requestId,
+				payload: {
+					commands: {
+						ids: [deviceId],
+						status: "SUCCESS"
+					}
+				}
+			}
+			console.log('openhabGoogleAssistant - turnOpenClose done with result:' + JSON.stringify(result));
+			response.status(200).json(result);
+		};
+
+		var failure = function (error) {
+			console.error("openhabGoogleAssistant - turnOpenClose failed: " + error.message);
+			response.status(500).set({
+				'Access-Control-Allow-Origin': '*',
+				'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+			}).json({ error: "failed" });
+		};
+
+		var state = params.openPercent.toString();
+		rest.postItemCommand(authToken, deviceId, state, success, failure);
+    }
+}
+
+/**
+ * Change a Item start or stop
+ */
+function changeStartStop(request, response, i, j) {
+	let authToken = request.headers.authorization ? request.headers.authorization.split(' ')[1] : null;
+	let reqCommand = request.body.inputs[0].payload.commands[i];
+	let params = reqCommand.execution[j].params;
+
+	console.log('openhabGoogleAssistant - turnStartStop reqCommand:' + JSON.stringify(reqCommand));
+
+	for (let k = 0; k < reqCommand.devices.length; k++) {
+		let deviceId = reqCommand.devices[k].id;
+
+		var success = function (resp) {
+			var payload = {};
+			let result = {
+				requestId: request.body.requestId,
+				payload: {
+					commands: {
+						ids: [deviceId],
+						status: "SUCCESS"
+					}
+				}
+			}
+			console.log('openhabGoogleAssistant - turnStartStop done with result:' + JSON.stringify(result));
+			response.status(200).json(result);
+		};
+
+		var failure = function (error) {
+			console.error("openhabGoogleAssistant - turnStartStop failed: " + error.message);
+			response.status(500).set({
+				'Access-Control-Allow-Origin': '*',
+				'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+			}).json({ error: "failed" });
+		};
+
+		var state = params.start ? 'MOVE' : 'STOP';
+		rest.postItemCommand(authToken, deviceId, state, success, failure);
+    }
 }
 
 /**
@@ -437,7 +542,7 @@ function adjustThermostatTemperature(request, response, i, j) {
 	let authToken = request.headers.authorization ? request.headers.authorization.split(' ')[1] : null;
 	let reqCommand = request.body.inputs[0].payload.commands[i];
 	let params = reqCommand.execution[j].params;
-  
+
 	console.log('openhabGoogleAssistant - adjustThermostatTemperature reqCommand:' + JSON.stringify(reqCommand));
 
 	for (let k = 0; k < reqCommand.devices.length; k++) {
@@ -525,15 +630,15 @@ function adjustThermostatTemperatureWithItems(authToken, request, response, para
 	let reqCommand = request.body.inputs[0].payload.commands[0];
 	let deviceId = reqCommand.devices[0].id;
 	let curMode;
-  
+
   	if (!targetTemperature) {
 		console.error("openhabGoogleAssistant - adjustThermostatTemperatureWithItems failed: " + error.message);
 		return;
 	}
-	
+
   	// Google Assistant needs (like Alexa) everything in Celsius, we will need to respect what a user has set
   	//let isF = tempUnit.toLowerCase().includes('fahrenheit');
-	
+
 	var setValue;
 	setValue = isF ? utils.toF(params.thermostatTemperatureSetpoint) : params.thermostatTemperatureSetpoint;
 
@@ -729,7 +834,7 @@ function syncAndDiscoverDevices(token, success, failure) {
 									'action.devices.traits.TemperatureSetting'
 								];
 								setTempFormat(item, attributeDetails);
-                              	deviceTypes = 'action.devices.types.THERMOSTAT';
+                deviceTypes = 'action.devices.types.THERMOSTAT';
 							}
 							break;
 						case 'Thermostat':
@@ -742,6 +847,14 @@ function syncAndDiscoverDevices(token, success, failure) {
 								deviceTypes = 'action.devices.types.THERMOSTAT';
 							}
 							break;
+            case 'Blinds':
+              deviceTypes = 'action.devices.types.BLINDS';
+              traits = [
+                'action.devices.traits.OpenClose',
+                'action.devices.traits.StartStop' //only for stop command
+  							];
+              attributeDetails.openDirection = ['UP', 'DOWN']
+  						break;
 						default:
 							break;
 					}
@@ -807,7 +920,7 @@ function getSwitchableTraits(item) {
 		(item.type === 'Group' && item.groupType && item.groupType === 'Rollershutter')) {
 		traits = [
 			//'setPercentage',
-			'action.devices.traits.Brightness'
+			'action.devices.traits.OpenClose'
 		];
 	} else if ((item.tags.toString().includes('CurrentTemperature') || (item.type === 'Group' && item.tags.toString().includes('Thermostat')))) {
 		traits = [
