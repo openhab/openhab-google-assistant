@@ -99,9 +99,9 @@ exports.handleQuery = function (request, response) {
 				case 'Color':
 					itemData = getColorData(res);
 					break;
-        			case 'Rollershutter':
-          				itemData = getRollerShutterData(res);
-          				break;
+				case 'Rollershutter':
+          			itemData = getRollerShutterData(res);
+          			break;
 				default:
 					if (checkTags.includes("CurrentTemperature")) itemData = getTempData(res);
 					break;
@@ -123,14 +123,14 @@ exports.handleQuery = function (request, response) {
 						retValue.data.color = itemData.color;
 						break;
 					case 'action.devices.traits.TemperatureSetting':
-						retValue.data.thermostatMode = itemData.thermostatMode
-						retValue.data.thermostatTemperatureAmbient = itemData.thermostatTemperatureAmbient
-						retValue.data.thermostatTemperatureSetpoint = itemData.thermostatTemperatureSetpoint
-						retValue.data.thermostatHumidityAmbient = itemData.thermostatHumidityAmbient
+						retValue.data.thermostatMode = itemData.thermostatMode;
+						retValue.data.thermostatTemperatureAmbient = itemData.thermostatTemperatureAmbient;
+						retValue.data.thermostatTemperatureSetpoint = itemData.thermostatTemperatureSetpoint;
+						retValue.data.thermostatHumidityAmbient = itemData.thermostatHumidityAmbient;
 						break;
-          				case 'action.devices.traits.OpenClose':
-            					retValue.data.openPercent = itemData.openPercent;
-            					break;
+					case 'action.devices.traits.OpenClose':
+						retValue.data.openPercent = itemData.openPercent;
+            			break;
 				}
 			}
 			return retValue;
@@ -183,19 +183,19 @@ exports.handleExecute = function (request, response) {
 					break;
 				case 'action.devices.commands.ActivateScene':
 					adjustScene(request, response, i, j);
-					break
+					break;
 				case 'action.devices.commands.ThermostatTemperatureSetpoint':
 					adjustThermostatTemperature(request, response, i, j);
 					break;
 				case 'action.devices.commands.ThermostatSetMode':
 					adjustThermostatMode(request, response, i, j);
 					break;
-        			case 'action.devices.commands.OpenClose':
-          				changeOpenClose(request, response, i, j);
-          				break;
-        			case 'action.devices.commands.StartStop':
-          				changeStartStop(request, response, i, j);
-          				break;
+				case 'action.devices.commands.OpenClose':
+					changeOpenClose(request, response, i, j);
+					break;
+				case 'action.devices.commands.StartStop':
+					changeStartStop(request, response, i, j);
+					break;
 			}
 		}
 	}
@@ -846,13 +846,13 @@ function syncAndDiscoverDevices(token, success, failure) {
 								deviceTypes = 'action.devices.types.THERMOSTAT';
 							}
 							break;
-            					case 'Blinds':
-              						deviceTypes = 'action.devices.types.BLINDS';
-              						traits = [
-                						'action.devices.traits.OpenClose',
-                						'action.devices.traits.StartStop' //only for stop command
+						case 'Blinds':
+							deviceTypes = 'action.devices.types.BLINDS';
+							traits = [
+									'action.devices.traits.OpenClose',
+									'action.devices.traits.StartStop' //only for stop command
   							];
-              						attributeDetails.openDirection = ['UP', 'DOWN']
+							attributeDetails.openDirection = ['UP', 'DOWN'];
   							break;
 						default:
 							break;
