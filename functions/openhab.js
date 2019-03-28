@@ -100,8 +100,8 @@ exports.handleQuery = function (request, response) {
 					itemData = getColorData(res);
 					break;
 				case 'Rollershutter':
-          			itemData = getRollerShutterData(res);
-          			break;
+					itemData = getRollerShutterData(res);
+					break;
 				default:
 					if (checkTags.includes("CurrentTemperature")) itemData = getTempData(res);
 					break;
@@ -849,8 +849,8 @@ function syncAndDiscoverDevices(token, success, failure) {
 						case 'Blinds':
 							deviceTypes = 'action.devices.types.BLINDS';
 							traits = [
-									'action.devices.traits.OpenClose',
-									'action.devices.traits.StartStop' //only for stop command
+								'action.devices.traits.OpenClose',
+								'action.devices.traits.StartStop' //only for stop command
   							];
 							attributeDetails.openDirection = ['UP', 'DOWN'];
   							break;
