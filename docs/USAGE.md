@@ -145,7 +145,7 @@ Here are some example voice commands:
   * A group item with the tag [ "Thermostat" ]
   * A number or string item with the tag [ "homekit:HeatingCoolingMode" ]
   * A number item with the tag [ "CurrentTemperature" ]
-  * A number ityem with the tag [ "TargetTemperature" ]
+  * A number item with the tag [ "TargetTemperature" ]
   ```
   Group g_HK_Basement_TSTAT "Basement Thermostat" [ "Thermostat", "Fahrenheit" ]
     Number HK_Basement_Mode "Basement Heating/Cooling Mode" (g_HK_Basement_TSTAT) [ "homekit:HeatingCoolingMode" ]
