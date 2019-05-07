@@ -222,7 +222,7 @@ function getTempData(item) {
 	const isF = item.tags.toString().toLowerCase().includes('fahrenheit');
 
 	//store long json variables in easier variables to work with below
-	var tstatMode = thermItems.hasOwnProperty('heatingCoolingMode') ? (thermItems.heatingCoolingMode.state.length == 1 ? utils.normalizeThermostatMode(thermItems.heatingCoolingMode.state) : thermItems.heatingCoolingMode.state) : 'heat'
+	var tstatMode = thermItems.hasOwnProperty('heatingCoolingMode') ? utils.normalizeThermostatMode(thermItems.heatingCoolingMode.state) : 'heat'
 	var currTemp = thermItems.hasOwnProperty('currentTemperature') ? (isF ? utils.toC(thermItems.currentTemperature.state) : thermItems.currentTemperature.state) : '';
 	var tarTemp = thermItems.hasOwnProperty('targetTemperature') ? (isF ? utils.toC(thermItems.targetTemperature.state) : thermItems.targetTemperature.state) : '';
 	var curHum = thermItems.hasOwnProperty('currentHumidity') ? thermItems.currentHumidity.state : '';
@@ -643,7 +643,7 @@ function adjustThermostatTemperatureWithItems(authToken, request, response, para
 
   	//if heatingCoolingMode has a length of 1 (*should* be number...), then convert to something GA can read (off, heat, cool, on, heatcool)
 	if(heatingCoolingMode && heatingCoolingMode.state )
-		curMode = heatingCoolingMode.state.length === 1 ? utils.normalizeThermostatMode(heatingCoolingMode.state) : heatingCoolingMode.state;
+		curMode = utils.normalizeThermostatMode(heatingCoolingMode.state);
 
 	var success = function (resp) {
 		var payload = {};
@@ -720,6 +720,7 @@ function adjustThermostatModeWithItems(authToken, request, response, params, cur
 		}).json({error: "failed"});
 	};
 
+	setValue = thermostatModeDenormalize(heatingCoolingMode.state, setValue);
 	rest.postItemCommand(authToken, heatingCoolingMode.name, setValue.toString(), success, failure);
 }
 

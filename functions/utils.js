@@ -49,31 +49,73 @@ function generateControlError(messageId, name, code, description) {
 	return result;
 }
 
+function thermostatModeIsNumber(mode){
+	var m = mode;
+	if(m.parseInt() == NaN) {
+		return false;
+	} else {
+		return true;
+	}
+}
+
 //Normilizes numeric/string thermostat modes to Google Assistant friendly ones
 function normalizeThermostatMode(mode){
 	//if state returns as a decimal type, convert to string, this is a very common thermo pattern
 	var m = mode;
-	switch (mode) {
-	case '0': //off, not supported! Weird. But nothing else todo.
-		m = 'off';
-		break;
-	case '1': //heating
-		m = 'heat';
-		break;
-	case '2': //cooling
-		m = 'cool';
-		break;
-	case 'heat-cool': //nest auto
-		m = 'heatcool'
-		break;
-	case '3': //auto
-		m = 'on';
-		break;
-    default:
-        m = 'off';
-        break;
+	if(thermostatModeIsNumber(mode)) {
+		switch(mode.parseInt()) {
+			case 0:
+				m = 'off';
+				break;
+			case 1:
+				m = 'heat';
+				break;
+			case 2:
+				m = 'cool';
+				break;
+			case 3:
+				m = 'on';
+				break;
+			default:
+				m = 'off';
+				break;
+		}
+	} else {
+		if(mode == 'heat-cool') {
+			m = 'heatcool';
+		}
 	}
 	return m.toLowerCase();
+}
+
+function thermostatModeDenormalize(oldMode, newMode){
+	var m = newMode;
+	if(thermostatModeIsNumber(oldMode)) {
+		switch(newMode) {
+			case 'off':
+				m = 0;
+				break;
+			case 'heat':
+				m = 1;
+				break;
+			case 'cool':
+				m = 2;
+				break;
+			case 'on':
+				m = 3;
+				break;
+			case 'heat-cool':
+				m = 3;
+				break;
+			case 'heatcool':
+				m = 3;
+				break;
+			default:
+				m = 0;
+				break;
+		}
+	}
+	return m;
 }
 
 //Should this be removed? JSON format appears to be Alexa Skill format, not Google Assistant
