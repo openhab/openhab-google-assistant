@@ -139,7 +139,7 @@ If you're getting error messages about an unknown scope, you can try this:
 * Edit the file routes/oauth2.js:
   1. Comment out line 121: `scope = req.oauth2.req.scope;` and insert the following line above it: `scope = 'any';`
   ```
-  #scope = req.oauth2.req.scope;
+  //scope = req.oauth2.req.scope;
   scope = 'any'
   ```
  * Restart your server and attempt to authorize again.
