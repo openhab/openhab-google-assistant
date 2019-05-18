@@ -201,14 +201,19 @@ exports.handleExecute = function (request, response) {
 	}
 }
 
+exports.handleDisconnect = function (request, response) {
+	response.status(200).json({}); // 200 Ok with an empty JSON body is all that is needed
+}
 
 /**
  * Gets Rollershutter Data
  */
 function getRollerShutterData(item) {
-  return {
-    openPercent: Number(item.state)
-  };
+	var state = 100 - Number(item.state);
+
+	return {
+		openPercent: state
+	};
 }
 
 /**
@@ -358,7 +363,17 @@ function changeOpenClose(request, response, i, j) {
 			}).json({ error: "failed" });
 		};
 
-		var state = params.openPercent.toString();
+		var iState = params.openPercent;
+		var state;
+
+		if (iState === 0) {
+			state = "DOWN"
+		} else if (iState === 100) {
+			state = "UP"
+		} else {
+			state = (100 - iState).toString();
+		}
+
 		rest.postItemCommand(authToken, deviceId, state, success, failure);
     }
 }
