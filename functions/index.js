@@ -41,6 +41,9 @@ exports.openhabGoogleAssistant = function(request, response) {
 		case "action.devices.EXECUTE":
 			openhab.handleExecute(request, response);
 			return;
+		case "action.devices.DISCONNECT":
+			openhab.handleDisconnect(request, response);
+			return;
 		}
 	}
 	showError(response, "openhabGoogleAssistant: Missing intent");
