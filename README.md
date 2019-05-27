@@ -88,6 +88,15 @@ When you ask your assistant to “Turn on the light”, it will use the auth bea
   }
 }
 ```
+If you want to deploy your action in a foreign language, add locale parameter to the top of the action.js like :
+```
+{
+  "locale": "fr",
+  "actions": [{
+    "name": "actions.devices",
+    "deviceControl": {
+[...]
+```
 
 * Afterwards deploy this action file using the following command:
 
