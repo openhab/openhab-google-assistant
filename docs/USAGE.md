@@ -47,7 +47,7 @@ In openHAB 2 Items are exposed via [tags](https://www.openhab.org/docs/configura
   Group g_HK_Basement_TSTAT "Basement Thermostat" [ "Thermostat", "Fahrenheit" ]
     Number HK_Basement_Mode "Basement Heating/Cooling Mode" (g_HK_Basement_TSTAT) [ "homekit:HeatingCoolingMode" ]
     Number HK_Basement_Temp "Basement Temperature" (g_HK_Basement_TSTAT) [ "CurrentTemperature" ]
-    Number HK_Basement_Temp "Basement Humidity" (g_HK_Basement_TSTAT) [ "CurrentHumidity" ]
+    Number HK_Basement_Humid "Basement Humidity" (g_HK_Basement_TSTAT) [ "CurrentHumidity" ]
     Number HK_Basement_Setpoint "Basement Setpoint" (g_HK_Basement_TSTAT) [ "TargetTemperature" ]
   ```
 
