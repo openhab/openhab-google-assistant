@@ -11,7 +11,7 @@
     "test": "./node_modules/.bin/mocha --reporter spec"
   },
   "author": "Mehmet Arziman",
-  "license": "EPLv1",
+  "license": "EPL-2.0",
   "bugs": {
     "url": "https://github.com/openhab/openhab-google-assistant/issues"
   },
