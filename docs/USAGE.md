@@ -25,6 +25,7 @@ With the Action you can voice control your openHAB items and it supports lights,
 In openHAB 2 Items are exposed via [tags](https://www.openhab.org/docs/configuration/items.html#item-definition-and-syntax). Currently the following Tags are supported (also depending on Googles API capabilities):
 * ["Lighting"]
 * ["Switchable"]
+* ["Blinds"]
 * ["Scene"]
 * ["Outlet"]
 * ["Thermostat"] 
@@ -124,6 +125,7 @@ Here are some example voice commands:
  * Turn on Office Lights.
  * Dim/Brighten Office Lights (increments 15%).
  * Set Office Lights to 35%.
+ * Open/Close the blinds
  * Turn off Pool Waterfall.
  * Turn on House Fan.
  * Turn on Home Theater Scene.
