@@ -178,6 +178,7 @@ Currently the following Tags are supported (also depending on Googles API capabi
 
 * ["Lighting"]
 * ["Switchable"]
+* ["Blinds"]
 * ["Scene"]
 * ["Outlet"]
 * ["CurrentTemperature"]
@@ -204,6 +205,7 @@ Here are some example voice commands:
  * Turn on Office Lights
  * Dim/Brighten Office Lights (increments 15%)
  * Set Office Lights to 35%
+ * Open/Close the blinds
  * Turn off Pool Waterfall
  * Turn on House Fan
  * Turn on Home Theater Scene
