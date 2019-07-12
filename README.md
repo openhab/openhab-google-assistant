@@ -59,7 +59,7 @@ Here you need to develop your actions to engage users on Google Home, Pixel, and
     * Enter the client ID and client secret from the OAuth Credentials you created earlier
     * Authorization URL should be something like: `https://openhab.myserver.com/oauth2/authorize`
     * Token URL should be something like `https://openhab.myserver.com/oauth2/token`
-    * The scope thing is completely unknown and appears to be broken. I set it to `google-assistant` but it doesn't seem to do what I think it should do.
+    * Set the scope to `google-assistant`. This links to the records you will insert into the MongoDB table `oauth2scopes` later in [Setup your Database](#setup-your-database) step below.
     * Testing instructions: "None"
   1. Hit save. You're not actually going to submit this for testing, we just need to set it up so we can deploy it later.
 
@@ -113,6 +113,8 @@ This web service will receive parameters (intents) from Google and will query/mo
 gactions test --action_package action.json --project <PROJECT ID>
 ```
 
+Note: Anytime you make changes to the settings to your Action on the _Actions By Google_ interface, you'll need to repeat this step.
+
 ## Setup your Database
 
 * SSH into to your openHAB Cloud instance
@@ -129,20 +131,24 @@ db.oauth2scopes.insert( { name : "google-assistant", description: "Access to ope
 
 * Make sure Google Play Services is up to date
 * Visit "Google" app entry in Google Play Store on Android
-* Set up the voice-activated speaker, Pixel, or Android phone (version 6+) with the *same test account*
-* Make sure you're the correct user
+* Your Google Assistant device (Home, Mini, Max etc) OR Phone should use the same Google account that you used to create and configure the _Actions On Google_ step above. If it's different, see below
 * Start the updated Google Home app on your phone
-* Go to the devices `Settings > Home control > Add device` and select the `[test] open hab`
-* Login at your Backend (e.g. https://myopenhab.org) with your username and password
-* You will now be able to see your previously tagged items and devices
-* You can now control those devices from the Google Assistant
+* From the app home screen, select the `Add` button and then `Set up device`. Then `Works with Google > Have something already set up?`
+* You should be shown a list of providers and your Test action should be available. eg. `[test] open hab` - select it
+* Login at your Backend (e.g. https://myopenhab.org) with your username and password and authorise the OAuth screen
+* If there is no errors, return back to the home screen and scroll to the bottom, your new devices should appear unassigned to any home or room. Complete the assignments as you see fit.
+* You can now control those devices from the Google Assistant!
 
 If you're lucky this works! You'll need to configure your items (below) and then sync again.
 If it didn't work, try the workaround below.
 
-## Workaround for scope issues
+To resync changes in tagging or other OpenHAB configuration, tell Google Home to `sync my devices`. In a few seconds any changes will appear.
 
-If you're getting error messages about an unknown scope, you can try this:
+## Workarounds
+
+### Scope issues
+
+If you're getting error messages about an unknown scope, first check you've updated the MongoDB correctly in the [Setup your Database](#setup-your-database) step. If you still have issues, you can try this:
 
 * SSH into to your openHAB Cloud instance
 * Edit the file routes/oauth2.js:
@@ -152,6 +158,22 @@ If you're getting error messages about an unknown scope, you can try this:
   scope = 'any'
   ```
  * Restart your server and attempt to authorize again.
+
+### Using a different Google account
+In some cases, you may wish to have your `Google Cloud Function` and `Actions On Google` configured on a different Google account than the one running on your Google Home (eg. you have a work account for GCP services and payments, a home account for assistant). This configuration is still possible, but you need to make some permissions changes.
+
+Follow the same process above to setup the function and action, using your _work@gmail.com_ account. By default, when you go to add OpenHAB to the Google Home app using your _home@gmail.com_ account, your `[test] open hab` service will NOT be available to select.
+
+To fix:
+
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/projectselector/home)
+1. Choose the GCP project you created your function in and linked to your Action
+1. From the side menu, choose `IAM & Admin > IAM`
+1. Click the `+ ADD` button at the top of the page
+1. Add a new user, with your _home@gmail.com_ address. Giving them `Project > Viewer` role
+
+Return back to the Google Home app and try to add the OpenHAB service again. You should now be able to see `[test] open hab` and add it successfully.
+
 
 ## Item configuration
 
