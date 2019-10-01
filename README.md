@@ -83,7 +83,7 @@ When you ask your assistant to “Turn on the light”, it will use the auth bea
     "automation" :
     {
      "name": "automation",
-     "url": "https://YOUR-OPENHAB-CLOUD-URL/openhabGoogleAssistant"
+     "url": "https://YOUR-FULFILMENT-URL-GIVEN-FROM-DEPLOYMENT"
     }
   }
 }
