@@ -1,0 +1,65 @@
+{
+  "response": "Okay. Getting the test version of my test app.\nhi",
+  "expectUserResponse": true,
+  "conversationToken": "EvwCS2o5Rk...",
+  "audioResponse": "//NExAAQyL...",
+  "ssmlMarkList": [],
+  "debugInfo": {
+    "assistantToAgentDebug": {
+      "curlCommand": "curl -v 'https://api.api.ai/api/integrations/google?token=cbf733ddb3624f2c94d8be0bf3c6b1f4' -H 'Content-Type: application/json;charset=UTF-8' -H 'Google-Actions-API-Version: 2' -H 'Authorization: eyJhbGciOiJSUzI1NiIsImtpZCI6ImVlNGRiZDA2YzA2NjgzY2I0OGRkZGNhNmI4OGMzZTQ3M2I2OTE1YjkiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhdWQiOiJtZWRpY3VyZTItMmUxZmEiLCJuYmYiOjE1NzEwNzU3ODcsImlhdCI6MTU3MTA3NjA4NywiZXhwIjoxNTcxMDc2MjA3LCJqdGkiOiJjNWRkODM1N2RiNmE0MzAxNjI3NTFlOTBhMWNmNzgxNjA2NWE2MDJhIn0.IAXTDEThTJF9mByYMiBxUVUpMjlf-iGdCw3CF7aKwMdz3BoJaJsMqcQqz8Va3lCYhn5Rn3Y0xikU_BRWjwDyfZpyaXRMKsozuFqF29XmtWrNGdyMymj6qsZw0S-X8KzDVZhDa6MFtldb0tAt0OSid0mvU9G5obxj2jHVwxkTkF_gpsKEoPIUYvT-FcM40XfLkfVaxfKVYE3ONb115PBcM3Jv_rO22hUK711Fp8jh3yMSXR7mvv2cn1x-HQEBo02wvsWt-9GLnZc00iQiJgKoptTL8XT36smhb1Zfo6zqOux3gnKnSHKQDXfFwEetk86oWS0Z2Ux_gmJXSfSRgJo1qA'  -A Google-ActionsOnGoogle/1.0 -X POST -d '{\"user\":{\"locale\":\"en-US\",\"lastSeen\":\"2019-10-14T17:46:45Z\",\"userVerificationStatus\":\"VERIFIED\"},\"conversation\":{\"conversationId\":\"ABwppHH3Vm2JZWCTajyLi6S1nPM8fARlW2ixvjp5saza-cN9lzwbQHerQ05Ass8gLkXoJkNDMUQJQe9bVzyN\",\"type\":\"NEW\"},\"inputs\":[{\"intent\":\"actions.intent.MAIN\",\"rawInputs\":[{\"inputType\":\"VOICE\",\"query\":\"Talk to my test app\"}]}],\"surface\":{\"capabilities\":[{\"name\":\"actions.capability.ACCOUNT_LINKING\"},{\"name\":\"actions.capability.SCREEN_OUTPUT\"},{\"name\":\"actions.capability.MEDIA_RESPONSE_AUDIO\"},{\"name\":\"actions.capability.AUDIO_OUTPUT\"}]},\"isInSandbox\":true,\"availableSurfaces\":[{\"capabilities\":[{\"name\":\"actions.capability.SCREEN_OUTPUT\"},{\"name\":\"actions.capability.WEB_BROWSER\"},{\"name\":\"actions.capability.AUDIO_OUTPUT\"}]}],\"requestType\":\"SIMULATOR\"}'",
+      "assistantToAgentJson": "{\"user\":{\"locale\":\"en-US\",\"lastSeen\":\"2019-10-14T17:46:45Z\",\"userVerificationStatus\":\"VERIFIED\"},\"conversation\":{\"conversationId\":\"ABwppHH3Vm2JZWCTajyLi6S1nPM8fARlW2ixvjp5saza-cN9lzwbQHerQ05Ass8gLkXoJkNDMUQJQe9bVzyN\",\"type\":\"NEW\"},\"inputs\":[{\"intent\":\"actions.intent.MAIN\",\"rawInputs\":[{\"inputType\":\"VOICE\",\"query\":\"Talk to my test app\"}]}],\"surface\":{\"capabilities\":[{\"name\":\"actions.capability.ACCOUNT_LINKING\"},{\"name\":\"actions.capability.SCREEN_OUTPUT\"},{\"name\":\"actions.capability.MEDIA_RESPONSE_AUDIO\"},{\"name\":\"actions.capability.AUDIO_OUTPUT\"}]},\"isInSandbox\":true,\"availableSurfaces\":[{\"capabilities\":[{\"name\":\"actions.capability.SCREEN_OUTPUT\"},{\"name\":\"actions.capability.WEB_BROWSER\"},{\"name\":\"actions.capability.AUDIO_OUTPUT\"}]}],\"requestType\":\"SIMULATOR\"}",
+      "delegatedRequest": {
+        "delegatedRequest": ""
+      }
+    },
+    "agentToAssistantDebug": {
+      "agentToAssistantJson": "{\n  \"conversationToken\": \"[]\",\n  \"expectUserResponse\": true,\n  \"expectedInputs\": [{\n    \"inputPrompt\": {\n      \"richInitialPrompt\": {\n        \"items\": [{\n          \"simpleResponse\": {\n            \"textToSpeech\": \"hi\",\n            \"displayText\": \"hi\"\n          }\n        }]\n      }\n    },\n    \"possibleIntents\": [{\n      \"intent\": \"assistant.intent.action.TEXT\"\n    }]\n  }],\n  \"responseMetadata\": {\n    \"status\": {\n      \"message\": \"Success (200)\"\n    },\n    \"queryMatchInfo\": {\n      \"queryMatched\": true,\n      \"intent\": \"30ad9ca9-036c-4e2d-9438-fbe2cd750b8a\"\n    }\n  }\n}",
+      "delegatedResponse": {
+        "delegatedResponse": ""
+      }
+    },
+    "sharedDebugInfoList": [],
+    "conversationBuilderExecutionEventsList": []
+  },
+  "visualResponse": {
+    "visualElementsList": [
+      {
+        "displayText": {
+          "content": "Okay. Getting the test version of my test app."
+        }
+      },
+      {
+        "displayText": {
+          "content": "hi"
+        }
+      }
+    ],
+    "suggestionsList": [],
+    "agentLogoUrl": "https://www.gstatic.com/voice/opa/partner_icons/generic_3p_avatar.png",
+    "agentStyle": {
+      "primaryColor": "#0d0101",
+      "fontFamily": "",
+      "borderRadius": 0,
+      "backgroundColor": "",
+      "backgroundImageUrl": "https://lh3.googleusercontent.com/kiHt6YUwRc2UKZcIZkj87IoOaIWSjqnnqPKyIyFBCdhPBNZDUo67KvrNkXh53299cmtXA5Y55vk"
+    }
+  },
+  "clientError": 0,
+  "is3pResponse": true,
+  "clientOperationList": [
+    {
+      "operationType": 4,
+      "startIndicatorPayLoad": {
+        "status": 1
+      }
+    },
+    {
+      "operationType": 1,
+      "micUpdatePayLoad": {
+        "micMode": 1
+      }
+    }
+  ],
+  "projectName": "",
+  "renderedHtml": ""
+}

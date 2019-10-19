@@ -1,0 +1,34 @@
+{
+  "conversationToken": "[]",
+  "expectUserResponse": true,
+  "expectedInputs": [
+    {
+      "inputPrompt": {
+        "richInitialPrompt": {
+          "items": [
+            {
+              "simpleResponse": {
+                "textToSpeech": "hi",
+                "displayText": "hi"
+              }
+            }
+          ]
+        }
+      },
+      "possibleIntents": [
+        {
+          "intent": "assistant.intent.action.TEXT"
+        }
+      ]
+    }
+  ],
+  "responseMetadata": {
+    "status": {
+      "message": "Success (200)"
+    },
+    "queryMatchInfo": {
+      "queryMatched": true,
+      "intent": "30ad9ca9-036c-4e2d-9438-fbe2cd750b8a"
+    }
+  }
+}

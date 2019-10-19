@@ -1,0 +1,63 @@
+{
+  "user": {
+    "locale": "en-US",
+    "lastSeen": "2019-10-14T17:46:28Z",
+    "userVerificationStatus": "VERIFIED"
+  },
+  "conversation": {
+    "conversationId": "ABwppHEizSGYpx26pr_jGSi0LI4b2EEMGGhur036JRXzPII7Qy-02PMt8uNH3AeRHgaeLMpd3aBPW0v-ir3c",
+    "type": "ACTIVE",
+    "conversationToken": "[\"input\"]"
+  },
+  "inputs": [
+    {
+      "intent": "actions.intent.TEXT",
+      "rawInputs": [
+        {
+          "inputType": "VOICE",
+          "query": "yes"
+        }
+      ],
+      "arguments": [
+        {
+          "name": "text",
+          "rawText": "yes",
+          "textValue": "yes"
+        }
+      ]
+    }
+  ],
+  "surface": {
+    "capabilities": [
+      {
+        "name": "actions.capability.MEDIA_RESPONSE_AUDIO"
+      },
+      {
+        "name": "actions.capability.AUDIO_OUTPUT"
+      },
+      {
+        "name": "actions.capability.SCREEN_OUTPUT"
+      },
+      {
+        "name": "actions.capability.ACCOUNT_LINKING"
+      }
+    ]
+  },
+  "isInSandbox": true,
+  "availableSurfaces": [
+    {
+      "capabilities": [
+        {
+          "name": "actions.capability.WEB_BROWSER"
+        },
+        {
+          "name": "actions.capability.AUDIO_OUTPUT"
+        },
+        {
+          "name": "actions.capability.SCREEN_OUTPUT"
+        }
+      ]
+    }
+  ],
+  "requestType": "SIMULATOR"
+}
