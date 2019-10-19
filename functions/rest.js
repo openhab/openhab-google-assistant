@@ -14,7 +14,7 @@
 /**
  * openHAB REST API handler for requests towards the openHAB REST API,
  * adapted from the opanHAB Alexa Skill
- * 
+ *
  * @author Mehmet Arziman - Initial contribution
  * @author Dan Cunningham - Foundations
  *
@@ -44,7 +44,7 @@ function getItem(token, itemName, success, failure) {
 		response.on('end', function () {
 			if (response.statusCode != 200) {
 				console.error('getItem failed for path: ' + options.path +
-						' code: ' + response.statusCode);
+					' code: ' + response.statusCode);
 				failure({
 					message: 'Error response ' + response.statusCode
 				});
@@ -57,7 +57,7 @@ function getItem(token, itemName, success, failure) {
 			failure(e);
 		});
 	})
-	.end();
+		.end();
 }
 
 /**
@@ -87,11 +87,11 @@ function postItemCommand(token, itemName, value, success, failure) {
  */
 function httpItemOptions(token, itemname, method, length) {
 	let options = {
-			hostname: config.host,
-			port: config.port,
-			path: config.path + (itemname || ''),
-			method: method || 'GET',
-			headers: {}
+		hostname: config.host,
+		port: config.port,
+		path: config.path + (itemname || ''),
+		method: method || 'GET',
+		headers: {}
 	};
 
 	if (config.userpass) {

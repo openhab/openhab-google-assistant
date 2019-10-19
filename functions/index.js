@@ -20,10 +20,9 @@
 'use strict';
 
 const openhab = require('./openhab.js');
-const color = require('colr');
 
-exports.openhabGoogleAssistant = function(request, response) {
-	let authToken = request.headers.authorization ? request.headers.authorization.split(' ')[1] : null;
+exports.openhabGoogleAssistant = function (request, response) {
+	// let authToken = request.headers.authorization ? request.headers.authorization.split(' ')[1] : null;
 	console.log("openhabGoogleAssistant: Cloud function called:" + JSON.stringify(request.body));
 
 	let requestBody = request.body;
@@ -36,18 +35,18 @@ exports.openhabGoogleAssistant = function(request, response) {
 		let input = requestBody.inputs[i];
 		let intent = input.intent || "";
 		switch (intent) {
-		case "action.devices.SYNC":
-			openhab.handleSync(request, response);
-			return;
-		case "action.devices.QUERY":
-			openhab.handleQuery(request, response);
-			return;
-		case "action.devices.EXECUTE":
-			openhab.handleExecute(request, response);
-			return;
-		case "action.devices.DISCONNECT":
-			openhab.handleDisconnect(request, response);
-			return;
+			case "action.devices.SYNC":
+				openhab.handleSync(request, response);
+				return;
+			case "action.devices.QUERY":
+				openhab.handleQuery(request, response);
+				return;
+			case "action.devices.EXECUTE":
+				openhab.handleExecute(request, response);
+				return;
+			case "action.devices.DISCONNECT":
+				openhab.handleDisconnect(request, response);
+				return;
 		}
 	}
 	showError(response, "openhabGoogleAssistant: Missing intent");
@@ -59,6 +58,6 @@ function showError(res, message) {
 	res.status(401).set({
 		'Access-Control-Allow-Origin': '*',
 		'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-	}).json({error: message});
+	}).json({ error: message });
 }
 
