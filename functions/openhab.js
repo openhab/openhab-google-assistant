@@ -164,6 +164,9 @@ exports.handleQuery = function (request, response) {
 }
 
 exports.handleExecute = function (request, response) {
+	const authToken = request.headers.authorization ? request.headers.authorization.split(' ')[1] : null;
+	const requestId = request.body.requestId;
+
 	const requestCommands = request.body.inputs[0].payload.commands;
 
 	for (let i = 0; i < requestCommands.length; i++) {
@@ -171,32 +174,33 @@ exports.handleExecute = function (request, response) {
 
 		for (let j = 0; j < currentCommand.execution.length; j++) {
 			const currentExecutionCommand = currentCommand.execution[j];
+			const params = currentExecutionCommand.params;
 
 			switch (currentExecutionCommand.command) {
 				case 'action.devices.commands.OnOff':
-					turnOnOff(request, response, i, j);
+					turnOnOff(requestId, currentCommand, params, authToken, response);
 					break;
 				case 'action.devices.commands.BrightnessAbsolute':
-					adjustBrightness(request, response, i, j);
+					adjustBrightness(requestId, currentCommand, params, authToken, response);
 					break;
 				case 'action.devices.commands.ChangeColor':
 				case 'action.devices.commands.ColorAbsolute':
-					adjustColor(request, response, i, j);
+					adjustColor(requestId, currentCommand, params, authToken, response);
 					break;
 				case 'action.devices.commands.ActivateScene':
-					adjustScene(request, response, i, j);
+					adjustScene(requestId, currentCommand, params, authToken, response);
+					break;
+				case 'action.devices.commands.OpenClose':
+					changeOpenClose(requestId, currentCommand, params, authToken, response);
+					break;
+				case 'action.devices.commands.StartStop':
+					changeStartStop(requestId, currentCommand, params, authToken, response);
 					break;
 				case 'action.devices.commands.ThermostatTemperatureSetpoint':
 					adjustThermostatTemperature(request, response, i, j);
 					break;
 				case 'action.devices.commands.ThermostatSetMode':
 					adjustThermostatMode(request, response, i, j);
-					break;
-				case 'action.devices.commands.OpenClose':
-					changeOpenClose(request, response, i, j);
-					break;
-				case 'action.devices.commands.StartStop':
-					changeStartStop(request, response, i, j);
 					break;
 			}
 		}
@@ -214,16 +218,16 @@ function getTempData(item) {
 	let thermData = {};
 	const thermItems = item.tags.toString().includes("Thermostat") ? getThermostatItems(item.members) : getThermostatItems([item]);
 
-	//Are we dealing with Fahrenheit?
+	// Are we dealing with Fahrenheit?
 	const isF = item.tags.toString().toLowerCase().includes('fahrenheit');
 
-	//store long json variables in easier variables to work with below
+	// store long json variables in easier variables to work with below
 	const tstatMode = thermItems.hasOwnProperty('heatingCoolingMode') ? utils.normalizeThermostatMode(thermItems.heatingCoolingMode.state) : 'heat'
 	const currTemp = thermItems.hasOwnProperty('currentTemperature') ? (isF ? utils.toC(thermItems.currentTemperature.state) : thermItems.currentTemperature.state) : '';
 	const tarTemp = thermItems.hasOwnProperty('targetTemperature') ? (isF ? utils.toC(thermItems.targetTemperature.state) : thermItems.targetTemperature.state) : '';
 	const curHum = thermItems.hasOwnProperty('currentHumidity') ? thermItems.currentHumidity.state : '';
 
-	//populate only the necessary json values, otherwise GA will get confused if keys are empty
+	// populate only the necessary json values, otherwise GA will get confused if keys are empty
 	if (item.tags.toString().toLowerCase().includes("thermostat")) {
 		thermData.thermostatMode = tstatMode;
 		if (thermItems.hasOwnProperty('currentTemperature')) thermData.thermostatTemperatureAmbient = Number(parseFloat(currTemp).toFixed(1));
@@ -242,11 +246,7 @@ function getTempData(item) {
 /**
  * Turns a Switch Item on or off
  */
-function turnOnOff(request, response, i, j) {
-	const authToken = request.headers.authorization ? request.headers.authorization.split(' ')[1] : null;
-	const reqCommand = request.body.inputs[0].payload.commands[i];
-	const params = reqCommand.execution[j].params;
-
+function turnOnOff(requestId, reqCommand, params, authToken, response) {
 	console.log('openhabGoogleAssistant - turnOnOff reqCommand:' + JSON.stringify(reqCommand));
 
 	for (let k = 0; k < reqCommand.devices.length; k++) {
@@ -263,7 +263,7 @@ function turnOnOff(request, response, i, j) {
 					}
 				}
 			};
-			generateResponse('turnOnOff', request.body.requestId, payload, response);
+			generateResponse('turnOnOff', requestId, payload, response);
 		};
 
 		const failure = function (error) {
@@ -278,11 +278,7 @@ function turnOnOff(request, response, i, j) {
 /**
  * Change a Item open or close
  */
-function changeOpenClose(request, response, i, j) {
-	const authToken = request.headers.authorization ? request.headers.authorization.split(' ')[1] : null;
-	const reqCommand = request.body.inputs[0].payload.commands[i];
-	const params = reqCommand.execution[j].params;
-
+function changeOpenClose(requestId, reqCommand, params, authToken, response) {
 	console.log('openhabGoogleAssistant - turnOpenClose reqCommand:' + JSON.stringify(reqCommand));
 
 	for (let k = 0; k < reqCommand.devices.length; k++) {
@@ -299,7 +295,7 @@ function changeOpenClose(request, response, i, j) {
 					}
 				}
 			};
-			generateResponse('turnOpenClose', request.body.requestId, payload, response);
+			generateResponse('turnOpenClose', requestId, payload, response);
 		};
 
 		const failure = function (error) {
@@ -324,11 +320,7 @@ function changeOpenClose(request, response, i, j) {
 /**
  * Change a Item start or stop
  */
-function changeStartStop(request, response, i, j) {
-	const authToken = request.headers.authorization ? request.headers.authorization.split(' ')[1] : null;
-	const reqCommand = request.body.inputs[0].payload.commands[i];
-	const params = reqCommand.execution[j].params;
-
+function changeStartStop(requestId, reqCommand, params, authToken, response) {
 	console.log('openhabGoogleAssistant - turnStartStop reqCommand:' + JSON.stringify(reqCommand));
 
 	for (let k = 0; k < reqCommand.devices.length; k++) {
@@ -346,7 +338,7 @@ function changeStartStop(request, response, i, j) {
 					}
 				}
 			};
-			generateResponse('turnStartStop', request.body.requestId, payload, response);
+			generateResponse('turnStartStop', requestId, payload, response);
 		};
 
 		const failure = function (error) {
@@ -361,11 +353,7 @@ function changeStartStop(request, response, i, j) {
 /**
  * Brightness control
  */
-function adjustBrightness(request, response, i, j) {
-	const authToken = request.headers.authorization ? request.headers.authorization.split(' ')[1] : null;
-	const reqCommand = request.body.inputs[0].payload.commands[i];
-	const params = reqCommand.execution[j].params;
-
+function adjustBrightness(requestId, reqCommand, params, authToken, response) {
 	console.log('openhabGoogleAssistant - adjustBrightness reqCommand:' + JSON.stringify(reqCommand));
 
 	for (let k = 0; k < reqCommand.devices.length; k++) {
@@ -382,7 +370,7 @@ function adjustBrightness(request, response, i, j) {
 					}
 				}
 			};
-			generateResponse('adjustBrightness', request.body.requestId, payload, response);
+			generateResponse('adjustBrightness', requestId, payload, response);
 		};
 
 		const failure = function (error) {
@@ -397,11 +385,7 @@ function adjustBrightness(request, response, i, j) {
 /**
  * Color control
  */
-function adjustColor(request, response, i, j) {
-	const authToken = request.headers.authorization ? request.headers.authorization.split(' ')[1] : null;
-	const reqCommand = request.body.inputs[0].payload.commands[i];
-	const params = reqCommand.execution[j].params;
-
+function adjustColor(requestId, reqCommand, params, authToken, response) {
 	console.log('openhabGoogleAssistant - adjustColor reqCommand:' + JSON.stringify(reqCommand));
 
 	for (let k = 0; k < reqCommand.devices.length; k++) {
@@ -420,7 +404,7 @@ function adjustColor(request, response, i, j) {
 					}
 				}
 			};
-			generateResponse('adjustColor', request.body.requestId, payload, response);
+			generateResponse('adjustColor', requestId, payload, response);
 		};
 
 		const failure = function (error) {
@@ -442,11 +426,7 @@ function adjustColor(request, response, i, j) {
 /**
  * Turns a Scene Item on or off
  */
-function adjustScene(request, response, i, j) {
-	const authToken = request.headers.authorization ? request.headers.authorization.split(' ')[1] : null;
-	const reqCommand = request.body.inputs[0].payload.commands[i];
-	const params = reqCommand.execution[j].params;
-
+function adjustScene(requestId, reqCommand, params, authToken, response) {
 	console.log('openhabGoogleAssistant - adjustScene reqCommand:' + JSON.stringify(reqCommand));
 
 	for (let k = 0; k < reqCommand.devices.length; k++) {
@@ -462,7 +442,7 @@ function adjustScene(request, response, i, j) {
 					}
 				}
 			};
-			generateResponse('adjustScene', request.body.requestId, payload, response);
+			generateResponse('adjustScene', requestId, payload, response);
 		};
 
 		const failure = function (error) {
@@ -642,14 +622,8 @@ function adjustThermostatModeWithItems(authToken, request, response, params, cur
  *
  **/
 function syncAndDiscoverDevices(token, success, failure) {
-	//return true if a value in the first group is contained in the second group
-	const matchesGroup = function (groups1, groups2) {
-		for (var num in groups1) {
-			if (groups2.indexOf(groups1[num]) >= 0)
-				return true;
-		}
-		return false;
-	};
+	// return true if a value in the first group is contained in the second group
+	const matchesGroup = (group1, group2) => (group1.some((e) => group2.includes(e)));
 
 	// Checks for a Fahrenheit tag and sets the righ property on the
 	const defaultThermModes = 'off, cool, heat, on, heatcool';
@@ -734,8 +708,8 @@ function syncAndDiscoverDevices(token, success, failure) {
 						traits = getSwitchableTraits(item);
 						break;
 					case 'CurrentTemperature':
-						//if this is not part of a thermostatGroup then add it
-						//standalone otherwise it will be available as a thermostat
+						// if this is not part of a thermostatGroup then add it
+						// standalone otherwise it will be available as a thermostat
 						if (!matchesGroup(thermostatGroups, item.groupNames)) {
 							traits = [
 								'action.devices.traits.TemperatureSetting'
@@ -745,7 +719,7 @@ function syncAndDiscoverDevices(token, success, failure) {
 						}
 						break;
 					case 'Thermostat':
-						//only group items are allowed to have a Temperature tag
+						// only group items are allowed to have a Temperature tag
 						if (item.type === 'Group') {
 							traits = [
 								'action.devices.traits.TemperatureSetting'
