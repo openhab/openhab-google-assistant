@@ -33,7 +33,7 @@ function getItems(token, success, failure) {
  * Returns a single item
  */
 function getItem(token, itemName, success, failure) {
-	let options = httpItemOptions(token, itemName);
+	const options = httpItemOptions(token, itemName);
 	https.get(options, function (response) {
 		let body = '';
 
@@ -64,8 +64,8 @@ function getItem(token, itemName, success, failure) {
  * POST a command to a item
  **/
 function postItemCommand(token, itemName, value, success, failure) {
-	let options = httpItemOptions(token, itemName, 'POST', value.length);
-	let req = https.request(options, function (response) {
+	const options = httpItemOptions(token, itemName, 'POST', value.length);
+	const req = https.request(options, function (response) {
 		if (response.statusCode === 200 || response.statusCode === 201) {
 			success(response);
 		} else {
@@ -86,7 +86,7 @@ function postItemCommand(token, itemName, value, success, failure) {
  * Returns a HTTP option object suitable for item commands
  */
 function httpItemOptions(token, itemname, method, length) {
-	let options = {
+	const options = {
 		hostname: config.host,
 		port: config.port,
 		path: config.path + (itemname || ''),

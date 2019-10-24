@@ -25,15 +25,15 @@ exports.openhabGoogleAssistant = function (request, response) {
 	// let authToken = request.headers.authorization ? request.headers.authorization.split(' ')[1] : null;
 	console.log("openhabGoogleAssistant: Cloud function called:" + JSON.stringify(request.body));
 
-	let requestBody = request.body;
+	const requestBody = request.body;
 	if (!requestBody.inputs) {
 		showError(response, "openhabGoogleAssistant: Missing inputs");
 		return;
 	}
 
 	for (let i = 0; i < requestBody.inputs.length; i++) {
-		let input = requestBody.inputs[i];
-		let intent = input.intent || "";
+		const input = requestBody.inputs[i];
+		const intent = input.intent || "";
 		switch (intent) {
 			case "action.devices.SYNC":
 				openhab.handleSync(request, response);
@@ -52,12 +52,9 @@ exports.openhabGoogleAssistant = function (request, response) {
 	showError(response, "openhabGoogleAssistant: Missing intent");
 }
 
-
-
 function showError(res, message) {
 	res.status(401).set({
 		'Access-Control-Allow-Origin': '*',
 		'Access-Control-Allow-Headers': 'Content-Type, Authorization'
 	}).json({ error: message });
 }
-
