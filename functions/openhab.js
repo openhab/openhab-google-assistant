@@ -310,7 +310,11 @@ function turnOnOff(request, response, i, j) {
 					payload: {
 						commands: {
 							ids: [ deviceId ],
-							status: "SUCCESS"
+							status: "SUCCESS",
+                           				states: {
+          							on: params.on,
+          							online: true
+        						}
 						}
 					}
 			}
