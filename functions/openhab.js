@@ -138,7 +138,7 @@ exports.handleQuery = function (request, response) {
 				}
 			}
 			return retValue;
-		}, function (res) { // failure
+		}, function () { // failure
 			return {
 				id: device.id,
 				data: {
@@ -303,17 +303,16 @@ function turnOnOff(request, response, i, j) {
 	for (let k = 0; k < reqCommand.devices.length; k++) {
 		let deviceId = reqCommand.devices[k].id;
 
-		var success = function (resp) {
+		var success = function () {
 			let result = {
-					requestId: request.body.requestId,
-					payload: {
-						commands: {
-							ids: [ deviceId ],
-							status: "SUCCESS",
-                           				states: {
-          							on: params.on,
-          							online: true
-        						}
+				requestId: request.body.requestId,
+				payload: {
+					commands: {
+						ids: [deviceId],
+						status: "SUCCESS",
+						states: {
+							on: params.on,
+							online: true
 						}
 					}
 				}
@@ -348,7 +347,7 @@ function changeOpenClose(request, response, i, j) {
 	for (let k = 0; k < reqCommand.devices.length; k++) {
 		let deviceId = reqCommand.devices[k].id;
 
-		var success = function (resp) {
+		var success = function () {
 			let result = {
 				requestId: request.body.requestId,
 				payload: {
@@ -397,7 +396,7 @@ function changeStartStop(request, response, i, j) {
 	for (let k = 0; k < reqCommand.devices.length; k++) {
 		let deviceId = reqCommand.devices[k].id;
 
-		var success = function (resp) {
+		var success = function () {
 			let result = {
 				requestId: request.body.requestId,
 				payload: {
@@ -437,7 +436,7 @@ function adjustBrightness(request, response, i, j) {
 	for (let k = 0; k < reqCommand.devices.length; k++) {
 		let deviceId = reqCommand.devices[k].id;
 
-		var success = function (resp) {
+		var success = function () {
 			let result = {
 				requestId: request.body.requestId,
 				payload: {
@@ -477,7 +476,7 @@ function adjustColor(request, response, i, j) {
 	for (let k = 0; k < reqCommand.devices.length; k++) {
 		let deviceId = reqCommand.devices[k].id;
 
-		var success = function (resp) {
+		var success = function () {
 			let result = {
 				requestId: request.body.requestId,
 				payload: {
@@ -524,7 +523,7 @@ function adjustScene(request, response, i, j) {
 	for (let k = 0; k < reqCommand.devices.length; k++) {
 		let deviceId = reqCommand.devices[k].id;
 
-		var success = function (resp) {
+		var success = function () {
 			let result = {
 				requestId: request.body.requestId,
 				payload: {
@@ -648,7 +647,7 @@ function adjustThermostatTemperatureWithItems(authToken, request, response, para
 	let curMode;
 
 	if (!targetTemperature) {
-		console.error("openhabGoogleAssistant - adjustThermostatTemperatureWithItems failed: " + error.message);
+		console.error("openhabGoogleAssistant - adjustThermostatTemperatureWithItems failed: targetTemperature not set");
 		return;
 	}
 
@@ -662,7 +661,7 @@ function adjustThermostatTemperatureWithItems(authToken, request, response, para
 	if (heatingCoolingMode && heatingCoolingMode.state)
 		curMode = utils.normalizeThermostatMode(heatingCoolingMode.state);
 
-	var success = function (resp) {
+	var success = function () {
 		let result = {
 			requestId: request.body.requestId,
 			payload: {
@@ -707,7 +706,7 @@ function adjustThermostatModeWithItems(authToken, request, response, params, cur
 
 	var setValue = params.thermostatMode;
 
-	var success = function (resp) {
+	var success = function () {
 		let result = {
 			requestId: request.body.requestId,
 			payload: {
