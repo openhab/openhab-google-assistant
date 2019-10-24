@@ -54,12 +54,7 @@ function generateControlError(messageId, name, code, description) {
 }
 
 function thermostatModeIsNumber(mode) {
-	var m = mode;
-	if (m.parseInt() == NaN) {
-		return false;
-	} else {
-		return true;
-	}
+	return !isNaN(parseInt(mode));
 }
 
 //Normilizes numeric/string thermostat modes to Google Assistant friendly ones
@@ -67,7 +62,7 @@ function normalizeThermostatMode(mode) {
 	//if state returns as a decimal type, convert to string, this is a very common thermo pattern
 	var m = mode;
 	if (thermostatModeIsNumber(mode)) {
-		switch (mode.parseInt()) {
+		switch (parseInt(mode)) {
 			case 0:
 				m = 'off';
 				break;
