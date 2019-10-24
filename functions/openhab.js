@@ -311,8 +311,8 @@ function turnOnOff(request, response, i, j) {
 						ids: [deviceId],
 						status: "SUCCESS",
 						states: {
-							on: params.on,
-							online: true
+							online: true,
+							on: params.on
 						}
 					}
 				}
@@ -353,7 +353,11 @@ function changeOpenClose(request, response, i, j) {
 				payload: {
 					commands: {
 						ids: [deviceId],
-						status: "SUCCESS"
+						status: "SUCCESS",
+						states: {
+							online: true,
+							openPercent: params.openPercent
+						}
 					}
 				}
 			}
@@ -402,7 +406,12 @@ function changeStartStop(request, response, i, j) {
 				payload: {
 					commands: {
 						ids: [deviceId],
-						status: "SUCCESS"
+						status: "SUCCESS",
+						states: {
+							online: true,
+							isRunning: !!params.start,
+							isPaused: !!params.pause
+						}
 					}
 				}
 			}
@@ -442,7 +451,11 @@ function adjustBrightness(request, response, i, j) {
 				payload: {
 					commands: {
 						ids: [deviceId],
-						status: "SUCCESS"
+						status: "SUCCESS",
+						states: {
+							online: true,
+							brightness: params.brightness
+						}
 					}
 				}
 			}
@@ -482,7 +495,13 @@ function adjustColor(request, response, i, j) {
 				payload: {
 					commands: {
 						ids: [deviceId],
-						status: "SUCCESS"
+						status: "SUCCESS",
+						states: {
+							online: true,
+							color: {
+								spectrumRgb: params.color.spectrumRGB
+							}
+						}
 					}
 				}
 			}
@@ -529,7 +548,10 @@ function adjustScene(request, response, i, j) {
 				payload: {
 					commands: {
 						ids: [deviceId],
-						status: "SUCCESS"
+						status: "SUCCESS",
+						states: {
+							// Note -- scenes are stateless.
+						}
 					}
 				}
 			}
@@ -669,9 +691,10 @@ function adjustThermostatTemperatureWithItems(authToken, request, response, para
 					ids: [deviceId],
 					status: "SUCCESS",
 					states: {
-						"thermostatMode": curMode,
-						"thermostatTemperatureSetpoint": isF ? utils.toC(setValue) : setValue,
-						"thermostatTemperatureAmbient": isF ? utils.toC(currentTemperature) : +currentTemperature.state
+						online: true,
+						thermostatMode: curMode,
+						thermostatTemperatureSetpoint: isF ? utils.toC(setValue) : setValue,
+						thermostatTemperatureAmbient: isF ? utils.toC(currentTemperature) : +currentTemperature.state
 					}
 				}
 			}
@@ -714,9 +737,10 @@ function adjustThermostatModeWithItems(authToken, request, response, params, cur
 					ids: [deviceId],
 					status: "SUCCESS",
 					states: {
-						"thermostatMode": setValue,
-						"thermostatTemperatureSetpoint": isF ? utils.toC(targetTemperature) : +targetTemperature.state,
-						"thermostatTemperatureAmbient": isF ? utils.toC(currentTemperature) : +currentTemperature.state
+						online: true,
+						thermostatMode: setValue,
+						thermostatTemperatureSetpoint: isF ? utils.toC(targetTemperature) : +targetTemperature.state,
+						thermostatTemperatureAmbient: isF ? utils.toC(currentTemperature) : +currentTemperature.state
 					}
 				}
 			}
