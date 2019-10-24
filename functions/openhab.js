@@ -31,12 +31,11 @@ exports.handleSync = function (request, response) {
 	// This will include all the device types and traits.
 	syncAndDiscoverDevices(authToken, function (devs) {
 		// The response payload will be an array of discovered devices with attributes and traits.
-		var payload = {
-			devices: devs
-		};
 		var result = {
 			requestId: request.body.requestId,
-			payload: payload
+			payload: {
+				devices: devs
+			}
 		};
 		console.log('openhabGoogleAssistant - SYNC result: ' + JSON.stringify(result));
 		response.status(200).json(result);
@@ -942,16 +941,14 @@ function getSwitchableTraits(item) {
 		(item.type === 'Group' && item.groupType && item.groupType === 'Dimmer')) {
 		traits = [
 			'action.devices.traits.Brightness',
-			//'setPercentage',
 			'action.devices.traits.OnOff'
 		];
 	} else if (item.type === 'Color' ||
 		(item.type === 'Group' && item.groupType && item.groupType === 'Color')) {
 		traits = [
+			'action.devices.traits.ColorSetting',
 			'action.devices.traits.Brightness',
-			//'setPercentage',
-			'action.devices.traits.OnOff',
-			'action.devices.traits.ColorSpectrum'
+			'action.devices.traits.OnOff'
 		];
 	} else if (item.type === 'Rollershutter' ||
 		(item.type === 'Group' && item.groupType && item.groupType === 'Rollershutter')) {
