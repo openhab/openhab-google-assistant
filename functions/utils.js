@@ -20,6 +20,53 @@
  *
  */
 
+
+/**
+ * Gets Rollershutter Data
+ */
+function getRollerShutterData(item) {
+	return {
+		openPercent: 100 - Number(item.state)
+	};
+}
+
+
+/**
+ *  Retrieves Light Attributes from OpenHAB Item
+ **/
+function getLightData(item) {
+	return {
+		on: item.state === 'ON' ? true : (Number(item.state) === 0 ? false : true),
+		brightness: Number(item.state)
+	};
+}
+
+/**
+ *  Retrieves Switch Attributes from OpenHAB Item
+ **/
+function getSwitchData(item) {
+	return {
+		on: item.state === 'ON' ? true : false,
+	};
+}
+
+/**
+ *  Retrieves Color Attributes from OpenHAB Item
+ **/
+function getColorData(item) {
+	const hsvArray = item.state.split(",").map((val) => Number(val));
+	const color = colr.fromHsvArray(hsvArray);
+	const rgbColor = parseInt(color.toHex().replace('#', ''), 16);
+
+	return {
+		color: {
+			"spectrumRGB": rgbColor
+		},
+		"brightness": hsvArray[2],
+		"on": hsvArray[2] === 0 ? false : true,
+	};
+}
+
 //Convert C to F
 function toF(value) {
 	return Math.round(value * 9 / 5 + 32);
@@ -54,18 +101,13 @@ function generateControlError(messageId, name, code, description) {
 }
 
 function thermostatModeIsNumber(mode) {
-	var m = mode;
-	if (m.parseInt() == NaN) {
-		return false;
-	} else {
-		return true;
-	}
+	return mode.parseInt() !== NaN;
 }
 
-//Normilizes numeric/string thermostat modes to Google Assistant friendly ones
+// Normilizes numeric/string thermostat modes to Google Assistant friendly ones
 function normalizeThermostatMode(mode) {
-	//if state returns as a decimal type, convert to string, this is a very common thermo pattern
-	var m = mode;
+	// if state returns as a decimal type, convert to string, this is a very common thermo pattern
+	let m = mode;
 	if (thermostatModeIsNumber(mode)) {
 		switch (mode.parseInt()) {
 			case 0:
@@ -84,16 +126,14 @@ function normalizeThermostatMode(mode) {
 				m = 'off';
 				break;
 		}
-	} else {
-		if (mode == 'heat-cool') {
-			m = 'heatcool';
-		}
+	} else if (mode == 'heat-cool') {
+		m = 'heatcool';
 	}
 	return m.toLowerCase();
 }
 
 function thermostatModeDenormalize(oldMode, newMode) {
-	var m = newMode;
+	let m = newMode;
 	if (thermostatModeIsNumber(oldMode)) {
 		switch (newMode) {
 			case 'off':
@@ -109,8 +149,6 @@ function thermostatModeDenormalize(oldMode, newMode) {
 				m = 3;
 				break;
 			case 'heat-cool':
-				m = 3;
-				break;
 			case 'heatcool':
 				m = 3;
 				break;
@@ -122,23 +160,21 @@ function thermostatModeDenormalize(oldMode, newMode) {
 	return m;
 }
 
-//Should this be removed? JSON format appears to be Alexa Skill format, not Google Assistant
+// Should this be removed? JSON format appears to be Alexa Skill format, not Google Assistant
 function isEventFahrenheit(event) {
 	return event.payload.appliance.additionalApplianceDetails.temperatureFormat &&
 		event.payload.appliance.additionalApplianceDetails.temperatureFormat === 'fahrenheit';
 }
 
 function rgb2hsv() {
+	const diffc = (c) => ((v - c) / 6 / diff + 1 / 2);
 	var rr, gg, bb,
 		r = arguments[0] / 255,
 		g = arguments[1] / 255,
 		b = arguments[2] / 255,
 		h, s,
 		v = Math.max(r, g, b),
-		diff = v - Math.min(r, g, b),
-		diffc = function (c) {
-			return (v - c) / 6 / diff + 1 / 2;
-		};
+		diff = v - Math.min(r, g, b);
 
 	if (diff == 0) {
 		h = s = 0;
@@ -171,12 +207,10 @@ function rgb2hsv() {
 
 function hexToRgb(hex) {
 	// Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
-	var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
-	hex = hex.replace(shorthandRegex, function (m, r, g, b) {
-		return r + r + g + g + b + b;
-	});
+	const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+	hex = hex.replace(shorthandRegex, (m, r, g, b) => (r + r + g + g + b + b));
 
-	var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+	const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
 	return result ? {
 		r: parseInt(result[1], 16),
 		g: parseInt(result[2], 16),
@@ -185,6 +219,10 @@ function hexToRgb(hex) {
 }
 
 module.exports = {
+	getRollerShutterData,
+	getLightData,
+	getSwitchData,
+	getColorData,
 	toF,
 	toC,
 	generateControlError,
