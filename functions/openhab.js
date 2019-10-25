@@ -23,21 +23,8 @@ const rest = require('./rest.js');
 const utils = require('./utils.js');
 const colr = require('colr');
 
-function generateResponse(action, requestId, payload, response) {
-	const result = {
-		requestId: requestId,
-		payload: payload
-	};
-	console.log(`openhabGoogleAssistant - ${action} result: ${JSON.stringify(result)}`);
-	response.status(200).json(result);
-}
-
-function generateError(action, error, response) {
-	console.error(`openhabGoogleAssistant - ${action} failed: ${error.message}`);
-	response.status(500).set({
-		'Access-Control-Allow-Origin': '*',
-		'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-	}).json({ error: "failed" });
+exports.handleDisconnect = function (request, response) {
+	response.status(200).json({}); // 200 Ok with an empty JSON body is all that is needed
 }
 
 exports.handleSync = function (request, response) {
@@ -77,7 +64,7 @@ exports.handleQuery = function (request, response) {
 		return getItemAsync(authToken, device.id).then((res) => { // success
 			console.log('result for ' + device.id + ': ' + JSON.stringify(res))
 
-			//device is always marked as online / available
+			// device is always marked as online / available
 			const retValue = {
 				id: device.id,
 				data: {
@@ -86,17 +73,24 @@ exports.handleQuery = function (request, response) {
 			};
 
 			let itemData = {};
-			const checkTags = res.tags.toString();
-			//get the data from the device
+			// get the data from the device
 			switch (res.type) {
 				case 'Switch':
+					if (utils.itemHasTag(res, 'Lock')) {
+						itemData = utils.getLockData(res);
+					} else {
+						itemData = utils.getSwitchData(res);
+					}
+					break;
 				case 'Scene':
 				case 'Outlet':
 					itemData = utils.getSwitchData(res);
 					break;
 				case 'Group':
-					//future proof in case Groups are used for other invocations
-					if (checkTags.includes("Thermostat")) itemData = getTempData(res);
+					// future proof in case Groups are used for other invocations
+					if (utils.itemHasTag(res, 'Thermostat')) {
+						itemData = getTempData(res);
+					}
 					break;
 				case 'Dimmer':
 					itemData = utils.getLightData(res);
@@ -108,18 +102,21 @@ exports.handleQuery = function (request, response) {
 					itemData = utils.getRollerShutterData(res);
 					break;
 				default:
-					if (checkTags.includes("CurrentTemperature")) itemData = getTempData(res);
+					if (utils.itemHasTag(res, 'CurrentTemperature')) {
+						itemData = getTempData(res);
+					}
 					break;
 			}
 
-			//find out, which data needs to be delivered to google
+			// find out, which data needs to be delivered to google
 			const traits = getSwitchableTraits(res);
 			for (let i = 0; i < traits.length; i++) {
 				switch (traits[i]) {
 					case 'action.devices.traits.OnOff':
 						retValue.data.on = itemData.on;
 						break;
-					case 'action.devices.traits.Scene': //scene's are stateless in google home graph
+					case 'action.devices.traits.Scene':
+						// Scenes are stateless in google home graph
 						break;
 					case 'action.devices.traits.Brightness':
 						retValue.data.brightness = itemData.brightness;
@@ -136,6 +133,9 @@ exports.handleQuery = function (request, response) {
 					case 'action.devices.traits.OpenClose':
 						retValue.data.openPercent = itemData.openPercent;
 						break;
+					case 'action.devices.traits.LockUnlock':
+						retValue.data.isLocked = itemData.isLocked;
+						break;
 				}
 			}
 			return retValue;
@@ -150,7 +150,7 @@ exports.handleQuery = function (request, response) {
 	// Wait for all requests to complete ...
 	Promise.all(promises)
 		.then(res => { 		// ... and process the results.
-			console.log("Got all results: " + JSON.stringify(res))
+			console.log('Got all results: ' + JSON.stringify(res))
 			const payload = {
 				devices: {}
 			};
@@ -196,6 +196,9 @@ exports.handleExecute = function (request, response) {
 				case 'action.devices.commands.StartStop':
 					changeStartStop(requestId, currentCommand, params, authToken, response);
 					break;
+				case 'action.devices.commands.LockUnlock':
+					changeLockUnlock(requestId, currentCommand, params, authToken, response);
+					break;
 				case 'action.devices.commands.ThermostatTemperatureSetpoint':
 					adjustThermostatTemperature(request, response, i, j);
 					break;
@@ -207,8 +210,21 @@ exports.handleExecute = function (request, response) {
 	}
 }
 
-exports.handleDisconnect = function (request, response) {
-	response.status(200).json({}); // 200 Ok with an empty JSON body is all that is needed
+function generateResponse(action, requestId, payload, response) {
+	const result = {
+		requestId: requestId,
+		payload: payload
+	};
+	console.log(`openhabGoogleAssistant - ${action} result: ${JSON.stringify(result)}`);
+	response.status(200).json(result);
+}
+
+function generateError(action, error, response) {
+	console.error(`openhabGoogleAssistant - ${action} failed: ${error.message}`);
+	response.status(500).set({
+		'Access-Control-Allow-Origin': '*',
+		'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+	}).json({ error: 'failed' });
 }
 
 /**
@@ -216,10 +232,10 @@ exports.handleDisconnect = function (request, response) {
  */
 function getTempData(item) {
 	let thermData = {};
-	const thermItems = item.tags.toString().includes("Thermostat") ? getThermostatItems(item.members) : getThermostatItems([item]);
+	const thermItems = utils.itemHasTag(item, 'Thermostat') ? getThermostatItems(item.members) : getThermostatItems([item]);
 
 	// Are we dealing with Fahrenheit?
-	const isF = item.tags.toString().toLowerCase().includes('fahrenheit');
+	const isF = utils.itemHasTag(item, 'Fahrenheit');
 
 	// store long json variables in easier variables to work with below
 	const tstatMode = thermItems.hasOwnProperty('heatingCoolingMode') ? utils.normalizeThermostatMode(thermItems.heatingCoolingMode.state) : 'heat'
@@ -228,14 +244,14 @@ function getTempData(item) {
 	const curHum = thermItems.hasOwnProperty('currentHumidity') ? thermItems.currentHumidity.state : '';
 
 	// populate only the necessary json values, otherwise GA will get confused if keys are empty
-	if (item.tags.toString().toLowerCase().includes("thermostat")) {
+	if (utils.itemHasTag(item, 'Thermostat')) {
 		thermData.thermostatMode = tstatMode;
 		if (thermItems.hasOwnProperty('currentTemperature')) thermData.thermostatTemperatureAmbient = Number(parseFloat(currTemp).toFixed(1));
 		if (thermItems.hasOwnProperty('targetTemperature')) thermData.thermostatTemperatureSetpoint = Number(parseFloat(tarTemp).toFixed(1));
 		if (thermItems.hasOwnProperty('currentHumidity')) thermData.thermostatHumidityAmbient = Number(parseFloat(curHum).toFixed(0));
 	}
-	else if (item.tags.toString().toLowerCase().includes("currenttemperature")) {
-		thermData.thermostatMode = "heat"; // doesn't matter, GA will only state the number (since we force Ambient and Setpoint to match)
+	else if (utils.itemHasTag(item, 'CurrentTemperature')) {
+		thermData.thermostatMode = 'heat'; // doesn't matter, GA will only state the number (since we force Ambient and Setpoint to match)
 		if (thermItems.hasOwnProperty('currentTemperature')) thermData.thermostatTemperatureAmbient = Number(parseFloat(currTemp).toFixed(1));
 		thermData.thermostatTemperatureSetpoint = thermData.thermostatTemperatureAmbient;
 	}
@@ -256,7 +272,7 @@ function turnOnOff(requestId, reqCommand, params, authToken, response) {
 			const payload = {
 				commands: {
 					ids: [deviceId],
-					status: "SUCCESS",
+					status: 'SUCCESS',
 					states: {
 						online: true,
 						on: params.on
@@ -288,7 +304,7 @@ function changeOpenClose(requestId, reqCommand, params, authToken, response) {
 			const payload = {
 				commands: {
 					ids: [deviceId],
-					status: "SUCCESS",
+					status: 'SUCCESS',
 					states: {
 						online: true,
 						openPercent: params.openPercent
@@ -306,9 +322,9 @@ function changeOpenClose(requestId, reqCommand, params, authToken, response) {
 		let state;
 
 		if (iState === 0) {
-			state = "DOWN"
+			state = 'DOWN'
 		} else if (iState === 100) {
-			state = "UP"
+			state = 'UP'
 		} else {
 			state = (100 - iState).toString();
 		}
@@ -330,7 +346,7 @@ function changeStartStop(requestId, reqCommand, params, authToken, response) {
 			const payload = {
 				commands: {
 					ids: [deviceId],
-					status: "SUCCESS",
+					status: 'SUCCESS',
 					states: {
 						online: true,
 						isRunning: !!params.start,
@@ -350,6 +366,39 @@ function changeStartStop(requestId, reqCommand, params, authToken, response) {
 	}
 }
 
+
+/**
+ * Turns a Switch Item on or off
+ */
+function changeLockUnlock(requestId, reqCommand, params, authToken, response) {
+	console.log('openhabGoogleAssistant - changeLockUnlock reqCommand:' + JSON.stringify(reqCommand));
+
+	for (let k = 0; k < reqCommand.devices.length; k++) {
+		const deviceId = reqCommand.devices[k].id;
+
+		const success = function () {
+			const payload = {
+				commands: {
+					ids: [deviceId],
+					status: 'SUCCESS',
+					states: {
+						online: true,
+						isLocked: params.lock
+					}
+				}
+			};
+			generateResponse('changeLockUnlock', requestId, payload, response);
+		};
+
+		const failure = function (error) {
+			generateError('changeLockUnlock', error, response);
+		};
+
+		const state = params.lock ? 'ON' : 'OFF';
+		rest.postItemCommand(authToken, deviceId, state, success, failure);
+	}
+}
+
 /**
  * Brightness control
  */
@@ -363,7 +412,7 @@ function adjustBrightness(requestId, reqCommand, params, authToken, response) {
 			const payload = {
 				commands: {
 					ids: [deviceId],
-					status: "SUCCESS",
+					status: 'SUCCESS',
 					states: {
 						online: true,
 						brightness: params.brightness
@@ -395,7 +444,7 @@ function adjustColor(requestId, reqCommand, params, authToken, response) {
 			const payload = {
 				commands: {
 					ids: [deviceId],
-					status: "SUCCESS",
+					status: 'SUCCESS',
 					states: {
 						online: true,
 						color: {
@@ -436,7 +485,7 @@ function adjustScene(requestId, reqCommand, params, authToken, response) {
 			const payload = {
 				commands: {
 					ids: [deviceId],
-					status: "SUCCESS",
+					status: 'SUCCESS',
 					states: {
 						// Note -- scenes are stateless.
 					}
@@ -469,7 +518,7 @@ function adjustThermostatTemperature(request, response, i, j) {
 
 		const success = function (resp) {
 			const items = getThermostatItems(resp.members);
-			const tempUnit = resp.tags.toString().toLowerCase().includes('fahrenheit');
+			const tempUnit = utils.itemHasTag(resp, 'Fahrenheit');
 			adjustThermostatTemperatureWithItems(authToken, request, response, params, items.currentTemperature, items.targetTemperature, items.heatingCoolingMode, tempUnit);
 		};
 
@@ -496,7 +545,7 @@ function adjustThermostatMode(request, response, i, j) {
 
 		const success = function (resp) {
 			const items = getThermostatItems(resp.members);
-			const tempUnit = resp.tags.toString().toLowerCase().includes('fahrenheit');
+			const tempUnit = utils.itemHasTag(resp, 'Fahrenheit');
 			adjustThermostatModeWithItems(authToken, request, response, params, items.currentTemperature, items.targetTemperature, items.heatingCoolingMode, tempUnit);
 		};
 
@@ -522,7 +571,7 @@ function getThermostatItems(thermoGroup) {
 			if (tag === 'TargetTemperature' || tag === 'homekit:TargetTemperature') {
 				values.targetTemperature = member;
 			}
-			if (tag === 'HeatingCoolingMode' || tag === 'homekit:HeatingCoolingMode' || tag === 'homekit:TargetHeatingCoolingMode' || tag === 'homekit:CurrentHeatingCoolingMode') {
+			if (tag === 'HeatingCoolingMode' || tag === 'homekit:HeatingCoolingMode' || tag === 'homekit:TargetHeatingCoolingMode' || tag === 'homekit:CurrentHeatingCoolingMode') {
 				values.heatingCoolingMode = member;
 			}
 			if (tag === 'CurrentHumidity') {
@@ -543,12 +592,12 @@ function adjustThermostatTemperatureWithItems(authToken, request, response, para
 	let curMode;
 
 	if (!targetTemperature) {
-		console.error("openhabGoogleAssistant - adjustThermostatTemperatureWithItems failed: targetTemperature not available");
+		console.error('openhabGoogleAssistant - adjustThermostatTemperatureWithItems failed: targetTemperature not available');
 		const payload = {
 			commands: {
 				ids: [deviceId],
-				status: "ERROR",
-				errorCode: "notSupported"
+				status: 'ERROR',
+				errorCode: 'notSupported'
 			}
 		};
 		generateResponse('adjustThermostatModeWithItems', request.body.requestId, payload, response);
@@ -566,7 +615,7 @@ function adjustThermostatTemperatureWithItems(authToken, request, response, para
 		const payload = {
 			commands: {
 				ids: [deviceId],
-				status: "SUCCESS",
+				status: 'SUCCESS',
 				states: {
 					online: true,
 					thermostatMode: curMode,
@@ -594,12 +643,12 @@ function adjustThermostatModeWithItems(authToken, request, response, params, cur
 	const deviceId = reqCommand.devices[0].id;
 
 	if (!heatingCoolingMode) {
-		console.error("openhabGoogleAssistant - adjustThermostatModeWithItems failed: heatingCoolingMode not available");
+		console.error('openhabGoogleAssistant - adjustThermostatModeWithItems failed: heatingCoolingMode not available');
 		const payload = {
 			commands: {
 				ids: [deviceId],
-				status: "ERROR",
-				errorCode: "notSupported"
+				status: 'ERROR',
+				errorCode: 'notSupported'
 			}
 		};
 		generateResponse('adjustThermostatModeWithItems', request.body.requestId, payload, response);
@@ -612,7 +661,7 @@ function adjustThermostatModeWithItems(authToken, request, response, params, cur
 		const payload = {
 			commands: {
 				ids: [deviceId],
-				status: "SUCCESS",
+				status: 'SUCCESS',
 				states: {
 					online: true,
 					thermostatMode: setValue,
@@ -646,7 +695,7 @@ function syncAndDiscoverDevices(token, success, failure) {
 
 	// attributeDetails response object
 	const setTempFormat = function (item, attributeDetails) {
-		if (item.tags.indexOf('Fahrenheit') > -1 || item.tags.indexOf('fahrenheit') > -1) {
+		if (utils.itemHasTag(item, 'Fahrenheit')) {
 			attributeDetails.availableThermostatModes = defaultThermModes;
 			attributeDetails.thermostatTemperatureUnit = 'F';
 		} else {
@@ -664,11 +713,8 @@ function syncAndDiscoverDevices(token, success, failure) {
 		// First retrieve any thermostat Groups
 		for (let itemNum in items) {
 			const item = items[itemNum];
-			for (let tagNum in item.tags) {
-				const tag = item.tags[tagNum];
-				if (tag == 'Thermostat' && item.type === 'Group') {
-					thermostatGroups.push(item.name);
-				}
+			if (utils.itemHasTag(item, 'Thermostat') && item.type === 'Group') {
+				thermostatGroups.push(item.name);
 			}
 		}
 
@@ -699,6 +745,7 @@ function syncAndDiscoverDevices(token, success, failure) {
 				//	  action.devices.types.LIGHT
 				//	  action.devices.types.OUTLET
 				//	  action.devices.types.SWITCH
+				//	  action.devices.types.LOCK
 				//	  action.devices.types.SCENE
 				//	   - This is in essence a locked type as a virtual device it can't be switched by the user to something else.
 				let deviceType = '';
@@ -712,10 +759,14 @@ function syncAndDiscoverDevices(token, success, failure) {
 						deviceType = 'action.devices.types.SWITCH';
 						traits = getSwitchableTraits(item);
 						break;
+					case 'Lock':
+						deviceType = 'action.devices.types.LOCK';
+						traits = getSwitchableTraits(item);
+						break;
 					case 'Scene':
 						deviceType = 'action.devices.types.SCENE';
 						traits = [
-							"action.devices.traits.Scene"
+							'action.devices.traits.Scene'
 						];
 						attributeDetails.sceneReversible = true;
 						break;
@@ -774,8 +825,8 @@ function syncAndDiscoverDevices(token, success, failure) {
 						deviceInfo: {
 							manufacturer: 'openHAB',
 							model: tag,
-							hwVersion: "2.1",
-							swVersion: "2.1"
+							hwVersion: '2.1',
+							swVersion: '2.1'
 						},
 						customData: customDataDetails
 					};
@@ -793,7 +844,15 @@ function syncAndDiscoverDevices(token, success, failure) {
  **/
 function getSwitchableTraits(item) {
 	let traits = null;
-	if (item.type === 'Switch' ||
+	if ((item.type === 'Switch' && utils.itemHasTag(item, 'Lock')) || (item.type === 'Group' && item.type === 'Switch' && utils.itemHasTag(item, 'Lock'))) {
+		traits = [
+			'action.devices.traits.LockUnlock'
+		];
+	} else if ((utils.itemHasTag(item, 'CurrentTemperature') || (item.type === 'Group' && utils.itemHasTag(item, 'Thermostat')))) {
+		traits = [
+			'action.devices.traits.TemperatureSetting'
+		];
+	} else if (item.type === 'Switch' ||
 		(item.type === 'Group' && item.groupType && item.groupType === 'Switch')) {
 		traits = [
 			'action.devices.traits.OnOff'
@@ -816,10 +875,6 @@ function getSwitchableTraits(item) {
 		traits = [
 			//'setPercentage',
 			'action.devices.traits.OpenClose'
-		];
-	} else if ((item.tags.toString().includes('CurrentTemperature') || (item.type === 'Group' && item.tags.toString().includes('Thermostat')))) {
-		traits = [
-			'action.devices.traits.TemperatureSetting'
 		];
 	}
 	return traits;

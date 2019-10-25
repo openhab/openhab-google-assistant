@@ -20,6 +20,11 @@
  *
  */
 
+const colr = require('colr');
+
+function itemHasTag(item, tag) {
+	return item.tags.map(t => t.toLowerCase()).includes(tag.toLowerCase());
+}
 
 /**
  * Gets Rollershutter Data
@@ -47,6 +52,15 @@ function getLightData(item) {
 function getSwitchData(item) {
 	return {
 		on: item.state === 'ON' ? true : false,
+	};
+}
+
+/**
+ *  Retrieves Lock Attributes from OpenHAB Item
+ **/
+function getLockData(item) {
+	return {
+		isLocked: item.state === 'ON' ? true : false,
 	};
 }
 
@@ -219,9 +233,11 @@ function hexToRgb(hex) {
 }
 
 module.exports = {
+	itemHasTag,
 	getRollerShutterData,
 	getLightData,
 	getSwitchData,
+	getLockData,
 	getColorData,
 	toF,
 	toC,
