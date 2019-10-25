@@ -177,7 +177,7 @@ Return back to the Google Home app and try to add the OpenHAB service again. You
 
 ## Item configuration
 
-* In openHAB Items are exposed via HomeKit tags, the following is taken from the [HomeKit Add-on](https://github.com/openhab/openhab2-addons/tree/master/bundles/org.openhab.io.homekit) documentation in openHAB:
+* In openHAB Items are exposed via HomeKit tags, the following is taken from the [HomeKit Add-on](https://www.openhab.org/addons/integrations/homekit/) documentation in openHAB:
 
   ```
   Switch KitchenLights "Kitchen Lights" <light> (gKitchen) [ "Switchable" ]
@@ -214,7 +214,7 @@ Notes Regarding Thermostat Items:
   * Current Temperature: Number
   * TargetTemperature: Number
 - If your thermostat does not have a mode, you should create one and manually assign a value (e.g. heat, cool, on, etc.) to have proper functionality
-- See also [HomeKit Add-on](https://github.com/openhab/openhab2-addons/tree/master/bundles/org.openhab.io.homekit) for further formatting details.
+- See also [HomeKit Add-on](https://www.openhab.org/addons/integrations/homekit/) for further formatting details.
 
 The following screenshots show the setup and the service linkage (https://myopenhab.org) procedure within the Google App:
 
