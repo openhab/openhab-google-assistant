@@ -519,10 +519,10 @@ function getThermostatItems(thermoGroup) {
 			if (tag === 'CurrentTemperature') {
 				values.currentTemperature = member;
 			}
-			if (tag === 'TargetTemperature') {
+			if (tag === 'TargetTemperature' || tag === 'homekit:TargetTemperature') {
 				values.targetTemperature = member;
 			}
-			if (tag === 'HeatingCoolingMode') {
+			if (tag === 'HeatingCoolingMode' || tag === 'homekit:HeatingCoolingMode' || tag === 'homekit:TargetHeatingCoolingMode' || tag === 'homekit:CurrentHeatingCoolingMode') {
 				values.heatingCoolingMode = member;
 			}
 			if (tag === 'CurrentHumidity') {
