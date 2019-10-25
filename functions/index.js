@@ -52,10 +52,8 @@ exports.openhabGoogleAssistant = function (request, response) {
 	showError(response, "openhabGoogleAssistant: Missing intent");
 }
 
-
-
-function showError(res, message) {
-	res.status(401).set({
+function showError(response, message) {
+	response.status(401).set({
 		'Access-Control-Allow-Origin': '*',
 		'Access-Control-Allow-Headers': 'Content-Type, Authorization'
 	}).json({ error: message });

@@ -626,7 +626,7 @@ function getThermostatItems(thermoGroup) {
 			if (tag === 'TargetTemperature') {
 				values.targetTemperature = member;
 			}
-			if (tag === 'homekit:HeatingCoolingMode') {
+			if (tag === 'HeatingCoolingMode') {
 				values.heatingCoolingMode = member;
 			}
 			if (tag === 'CurrentHumidity') {
@@ -647,7 +647,18 @@ function adjustThermostatTemperatureWithItems(authToken, request, response, para
 	let curMode;
 
 	if (!targetTemperature) {
-		console.error("openhabGoogleAssistant - adjustThermostatTemperatureWithItems failed: targetTemperature not set");
+		console.error("openhabGoogleAssistant - adjustThermostatTemperatureWithItems failed: targetTemperature not available");
+		let result = {
+			requestId: request.body.requestId,
+			payload: {
+				commands: {
+					ids: [deviceId],
+					status: "ERROR",
+					errorCode: "notSupported"
+				}
+			}
+		};
+		response.status(200).json(result);
 		return;
 	}
 
@@ -700,7 +711,18 @@ function adjustThermostatModeWithItems(authToken, request, response, params, cur
 	let deviceId = reqCommand.devices[0].id;
 
 	if (!heatingCoolingMode) {
-		console.error("openhabGoogleAssistant - adjustThermostatModeWithItems failed: no mode given");
+		console.error("openhabGoogleAssistant - adjustThermostatModeWithItems failed: heatingCoolingMode not available");
+		let result = {
+			requestId: request.body.requestId,
+			payload: {
+				commands: {
+					ids: [deviceId],
+					status: "ERROR",
+					errorCode: "notSupported"
+				}
+			}
+		};
+		response.status(200).json(result);
 		return;
 	}
 
