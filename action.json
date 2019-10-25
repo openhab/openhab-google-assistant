@@ -1,15 +1,15 @@
 {
-	"actions": [{
-		"name": "actions.devices",
-		"deviceControl": {
-		},
-		"fulfillment": {
-			"conversationName": "automation"
-		}
-	}],
-	"conversations": {
-		"automation" :
+	"actions": [
 		{
+			"name": "actions.devices",
+			"deviceControl": {},
+			"fulfillment": {
+				"conversationName": "automation"
+			}
+		}
+	],
+	"conversations": {
+		"automation": {
 			"name": "automation",
 			"url": "<YOUR-CLOUD-FUNCTION-URL>"
 		}
