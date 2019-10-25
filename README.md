@@ -30,8 +30,8 @@ chmod +x gactions
 Deploy the `openhabGoogleAssistant` (openHAB home automation) function:
 
 * Create a storage bucket (https://console.cloud.google.com/storage/browser)
-* cd openhab-google-assistant/functions
-* gcloud beta functions deploy openhabGoogleAssistant --runtime nodejs6 --stage-bucket <BUCKET_NAME> --trigger-http
+* `cd openhab-google-assistant/functions`
+* `gcloud beta functions deploy openhabGoogleAssistant --runtime nodejs8 --stage-bucket <BUCKET_NAME> --trigger-http --project <PROJECT ID>`
 * This commands will deploy the function to Google Cloud and give you the endpoint address.
 
 Keep the address somewhere, you'll need it (something like `https://us-central1-<PROJECT ID>.cloudfunctions.net/openhabGoogleAssistant`).
@@ -177,7 +177,7 @@ Return back to the Google Home app and try to add the OpenHAB service again. You
 
 ## Item configuration
 
-* In openHAB Items are exposed via HomeKit tags, the following is taken from the [HomeKit Add-on]({{base}}addons/integrations/homekit/) documentation in openHAB:
+* In openHAB Items are exposed via HomeKit tags, the following is taken from the [HomeKit Add-on](https://www.openhab.org/addons/integrations/homekit/) documentation in openHAB:
 
   ```
   Switch KitchenLights "Kitchen Lights" <light> (gKitchen) [ "Switchable" ]
@@ -185,13 +185,13 @@ Return back to the Google Home app and try to add the OpenHAB service again. You
   Color LivingroomLights "Livingroom Lights" <light> (gLivingroom) [ "Lighting" ]
   Switch SceneMovie "Livingroom Scene Movie" (gLivingroom) [ "Scene" ]
   Switch CristmasTree "Cristmas Tree" (gLivingroom) [ "Outlet" ]
- 
+
   //Standalone Thermostat Sensor (just reports current ambient temperature)
   Number HK_SF_Bedroom_Temp "Bedroom Temperature [%.1f]" [ "CurrentTemperature", "Fahrenheit"]
- 
+
   //Thermostat Setup (Google requires a mode, even if you manually set it up in openHAB)
   Group g_HK_Basement_TSTAT "Basement Thermostat" [ "Thermostat", "Fahrenheit" ]
-  Number HK_Basement_Mode "Basement Heating/Cooling Mode" (g_HK_Basement_TSTAT) [ "homekit:HeatingCoolingMode" ]
+  Number HK_Basement_Mode "Basement Heating/Cooling Mode" (g_HK_Basement_TSTAT) [ "HeatingCoolingMode" ]
   Number HK_Basement_Temp    "Basement Temperature" (g_HK_Basement_TSTAT) [ "CurrentTemperature" ]
   Number HK_Basement_Setpoint "Basement Setpoint" (g_HK_Basement_TSTAT) [ "TargetTemperature" ]
   ```
@@ -214,7 +214,7 @@ Notes Regarding Thermostat Items:
   * Current Temperature: Number
   * TargetTemperature: Number
 - If your thermostat does not have a mode, you should create one and manually assign a value (e.g. heat, cool, on, etc.) to have proper functionality
-- See also [HomeKit Add-on]({{base}}addons/integrations/homekit/) for further formatting details.
+- See also [HomeKit Add-on](https://www.openhab.org/addons/integrations/homekit/) for further formatting details.
 
 The following screenshots show the setup and the service linkage (https://myopenhab.org) procedure within the Google App:
 
