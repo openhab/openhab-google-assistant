@@ -300,48 +300,48 @@ function turnOnOff(request, response, i, j) {
 
 	console.log('openhabGoogleAssistant - turnOnOff reqCommand:' + JSON.stringify(reqCommand));
 
-  	// template for result.
+	// template for result.
 	let result = {
 		requestId: request.body.requestId,
 		payload: {
 			commands: []
 		}
 	}
-  
-  	let state = params.on ? 'ON' : 'OFF';
-  	
-  	// Wrap async call in promise
+
+	let state = params.on ? 'ON' : 'OFF';
+
+	// Wrap async call in promise
 	let postItemCommandAsync = function (token, deviceId) {
 		return new Promise(function (success, failure) {
 			rest.postItemCommand(token, deviceId, state, success, failure);
 		});
 	}
-  
-    // Get status for all devices, and return array of promises... one for each device.
+
+	// Get status for all devices, and return array of promises... one for each device.
 	let promises = reqCommand.devices.map(function (device) {
 		return postItemCommandAsync(authToken, device.id).then(function (res) { // success
 			console.log('result for ' + device.id + ': ' + res.statusCode)
-         
+
 			//device is always marked as online / available
 			return {
 				ids: [ device.id ],
-                		status: "SUCCESS",
-              			states: {
-                  			on: params.on,
-                  			online: true
-                		}
+						status: "SUCCESS",
+						states: {
+							on: params.on,
+							online: true
+						}
 			}
-  		}).catch(e => {  
-          		console.log('error for ' + device.id + ': ' + e)
-          		return {
+		}).catch(e => {
+				console.log('error for ' + device.id + ': ' + e)
+				return {
 				ids: [ device.id ],
-                		status: 'ERROR',
+						status: 'ERROR',
 				errorCode: 'deviceTurnedOff'
-            		}
+					}
 		});
-    })
- 	
-    // Wait for all requests to complete ...
+	})
+
+	// Wait for all requests to complete ...
 	Promise.all(promises)
 		.then(res => { 		// ... and process the results.
 			console.log("Got all results: " + JSON.stringify(res))
@@ -356,7 +356,7 @@ function turnOnOff(request, response, i, j) {
 				'Access-Control-Allow-Origin': '*',
 				'Access-Control-Allow-Headers': 'Content-Type, Authorization'
 			}).json({ error: "failed" });
-		}) 
+		})
 }
 
 /**
