@@ -327,7 +327,7 @@ function turnOnOff(request, response, i, j) {
 				ids: [ device.id ],
                 		status: "SUCCESS",
               			states: {
-                  			on: state,
+                  			on: params.on,
                   			online: true
                 		}
 			}
