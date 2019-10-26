@@ -311,7 +311,7 @@ function turnOnOff(request, response, i, j) {
   	let state = params.on ? 'ON' : 'OFF';
   	
   	// Wrap async call in promise
-	let getItemAsync = function (token, deviceId) {
+	let postItemCommandAsync = function (token, deviceId) {
 		return new Promise(function (success, failure) {
 			rest.postItemCommand(token, deviceId, state, success, failure);
 		});
@@ -319,7 +319,7 @@ function turnOnOff(request, response, i, j) {
   
     // Get status for all devices, and return array of promises... one for each device.
 	let promises = reqCommand.devices.map(function (device) {
-		return getItemAsync(authToken, device.id).then(function (res) { // success
+		return postItemCommandAsync(authToken, device.id).then(function (res) { // success
 			console.log('result for ' + device.id + ': ' + res.statusCode)
          
 			//device is always marked as online / available
