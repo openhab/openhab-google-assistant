@@ -324,20 +324,20 @@ function turnOnOff(request, response, i, j) {
 
 			//device is always marked as online / available
 			return {
-				ids: [ device.id ],
-						status: "SUCCESS",
-						states: {
-							on: params.on,
-							online: true
-						}
+				ids: [device.id],
+				status: "SUCCESS",
+				states: {
+					on: params.on,
+					online: true
+				}
 			}
 		}).catch(e => {
-				console.log('error for ' + device.id + ': ' + e)
-				return {
-				ids: [ device.id ],
-						status: 'ERROR',
+			console.log('error for ' + device.id + ': ' + e)
+			return {
+				ids: [device.id],
+				status: 'ERROR',
 				errorCode: 'deviceTurnedOff'
-					}
+			}
 		});
 	})
 
@@ -351,12 +351,12 @@ function turnOnOff(request, response, i, j) {
 			console.log('openhabGoogleAssistant - turnOnOff done with result:' + JSON.stringify(result));
 			response.status(200).json(result);
 		}).catch(e => {
-			console.error("openhabGoogleAssistant - turnOnOff failed: " + e.message);
-			response.status(500).set({
-				'Access-Control-Allow-Origin': '*',
-				'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-			}).json({ error: "failed" });
-		})
+		console.error("openhabGoogleAssistant - turnOnOff failed: " + e.message);
+		response.status(500).set({
+			'Access-Control-Allow-Origin': '*',
+			'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+		}).json({error: "failed"});
+	})
 }
 
 /**
