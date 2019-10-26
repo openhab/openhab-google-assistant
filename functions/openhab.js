@@ -300,39 +300,63 @@ function turnOnOff(request, response, i, j) {
 
 	console.log('openhabGoogleAssistant - turnOnOff reqCommand:' + JSON.stringify(reqCommand));
 
-	for (let k = 0; k < reqCommand.devices.length; k++) {
-		let deviceId = reqCommand.devices[k].id;
-
-		var success = function (resp) {
-			var payload = {};
-			let result = {
-					requestId: request.body.requestId,
-					payload: {
-						commands: {
-							ids: [ deviceId ],
-							status: "SUCCESS",
-                           				states: {
-          							on: params.on,
-          							online: true
-        						}
-						}
-					}
+  	// template for result.
+	let result = {
+		requestId: request.body.requestId,
+		payload: {
+			commands: []
+		}
+	}
+  
+  	let state = params.on ? 'ON' : 'OFF';
+  	
+  	// Wrap async call in promise
+	let getItemAsync = function (token, deviceId) {
+		return new Promise(function (success, failure) {
+			rest.postItemCommand(token, deviceId, state, success, failure);
+		});
+	}
+  
+    // Get status for all devices, and return array of promises... one for each device.
+	let promises = reqCommand.devices.map(function (device) {
+		return getItemAsync(authToken, device.id).then(function (res) { // success
+			console.log('result for ' + device.id + ': ' + res.statusCode)
+         
+			//device is always marked as online / available
+			return {
+				ids: [ device.id ],
+                		status: "SUCCESS",
+              			states: {
+                  			on: state,
+                  			online: true
+                		}
+			}
+  		}).catch(e => {  
+          		console.log('error for ' + device.id + ': ' + e)
+          		return {
+				ids: [ device.id ],
+                		status: 'ERROR',
+				errorCode: 'deviceTurnedOff'
+            		}
+		});
+    })
+ 	
+    // Wait for all requests to complete ...
+	Promise.all(promises)
+		.then(res => { 		// ... and process the results.
+			console.log("Got all results: " + JSON.stringify(res))
+			for (var i = 0; i < res.length; i++) {
+				result.payload.commands.push(res[i]);
 			}
 			console.log('openhabGoogleAssistant - turnOnOff done with result:' + JSON.stringify(result));
 			response.status(200).json(result);
-		};
-
-		var failure = function (error) {
-			console.error("openhabGoogleAssistant - turnOnOff failed: " + error.message);
+		}).catch(e => {
+			console.error("openhabGoogleAssistant - turnOnOff failed: " + e.message);
 			response.status(500).set({
 				'Access-Control-Allow-Origin': '*',
 				'Access-Control-Allow-Headers': 'Content-Type, Authorization'
 			}).json({ error: "failed" });
-		};
-
-		var state = params.on ? 'ON' : 'OFF';
-		rest.postItemCommand(authToken, deviceId, state, success, failure);
-	}
+		}) 
 }
 
 /**
