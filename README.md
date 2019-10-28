@@ -185,15 +185,13 @@ Return back to the Google Home app and try to add the OpenHAB service again. You
   Color LivingroomLights "Livingroom Lights" <light> (gLivingroom) [ "Lighting" ]
   Switch SceneMovie "Livingroom Scene Movie" (gLivingroom) [ "Scene" ]
   Switch CristmasTree "Cristmas Tree" (gLivingroom) [ "Outlet" ]
-
-  //Standalone Thermostat Sensor (just reports current ambient temperature)
-  Number HK_SF_Bedroom_Temp "Bedroom Temperature [%.1f]" [ "CurrentTemperature", "Fahrenheit"]
+  Switch DoorLock "Door Lock" [ "Lock" ]
 
   //Thermostat Setup (Google requires a mode, even if you manually set it up in openHAB)
   Group g_HK_Basement_TSTAT "Basement Thermostat" [ "Thermostat", "Fahrenheit" ]
-  Number HK_Basement_Mode "Basement Heating/Cooling Mode" (g_HK_Basement_TSTAT) [ "HeatingCoolingMode" ]
+  Number HK_Basement_Mode "Basement Heating/Cooling Mode" (g_HK_Basement_TSTAT) [ "homekit:TargetHeatingCoolingMode" ]
   Number HK_Basement_Temp    "Basement Temperature" (g_HK_Basement_TSTAT) [ "CurrentTemperature" ]
-  Number HK_Basement_Setpoint "Basement Setpoint" (g_HK_Basement_TSTAT) [ "TargetTemperature" ]
+  Number HK_Basement_Setpoint "Basement Setpoint" (g_HK_Basement_TSTAT) [ "homekit:TargetTemperature" ]
   ```
 
 Currently the following Tags are supported (also depending on Googles API capabilities):
@@ -203,8 +201,12 @@ Currently the following Tags are supported (also depending on Googles API capabi
 * ["Blinds"]
 * ["Scene"]
 * ["Outlet"]
-* ["CurrentTemperature"]
+* ["Lock"]
 * ["Thermostat"]
+* ["CurrentTemperature"] as part of Thermostat.
+* ["CurrentHumidity"] as part of Thermostat.
+* ["homekit:TargetTemperature"] as part of Thermostat.
+* ["homekit:TargetHeatingCoolingMode"] as part of Thermostat.
 
 Notes Regarding Thermostat Items:
 

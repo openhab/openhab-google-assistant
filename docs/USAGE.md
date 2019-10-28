@@ -28,11 +28,12 @@ In openHAB 2 Items are exposed via [tags](https://www.openhab.org/docs/configura
 * ["Blinds"]
 * ["Scene"]
 * ["Outlet"]
+* ["Lock"]
 * ["Thermostat"]
-* ["CurrentTemperature"] as part of Thermostat or standalone.
+* ["CurrentTemperature"] as part of Thermostat.
 * ["CurrentHumidity"] as part of Thermostat.
-* ["TargetTemperature"] as part of Thermostat.
-* ["HeatingCoolingMode"] as part of Thermostat.
+* ["homekit:TargetTemperature"] as part of Thermostat.
+* ["homekit:TargetHeatingCoolingMode"] as part of Thermostat.
 
   ```
   Switch KitchenLights "Kitchen Lights" <light> (gKitchen) [ "Switchable" ]
@@ -40,16 +41,14 @@ In openHAB 2 Items are exposed via [tags](https://www.openhab.org/docs/configura
   Color LivingroomLights "Livingroom Lights" <light> (gLivingroom) [ "Lighting" ]
   Switch SceneMovie "Scene Movie" (gLivingroom) [ "Scene" ]
   Switch CristmasTree "Cristmas Tree" (gLivingroom) [ "Outlet" ]
-
-  //Standalone Thermostat Sensor (just reports current ambient temperature)
-  Number HK_SF_Bedroom_Temp "Bedroom Temperature [%.1f]" [ "CurrentTemperature", "Fahrenheit"]
+  Switch DoorLock "Door Lock" [ "Lock" ]
 
   //Thermostat Setup (Google requires a mode, even if you manually set it up in Openhab)
   Group g_HK_Basement_TSTAT "Basement Thermostat" [ "Thermostat", "Fahrenheit" ]
-    Number HK_Basement_Mode "Basement Heating/Cooling Mode" (g_HK_Basement_TSTAT) [ "HeatingCoolingMode" ]
+    Number HK_Basement_Mode "Basement Heating/Cooling Mode" (g_HK_Basement_TSTAT) [ "homekit:TargetHeatingCoolingMode" ]
     Number HK_Basement_Temp "Basement Temperature" (g_HK_Basement_TSTAT) [ "CurrentTemperature" ]
     Number HK_Basement_Humid "Basement Humidity" (g_HK_Basement_TSTAT) [ "CurrentHumidity" ]
-    Number HK_Basement_Setpoint "Basement Setpoint" (g_HK_Basement_TSTAT) [ "TargetTemperature" ]
+    Number HK_Basement_Setpoint "Basement Setpoint" (g_HK_Basement_TSTAT) [ "homekit:TargetTemperature" ]
   ```
 
 Item labels are not mandatory in openhab, but for the Google Assistant Action they are absolutely necessary!
@@ -150,9 +149,9 @@ Here are some example voice commands:
   * A number item with the tag [ "TargetTemperature" ]
   ```
   Group g_HK_Basement_TSTAT "Basement Thermostat" [ "Thermostat", "Fahrenheit" ]
-    Number HK_Basement_Mode "Basement Heating/Cooling Mode" (g_HK_Basement_TSTAT) [ "HeatingCoolingMode" ]
+    Number HK_Basement_Mode "Basement Heating/Cooling Mode" (g_HK_Basement_TSTAT) [ "homekit:TargetHeatingCoolingMode" ]
     Number HK_Basement_Temp "Basement Temperature" (g_HK_Basement_TSTAT) [ "CurrentTemperature" ]
-    Number HK_Basement_Setpoint "Basement Setpoint" (g_HK_Basement_TSTAT) [ "TargetTemperature" ]
+    Number HK_Basement_Setpoint "Basement Setpoint" (g_HK_Basement_TSTAT) [ "homekit:TargetTemperature" ]
   ```
 * If none of the above solutions works for you:
   * Remove all the tags.
