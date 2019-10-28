@@ -28,6 +28,9 @@ class GenericCommand {
     const commandsResponse = [];
     const promises = devices.map((device) => {
       return this._apiHandler.sendCommand(device.id, targetState).then(() => {
+        if (Object.keys(responseStates)) {
+          responseStates.online = true;
+        }
         commandsResponse.push({
           ids: [device.id],
           status: 'SUCCESS',
@@ -62,8 +65,7 @@ class OnOffCommand extends GenericCommand {
     console.log(`openhabGoogleAssistant - commands.OnOff: ${JSON.stringify({ devices: devices, params: params })}`);
     const state = params.on ? 'ON' : 'OFF';
     return this._triggerCommand(devices, state, {
-      on: params.on,
-      online: true
+      on: params.on
     });
   }
 }
@@ -85,8 +87,7 @@ class LockUnlockCommand extends GenericCommand {
     console.log(`openhabGoogleAssistant - commands.LockUnlock: ${JSON.stringify({ devices: devices, params: params })}`);
     const state = params.lock ? 'ON' : 'OFF';
     return this._triggerCommand(devices, state, {
-      on: params.on,
-      online: true
+      on: params.on
     });
   }
 }
@@ -132,8 +133,7 @@ class BrightnessAbsoluteCommand extends GenericCommand {
     console.log(`openhabGoogleAssistant - commands.BrightnessAbsolute: ${JSON.stringify({ devices: devices, params: params })}`);
     const state = params.brightness.toString();
     return this._triggerCommand(devices, state, {
-      on: params.brightness,
-      online: true
+      brightness: params.brightness
     });
   }
 }
@@ -160,13 +160,7 @@ class ColorAbsoluteCommand extends GenericCommand {
     return this._triggerCommand(devices, state, {
       on: params.color.spectrumHSV.value > 0,
       brightness: params.color.spectrumHSV.value,
-      color: {
-        spectrumHSV: {
-          hue: params.color.spectrumHSV.hue,
-          saturation: params.color.spectrumHSV.saturation,
-          value: params.color.spectrumHSV.value
-        }
-      }
+      color: params.color
     });
   }
 }
