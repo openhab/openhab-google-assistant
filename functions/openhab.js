@@ -61,7 +61,7 @@ class OpenHAB {
 				};
 				const deviceType = DeviceTypes.find((itemType) => itemType.appliesTo(item) && !matchesGroup(thermostatGroups, item.groupNames));
 				if (deviceType) {
-					console.log('openhabGoogleAssistant - syncAndDiscoverDevices - SYNC is adding: ' + item.name + ' with tags: ' + item.tags.join(', '));
+					console.log(`openhabGoogleAssistant - handleSync - SYNC is adding: ${item.name} with tags: ${item.tags.join(', ')}`);
 					discoveredDevice.type = deviceType.type;
 					discoveredDevice.traits = deviceType.traits;
 					discoveredDevice.attributes = deviceType.getAttributes(item);
@@ -78,7 +78,7 @@ class OpenHAB {
 	 * @param {array} devices
 	 */
 	handleQuery(devices) {
-		console.log('openhabGoogleAssistant - getItemsState devices:' + JSON.stringify(devices));
+		console.log(`openhabGoogleAssistant - handleQuery - devices: ${JSON.stringify(devices)}`);
 		const payload = {
 			devices: {}
 		};
@@ -115,6 +115,7 @@ class OpenHAB {
 	 * @param {array} commands
 	 */
 	handleExecute(commands) {
+		console.log(`openhabGoogleAssistant - handleExecute - commands: ${JSON.stringify(commands)}`);
 		const payload = {
 			commands: []
 		};
