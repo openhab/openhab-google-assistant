@@ -41,7 +41,7 @@ class ApiHandler {
     if (this._config.userpass) {
       options.auth = this._config.userpass;
     } else {
-      options.headers['Authorization'] = 'Basic ' + this._authToken;
+      options.headers['Authorization'] = 'Bearer ' + this._authToken;
     }
 
     if (method === 'POST') {
