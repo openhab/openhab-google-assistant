@@ -1,24 +1,23 @@
 {
   "name": "openHAB.google-assistant-smarthome",
-  "version": "0.0.6",
+  "version": "0.1.0",
   "description": "A Google Assistant, Actions on Google based implementation for openHAB",
   "main": "functions/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/openhab/openhab-google-assistant.git"
   },
-  "scripts": {
-    "test": "./node_modules/.bin/mocha --reporter spec"
-  },
   "author": "Mehmet Arziman",
+  "contributors": [
+    "Michael Krug"
+  ],
   "license": "EPL-2.0",
   "bugs": {
     "url": "https://github.com/openhab/openhab-google-assistant/issues"
   },
   "homepage": "https://github.com/openhab/openhab-google-assistant",
   "dependencies": {
-    "colr": "^1.2.2",
-    "chai": "^4.1.1",
-    "mocha": "^3.5.0"
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1"
   }
 }

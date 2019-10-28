@@ -23,7 +23,7 @@ The Google related parts of any Smart Home action rely on Google Home Graph, a d
 curl -O https://dl.google.com/gactions/updates/bin/linux/amd64/gactions/gactions
 chmod +x gactions
 ```
-* Modify `functions\config.js`
+* Modify `functions/config.js`
   1. Change `host` to point to your openHAB Cloud instance, for example: `openhab.myserver.com`. Do not include `https`, if you do you'll get DNS errors.
   1. Change `path` to the rest API. Defaults to `/rest/items/`.
 
@@ -31,7 +31,7 @@ Deploy the `openhabGoogleAssistant` (openHAB home automation) function:
 
 * Create a storage bucket (https://console.cloud.google.com/storage/browser)
 * `cd openhab-google-assistant/functions`
-* `gcloud beta functions deploy openhabGoogleAssistant --runtime nodejs8 --stage-bucket <BUCKET_NAME> --trigger-http --project <PROJECT ID>`
+* `gcloud beta functions deploy openhabGoogleAssistant --runtime nodejs10 --stage-bucket <BUCKET_NAME> --trigger-http --project <PROJECT ID>`
 * This commands will deploy the function to Google Cloud and give you the endpoint address.
 
 Keep the address somewhere, you'll need it (something like `https://us-central1-<PROJECT ID>.cloudfunctions.net/openhabGoogleAssistant`).
