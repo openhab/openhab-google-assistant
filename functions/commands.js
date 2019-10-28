@@ -68,6 +68,29 @@ class OnOffCommand extends GenericCommand {
   }
 }
 
+class LockUnlockCommand extends GenericCommand {
+  constructor(apiHandler) {
+    super(apiHandler);
+  }
+
+  static get type() {
+    return 'action.devices.commands.LockUnlock';
+  }
+
+  static appliesTo(command, params) {
+    return command === this.type && ('lock' in params) && typeof params.lock === 'boolean';
+  }
+
+  execute(devices, params) {
+    console.log(`openhabGoogleAssistant - commands.LockUnlock: ${JSON.stringify({ devices: devices, params: params })}`);
+    const state = params.lock ? 'ON' : 'OFF';
+    return this._triggerCommand(devices, state, {
+      on: params.on,
+      online: true
+    });
+  }
+}
+
 class ActivateSceneCommand extends GenericCommand {
   constructor(apiHandler) {
     super(apiHandler);
@@ -284,6 +307,6 @@ class ThermostatSetModeCommand extends GenericCommand {
   }
 }
 
-const Commands = [OnOffCommand, ActivateSceneCommand, BrightnessAbsoluteCommand, ColorAbsoluteCommand, OpenCloseCommand, StartStopCommand, ThermostatTemperatureSetpointCommand, ThermostatSetModeCommand];
+const Commands = [OnOffCommand, LockUnlockCommand, ActivateSceneCommand, BrightnessAbsoluteCommand, ColorAbsoluteCommand, OpenCloseCommand, StartStopCommand, ThermostatTemperatureSetpointCommand, ThermostatSetModeCommand];
 
-module.exports = { Commands, OnOffCommand, ActivateSceneCommand, BrightnessAbsoluteCommand, ColorAbsoluteCommand, OpenCloseCommand, StartStopCommand, ThermostatTemperatureSetpointCommand, ThermostatSetModeCommand };
+module.exports = { Commands, OnOffCommand, LockUnlockCommand, ActivateSceneCommand, BrightnessAbsoluteCommand, ColorAbsoluteCommand, OpenCloseCommand, StartStopCommand, ThermostatTemperatureSetpointCommand, ThermostatSetModeCommand };
