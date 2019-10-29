@@ -28,7 +28,7 @@ class GenericCommand {
     const commandsResponse = [];
     const promises = devices.map((device) => {
       return this._apiHandler.sendCommand(device.id, targetState).then(() => {
-        if (Object.keys(responseStates)) {
+        if (Object.keys(responseStates).length) {
           responseStates.online = true;
         }
         commandsResponse.push({
