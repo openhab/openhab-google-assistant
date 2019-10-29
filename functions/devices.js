@@ -259,12 +259,6 @@ class Blinds extends GenericDevice {
       'action.devices.traits.StartStop'
     ];
   }
-
-  static getAttributes(item) {
-    return {
-      openDirection: this.hasTag(item, 'Up') ? ['UP'] : ['DOWN']
-    };
-  }
 }
 
 class Thermostat extends GenericDevice {
