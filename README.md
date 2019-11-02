@@ -50,7 +50,7 @@ See [The Client ID and Secret - OAuth](https://www.oauth.com/oauth2-servers/clie
 ## Setup your Database
 
 * SSH into to your openHAB Cloud instance
-* Open the mongodb client `mongo` and enter these commands
+* Open the MongoDB client `mongo` and enter these commands
 
 ```
 use openhab
@@ -73,7 +73,7 @@ Here you need to develop your actions to engage users on Google Home, Pixel, and
     * Enter the client ID and client secret from the OAuth Credentials you created earlier
     * Authorization URL should be something like: `https://openhab.myserver.com/oauth2/authorize`
     * Token URL should be something like `https://openhab.myserver.com/oauth2/token`
-    * Set the scope to `google-assistant`. This links to the records you will insert into the MongoDB table `oauth2scopes` later in [Setup your Database](#setup-your-database) step below.
+    * Set the scope to `google-assistant`. This links to the records that you have inserted into the MongoDB table `oauth2scopes` in [Setup your Database](#setup-your-database).
     * Testing instructions: "None"
   1. Hit save. You're not actually going to submit this for testing, we just need to set it up so we can deploy it later.
 
