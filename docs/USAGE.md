@@ -25,10 +25,18 @@ With the Action you can voice control your openHAB items and it supports lights,
 In openHAB 2 Items are exposed via [tags](https://www.openhab.org/docs/configuration/items.html#item-definition-and-syntax). Currently the following Tags are supported (also depending on Googles API capabilities):
 * ["Lighting"]
 * ["Switchable"]
-* ["Blinds"]
 * ["Scene"]
 * ["Outlet"]
+* ["Valve"]
 * ["Lock"]
+* ["Blinds"]
+* ["Shutter"]
+* ["Curtain"]
+* ["Door"]
+* ["Garage"]
+* ["Gate"]
+* ["Window"]
+* ["Pergola"]
 * ["Thermostat"]
 * ["CurrentTemperature"] as part of Thermostat.
 * ["CurrentHumidity"] as part of Thermostat.
@@ -43,15 +51,15 @@ In openHAB 2 Items are exposed via [tags](https://www.openhab.org/docs/configura
   Switch CristmasTree "Cristmas Tree" (gLivingroom) [ "Outlet" ]
   Switch DoorLock "Door Lock" [ "Lock" ]
 
-  //Thermostat Setup (Google requires a mode, even if you manually set it up in Openhab)
+  //Thermostat Setup (Google requires a mode, even if you manually set it up in openHAB)
   Group g_HK_Basement_TSTAT "Basement Thermostat" [ "Thermostat", "Fahrenheit" ]
-    Number HK_Basement_Mode "Basement Heating/Cooling Mode" (g_HK_Basement_TSTAT) [ "homekit:TargetHeatingCoolingMode" ]
-    Number HK_Basement_Temp "Basement Temperature" (g_HK_Basement_TSTAT) [ "CurrentTemperature" ]
-    Number HK_Basement_Humid "Basement Humidity" (g_HK_Basement_TSTAT) [ "CurrentHumidity" ]
-    Number HK_Basement_Setpoint "Basement Setpoint" (g_HK_Basement_TSTAT) [ "homekit:TargetTemperature" ]
+  Number HK_Basement_Mode "Basement Heating/Cooling Mode" (g_HK_Basement_TSTAT) [ "homekit:TargetHeatingCoolingMode" ]
+  Number HK_Basement_Temp "Basement Temperature" (g_HK_Basement_TSTAT) [ "CurrentTemperature" ]
+  Number HK_Basement_Humid "Basement Humidity" (g_HK_Basement_TSTAT) [ "CurrentHumidity" ]
+  Number HK_Basement_Setpoint "Basement Setpoint" (g_HK_Basement_TSTAT) [ "homekit:TargetTemperature" ]
   ```
 
-Item labels are not mandatory in openhab, but for the Google Assistant Action they are absolutely necessary!
+Item labels are not mandatory in openHAB, but for the Google Assistant Action they are absolutely necessary!
 
 It is the "label text" (e.g. "Kitchen Lights" for example above) and not the item's name that will be available to you via vocal commands or in the Google Home app, so make it unique and easy to say!
 
@@ -137,21 +145,21 @@ Here are some example voice commands:
 
  * Say: Hey Google, sync my devices.
 
- I'm not able to connect OpenHAB to Google Home.
+ I'm not able to connect openHAB to Google Home.
 
 * Check, recheck and after that check again your items!
 * The items that you want to expose to Google Assistant should have the right tags.
 * The items that you want to expose to Google Assistant must have a item label! [Item Definition and Syntax](https://www.openhab.org/docs/configuration/items.html#item-definition-and-syntax)
 * If you expose thermostats make sure than you have:
   * A group item with the tag [ "Thermostat" ]
-  * A number or string item with the tag [ "HeatingCoolingMode" ]
+  * A number or string item with the tag [ "homekit:TargetHeatingCoolingMode" ]
   * A number item with the tag [ "CurrentTemperature" ]
-  * A number item with the tag [ "TargetTemperature" ]
+  * A number item with the tag [ "homekit:TargetTemperature" ]
   ```
   Group g_HK_Basement_TSTAT "Basement Thermostat" [ "Thermostat", "Fahrenheit" ]
-    Number HK_Basement_Mode "Basement Heating/Cooling Mode" (g_HK_Basement_TSTAT) [ "homekit:TargetHeatingCoolingMode" ]
-    Number HK_Basement_Temp "Basement Temperature" (g_HK_Basement_TSTAT) [ "CurrentTemperature" ]
-    Number HK_Basement_Setpoint "Basement Setpoint" (g_HK_Basement_TSTAT) [ "homekit:TargetTemperature" ]
+  Number HK_Basement_Mode "Basement Heating/Cooling Mode" (g_HK_Basement_TSTAT) [ "homekit:TargetHeatingCoolingMode" ]
+  Number HK_Basement_Temp "Basement Temperature" (g_HK_Basement_TSTAT) [ "CurrentTemperature" ]
+  Number HK_Basement_Setpoint "Basement Setpoint" (g_HK_Basement_TSTAT) [ "homekit:TargetTemperature" ]
   ```
 * If none of the above solutions works for you:
   * Remove all the tags.
