@@ -244,20 +244,12 @@ class ColorLight extends GenericDevice {
   }
 }
 
-class Blinds extends GenericDevice {
-  static get type() {
-    return 'action.devices.types.BLINDS';
-  }
-
+class GenericOpenCloseDevice extends GenericDevice {
   static get traits() {
     return [
       'action.devices.traits.OpenClose',
       'action.devices.traits.StartStop'
     ];
-  }
-
-  static get tag() {
-    return 'Blinds';
   }
 
   static appliesTo(item) {
@@ -271,31 +263,49 @@ class Blinds extends GenericDevice {
   }
 }
 
-class Pergola extends Blinds {
+class Blinds extends GenericOpenCloseDevice {
   static get type() {
-    return 'action.devices.types.PERGOLA';
-  }
-
-  static get traits() {
-    return [
-      'action.devices.traits.OpenClose'
-    ];
+    return 'action.devices.types.BLINDS';
   }
 
   static get tag() {
-    return 'Pergola';
+    return 'Blinds';
   }
 }
 
-class Gate extends Blinds {
+class Shutter extends GenericOpenCloseDevice {
   static get type() {
-    return 'action.devices.types.GATE';
+    return 'action.devices.types.SHUTTER';
   }
 
-  static get traits() {
-    return [
-      'action.devices.traits.OpenClose'
-    ];
+  static get tag() {
+    return 'Shutter';
+  }
+}
+
+class Curtain extends GenericOpenCloseDevice {
+  static get type() {
+    return 'action.devices.types.CURTAIN';
+  }
+
+  static get tag() {
+    return 'Curtain';
+  }
+}
+
+class Door extends GenericOpenCloseDevice {
+  static get type() {
+    return 'action.devices.types.DOOR';
+  }
+
+  static get tag() {
+    return 'Door';
+  }
+}
+
+class Gate extends GenericOpenCloseDevice {
+  static get type() {
+    return 'action.devices.types.GATE';
   }
 
   static get tag() {
@@ -303,19 +313,33 @@ class Gate extends Blinds {
   }
 }
 
-class Garage extends Blinds {
+class Garage extends GenericOpenCloseDevice {
   static get type() {
     return 'action.devices.types.GARAGE';
   }
 
-  static get traits() {
-    return [
-      'action.devices.traits.OpenClose'
-    ];
+  static get tag() {
+    return 'Garage';
+  }
+}
+
+class Pergola extends GenericOpenCloseDevice {
+  static get type() {
+    return 'action.devices.types.PERGOLA';
   }
 
   static get tag() {
-    return 'Garage';
+    return 'Pergola';
+  }
+}
+
+class Window extends GenericOpenCloseDevice {
+  static get type() {
+    return 'action.devices.types.WINDOW';
+  }
+
+  static get tag() {
+    return 'Window';
   }
 }
 
@@ -426,6 +450,6 @@ class Thermostat extends GenericDevice {
   }
 }
 
-const Devices = [Switch, Outlet, Valve, Scene, Lock, SimpleLight, DimmableLight, ColorLight, Blinds, Pergola, Gate, Garage, Thermostat];
+const Devices = [Switch, Outlet, Valve, Scene, Lock, SimpleLight, DimmableLight, ColorLight, Blinds, Shutter, Curtain, Door, Gate, Garage, Pergola, Window, Thermostat];
 
-module.exports = { Devices, Switch, Outlet, Valve, Scene, Lock, SimpleLight, DimmableLight, ColorLight, Blinds, Pergola, Gate, Garage, Thermostat }
+module.exports = { Devices, Switch, Outlet, Valve, Scene, Lock, SimpleLight, DimmableLight, ColorLight, Blinds, Shutter, Curtain, Door, Gate, Garage, Pergola, Window, Thermostat }
