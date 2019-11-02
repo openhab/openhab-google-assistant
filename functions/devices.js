@@ -73,7 +73,7 @@ class Switch extends GenericDevice {
   }
 }
 
-class Outlet extends GenericDevice {
+class Outlet extends Switch {
   static get type() {
     return 'action.devices.types.OUTLET';
   }
@@ -87,19 +87,9 @@ class Outlet extends GenericDevice {
   static get tag() {
     return 'Outlet';
   }
-
-  static appliesTo(item) {
-    return this.hasTag(item, this.tag) && (item.type === 'Switch' || (item.type === 'Group' && item.groupType && item.groupType === 'Switch'));
-  }
-
-  static getState(item) {
-    return {
-      on: item.state === 'ON'
-    };
-  }
 }
 
-class Valve extends GenericDevice {
+class Valve extends Switch {
   static get type() {
     return 'action.devices.types.VALVE';
   }
@@ -112,16 +102,6 @@ class Valve extends GenericDevice {
 
   static get tag() {
     return 'Valve';
-  }
-
-  static appliesTo(item) {
-    return this.hasTag(item, this.tag) && (item.type === 'Switch' || (item.type === 'Group' && item.groupType && item.groupType === 'Switch'));
-  }
-
-  static getState(item) {
-    return {
-      on: item.state === 'ON'
-    };
   }
 }
 
@@ -178,7 +158,7 @@ class Lock extends GenericDevice {
 }
 
 
-class SimpleLight extends GenericDevice {
+class SimpleLight extends Switch {
   static get type() {
     return 'action.devices.types.LIGHT';
   }
@@ -191,16 +171,6 @@ class SimpleLight extends GenericDevice {
 
   static get tag() {
     return 'Lighting';
-  }
-
-  static appliesTo(item) {
-    return this.hasTag(item, this.tag) && (item.type === 'Switch' || (item.type === 'Group' && item.groupType && item.groupType === 'Switch'));
-  }
-
-  static getState(item) {
-    return {
-      on: item.state === 'ON'
-    };
   }
 }
 
@@ -298,6 +268,54 @@ class Blinds extends GenericDevice {
     return {
       openPercent: 100 - Number(item.state)
     };
+  }
+}
+
+class Pergola extends Blinds {
+  static get type() {
+    return 'action.devices.types.PERGOLA';
+  }
+
+  static get traits() {
+    return [
+      'action.devices.traits.OpenClose'
+    ];
+  }
+
+  static get tag() {
+    return 'Pergola';
+  }
+}
+
+class Gate extends Blinds {
+  static get type() {
+    return 'action.devices.types.GATE';
+  }
+
+  static get traits() {
+    return [
+      'action.devices.traits.OpenClose'
+    ];
+  }
+
+  static get tag() {
+    return 'Gate';
+  }
+}
+
+class Garage extends Blinds {
+  static get type() {
+    return 'action.devices.types.GARAGE';
+  }
+
+  static get traits() {
+    return [
+      'action.devices.traits.OpenClose'
+    ];
+  }
+
+  static get tag() {
+    return 'Garage';
   }
 }
 
@@ -408,6 +426,6 @@ class Thermostat extends GenericDevice {
   }
 }
 
-const Devices = [Switch, Outlet, Valve, Scene, Lock, SimpleLight, DimmableLight, ColorLight, Blinds, Thermostat];
+const Devices = [Switch, Outlet, Valve, Scene, Lock, SimpleLight, DimmableLight, ColorLight, Blinds, Pergola, Gate, Garage, Thermostat];
 
-module.exports = { Devices, Switch, Outlet, Valve, Scene, Lock, SimpleLight, DimmableLight, ColorLight, Blinds, Thermostat }
+module.exports = { Devices, Switch, Outlet, Valve, Scene, Lock, SimpleLight, DimmableLight, ColorLight, Blinds, Pergola, Gate, Garage, Thermostat }
