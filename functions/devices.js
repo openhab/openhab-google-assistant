@@ -78,12 +78,6 @@ class Outlet extends Switch {
     return 'action.devices.types.OUTLET';
   }
 
-  static get traits() {
-    return [
-      'action.devices.traits.OnOff'
-    ];
-  }
-
   static get tag() {
     return 'Outlet';
   }
@@ -92,12 +86,6 @@ class Outlet extends Switch {
 class Valve extends Switch {
   static get type() {
     return 'action.devices.types.VALVE';
-  }
-
-  static get traits() {
-    return [
-      'action.devices.traits.OnOff'
-    ];
   }
 
   static get tag() {
@@ -161,12 +149,6 @@ class Lock extends GenericDevice {
 class SimpleLight extends Switch {
   static get type() {
     return 'action.devices.types.LIGHT';
-  }
-
-  static get traits() {
-    return [
-      'action.devices.traits.OnOff'
-    ];
   }
 
   static get tag() {
