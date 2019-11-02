@@ -22,7 +22,27 @@ class GenericDevice {
     return item.tags && item.tags.map(t => t.toLowerCase()).includes(tag.toLowerCase());
   }
 
+  static get type() {
+    return '';
+  }
+
+  static get traits() {
+    return [];
+  }
+
   static getAttributes(item) {
+    return {};
+  }
+
+  static get tag() {
+    return '';
+  }
+
+  static appliesTo(item) {
+    return this.hasTag(item, this.tag);
+  }
+
+  static getState(item) {
     return {};
   }
 }
@@ -30,6 +50,12 @@ class GenericDevice {
 class Switch extends GenericDevice {
   static get type() {
     return 'action.devices.types.SWITCH';
+  }
+
+  static get traits() {
+    return [
+      'action.devices.traits.OnOff'
+    ];
   }
 
   static get tag() {
@@ -45,17 +71,17 @@ class Switch extends GenericDevice {
       on: item.state === 'ON'
     };
   }
-
-  static get traits() {
-    return [
-      'action.devices.traits.OnOff'
-    ];
-  }
 }
 
 class Outlet extends GenericDevice {
   static get type() {
     return 'action.devices.types.OUTLET';
+  }
+
+  static get traits() {
+    return [
+      'action.devices.traits.OnOff'
+    ];
   }
 
   static get tag() {
@@ -71,21 +97,21 @@ class Outlet extends GenericDevice {
       on: item.state === 'ON'
     };
   }
+}
+
+class Valve extends GenericDevice {
+  static get type() {
+    return 'action.devices.types.VALVE';
+  }
 
   static get traits() {
     return [
       'action.devices.traits.OnOff'
     ];
   }
-}
-
-class Scene extends GenericDevice {
-  static get type() {
-    return 'action.devices.types.SCENE';
-  }
 
   static get tag() {
-    return 'Scene';
+    return 'Valve';
   }
 
   static appliesTo(item) {
@@ -93,7 +119,15 @@ class Scene extends GenericDevice {
   }
 
   static getState(item) {
-    return {};
+    return {
+      on: item.state === 'ON'
+    };
+  }
+}
+
+class Scene extends GenericDevice {
+  static get type() {
+    return 'action.devices.types.SCENE';
   }
 
   static get traits() {
@@ -107,11 +141,25 @@ class Scene extends GenericDevice {
       sceneReversible: true
     };
   }
+
+  static get tag() {
+    return 'Scene';
+  }
+
+  static appliesTo(item) {
+    return this.hasTag(item, this.tag) && (item.type === 'Switch' || (item.type === 'Group' && item.groupType && item.groupType === 'Switch'));
+  }
 }
 
 class Lock extends GenericDevice {
   static get type() {
     return 'action.devices.types.LOCK';
+  }
+
+  static get traits() {
+    return [
+      'action.devices.traits.LockUnlock'
+    ];
   }
 
   static get tag() {
@@ -127,12 +175,6 @@ class Lock extends GenericDevice {
       isLocked: item.state === 'ON'
     };
   }
-
-  static get traits() {
-    return [
-      'action.devices.traits.LockUnlock'
-    ];
-  }
 }
 
 
@@ -141,6 +183,11 @@ class SimpleLight extends GenericDevice {
     return 'action.devices.types.LIGHT';
   }
 
+  static get traits() {
+    return [
+      'action.devices.traits.OnOff'
+    ];
+  }
 
   static get tag() {
     return 'Lighting';
@@ -155,17 +202,18 @@ class SimpleLight extends GenericDevice {
       on: item.state === 'ON'
     };
   }
-
-  static get traits() {
-    return [
-      'action.devices.traits.OnOff'
-    ];
-  }
 }
 
 class DimmableLight extends GenericDevice {
   static get type() {
     return 'action.devices.types.LIGHT';
+  }
+
+  static get traits() {
+    return [
+      'action.devices.traits.OnOff',
+      'action.devices.traits.Brightness'
+    ];
   }
 
   static get tag() {
@@ -182,13 +230,6 @@ class DimmableLight extends GenericDevice {
       brightness: item.state
     };
   }
-
-  static get traits() {
-    return [
-      'action.devices.traits.OnOff',
-      'action.devices.traits.Brightness'
-    ];
-  }
 }
 
 class ColorLight extends GenericDevice {
@@ -196,6 +237,19 @@ class ColorLight extends GenericDevice {
     return 'action.devices.types.LIGHT';
   }
 
+  static get traits() {
+    return [
+      'action.devices.traits.OnOff',
+      'action.devices.traits.Brightness',
+      'action.devices.traits.ColorSetting'
+    ];
+  }
+
+  static getAttributes(item) {
+    return {
+      colorModel: 'hsv'
+    };
+  }
 
   static get tag() {
     return 'Lighting';
@@ -218,25 +272,18 @@ class ColorLight extends GenericDevice {
       }
     };
   }
-
-  static get traits() {
-    return [
-      'action.devices.traits.OnOff',
-      'action.devices.traits.Brightness',
-      'action.devices.traits.ColorSetting'
-    ];
-  }
-
-  static getAttributes(item) {
-    return {
-      colorModel: 'hsv'
-    };
-  }
 }
 
 class Blinds extends GenericDevice {
   static get type() {
     return 'action.devices.types.BLINDS';
+  }
+
+  static get traits() {
+    return [
+      'action.devices.traits.OpenClose',
+      'action.devices.traits.StartStop'
+    ];
   }
 
   static get tag() {
@@ -252,18 +299,24 @@ class Blinds extends GenericDevice {
       openPercent: 100 - Number(item.state)
     };
   }
-
-  static get traits() {
-    return [
-      'action.devices.traits.OpenClose',
-      'action.devices.traits.StartStop'
-    ];
-  }
 }
 
 class Thermostat extends GenericDevice {
   static get type() {
     return 'action.devices.types.THERMOSTAT';
+  }
+
+  static get traits() {
+    return [
+      'action.devices.traits.TemperatureSetting'
+    ];
+  }
+
+  static getAttributes(item) {
+    return {
+      availableThermostatModes: 'off,heat,cool,on,heatcool',
+      thermostatTemperatureUnit: this.usesFahrenheit(item) ? 'F' : 'C'
+    };
   }
 
   static get tag() {
@@ -297,19 +350,6 @@ class Thermostat extends GenericDevice {
       state.thermostatHumidityAmbient = Number(parseFloat(members.thermostatHumidityAmbient.state).toFixed(0));
     }
     return state;
-  }
-
-  static get traits() {
-    return [
-      'action.devices.traits.TemperatureSetting'
-    ];
-  }
-
-  static getAttributes(item) {
-    return {
-      availableThermostatModes: 'off,heat,cool,on,heatcool',
-      thermostatTemperatureUnit: this.usesFahrenheit(item) ? 'F' : 'C'
-    };
   }
 
   static getMembers(item) {
@@ -368,6 +408,6 @@ class Thermostat extends GenericDevice {
   }
 }
 
-const Devices = [Switch, Outlet, Scene, Lock, SimpleLight, DimmableLight, ColorLight, Blinds, Thermostat];
+const Devices = [Switch, Outlet, Valve, Scene, Lock, SimpleLight, DimmableLight, ColorLight, Blinds, Thermostat];
 
-module.exports = { Devices, Switch, Outlet, Scene, Lock, SimpleLight, DimmableLight, ColorLight, Blinds, Thermostat }
+module.exports = { Devices, Switch, Outlet, Valve, Scene, Lock, SimpleLight, DimmableLight, ColorLight, Blinds, Thermostat }
