@@ -235,9 +235,7 @@ Notes Regarding Thermostat Items:
 - If your thermostat does not have a mode, you should create one and manually assign a value (e.g. heat, cool, on, etc.) to have proper functionality
 - See also [HomeKit Add-on](https://www.openhab.org/addons/integrations/homekit/) for further formatting details.
 
-The following screenshots show the setup and the service linkage (https://myopenhab.org) procedure within the Google App:
-
-![openHAB Google App](/docs/openhab_google_app.png)
+More details about the setup and the service linkage (https://myopenhab.org) procedure within the Google App can be found in the [USAGE documentation](docs/USAGE.md).
 
 ## Example Voice Commands
 
@@ -272,4 +270,4 @@ gcloud beta functions logs read openhabGoogleAssistant
 * https://developers.google.com/actions/extending-the-assistant
 * https://developers.google.com/actions/smarthome/
 * https://cloud.google.com/functions/docs/how-to
-* {{base}}addons/integrations/homekit/
+* https://www.openhab.org/addons/integrations/homekit/
