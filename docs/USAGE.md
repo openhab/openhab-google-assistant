@@ -23,25 +23,33 @@ With the Action you can voice control your openHAB items and it supports lights,
 
 ## Item configuration
 In openHAB 2 Items are exposed via [tags](https://www.openhab.org/docs/configuration/items.html#item-definition-and-syntax). Currently the following Tags are supported (also depending on Googles API capabilities):
-* ["Lighting"]
-* ["Switchable"]
-* ["Scene"]
-* ["Outlet"]
-* ["Valve"]
-* ["Lock"]
-* ["Blinds"]
-* ["Shutter"]
-* ["Curtain"]
-* ["Door"]
-* ["Garage"]
-* ["Gate"]
-* ["Window"]
-* ["Pergola"]
-* ["Thermostat"]
-* ["CurrentTemperature"] as part of Thermostat.
-* ["CurrentHumidity"] as part of Thermostat.
-* ["homekit:TargetTemperature"] as part of Thermostat.
-* ["homekit:TargetHeatingCoolingMode"] as part of Thermostat.
+
+* Switch / Dimmer / Color ["Lighting"]
+* Switch ["Switchable"]
+* Switch ["Outlet"]
+* Switch ["Fan"]
+* Switch ["CoffeeMaker"]
+* Switch ["WaterHeater"]
+* Switch ["Fireplace"]
+* Switch ["Valve"]
+* Switch ["Sprinkler"]
+* Switch ["Vacuum"]
+* Switch ["Scene"]
+* Switch ["Lock"]
+* Rollershutter ["Awning"]
+* Rollershutter ["Blinds"]
+* Rollershutter ["Curtain"]
+* Rollershutter ["Door"]
+* Rollershutter ["Garage"]
+* Rollershutter ["Gate"]
+* Rollershutter ["Pergola"]
+* Rollershutter ["Shutter"]
+* Rollershutter ["Window"]
+* Group ["Thermostat"]
+* Number ["CurrentTemperature"] as part of Thermostat.
+* Number ["CurrentHumidity"] as part of Thermostat.
+* Number ["homekit:TargetTemperature"] as part of Thermostat.
+* Number / String ["homekit:TargetHeatingCoolingMode"] as part of Thermostat.
 
   ```
   Switch KitchenLights "Kitchen Lights" <light> (gKitchen) [ "Switchable" ]
