@@ -181,10 +181,38 @@ class OpenCloseCommand extends GenericCommand {
 
   execute(devices, params) {
     console.log(`openhabGoogleAssistant - commands.OpenClose: ${JSON.stringify({ devices: devices, params: params })}`);
-    const state = params.openPercent == 0 ? 'DOWN' : params.openPercent == 100 ? 'UP' : (100 - params.openPercent).toString();
-    return this._triggerCommand(devices, state, {
-      openPercent: params.openPercent
+    let state = params.openPercent === 0 ? 'DOWN' : params.openPercent === 100 ? 'UP' : (100 - params.openPercent).toString();
+    const commandsResponse = [];
+    const promises = devices.map((device) => {
+      return this._apiHandler.getItem(device.id).then((item) => {
+        for (const device of DeviceTypes) {
+          if (device.appliesTo(item)) {
+            // item can not handle StartStop --> we will send "ON" / "OFF"
+            if (!device.traits.includes('action.devices.traits.StartStop')) {
+              state = params.openPercent === 0 ? 'OFF' : 'ON';
+            }
+            break;
+          }
+        }
+        return this._apiHandler.sendCommand(device.id, state).then(() => {
+          commandsResponse.push({
+            ids: [device.id],
+            status: 'SUCCESS',
+            states: {
+              online: true,
+              openPercent: params.openPercent
+            }
+          });
+        });
+      }).catch((error) => {
+        commandsResponse.push({
+          ids: [device.id],
+          status: 'ERROR',
+          errorCode: error.statusCode == 404 ? 'deviceNotFound' : error.statusCode == 400 ? 'notSupported' : 'deviceOffline'
+        });
+      });
     });
+    return Promise.all(promises).then(() => commandsResponse);
   }
 }
 
