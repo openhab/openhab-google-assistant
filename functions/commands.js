@@ -18,6 +18,7 @@
  *
  */
 const Thermostat = require('./devices.js').Thermostat;
+const DeviceTypes = require('./devices.js').Devices;
 
 class GenericCommand {
   constructor(apiHandler) {
@@ -202,11 +203,39 @@ class StartStopCommand extends GenericCommand {
 
   execute(devices, params) {
     console.log(`openhabGoogleAssistant - commands.StartStop: ${JSON.stringify({ devices: devices, params: params })}`);
-    const state = params.start ? 'MOVE' : 'STOP';
-    return this._triggerCommand(devices, state, {
-      isRunning: params.start,
-      isPaused: !params.start
+    let state = params.start ? 'MOVE' : 'STOP';
+    const commandsResponse = [];
+    const promises = devices.map((device) => {
+      return this._apiHandler.getItem(device.id).then((item) => {
+        for (const device of DeviceTypes) {
+          if (device.appliesTo(item)) {
+            // item can not handle OpenClose --> we will send "ON" / "OFF"
+            if (!device.traits.includes('action.devices.traits.OpenClose')) {
+              state = params.start ? 'ON' : 'OFF';
+            }
+            break;
+          }
+        }
+        return this._apiHandler.sendCommand(device.id, state).then(() => {
+          commandsResponse.push({
+            ids: [device.id],
+            status: 'SUCCESS',
+            states: {
+              online: true,
+              isRunning: params.start,
+              isPaused: !params.start
+            }
+          });
+        });
+      }).catch((error) => {
+        commandsResponse.push({
+          ids: [device.id],
+          status: 'ERROR',
+          errorCode: error.statusCode == 404 ? 'deviceNotFound' : error.statusCode == 400 ? 'notSupported' : 'deviceOffline'
+        });
+      });
     });
+    return Promise.all(promises).then(() => commandsResponse);
   }
 }
 
@@ -236,13 +265,14 @@ class ThermostatTemperatureSetpointCommand extends GenericCommand {
         if (Thermostat.usesFahrenheit(item)) {
           targetState = Thermostat.convertToFahrenheit(targetState);
         }
-        const state = Thermostat.getState(item);
-        state.thermostatTemperatureSetpoint = params.thermostatTemperatureSetpoint;
+        const states = Thermostat.getState(item);
+        states.thermostatTemperatureSetpoint = params.thermostatTemperatureSetpoint;
+        states.online = true;
         return this._apiHandler.sendCommand(members.thermostatTemperatureSetpoint.name, targetState).then(() => {
           commandsResponse.push({
             ids: [device.id],
             status: 'SUCCESS',
-            states: state
+            states: states
           });
         });
       }).catch((error) => {
@@ -280,13 +310,14 @@ class ThermostatSetModeCommand extends GenericCommand {
           return Promise.reject({ statusCode: 400 });
         }
         const targetState = Thermostat.denormalizeThermostatMode(members.thermostatMode.state, params.thermostatMode);
-        const state = Thermostat.getState(item);
-        state.thermostatMode = params.thermostatMode;
+        const states = Thermostat.getState(item);
+        states.thermostatMode = params.thermostatMode;
+        states.online = true;
         return this._apiHandler.sendCommand(members.thermostatMode.name, targetState).then(() => {
           commandsResponse.push({
             ids: [device.id],
             status: 'SUCCESS',
-            states: state
+            states: states
           });
         });
       }).catch((error) => {
