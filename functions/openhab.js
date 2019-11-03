@@ -29,6 +29,7 @@ class OpenHAB {
 	 */
 	constructor(apiHandler) {
 		this._apiHandler = apiHandler;
+		this.openhabVersion = '2.4.0'
 	}
 
 	handleSync() {
@@ -50,13 +51,13 @@ class OpenHAB {
 					deviceInfo: {
 						manufacturer: 'openHAB',
 						model: '',
-						hwVersion: '2.4.0',
-						swVersion: '2.4.0'
+						hwVersion: this.openhabVersion,
+						swVersion: this.openhabVersion
 					},
 					customData: {
 						itemType: item.type,
 						itemTag: '',
-						openhabVersion: '2.4.0'
+						openhabVersion: this.openhabVersion
 					}
 				};
 				const deviceType = DeviceTypes.find((itemType) => itemType.appliesTo(item) && !matchesGroup(thermostatGroups, item.groupNames));
