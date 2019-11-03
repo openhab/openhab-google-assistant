@@ -47,6 +47,8 @@ class GenericDevice {
   }
 }
 
+/* Switch items that act as switch devices */
+
 class Switch extends GenericDevice {
   static get type() {
     return 'action.devices.types.SWITCH';
@@ -83,15 +85,116 @@ class Outlet extends Switch {
   }
 }
 
-class Valve extends Switch {
+class Fan extends Switch {
+  static get type() {
+    return 'action.devices.types.FAN';
+  }
+
+  static get tag() {
+    return 'Fan';
+  }
+}
+
+class CoffeeMaker extends Switch {
+  static get type() {
+    return 'action.devices.types.COFFEE_MAKER';
+  }
+
+  static get tag() {
+    return 'CoffeeMaker';
+  }
+}
+
+class WaterHeater extends Switch {
+  static get type() {
+    return 'action.devices.types.WATERHEATER';
+  }
+
+  static get tag() {
+    return 'WaterHeater';
+  }
+}
+
+class Fireplace extends Switch {
+  static get type() {
+    return 'action.devices.types.FIREPLACE';
+  }
+
+  static get tag() {
+    return 'Fireplace';
+  }
+}
+
+/* Switch items that act as open-close devices */
+
+class Valve extends GenericDevice {
   static get type() {
     return 'action.devices.types.VALVE';
+  }
+
+  static get traits() {
+    return [
+      'action.devices.traits.OpenClose'
+    ];
   }
 
   static get tag() {
     return 'Valve';
   }
+
+  static appliesTo(item) {
+    return this.hasTag(item, this.tag) && (item.type === 'Switch' || (item.type === 'Group' && item.groupType && item.groupType === 'Switch'));
+  }
+
+  static getState(item) {
+    return {
+      openPercent: item.state === 'ON' ? 100 : 0
+    };
+  }
 }
+
+/* Switch items that act as start-stop devices */
+
+class StartStopSwitch extends GenericDevice {
+  static get traits() {
+    return [
+      'action.devices.traits.StartStop'
+    ];
+  }
+
+  static appliesTo(item) {
+    return this.hasTag(item, this.tag) && (item.type === 'Switch' || (item.type === 'Group' && item.groupType && item.groupType === 'Switch'));
+  }
+
+  static getState(item) {
+    return {
+      isRunning: item.state === 'ON',
+      isPaused: item.state !== 'ON'
+    };
+  }
+}
+
+class Sprinkler extends StartStopSwitch {
+  static get type() {
+    return 'action.devices.types.SPRINKLER';
+  }
+
+  static get tag() {
+    return 'Sprinkler';
+  }
+}
+
+class Vacuum extends StartStopSwitch {
+  static get type() {
+    return 'action.devices.types.VACUUM';
+  }
+
+  static get tag() {
+    return 'Vacuum';
+  }
+}
+
+/* Switch items that act as scene devices */
 
 class Scene extends GenericDevice {
   static get type() {
@@ -119,6 +222,8 @@ class Scene extends GenericDevice {
   }
 }
 
+/* Switch items that act as lock devices */
+
 class Lock extends GenericDevice {
   static get type() {
     return 'action.devices.types.LOCK';
@@ -145,6 +250,7 @@ class Lock extends GenericDevice {
   }
 }
 
+/* Switch items that act as lighting devices */
 
 class SimpleLight extends Switch {
   static get type() {
@@ -155,6 +261,8 @@ class SimpleLight extends Switch {
     return 'Lighting';
   }
 }
+
+/* Dimmer items that act as lighting devices */
 
 class DimmableLight extends GenericDevice {
   static get type() {
@@ -183,6 +291,8 @@ class DimmableLight extends GenericDevice {
     };
   }
 }
+
+/* Color items that act as lighting devices */
 
 class ColorLight extends GenericDevice {
   static get type() {
@@ -226,6 +336,8 @@ class ColorLight extends GenericDevice {
   }
 }
 
+/* Rollershutter items that act as open-close / start-stop devices */
+
 class GenericOpenCloseDevice extends GenericDevice {
   static get traits() {
     return [
@@ -245,6 +357,16 @@ class GenericOpenCloseDevice extends GenericDevice {
   }
 }
 
+class Awning extends GenericOpenCloseDevice {
+  static get type() {
+    return 'action.devices.types.AWNING';
+  }
+
+  static get tag() {
+    return 'Awning';
+  }
+}
+
 class Blinds extends GenericOpenCloseDevice {
   static get type() {
     return 'action.devices.types.BLINDS';
@@ -252,16 +374,6 @@ class Blinds extends GenericOpenCloseDevice {
 
   static get tag() {
     return 'Blinds';
-  }
-}
-
-class Shutter extends GenericOpenCloseDevice {
-  static get type() {
-    return 'action.devices.types.SHUTTER';
-  }
-
-  static get tag() {
-    return 'Shutter';
   }
 }
 
@@ -285,16 +397,6 @@ class Door extends GenericOpenCloseDevice {
   }
 }
 
-class Gate extends GenericOpenCloseDevice {
-  static get type() {
-    return 'action.devices.types.GATE';
-  }
-
-  static get tag() {
-    return 'Gate';
-  }
-}
-
 class Garage extends GenericOpenCloseDevice {
   static get type() {
     return 'action.devices.types.GARAGE';
@@ -305,6 +407,16 @@ class Garage extends GenericOpenCloseDevice {
   }
 }
 
+class Gate extends GenericOpenCloseDevice {
+  static get type() {
+    return 'action.devices.types.GATE';
+  }
+
+  static get tag() {
+    return 'Gate';
+  }
+}
+
 class Pergola extends GenericOpenCloseDevice {
   static get type() {
     return 'action.devices.types.PERGOLA';
@@ -312,6 +424,16 @@ class Pergola extends GenericOpenCloseDevice {
 
   static get tag() {
     return 'Pergola';
+  }
+}
+
+class Shutter extends GenericOpenCloseDevice {
+  static get type() {
+    return 'action.devices.types.SHUTTER';
+  }
+
+  static get tag() {
+    return 'Shutter';
   }
 }
 
@@ -432,6 +554,6 @@ class Thermostat extends GenericDevice {
   }
 }
 
-const Devices = [Switch, Outlet, Valve, Scene, Lock, SimpleLight, DimmableLight, ColorLight, Blinds, Shutter, Curtain, Door, Gate, Garage, Pergola, Window, Thermostat];
+const Devices = [Switch, Outlet, Fan, CoffeeMaker, WaterHeater, Fireplace, Valve, Sprinkler, Vacuum, Scene, Lock, SimpleLight, DimmableLight, ColorLight, Awning, Blinds, Curtain, Door, Garage, Gate, Pergola, Shutter, Window, Thermostat];
 
-module.exports = { Devices, Switch, Outlet, Valve, Scene, Lock, SimpleLight, DimmableLight, ColorLight, Blinds, Shutter, Curtain, Door, Gate, Garage, Pergola, Window, Thermostat }
+module.exports = { Devices, Switch, Outlet, Fan, CoffeeMaker, WaterHeater, Fireplace, Valve, Sprinkler, Vacuum, Scene, Lock, SimpleLight, DimmableLight, ColorLight, Awning, Blinds, Curtain, Door, Garage, Gate, Shutter, Pergola, Window, Thermostat }
