@@ -182,7 +182,7 @@ class VolumeRelativeCommand extends GenericCommand {
     const commandsResponse = [];
     const promises = devices.map((device) => {
       return this._apiHandler.getItem(device.id).then((item) => {
-        const state = item.state + params.volumeRelativeLevel;
+        const state = parseInt(item.state) + params.volumeRelativeLevel;
         return this._apiHandler.sendCommand(device.id, state.toString()).then(() => {
           commandsResponse.push({
             ids: [device.id],
