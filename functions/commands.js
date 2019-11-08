@@ -139,6 +139,73 @@ class ActivateSceneCommand extends GenericCommand {
 }
 
 
+class SetVolumeCommand extends GenericCommand {
+  constructor(apiHandler) {
+    super(apiHandler);
+  }
+
+  static get type() {
+    return 'action.devices.commands.setVolume';
+  }
+
+  static appliesTo(command, params) {
+    return command === this.type && (('volumeLevel' in params) && typeof params.volumeLevel === 'number'
+    );
+  }
+
+  execute(devices, params) {
+    console.log(`openhabGoogleAssistant - commands.setVolume: ${JSON.stringify({ devices: devices, params: params })}`);
+    const state = params.volumeLevel.toString();
+    return this._triggerCommand(devices, state, {
+      currentVolume: params.volumeLevel,
+      isMuted: params.volumeLevel === 0
+    });
+  }
+}
+
+class VolumeRelativeCommand extends GenericCommand {
+  constructor(apiHandler) {
+    super(apiHandler);
+  }
+
+  static get type() {
+    return 'action.devices.commands.volumeRelative';
+  }
+
+  static appliesTo(command, params) {
+    return command === this.type && (('volumeRelativeLevel' in params) && typeof params.volumeRelativeLevel === 'number'
+    );
+  }
+
+  execute(devices, params) {
+    console.log(`openhabGoogleAssistant - commands.volumeRelative: ${JSON.stringify({ devices: devices, params: params })}`);
+    const commandsResponse = [];
+    const promises = devices.map((device) => {
+      return this._apiHandler.getItem(device.id).then((item) => {
+        const state = item.state + params.volumeRelativeLevel;
+        return this._apiHandler.sendCommand(device.id, state.toString()).then(() => {
+          commandsResponse.push({
+            ids: [device.id],
+            status: 'SUCCESS',
+            states: {
+              online: true,
+              currentVolume: state,
+              isMuted: state === 0
+            }
+          });
+        });
+      }).catch((error) => {
+        commandsResponse.push({
+          ids: [device.id],
+          status: 'ERROR',
+          errorCode: error.statusCode == 404 ? 'deviceNotFound' : error.statusCode == 400 ? 'notSupported' : 'deviceOffline'
+        });
+      });
+    });
+    return Promise.all(promises).then(() => commandsResponse);
+  }
+}
+
 class BrightnessAbsoluteCommand extends GenericCommand {
   constructor(apiHandler) {
     super(apiHandler);
@@ -388,6 +455,8 @@ const Commands = [
   ArmDisarmCommand,
   ActivateSceneCommand,
   BrightnessAbsoluteCommand,
+  SetVolumeCommand,
+  VolumeRelativeCommand,
   ColorAbsoluteCommand,
   OpenCloseCommand,
   StartStopCommand,
@@ -401,6 +470,8 @@ module.exports = {
   LockUnlockCommand,
   ArmDisarmCommand,
   ActivateSceneCommand,
+  SetVolumeCommand,
+  VolumeRelativeCommand,
   BrightnessAbsoluteCommand,
   ColorAbsoluteCommand,
   OpenCloseCommand,

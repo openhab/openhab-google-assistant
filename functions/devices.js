@@ -475,6 +475,33 @@ class Window extends GenericOpenCloseDevice {
   }
 }
 
+class Speaker extends GenericDevice {
+  static get type() {
+    return 'action.devices.types.SPEAKER';
+  }
+
+  static get traits() {
+    return [
+      'action.devices.traits.Volume'
+    ];
+  }
+
+  static get tag() {
+    return 'Speaker';
+  }
+
+  static appliesTo(item) {
+    return this.hasTag(item, this.tag) && (item.type === 'Dimmer' || (item.type === 'Group' && item.groupType && item.groupType === 'Dimmer'));
+  }
+
+  static getState(item) {
+    return {
+      currentVolume: item.state,
+      isMuted: item.state === 0
+    };
+  }
+}
+
 class Thermostat extends GenericDevice {
   static get type() {
     return 'action.devices.types.THERMOSTAT';
@@ -590,6 +617,7 @@ const Devices = [
   SecuritySystem,
   SimpleLight, DimmableLight, ColorLight,
   Awning, Blinds, Curtain, Door, Garage, Gate, Shutter, Pergola, Window,
+  Speaker,
   Thermostat
 ];
 
@@ -603,5 +631,6 @@ module.exports = {
   SecuritySystem,
   SimpleLight, DimmableLight, ColorLight,
   Awning, Blinds, Curtain, Door, Garage, Gate, Shutter, Pergola, Window,
+  Speaker,
   Thermostat
 }
