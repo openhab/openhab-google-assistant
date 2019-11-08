@@ -264,7 +264,7 @@ class SecuritySystem extends GenericDevice {
   }
 
   static get tag() {
-    return 'Lock';
+    return 'SecuritySystem';
   }
 
   static appliesTo(item) {
