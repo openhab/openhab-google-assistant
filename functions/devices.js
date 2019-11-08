@@ -250,6 +250,34 @@ class Lock extends GenericDevice {
   }
 }
 
+/* Switch items that act as security system devices */
+
+class SecuritySystem extends GenericDevice {
+  static get type() {
+    return 'action.devices.types.SECURITYSYSTEM';
+  }
+
+  static get traits() {
+    return [
+      'action.devices.traits.ArmDisarm'
+    ];
+  }
+
+  static get tag() {
+    return 'Lock';
+  }
+
+  static appliesTo(item) {
+    return this.hasTag(item, this.tag) && (item.type === 'Switch' || (item.type === 'Group' && item.groupType && item.groupType === 'Switch'));
+  }
+
+  static getState(item) {
+    return {
+      isArmed: item.state === 'ON'
+    };
+  }
+}
+
 /* Switch items that act as lighting devices */
 
 class SimpleLight extends Switch {
@@ -485,7 +513,6 @@ class Thermostat extends GenericDevice {
         state.thermostatTemperatureSetpoint = this.convertToCelsius(state.thermostatTemperatureSetpoint);
       }
     }
-
     if (members.thermostatTemperatureAmbient) {
       state.thermostatTemperatureAmbient = Number(parseFloat(members.thermostatTemperatureAmbient.state).toFixed(1));
       if (this.usesFahrenheit(item)) {
@@ -554,6 +581,27 @@ class Thermostat extends GenericDevice {
   }
 }
 
-const Devices = [Switch, Outlet, Fan, CoffeeMaker, WaterHeater, Fireplace, Valve, Sprinkler, Vacuum, Scene, Lock, SimpleLight, DimmableLight, ColorLight, Awning, Blinds, Curtain, Door, Garage, Gate, Pergola, Shutter, Window, Thermostat];
+const Devices = [
+  Switch, Outlet, Fan, CoffeeMaker, WaterHeater, Fireplace,
+  Valve,
+  Sprinkler, Vacuum,
+  Scene,
+  Lock,
+  SecuritySystem,
+  SimpleLight, DimmableLight, ColorLight,
+  Awning, Blinds, Curtain, Door, Garage, Gate, Shutter, Pergola, Window,
+  Thermostat
+];
 
-module.exports = { Devices, Switch, Outlet, Fan, CoffeeMaker, WaterHeater, Fireplace, Valve, Sprinkler, Vacuum, Scene, Lock, SimpleLight, DimmableLight, ColorLight, Awning, Blinds, Curtain, Door, Garage, Gate, Shutter, Pergola, Window, Thermostat }
+module.exports = {
+  Devices,
+  Switch, Outlet, Fan, CoffeeMaker, WaterHeater, Fireplace,
+  Valve,
+  Sprinkler, Vacuum,
+  Scene,
+  Lock,
+  SecuritySystem,
+  SimpleLight, DimmableLight, ColorLight,
+  Awning, Blinds, Curtain, Door, Garage, Gate, Shutter, Pergola, Window,
+  Thermostat
+}
