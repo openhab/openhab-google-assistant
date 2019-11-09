@@ -623,6 +623,7 @@ const Devices = [
 
 module.exports = {
   Devices,
+  GenericDevice,
   Switch, Outlet, Fan, CoffeeMaker, WaterHeater, Fireplace,
   Valve,
   Sprinkler, Vacuum,

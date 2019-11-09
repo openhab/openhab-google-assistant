@@ -123,10 +123,9 @@ class OpenHAB {
 		const promises = [];
 		commands.forEach((command) => {
 			command.execution.forEach((execution) => {
-				const executionParams = execution.params;
-				const commandType = CommandTypes.find((commandType) => commandType.appliesTo(execution.command, executionParams));
+				const commandType = CommandTypes.find((commandType) => commandType.appliesTo(execution.command, execution.params));
 				if (commandType) {
-					promises.push((new commandType(this._apiHandler).execute(command.devices, executionParams)));
+					promises.push((new commandType(this._apiHandler).execute(command.devices, execution.params, execution.challenge)));
 				} else {
 					promises.push(Promise.resolve(command.devices.map((device) => ({
 						ids: [device.id],
