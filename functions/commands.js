@@ -21,11 +21,17 @@ const GenericDevice = require('./devices.js').GenericDevice;
 const Thermostat = require('./devices.js').Thermostat;
 const DeviceTypes = require('./devices.js').Devices;
 
-class GenericCommand {
-  constructor(apiHandler) {
-    this._apiHandler = apiHandler;
-  }
+const ackSupportedTraits = [
+  'action.devices.traits.ArmDisarm',
+  'action.devices.traits.Fill',
+  'action.devices.traits.LockUnlock',
+  'action.devices.traits.OnOff',
+  'action.devices.traits.OpenClose',
+  'action.devices.traits.Scene',
+  'action.devices.traits.TemperatureSetting'
+]
 
+class GenericCommand {
   static get type() {
     return '';
   }
@@ -46,44 +52,71 @@ class GenericCommand {
     return item.name;
   }
 
-  execute(devices = [], params = {}, challenge = {}) {
-    console.log(`openhabGoogleAssistant - ${this.constructor.type}: ${JSON.stringify({ devices: devices, params: params })}`);
+  static handlAuthPin(item = { tags: [] }, challenge = {}) {
+    if (!GenericDevice.hasTag(item, 'TFA-PIN') || challenge.pin === 1234) {
+      return;
+    }
+    return {
+      ids: [item.name],
+      status: 'ERROR',
+      errorCode: 'challengeNeeded',
+      challengeNeeded: {
+        type: !challenge.pin ? 'pinNeeded' : 'challengeFailedPinNeeded'
+      }
+    };
+  }
+
+  static handlAuthAck(item = { tags: [] }, challenge = {}, responseStates = {}) {
+    if (!GenericDevice.hasTag(item, 'TFA-ACK') || challenge.ack === true) {
+      return;
+    }
+    let traits = [];
+    for (const device of DeviceTypes) {
+      if (device.appliesTo(item)) {
+        traits = device.traits;
+        break;
+      }
+    }
+    // check if acknowledge is supported for that device's traits
+    if (!traits.some((trait) => ackSupportedTraits.includes(trait))) {
+      return;
+    }
+    return {
+      ids: [item.name],
+      status: 'ERROR',
+      states: responseStates,
+      errorCode: 'challengeNeeded',
+      challengeNeeded: {
+        type: 'ackNeeded'
+      }
+    };
+  }
+
+  static execute(apiHandler = {}, devices = [], params = {}, challenge = {}) {
+    console.log(`openhabGoogleAssistant - ${this.type}: ${JSON.stringify({ devices: devices, params: params })}`);
     const commandsResponse = [];
     const promises = devices.map((device) => {
-      return this._apiHandler.getItem(device.id).then((item) => {
-        if (GenericDevice.hasTag(item, 'TFA-PIN') && (!challenge.pin || challenge.pin !== 1234)) {
-          commandsResponse.push({
-            ids: [device.id],
-            status: 'ERROR',
-            errorCode: 'challengeNeeded',
-            challengeNeeded: {
-              type: !challenge.pin ? 'pinNeeded' : 'challengeFailedPinNeeded'
-            }
-          });
+      return apiHandler.getItem(device.id).then((item) => {
+        const authPinResponse = this.handlAuthPin(item, challenge);
+        if (authPinResponse) {
+          commandsResponse.push(authPinResponse);
           return;
         }
 
-        const responseStates = this.constructor.getResponseStates(item, params);
+        const responseStates = this.getResponseStates(item, params);
         if (Object.keys(responseStates).length) {
           responseStates.online = true;
         }
 
-        if (GenericDevice.hasTag(item, 'TFA-ACK') && challenge.ack !== true) {
-          commandsResponse.push({
-            ids: [device.id],
-            status: 'ERROR',
-            states: responseStates,
-            errorCode: 'challengeNeeded',
-            challengeNeeded: {
-              type: 'ackNeeded'
-            }
-          });
+        const authAckResponse = this.handlAuthAck(item, challenge, responseStates);
+        if (authAckResponse) {
+          commandsResponse.push(authAckResponse);
           return;
         }
 
-        const targetItem = this.constructor.getItemName(item);
-        const targetValue = this.constructor.convertParamsToValue(item, params);
-        return this._apiHandler.sendCommand(targetItem, targetValue).then(() => {
+        const targetItem = this.getItemName(item);
+        const targetValue = this.convertParamsToValue(item, params);
+        return apiHandler.sendCommand(targetItem, targetValue).then(() => {
           commandsResponse.push({
             ids: [device.id],
             status: 'SUCCESS',
@@ -103,10 +136,6 @@ class GenericCommand {
 }
 
 class OnOffCommand extends GenericCommand {
-  constructor(apiHandler) {
-    super(apiHandler);
-  }
-
   static get type() {
     return 'action.devices.commands.OnOff';
   }
@@ -127,10 +156,6 @@ class OnOffCommand extends GenericCommand {
 }
 
 class LockUnlockCommand extends GenericCommand {
-  constructor(apiHandler) {
-    super(apiHandler);
-  }
-
   static get type() {
     return 'action.devices.commands.LockUnlock';
   }
@@ -151,10 +176,6 @@ class LockUnlockCommand extends GenericCommand {
 }
 
 class ArmDisarmCommand extends GenericCommand {
-  constructor(apiHandler) {
-    super(apiHandler);
-  }
-
   static get type() {
     return 'action.devices.commands.ArmDisarm';
   }
@@ -175,10 +196,6 @@ class ArmDisarmCommand extends GenericCommand {
 }
 
 class ActivateSceneCommand extends GenericCommand {
-  constructor(apiHandler) {
-    super(apiHandler);
-  }
-
   static get type() {
     return 'action.devices.commands.ActivateScene';
   }
@@ -197,10 +214,6 @@ class ActivateSceneCommand extends GenericCommand {
 
 
 class SetVolumeCommand extends GenericCommand {
-  constructor(apiHandler) {
-    super(apiHandler);
-  }
-
   static get type() {
     return 'action.devices.commands.setVolume';
   }
@@ -223,10 +236,6 @@ class SetVolumeCommand extends GenericCommand {
 }
 
 class VolumeRelativeCommand extends GenericCommand {
-  constructor(apiHandler) {
-    super(apiHandler);
-  }
-
   static get type() {
     return 'action.devices.commands.volumeRelative';
   }
@@ -250,10 +259,6 @@ class VolumeRelativeCommand extends GenericCommand {
 }
 
 class BrightnessAbsoluteCommand extends GenericCommand {
-  constructor(apiHandler) {
-    super(apiHandler);
-  }
-
   static get type() {
     return 'action.devices.commands.BrightnessAbsolute';
   }
@@ -274,10 +279,6 @@ class BrightnessAbsoluteCommand extends GenericCommand {
 }
 
 class ColorAbsoluteCommand extends GenericCommand {
-  constructor(apiHandler) {
-    super(apiHandler);
-  }
-
   static get type() {
     return 'action.devices.commands.ColorAbsolute';
   }
@@ -303,10 +304,6 @@ class ColorAbsoluteCommand extends GenericCommand {
 }
 
 class OpenCloseCommand extends GenericCommand {
-  constructor(apiHandler) {
-    super(apiHandler);
-  }
-
   static get type() {
     return 'action.devices.commands.OpenClose';
   }
@@ -337,10 +334,6 @@ class OpenCloseCommand extends GenericCommand {
 }
 
 class StartStopCommand extends GenericCommand {
-  constructor(apiHandler) {
-    super(apiHandler);
-  }
-
   static get type() {
     return 'action.devices.commands.StartStop';
   }
@@ -372,10 +365,6 @@ class StartStopCommand extends GenericCommand {
 }
 
 class ThermostatTemperatureSetpointCommand extends GenericCommand {
-  constructor(apiHandler) {
-    super(apiHandler);
-  }
-
   static get type() {
     return 'action.devices.commands.ThermostatTemperatureSetpoint';
   }
@@ -408,10 +397,6 @@ class ThermostatTemperatureSetpointCommand extends GenericCommand {
 }
 
 class ThermostatSetModeCommand extends GenericCommand {
-  constructor(apiHandler) {
-    super(apiHandler);
-  }
-
   static get type() {
     return 'action.devices.commands.ThermostatSetMode';
   }

@@ -60,14 +60,14 @@ class OpenHAB {
 						openhabVersion: this.openhabVersion
 					}
 				};
-				const deviceType = DeviceTypes.find((itemType) => itemType.appliesTo(item) && !matchesGroup(thermostatGroups, item.groupNames));
-				if (deviceType) {
+				const DeviceType = DeviceTypes.find((itemType) => itemType.appliesTo(item) && !matchesGroup(thermostatGroups, item.groupNames));
+				if (DeviceType) {
 					console.log(`openhabGoogleAssistant - handleSync - SYNC is adding: ${item.name} with tags: ${item.tags.join(', ')}`);
-					discoveredDevice.type = deviceType.type;
-					discoveredDevice.traits = deviceType.traits;
-					discoveredDevice.attributes = deviceType.getAttributes(item);
-					discoveredDevice.deviceInfo.model = deviceType.tag;
-					discoveredDevice.customData.itemTag = deviceType.tag;
+					discoveredDevice.type = DeviceType.type;
+					discoveredDevice.traits = DeviceType.traits;
+					discoveredDevice.attributes = DeviceType.getAttributes(item);
+					discoveredDevice.deviceInfo.model = DeviceType.tag;
+					discoveredDevice.customData.itemTag = DeviceType.tag;
 					discoveredDevicesList.push(discoveredDevice);
 				}
 			});
@@ -123,9 +123,9 @@ class OpenHAB {
 		const promises = [];
 		commands.forEach((command) => {
 			command.execution.forEach((execution) => {
-				const commandType = CommandTypes.find((commandType) => commandType.appliesTo(execution.command, execution.params));
-				if (commandType) {
-					promises.push((new commandType(this._apiHandler).execute(command.devices, execution.params, execution.challenge)));
+				const CommandType = CommandTypes.find((commandType) => commandType.appliesTo(execution.command, execution.params));
+				if (CommandType) {
+					promises.push((CommandType.execute(this._apiHandler, command.devices, execution.params, execution.challenge)));
 				} else {
 					promises.push(Promise.resolve(command.devices.map((device) => ({
 						ids: [device.id],
