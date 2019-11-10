@@ -67,7 +67,7 @@ class GenericDevice {
         swVersion: '2.4.0'
       },
       attributes: this.getAttributes(item),
-      customData: JSON.stringify(customData)
+      customData: customData
     };
   }
 
