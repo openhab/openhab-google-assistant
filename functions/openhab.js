@@ -99,9 +99,11 @@ class OpenHAB {
 				return devicesPayload;
 			}).catch((error) => {
 				return {
-					ids: [device.id],
-					status: 'ERROR',
-					errorCode: error.statusCode == 404 ? 'deviceNotFound' : error.statusCode == 400 ? 'notSupported' : 'deviceOffline'
+					id: device.id,
+					data: {
+						status: 'ERROR',
+						errorCode: error.statusCode == 404 ? 'deviceNotFound' : error.statusCode == 400 ? 'notSupported' : 'deviceOffline'
+					}
 				};
 			});
 		});
@@ -128,11 +130,11 @@ class OpenHAB {
 				if (commandType) {
 					promises.push((new commandType(this._apiHandler).execute(command.devices, executionParams)));
 				} else {
-					promises.push(Promise.resolve(command.devices.map((device) => ({
-						ids: [device.id],
+					promises.push(Promise.resolve({
+						ids: command.devices.map((device) => device.id),
 						status: 'ERROR',
 						errorCode: 'functionNotSupported'
-					}))));
+					}));
 				}
 			});
 		});
