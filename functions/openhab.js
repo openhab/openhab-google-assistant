@@ -19,8 +19,8 @@
  * @author Michael Krug - Rework
  *
  */
-const getCommandType = require('./commands.js').GetCommandType;
-const getDeviceForItem = require('./devices.js').GetDeviceForItem;
+const getCommandType = require('./commands.js').getCommandType;
+const getDeviceForItem = require('./devices.js').getDeviceForItem;
 
 class OpenHAB {
 	/**

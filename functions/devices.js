@@ -17,7 +17,7 @@
  * @author Michael Krug
  *
  */
-const GetDeviceForItem = (item) => {
+const getDeviceForItem = (item) => {
   return Devices.find((device) => (
     item.metadata && item.metadata.ga &&
     device.type.toLowerCase() === `action.devices.types.${item.metadata.ga.value}`.toLowerCase() &&
@@ -560,5 +560,5 @@ const Devices = [
 ];
 
 module.exports = {
-  GetDeviceForItem
+  getDeviceForItem
 }

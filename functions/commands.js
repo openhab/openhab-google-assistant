@@ -30,8 +30,8 @@ const ackSupportedTraits = [
   'action.devices.traits.TemperatureSetting'
 ];
 
-const getCommandType = () => {
-  return CommandTypes.find((commandType) => commandType.appliesTo());
+const getCommandType = (command = '', params = {}) => {
+  return CommandTypes.find((commandType) => commandType.appliesTo(command, params));
 };
 
 class GenericCommand {
