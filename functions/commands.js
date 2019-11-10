@@ -217,8 +217,7 @@ class SetVolumeCommand extends GenericCommand {
   }
 
   static appliesTo(command, params) {
-    return command === this.type && (('volumeLevel' in params) && typeof params.volumeLevel === 'number'
-    );
+    return command === this.type && ('volumeLevel' in params) && typeof params.volumeLevel === 'number';
   }
 
   static convertParamsToValue(item, params) {
@@ -239,8 +238,7 @@ class VolumeRelativeCommand extends GenericCommand {
   }
 
   static appliesTo(command, params) {
-    return command === this.type && (('volumeRelativeLevel' in params) && typeof params.volumeRelativeLevel === 'number'
-    );
+    return command === this.type && ('volumeRelativeLevel' in params) && typeof params.volumeRelativeLevel === 'number';
   }
 
   static convertParamsToValue(item, params) {
