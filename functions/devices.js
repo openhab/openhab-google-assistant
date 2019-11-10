@@ -40,7 +40,8 @@ class GenericDevice {
 
   static getMetadata(item = {}) {
     const customData = {
-      itemType: item.type
+      itemType: item.type,
+      deviceType: this.type
     };
     if (item.metadata.ga.config && item.metadata.ga.config.tfaAck) {
       customData.tfaAck = item.metadata.ga.config.tfaAck;
@@ -460,6 +461,16 @@ class Thermostat extends GenericDevice {
       availableThermostatModes: 'off,heat,cool,on,heatcool',
       thermostatTemperatureUnit: this.usesFahrenheit(item) ? 'F' : 'C'
     };
+  }
+
+  static getMetadata(item) {
+    const metadata = super.getMetadata(item);
+    const members = this.getMembers(item);
+    for (const member in members) {
+      metadata.customData[member] = members[member].name;
+    }
+    metadata.customData.useFahrenheit = this.usesFahrenheit(item);
+    return metadata;
   }
 
   static checkItemType(item) {
