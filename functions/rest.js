@@ -44,10 +44,12 @@ function getItem(token, itemName, success, failure) {
 		response.on('end', function () {
 			if (response.statusCode != 200) {
 				console.error('getItem failed for path: ' + options.path +
-						' code: ' + response.statusCode);
+						' code: ' + response.statusCode +
+						' body: ' + body);
 				failure({
 					message: 'Error response ' + response.statusCode
 				});
+				return;
 			}
 			let resp = JSON.parse(body);
 			success(resp);

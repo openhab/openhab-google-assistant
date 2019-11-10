@@ -27,7 +27,7 @@ exports.openhabGoogleAssistant = function(request, response) {
 	console.log("openhabGoogleAssistant: Cloud function called:" + JSON.stringify(request.body));
 
 	let requestBody = request.body;
-	if (!requestBody.inputs) {
+	if (!requestBody || !requestBody.inputs) {
 		showError(response, "openhabGoogleAssistant: Missing inputs");
 		return;
 	}
