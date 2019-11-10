@@ -17,29 +17,6 @@
  * @author Michael Krug
  *
  */
-
-const DeviceMetadata = {
-  id: '',
-  type: '',
-  traits: [],
-  name: {
-    name: '',
-    nicknames: [],
-    defaultNames: []
-  },
-  willReportState: false,
-  roomHint: '',
-  structureHint: '',
-  deviceInfo: {
-    manufacturer: 'openHAB',
-    model: '',
-    hwVersion: '2.4.0',
-    swVersion: '2.4.0'
-  },
-  attributes: {},
-  customData: ''
-};
-
 const GetDeviceForItem = (item) => {
   return Devices.find((device) => (
     item.metadata && item.metadata.ga &&
@@ -62,14 +39,6 @@ class GenericDevice {
   }
 
   static getMetadata(item = {}) {
-    const device = JSON.parse(JSON.stringify(DeviceMetadata));;
-    device.id = item.name;
-    device.name.name = item.name;
-    device.name.defaultNames = [item.name];
-    device.type = this.type;
-    device.traits = this.traits;
-    device.attributes = this.getAttributes(item);
-    device.deviceInfo.model = item.type;
     const customData = {
       itemType: item.type
     };
@@ -79,8 +48,27 @@ class GenericDevice {
     if (item.metadata.ga.config && item.metadata.ga.config.tfaPin) {
       customData.tfaPin = item.metadata.ga.config.tfaPin;
     }
-    device.customData = JSON.stringify(customData);
-    return device;
+    return {
+      id: item.name,
+      type: this.type,
+      traits: this.traits,
+      name: {
+        name: item.name,
+        nicknames: [],
+        defaultNames: [item.name]
+      },
+      willReportState: false,
+      roomHint: '',
+      structureHint: '',
+      deviceInfo: {
+        manufacturer: 'openHAB',
+        model: item.type,
+        hwVersion: '2.4.0',
+        swVersion: '2.4.0'
+      },
+      attributes: this.getAttributes(item),
+      customData: JSON.stringify(customData)
+    };
   }
 
   static get requiredItemType() {
@@ -89,6 +77,7 @@ class GenericDevice {
 
   static checkItemType(item = {}) {
     return (
+      !this.requiredItemType ||
       item.type === this.requiredItemType ||
       (item.type === 'Group' && item.groupType && item.groupType === this.requiredItemType)
     );
@@ -227,7 +216,7 @@ class Scene extends GenericDevice {
     return 'Switch'
   }
 
-  static getAttributes(item) {
+  static getAttributes() {
     return {
       sceneReversible: true
     };
@@ -331,7 +320,7 @@ class ColorLight extends GenericDevice {
     ];
   }
 
-  static getAttributes(item) {
+  static getAttributes() {
     return {
       colorModel: 'hsv'
     };
@@ -504,16 +493,16 @@ class Thermostat extends GenericDevice {
   static getMembers(item) {
     const members = {};
     item.members.forEach((member) => {
-      if (member.metadata.ga.value === 'HeatingCoolingMode') {
+      if (member.metadata.ga.value.toLowerCase() === 'heatingcoolingMode') {
         members.thermostatMode = { name: member.name, state: member.state };
       }
-      if (member.metadata.ga.value === 'TargetTemperature') {
+      if (member.metadata.ga.value.toLowerCase() === 'targettemperature') {
         members.thermostatTemperatureSetpoint = { name: member.name, state: member.state };
       }
-      if (member.metadata.ga.value === 'CurrentTemperature') {
+      if (member.metadata.ga.value.toLowerCase() === 'currenttemperature') {
         members.thermostatTemperatureAmbient = { name: member.name, state: member.state };
       }
-      if (member.metadata.ga.value === 'CurrentHumidity') {
+      if (member.metadata.ga.value.toLowerCase() === 'currenthumidity') {
         members.thermostatHumidityAmbient = { name: member.name, state: member.state };
       }
     });
@@ -571,17 +560,5 @@ const Devices = [
 ];
 
 module.exports = {
-  GetDeviceForItem,
-  Devices,
-  GenericDevice,
-  Switch, Outlet, Fan, CoffeeMaker, WaterHeater, Fireplace,
-  Valve,
-  Sprinkler, Vacuum,
-  Scene,
-  Lock,
-  SecuritySystem,
-  SimpleLight, DimmableLight, ColorLight,
-  Awning, Blinds, Curtain, Door, Garage, Gate, Shutter, Pergola, Window,
-  Speaker,
-  Thermostat
+  GetDeviceForItem
 }

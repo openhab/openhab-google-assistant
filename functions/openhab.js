@@ -84,15 +84,15 @@ class OpenHAB {
 		commands.forEach((command) => {
 			command.execution.forEach((execution) => {
 				const CommandType = getCommandType(execution.command, execution.params);
-				if (CommandType) {
-					promises.push((CommandType.execute(this._apiHandler, command.devices, execution.params, execution.challenge)));
-				} else {
+				if (!CommandType) {
 					promises.push(Promise.resolve({
 						ids: command.devices.map((device) => (device.id)),
 						status: 'ERROR',
 						errorCode: 'functionNotSupported'
 					}));
+					return;
 				}
+				promises.push((CommandType.execute(this._apiHandler, command.devices, execution.params, execution.challenge)));
 			});
 		});
 		return Promise.all(promises).then((result) => {
