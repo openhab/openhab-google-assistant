@@ -562,5 +562,6 @@ const Devices = [
 ];
 
 module.exports = {
-  getDeviceForItem
+  getDeviceForItem,
+  Thermostat
 }
