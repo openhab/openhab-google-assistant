@@ -60,7 +60,7 @@ class OpenHAB {
 				if (!DeviceType) {
 					throw { statusCode: 404 };
 				}
-				payload.devices[device.id] = Object.assign({ online: true }, device.getState(item));
+				payload.devices[device.id] = Object.assign({ online: true }, DeviceType.getState(item));
 			}).catch((error) => {
 				payload.devices[device.id] = {
 					status: 'ERROR',
