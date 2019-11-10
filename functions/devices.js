@@ -493,17 +493,19 @@ class Thermostat extends GenericDevice {
   static getMembers(item) {
     const members = {};
     item.members.forEach((member) => {
-      if (member.metadata.ga.value.toLowerCase() === 'heatingcoolingMode') {
-        members.thermostatMode = { name: member.name, state: member.state };
-      }
-      if (member.metadata.ga.value.toLowerCase() === 'targettemperature') {
-        members.thermostatTemperatureSetpoint = { name: member.name, state: member.state };
-      }
-      if (member.metadata.ga.value.toLowerCase() === 'currenttemperature') {
-        members.thermostatTemperatureAmbient = { name: member.name, state: member.state };
-      }
-      if (member.metadata.ga.value.toLowerCase() === 'currenthumidity') {
-        members.thermostatHumidityAmbient = { name: member.name, state: member.state };
+      if (member.metadata && member.metadata.ga) {
+        if (member.metadata.ga.value.toLowerCase() === 'heatingcoolingmode') {
+          members.thermostatMode = { name: member.name, state: member.state };
+        }
+        if (member.metadata.ga.value.toLowerCase() === 'targettemperature') {
+          members.thermostatTemperatureSetpoint = { name: member.name, state: member.state };
+        }
+        if (member.metadata.ga.value.toLowerCase() === 'currenttemperature') {
+          members.thermostatTemperatureAmbient = { name: member.name, state: member.state };
+        }
+        if (member.metadata.ga.value.toLowerCase() === 'currenthumidity') {
+          members.thermostatHumidityAmbient = { name: member.name, state: member.state };
+        }
       }
     });
     return members;
