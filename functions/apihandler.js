@@ -31,7 +31,7 @@ class ApiHandler {
     const options = {
       hostname: this._config.host,
       port: this._config.port,
-      path: this._config.path + (itemName || ''),
+      path: this._config.path + (itemName || '') + '?metadata=ga',
       method: method,
       headers: {
         'Accept': 'application/json'

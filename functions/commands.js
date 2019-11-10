@@ -17,9 +17,8 @@
  * @author Michael Krug
  *
  */
-const GenericDevice = require('./devices.js').GenericDevice;
 const Thermostat = require('./devices.js').Thermostat;
-const DeviceTypes = require('./devices.js').Devices;
+const getDeviceForItem = require('./devices.js').GetDeviceForItem;
 
 const ackSupportedTraits = [
   'action.devices.traits.ArmDisarm',
@@ -29,7 +28,11 @@ const ackSupportedTraits = [
   'action.devices.traits.OpenClose',
   'action.devices.traits.Scene',
   'action.devices.traits.TemperatureSetting'
-]
+];
+
+const getCommandType = () => {
+  return CommandTypes.find((commandType) => commandType.appliesTo());
+};
 
 class GenericCommand {
   static get type() {
@@ -53,7 +56,7 @@ class GenericCommand {
   }
 
   static handlAuthPin(item = { tags: [] }, challenge = {}) {
-    if (!GenericDevice.hasTag(item, 'TFA-PIN') || challenge.pin === 1234) {
+    if (!item.metadata.ga.config || !item.metadata.ga.config.tfaPin || challenge.pin === item.metadata.ga.config.tfaPin) {
       return;
     }
     return {
@@ -67,16 +70,11 @@ class GenericCommand {
   }
 
   static handlAuthAck(item = { tags: [] }, challenge = {}, responseStates = {}) {
-    if (!GenericDevice.hasTag(item, 'TFA-ACK') || challenge.ack === true) {
+    if (!item.metadata.ga.config || !item.metadata.ga.config.tfaAck || challenge.ack === true) {
       return;
     }
-    let traits = [];
-    for (const device of DeviceTypes) {
-      if (device.appliesTo(item)) {
-        traits = device.traits;
-        break;
-      }
-    }
+    const device = getDeviceForItem(item);
+    const traits = device && device.traits || [];
     // check if acknowledge is supported for that device's traits
     if (!traits.some((trait) => ackSupportedTraits.includes(trait))) {
       return;
@@ -314,13 +312,11 @@ class OpenCloseCommand extends GenericCommand {
 
   static convertParamsToValue(item, params) {
     let value = params.openPercent === 0 ? 'DOWN' : params.openPercent === 100 ? 'UP' : (100 - params.openPercent).toString();
-    for (const device of DeviceTypes) {
-      if (device.appliesTo(item)) {
-        // item can not handle StartStop --> we will send "ON" / "OFF"
-        if (!device.traits.includes('action.devices.traits.StartStop')) {
-          value = params.openPercent === 0 ? 'OFF' : 'ON';
-        }
-        break;
+    const device = getDeviceForItem(item);
+    if (device) {
+      // item can not handle StartStop --> we will send "ON" / "OFF"
+      if (!device.traits.includes('action.devices.traits.StartStop')) {
+        value = params.openPercent === 0 ? 'OFF' : 'ON';
       }
     }
     return value;
@@ -344,13 +340,11 @@ class StartStopCommand extends GenericCommand {
 
   static convertParamsToValue(item, params) {
     let value = params.start ? 'MOVE' : 'STOP';
-    for (const device of DeviceTypes) {
-      if (device.appliesTo(item)) {
-        // item can not handle OpenClose --> we will send "ON" / "OFF"
-        if (!device.traits.includes('action.devices.traits.OpenClose')) {
-          value = params.start ? 'ON' : 'OFF';
-        }
-        break;
+    const device = getDeviceForItem(item);
+    if (device) {
+      // item can not handle OpenClose --> we will send "ON" / "OFF"
+      if (!device.traits.includes('action.devices.traits.OpenClose')) {
+        value = params.start ? 'ON' : 'OFF';
       }
     }
     return value;
@@ -428,7 +422,7 @@ class ThermostatSetModeCommand extends GenericCommand {
   }
 }
 
-const Commands = [
+const CommandTypes = [
   OnOffCommand,
   LockUnlockCommand,
   ArmDisarmCommand,
@@ -444,17 +438,5 @@ const Commands = [
 ];
 
 module.exports = {
-  Commands,
-  OnOffCommand,
-  LockUnlockCommand,
-  ArmDisarmCommand,
-  ActivateSceneCommand,
-  SetVolumeCommand,
-  VolumeRelativeCommand,
-  BrightnessAbsoluteCommand,
-  ColorAbsoluteCommand,
-  OpenCloseCommand,
-  StartStopCommand,
-  ThermostatTemperatureSetpointCommand,
-  ThermostatSetModeCommand
+  getCommandType
 };

@@ -17,11 +17,38 @@
  * @author Michael Krug
  *
  */
-class GenericDevice {
-  static hasTag(item = { tags: [] }, tag = '') {
-    return item.tags && item.tags.map(t => t.toLowerCase()).includes(tag.toLowerCase());
-  }
 
+const DeviceMetadata = {
+  id: '',
+  type: '',
+  traits: [],
+  name: {
+    name: '',
+    nicknames: [],
+    defaultNames: []
+  },
+  willReportState: false,
+  roomHint: '',
+  structureHint: '',
+  deviceInfo: {
+    manufacturer: 'openHAB',
+    model: '',
+    hwVersion: '2.4.0',
+    swVersion: '2.4.0'
+  },
+  attributes: {},
+  customData: ''
+};
+
+const GetDeviceForItem = (item) => {
+  return Devices.find((device) => (
+    item.metadata && item.metadata.ga &&
+    device.type.toLowerCase() === `action.devices.types.${item.metadata.ga.value}`.toLowerCase() &&
+    device.checkItemType(item)
+  ));
+};
+
+class GenericDevice {
   static get type() {
     return '';
   }
@@ -30,19 +57,44 @@ class GenericDevice {
     return [];
   }
 
-  static getAttributes(item) {
+  static getAttributes(item = {}) {
     return {};
   }
 
-  static get tag() {
+  static getMetadata(item = {}) {
+    const device = JSON.parse(JSON.stringify(DeviceMetadata));;
+    device.id = item.name;
+    device.name.name = item.name;
+    device.name.defaultNames = [item.name];
+    device.type = this.type;
+    device.traits = this.traits;
+    device.attributes = this.getAttributes(item);
+    device.deviceInfo.model = item.type;
+    const customData = {
+      itemType: item.type
+    };
+    if (item.metadata.ga.config && item.metadata.ga.config.tfaAck) {
+      customData.tfaAck = item.metadata.ga.config.tfaAck;
+    }
+    if (item.metadata.ga.config && item.metadata.ga.config.tfaPin) {
+      customData.tfaPin = item.metadata.ga.config.tfaPin;
+    }
+    device.customData = JSON.stringify(customData);
+    return device;
+  }
+
+  static get requiredItemType() {
     return '';
   }
 
-  static appliesTo(item) {
-    return this.hasTag(item, this.tag);
+  static checkItemType(item = {}) {
+    return (
+      item.type === this.requiredItemType ||
+      (item.type === 'Group' && item.groupType && item.groupType === this.requiredItemType)
+    );
   }
 
-  static getState(item) {
+  static getState(item = {}) {
     return {};
   }
 }
@@ -60,12 +112,8 @@ class Switch extends GenericDevice {
     ];
   }
 
-  static get tag() {
-    return 'Switchable';
-  }
-
-  static appliesTo(item) {
-    return this.hasTag(item, this.tag) && (item.type === 'Switch' || (item.type === 'Group' && item.groupType && item.groupType === 'Switch'));
+  static get requiredItemType() {
+    return 'Switch';
   }
 
   static getState(item) {
@@ -79,19 +127,11 @@ class Outlet extends Switch {
   static get type() {
     return 'action.devices.types.OUTLET';
   }
-
-  static get tag() {
-    return 'Outlet';
-  }
 }
 
 class Fan extends Switch {
   static get type() {
     return 'action.devices.types.FAN';
-  }
-
-  static get tag() {
-    return 'Fan';
   }
 }
 
@@ -99,29 +139,17 @@ class CoffeeMaker extends Switch {
   static get type() {
     return 'action.devices.types.COFFEE_MAKER';
   }
-
-  static get tag() {
-    return 'CoffeeMaker';
-  }
 }
 
 class WaterHeater extends Switch {
   static get type() {
     return 'action.devices.types.WATERHEATER';
   }
-
-  static get tag() {
-    return 'WaterHeater';
-  }
 }
 
 class Fireplace extends Switch {
   static get type() {
     return 'action.devices.types.FIREPLACE';
-  }
-
-  static get tag() {
-    return 'Fireplace';
   }
 }
 
@@ -138,12 +166,8 @@ class Valve extends GenericDevice {
     ];
   }
 
-  static get tag() {
-    return 'Valve';
-  }
-
-  static appliesTo(item) {
-    return this.hasTag(item, this.tag) && (item.type === 'Switch' || (item.type === 'Group' && item.groupType && item.groupType === 'Switch'));
+  static get requiredItemType() {
+    return 'Switch';
   }
 
   static getState(item) {
@@ -162,8 +186,8 @@ class StartStopSwitch extends GenericDevice {
     ];
   }
 
-  static appliesTo(item) {
-    return this.hasTag(item, this.tag) && (item.type === 'Switch' || (item.type === 'Group' && item.groupType && item.groupType === 'Switch'));
+  static get requiredItemType() {
+    return 'Switch';
   }
 
   static getState(item) {
@@ -178,19 +202,11 @@ class Sprinkler extends StartStopSwitch {
   static get type() {
     return 'action.devices.types.SPRINKLER';
   }
-
-  static get tag() {
-    return 'Sprinkler';
-  }
 }
 
 class Vacuum extends StartStopSwitch {
   static get type() {
     return 'action.devices.types.VACUUM';
-  }
-
-  static get tag() {
-    return 'Vacuum';
   }
 }
 
@@ -207,18 +223,14 @@ class Scene extends GenericDevice {
     ];
   }
 
+  static get requiredItemType() {
+    return 'Switch'
+  }
+
   static getAttributes(item) {
     return {
       sceneReversible: true
     };
-  }
-
-  static get tag() {
-    return 'Scene';
-  }
-
-  static appliesTo(item) {
-    return this.hasTag(item, this.tag) && (item.type === 'Switch' || (item.type === 'Group' && item.groupType && item.groupType === 'Switch'));
   }
 }
 
@@ -235,12 +247,8 @@ class Lock extends GenericDevice {
     ];
   }
 
-  static get tag() {
-    return 'Lock';
-  }
-
-  static appliesTo(item) {
-    return this.hasTag(item, this.tag) && (item.type === 'Switch' || (item.type === 'Group' && item.groupType && item.groupType === 'Switch'));
+  static get requiredItemType() {
+    return 'Switch';
   }
 
   static getState(item) {
@@ -263,12 +271,8 @@ class SecuritySystem extends GenericDevice {
     ];
   }
 
-  static get tag() {
-    return 'SecuritySystem';
-  }
-
-  static appliesTo(item) {
-    return this.hasTag(item, this.tag) && (item.type === 'Switch' || (item.type === 'Group' && item.groupType && item.groupType === 'Switch'));
+  static get requiredItemType() {
+    return 'Switch';
   }
 
   static getState(item) {
@@ -283,10 +287,6 @@ class SecuritySystem extends GenericDevice {
 class SimpleLight extends Switch {
   static get type() {
     return 'action.devices.types.LIGHT';
-  }
-
-  static get tag() {
-    return 'Lighting';
   }
 }
 
@@ -304,12 +304,8 @@ class DimmableLight extends GenericDevice {
     ];
   }
 
-  static get tag() {
-    return 'Lighting';
-  }
-
-  static appliesTo(item) {
-    return this.hasTag(item, this.tag) && (item.type === 'Dimmer' || (item.type === 'Group' && item.groupType && item.groupType === 'Dimmer'));
+  static get requiredItemType() {
+    return 'Dimmer';
   }
 
   static getState(item) {
@@ -341,11 +337,8 @@ class ColorLight extends GenericDevice {
     };
   }
 
-  static get tag() {
-    return 'Lighting';
-  }
-  static appliesTo(item) {
-    return this.hasTag(item, this.tag) && (item.type === 'Color' || (item.type === 'Group' && item.groupType && item.groupType === 'Color'));
+  static get requiredItemType() {
+    return 'Color';
   }
 
   static getState(item) {
@@ -374,8 +367,8 @@ class GenericOpenCloseDevice extends GenericDevice {
     ];
   }
 
-  static appliesTo(item) {
-    return this.hasTag(item, this.tag) && (item.type === 'Rollershutter' || (item.type === 'Group' && item.groupType && item.groupType === 'Rollershutter'));
+  static get requiredItemType() {
+    return 'Rollershutter';
   }
 
   static getState(item) {
@@ -389,19 +382,11 @@ class Awning extends GenericOpenCloseDevice {
   static get type() {
     return 'action.devices.types.AWNING';
   }
-
-  static get tag() {
-    return 'Awning';
-  }
 }
 
 class Blinds extends GenericOpenCloseDevice {
   static get type() {
     return 'action.devices.types.BLINDS';
-  }
-
-  static get tag() {
-    return 'Blinds';
   }
 }
 
@@ -409,19 +394,11 @@ class Curtain extends GenericOpenCloseDevice {
   static get type() {
     return 'action.devices.types.CURTAIN';
   }
-
-  static get tag() {
-    return 'Curtain';
-  }
 }
 
 class Door extends GenericOpenCloseDevice {
   static get type() {
     return 'action.devices.types.DOOR';
-  }
-
-  static get tag() {
-    return 'Door';
   }
 }
 
@@ -429,19 +406,11 @@ class Garage extends GenericOpenCloseDevice {
   static get type() {
     return 'action.devices.types.GARAGE';
   }
-
-  static get tag() {
-    return 'Garage';
-  }
 }
 
 class Gate extends GenericOpenCloseDevice {
   static get type() {
     return 'action.devices.types.GATE';
-  }
-
-  static get tag() {
-    return 'Gate';
   }
 }
 
@@ -449,29 +418,17 @@ class Pergola extends GenericOpenCloseDevice {
   static get type() {
     return 'action.devices.types.PERGOLA';
   }
-
-  static get tag() {
-    return 'Pergola';
-  }
 }
 
 class Shutter extends GenericOpenCloseDevice {
   static get type() {
     return 'action.devices.types.SHUTTER';
   }
-
-  static get tag() {
-    return 'Shutter';
-  }
 }
 
 class Window extends GenericOpenCloseDevice {
   static get type() {
     return 'action.devices.types.WINDOW';
-  }
-
-  static get tag() {
-    return 'Window';
   }
 }
 
@@ -486,12 +443,8 @@ class Speaker extends GenericDevice {
     ];
   }
 
-  static get tag() {
-    return 'Speaker';
-  }
-
-  static appliesTo(item) {
-    return this.hasTag(item, this.tag) && (item.type === 'Dimmer' || (item.type === 'Group' && item.groupType && item.groupType === 'Dimmer'));
+  static get requiredItemType() {
+    return 'Dimmer';
   }
 
   static getState(item) {
@@ -520,12 +473,8 @@ class Thermostat extends GenericDevice {
     };
   }
 
-  static get tag() {
-    return 'Thermostat';
-  }
-
-  static appliesTo(item) {
-    return this.hasTag(item, this.tag) && item.type === 'Group';
+  static checkItemType(item) {
+    return item.type === 'Group';
   }
 
   static getState(item) {
@@ -555,16 +504,16 @@ class Thermostat extends GenericDevice {
   static getMembers(item) {
     const members = {};
     item.members.forEach((member) => {
-      if (this.hasTag(member, 'HeatingCoolingMode') || this.hasTag(member, 'homekit:HeatingCoolingMode') || this.hasTag(member, 'homekit:TargetHeatingCoolingMode') || this.hasTag(member, 'homekit:CurrentHeatingCoolingMode')) {
+      if (member.metadata.ga.value === 'HeatingCoolingMode') {
         members.thermostatMode = { name: member.name, state: member.state };
       }
-      if (this.hasTag(member, 'TargetTemperature') || this.hasTag(member, 'homekit:TargetTemperature')) {
+      if (member.metadata.ga.value === 'TargetTemperature') {
         members.thermostatTemperatureSetpoint = { name: member.name, state: member.state };
       }
-      if (this.hasTag(member, 'CurrentTemperature')) {
+      if (member.metadata.ga.value === 'CurrentTemperature') {
         members.thermostatTemperatureAmbient = { name: member.name, state: member.state };
       }
-      if (this.hasTag(member, 'CurrentHumidity')) {
+      if (member.metadata.ga.value === 'CurrentHumidity') {
         members.thermostatHumidityAmbient = { name: member.name, state: member.state };
       }
     });
@@ -572,7 +521,7 @@ class Thermostat extends GenericDevice {
   }
 
   static usesFahrenheit(item) {
-    return this.hasTag(item, 'Fahrenheit');
+    return item.metadata.ga.config && item.metadata.ga.config.useFahrenheit === true;
   }
 
   static get _modeMap() {
@@ -622,6 +571,7 @@ const Devices = [
 ];
 
 module.exports = {
+  GetDeviceForItem,
   Devices,
   GenericDevice,
   Switch, Outlet, Fan, CoffeeMaker, WaterHeater, Fireplace,

@@ -19,9 +19,8 @@
  * @author Michael Krug - Rework
  *
  */
-const CommandTypes = require('./commands.js').Commands;
-const DeviceTypes = require('./devices.js').Devices;
-const Thermostat = require('./devices.js').Thermostat;
+const getCommandType = require('./commands.js').GetCommandType;
+const getDeviceForItem = require('./devices.js').GetDeviceForItem;
 
 class OpenHAB {
 	/**
@@ -34,41 +33,13 @@ class OpenHAB {
 
 	handleSync() {
 		console.log('openhabGoogleAssistant - handleSync');
-		const matchesGroup = (group1, group2) => (group1.some((e) => group2.includes(e)));
 		return this._apiHandler.getItems().then((items) => {
 			let discoveredDevicesList = [];
-			const thermostatGroups = items.filter((item) => Thermostat.appliesTo(item)).map((item) => item.name);
 			items.forEach((item) => {
-				const discoveredDevice = {
-					id: item.name,
-					type: '',
-					traits: [],
-					name: {
-						name: item.label
-					},
-					willReportState: false,
-					attributes: {},
-					deviceInfo: {
-						manufacturer: 'openHAB',
-						model: '',
-						hwVersion: this.openhabVersion,
-						swVersion: this.openhabVersion
-					},
-					customData: {
-						itemType: item.type,
-						itemTag: '',
-						openhabVersion: this.openhabVersion
-					}
-				};
-				const DeviceType = DeviceTypes.find((itemType) => itemType.appliesTo(item) && !matchesGroup(thermostatGroups, item.groupNames));
+				const DeviceType = getDeviceForItem(item);
 				if (DeviceType) {
-					console.log(`openhabGoogleAssistant - handleSync - SYNC is adding: ${item.name} with tags: ${item.tags.join(', ')}`);
-					discoveredDevice.type = DeviceType.type;
-					discoveredDevice.traits = DeviceType.traits;
-					discoveredDevice.attributes = DeviceType.getAttributes(item);
-					discoveredDevice.deviceInfo.model = DeviceType.tag;
-					discoveredDevice.customData.itemTag = DeviceType.tag;
-					discoveredDevicesList.push(discoveredDevice);
+					console.log(`openhabGoogleAssistant - handleSync - SYNC is adding: ${item.type}:${item.name} with type: ${DeviceType.type}`);
+					discoveredDevicesList.push(DeviceType.getMetadata(item));
 				}
 			});
 			return { devices: discoveredDevicesList };
@@ -85,30 +56,19 @@ class OpenHAB {
 		};
 		const promises = devices.map((device) => {
 			return this._apiHandler.getItem(device.id).then((item) => {
-				const devicesPayload = {
-					id: device.id,
-					data: {
-						online: true
-					}
-				};
-				DeviceTypes.forEach((device) => {
-					if (device.appliesTo(item)) {
-						devicesPayload.data = Object.assign(devicesPayload.data, device.getState(item));
-					}
-				});
-				return devicesPayload;
+				const DeviceType = getDeviceForItem(item);
+				if (!DeviceType) {
+					throw { statusCode: 404 };
+				}
+				payload.devices[device.id] = Object.assign({ online: true }, device.getState(item));
 			}).catch((error) => {
-				return {
-					ids: [device.id],
+				payload.devices[device.id] = {
 					status: 'ERROR',
 					errorCode: error.statusCode == 404 ? 'deviceNotFound' : error.statusCode == 400 ? 'notSupported' : 'deviceOffline'
 				};
 			});
 		});
-		return Promise.all(promises).then((data) => {
-			data.forEach((device) => (payload.devices[device.id] = device.data));
-			return payload;
-		});
+		return Promise.all(promises).then(() => payload);
 	}
 
 
@@ -123,15 +83,15 @@ class OpenHAB {
 		const promises = [];
 		commands.forEach((command) => {
 			command.execution.forEach((execution) => {
-				const CommandType = CommandTypes.find((commandType) => commandType.appliesTo(execution.command, execution.params));
+				const CommandType = getCommandType(execution.command, execution.params);
 				if (CommandType) {
 					promises.push((CommandType.execute(this._apiHandler, command.devices, execution.params, execution.challenge)));
 				} else {
-					promises.push(Promise.resolve(command.devices.map((device) => ({
-						ids: [device.id],
+					promises.push(Promise.resolve({
+						ids: command.devices.map((device) => (device.id)),
 						status: 'ERROR',
 						errorCode: 'functionNotSupported'
-					}))));
+					}));
 				}
 			});
 		});
