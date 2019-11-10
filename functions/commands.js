@@ -18,16 +18,18 @@
  *
  */
 const Thermostat = require('./devices.js').Thermostat;
-const getDeviceForItem = require('./devices.js').GetDeviceForItem;
 
-const ackSupportedTraits = [
-  'action.devices.traits.ArmDisarm',
-  'action.devices.traits.Fill',
-  'action.devices.traits.LockUnlock',
-  'action.devices.traits.OnOff',
-  'action.devices.traits.OpenClose',
-  'action.devices.traits.Scene',
-  'action.devices.traits.TemperatureSetting'
+const ackSupported = [
+  'action.devices.commands.ArmDisarm',
+  'action.devices.commands.Fill',
+  'action.devices.commands.LockUnlock',
+  'action.devices.commands.OnOff',
+  'action.devices.commands.OpenClose',
+  'action.devices.commands.ActivateScene',
+  'action.devices.commands.ThermostatTemperatureSetpoint',
+  'action.devices.commands.ThermostatTemperatureSetRange',
+  'action.devices.commands.ThermostatSetMode',
+  'action.devices.commands.TemperatureRelative'
 ];
 
 const getCommandType = (command = '', params = {}) => {
@@ -43,24 +45,28 @@ class GenericCommand {
     return false;
   }
 
-  static convertParamsToValue(item = {}, params = {}) {
+  static convertParamsToValue(params = {}, item = {}, device = {}) {
     return null;
   }
 
-  static getResponseStates(item = {}, params = {}) {
+  static getResponseStates(params = {}, item = {}) {
     return {};
   }
 
-  static getItemName(item = {}) {
-    return item.name;
+  static getItemName(device = {}) {
+    return device.id;
   }
 
-  static handlAuthPin(item = { tags: [] }, challenge = {}) {
-    if (!item.metadata.ga.config || !item.metadata.ga.config.tfaPin || challenge.pin === item.metadata.ga.config.tfaPin) {
+  static get requiresItem() {
+    return false;
+  }
+
+  static handlAuthPin(device = {}, challenge = {}) {
+    if (!device.customData || !device.customData.tfaPin || challenge.pin === device.customData.tfaPin) {
       return;
     }
     return {
-      ids: [item.name],
+      ids: [device.id],
       status: 'ERROR',
       errorCode: 'challengeNeeded',
       challengeNeeded: {
@@ -69,18 +75,14 @@ class GenericCommand {
     };
   }
 
-  static handlAuthAck(item = { tags: [] }, challenge = {}, responseStates = {}) {
-    if (!item.metadata.ga.config || !item.metadata.ga.config.tfaAck || challenge.ack === true) {
-      return;
-    }
-    const device = getDeviceForItem(item);
-    const traits = device && device.traits || [];
-    // check if acknowledge is supported for that device's traits
-    if (!traits.some((trait) => ackSupportedTraits.includes(trait))) {
+  static handlAuthAck(device = {}, challenge = {}, responseStates = {}) {
+    // check if acknowledge is supported for that command
+    if (!ackSupported.includes(this.type) ||
+        !device.customData || !device.customData.tfaAck || challenge.ack === true) {
       return;
     }
     return {
-      ids: [item.name],
+      ids: [device.id],
       status: 'ERROR',
       states: responseStates,
       errorCode: 'challengeNeeded',
@@ -94,26 +96,32 @@ class GenericCommand {
     console.log(`openhabGoogleAssistant - ${this.type}: ${JSON.stringify({ devices: devices, params: params })}`);
     const commandsResponse = [];
     const promises = devices.map((device) => {
-      return apiHandler.getItem(device.id).then((item) => {
-        const authPinResponse = this.handlAuthPin(item, challenge);
-        if (authPinResponse) {
-          commandsResponse.push(authPinResponse);
-          return;
-        }
 
-        const responseStates = this.getResponseStates(item, params);
+      const authPinResponse = this.handlAuthPin(device, challenge);
+      if (authPinResponse) {
+        commandsResponse.push(authPinResponse);
+        return Promise.resolve();
+      }
+
+      let promise = Promise.resolve(({}));
+      if (this.requiresItem) {
+        promise = apiHandler.getItem(device.id);
+      }
+
+      return promise.then((item) => {
+        const responseStates = this.getResponseStates(params, item);
         if (Object.keys(responseStates).length) {
           responseStates.online = true;
         }
 
-        const authAckResponse = this.handlAuthAck(item, challenge, responseStates);
+        const authAckResponse = this.handlAuthAck(device, challenge, responseStates);
         if (authAckResponse) {
           commandsResponse.push(authAckResponse);
           return;
         }
 
-        const targetItem = this.getItemName(item);
-        const targetValue = this.convertParamsToValue(item, params);
+        const targetItem = this.getItemName(device);
+        const targetValue = this.convertParamsToValue(params, item, device);
         return apiHandler.sendCommand(targetItem, targetValue).then(() => {
           commandsResponse.push({
             ids: [device.id],
@@ -142,11 +150,11 @@ class OnOffCommand extends GenericCommand {
     return command === this.type && ('on' in params) && typeof params.on === 'boolean';
   }
 
-  static convertParamsToValue(item, params) {
+  static convertParamsToValue(params) {
     return params.on ? 'ON' : 'OFF';
   }
 
-  static getResponseStates(item, params) {
+  static getResponseStates(params) {
     return {
       on: params.on
     };
@@ -162,11 +170,11 @@ class LockUnlockCommand extends GenericCommand {
     return command === this.type && ('lock' in params) && typeof params.lock === 'boolean';
   }
 
-  static convertParamsToValue(item, params) {
+  static convertParamsToValue(params) {
     return params.lock ? 'ON' : 'OFF';
   }
 
-  static getResponseStates(item, params) {
+  static getResponseStates(params) {
     return {
       on: params.on
     };
@@ -182,11 +190,11 @@ class ArmDisarmCommand extends GenericCommand {
     return command === this.type && ('arm' in params) && typeof params.arm === 'boolean';
   }
 
-  static convertParamsToValue(item, params) {
+  static convertParamsToValue(params) {
     return params.arm ? 'ON' : 'OFF';
   }
 
-  static getResponseStates(item, params) {
+  static getResponseStates(params) {
     return {
       isArmed: params.arm
     };
@@ -205,7 +213,7 @@ class ActivateSceneCommand extends GenericCommand {
     );
   }
 
-  static convertParamsToValue(item, params) {
+  static convertParamsToValue(params) {
     return !params.deactivate ? 'ON' : 'OFF';
   }
 }
@@ -220,11 +228,11 @@ class SetVolumeCommand extends GenericCommand {
     return command === this.type && ('volumeLevel' in params) && typeof params.volumeLevel === 'number';
   }
 
-  static convertParamsToValue(item, params) {
+  static convertParamsToValue(params) {
     return params.volumeLevel.toString();
   }
 
-  static getResponseStates(item, params) {
+  static getResponseStates(params) {
     return {
       currentVolume: params.volumeLevel,
       isMuted: params.volumeLevel === 0
@@ -241,12 +249,16 @@ class VolumeRelativeCommand extends GenericCommand {
     return command === this.type && ('volumeRelativeLevel' in params) && typeof params.volumeRelativeLevel === 'number';
   }
 
-  static convertParamsToValue(item, params) {
+  static get requiresItem() {
+    return true;
+  }
+
+  static convertParamsToValue(params, item) {
     return parseInt(item.state) + params.volumeRelativeLevel;
   }
 
-  static getResponseStates(item, params) {
-    const state = this.convertParamsToValue(item, params);
+  static getResponseStates(params, item) {
+    const state = this.convertParamsToValue(params, item);
     return {
       currentVolume: state,
       isMuted: state === 0
@@ -263,11 +275,11 @@ class BrightnessAbsoluteCommand extends GenericCommand {
     return command === this.type && ('brightness' in params) && typeof params.brightness === 'number';
   }
 
-  static convertParamsToValue(item, params) {
+  static convertParamsToValue(params) {
     return params.brightness.toString();
   }
 
-  static getResponseStates(item, params) {
+  static getResponseStates(params) {
     return {
       brightness: params.brightness
     };
@@ -286,11 +298,11 @@ class ColorAbsoluteCommand extends GenericCommand {
     );
   }
 
-  static convertParamsToValue(item, params) {
+  static convertParamsToValue(params) {
     return [params.color.spectrumHSV.hue, params.color.spectrumHSV.saturation * 100, params.color.spectrumHSV.value * 100].join(',');
   }
 
-  static getResponseStates(item, params) {
+  static getResponseStates(params) {
     return {
       on: params.color.spectrumHSV.value > 0,
       brightness: params.color.spectrumHSV.value,
@@ -308,19 +320,16 @@ class OpenCloseCommand extends GenericCommand {
     return command === this.type && ('openPercent' in params) && typeof params.openPercent === 'number';
   }
 
-  static convertParamsToValue(item, params) {
+  static convertParamsToValue(params, item, device) {
     let value = params.openPercent === 0 ? 'DOWN' : params.openPercent === 100 ? 'UP' : (100 - params.openPercent).toString();
-    const device = getDeviceForItem(item);
-    if (device) {
-      // item can not handle StartStop --> we will send "ON" / "OFF"
-      if (!device.traits.includes('action.devices.traits.StartStop')) {
-        value = params.openPercent === 0 ? 'OFF' : 'ON';
-      }
+    // item can not handle OpenClose --> we will send "ON" / "OFF"
+    if (device.customData && device.customData.itemType !== 'Rollershutter') {
+      value = params.openPercent === 0 ? 'OFF' : 'ON';
     }
     return value;
   }
 
-  static getResponseStates(item, params) {
+  static getResponseStates(params) {
     return {
       openPercent: params.openPercent
     };
@@ -336,19 +345,16 @@ class StartStopCommand extends GenericCommand {
     return command === this.type && ('start' in params) && typeof params.start === 'boolean';
   }
 
-  static convertParamsToValue(item, params) {
+  static convertParamsToValue(params, item, device) {
     let value = params.start ? 'MOVE' : 'STOP';
-    const device = getDeviceForItem(item);
-    if (device) {
-      // item can not handle OpenClose --> we will send "ON" / "OFF"
-      if (!device.traits.includes('action.devices.traits.OpenClose')) {
-        value = params.start ? 'ON' : 'OFF';
-      }
+    // item can not handle StartStop --> we will send "ON" / "OFF"
+    if (device.customData && device.customData.itemType !== 'Rollershutter') {
+      value = params.start ? 'ON' : 'OFF';
     }
     return value;
   }
 
-  static getResponseStates(item, params) {
+  static getResponseStates(params) {
     return {
       isRunning: params.start,
       isPaused: !params.start
@@ -365,15 +371,18 @@ class ThermostatTemperatureSetpointCommand extends GenericCommand {
     return command === this.type && ('thermostatTemperatureSetpoint' in params) && typeof params.thermostatTemperatureSetpoint === 'number';
   }
 
-  static getItemName(item) {
-    const members = Thermostat.getMembers(item);
-    if (!members.thermostatTemperatureSetpoint) {
-      throw { statusCode: 400 };
-    }
-    return members.thermostatTemperatureSetpoint.name;
+  static get requiresItem() {
+    return true;
   }
 
-  static convertParamsToValue(item, params) {
+  static getItemName(device) {
+    if (!device.customData || !device.customData.thermostatTemperatureSetpoint) {
+      throw { statusCode: 400 };
+    }
+    return device.customData.thermostatTemperatureSetpoint;
+  }
+
+  static convertParamsToValue(params, item) {
     let value = params.thermostatTemperatureSetpoint.toString();
     if (Thermostat.usesFahrenheit(item)) {
       value = Thermostat.convertToFahrenheit(params.thermostatTemperatureSetpoint).toString();
@@ -381,7 +390,7 @@ class ThermostatTemperatureSetpointCommand extends GenericCommand {
     return value;
   }
 
-  static getResponseStates(item, params) {
+  static getResponseStates(params, item) {
     const states = Thermostat.getState(item);
     states.thermostatTemperatureSetpoint = params.thermostatTemperatureSetpoint;
     return states;
@@ -397,15 +406,18 @@ class ThermostatSetModeCommand extends GenericCommand {
     return command === this.type && ('thermostatMode' in params) && typeof params.thermostatMode === 'string';
   }
 
-  static getItemName(item) {
-    const members = Thermostat.getMembers(item);
-    if (!members.thermostatMode) {
-      throw { statusCode: 400 };
-    }
-    return members.thermostatMode.name;
+  static get requiresItem() {
+    return true;
   }
 
-  static convertParamsToValue(item, params) {
+  static getItemName(device) {
+    if (!device.customData || !device.customData.thermostatMode) {
+      throw { statusCode: 400 };
+    }
+    return device.customData.thermostatMode;
+  }
+
+  static convertParamsToValue(params, item) {
     const members = Thermostat.getMembers(item);
     if (!members.thermostatMode) {
       throw { statusCode: 400 };
@@ -413,7 +425,7 @@ class ThermostatSetModeCommand extends GenericCommand {
     return Thermostat.denormalizeThermostatMode(members.thermostatMode.state, params.thermostatMode);
   }
 
-  static getResponseStates(item, params) {
+  static getResponseStates(params, item) {
     const states = Thermostat.getState(item);
     states.thermostatMode = params.thermostatMode;
     return states;
