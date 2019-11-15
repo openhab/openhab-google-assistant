@@ -15,50 +15,60 @@
  * Main entry point for incoming intents from Google Assistant.
  *
  * @author Mehmet Arziman - Initial contribution
+ * @author Michael Krug - Rework
  *
  */
-'use strict';
+const OpenHAB = require('./openhab.js').OpenHAB;
+const ApiHandler = require('./apihandler.js').ApiHandler;
+const config = require('./config.js');
+const app = require('actions-on-google').smarthome();
 
-const openhab = require('./openhab.js');
-const color = require('colr');
+app.onDisconnect(() => {
+	return {};
+});
 
-exports.openhabGoogleAssistant = function(request, response) {
-	let authToken = request.headers.authorization ? request.headers.authorization.split(' ')[1] : null;
-	console.log("openhabGoogleAssistant: Cloud function called:" + JSON.stringify(request.body));
+app.onExecute(async (body, headers) => {
+	const authToken = headers.authorization ? headers.authorization.split(' ')[1] : null;
+	const apiHandler = new ApiHandler(config, authToken);
+	const payload = await new OpenHAB(apiHandler).handleExecute(body.inputs[0].payload.commands).catch(() => ({
+		errorCode: 'actionNotAvailable',
+		status: 'ERROR',
+		commands: []
+	}));
 
-	let requestBody = request.body;
-	if (!requestBody.inputs) {
-		showError(response, "openhabGoogleAssistant: Missing inputs");
-		return;
-	}
+	return {
+		requestId: body.requestId,
+		payload: payload
+	};
+});
 
-	for (let i = 0; i < requestBody.inputs.length; i++) {
-		let input = requestBody.inputs[i];
-		let intent = input.intent || "";
-		switch (intent) {
-		case "action.devices.SYNC":
-			openhab.handleSync(request, response);
-			return;
-		case "action.devices.QUERY":
-			openhab.handleQuery(request, response);
-			return;
-		case "action.devices.EXECUTE":
-			openhab.handleExecute(request, response);
-			return;
-		case "action.devices.DISCONNECT":
-			openhab.handleDisconnect(request, response);
-			return;
-		}
-	}
-	showError(response, "openhabGoogleAssistant: Missing intent");
-}
+app.onQuery(async (body, headers) => {
+	const authToken = headers.authorization ? headers.authorization.split(' ')[1] : null;
+	const apiHandler = new ApiHandler(config, authToken);
+	const payload = await new OpenHAB(apiHandler).handleQuery(body.inputs[0].payload.devices).catch(() => ({
+		errorCode: 'actionNotAvailable',
+		status: 'ERROR',
+		devices: {}
+	}));
 
+	return {
+		requestId: body.requestId,
+		payload: payload
+	};
+});
 
+app.onSync(async (body, headers) => {
+	const authToken = headers.authorization ? headers.authorization.split(' ')[1] : null;
+	const apiHandler = new ApiHandler(config, authToken);
+	const payload = await new OpenHAB(apiHandler).handleSync().catch(() => ({
+		errorCode: 'actionNotAvailable',
+		status : 'ERROR'
+	}));
 
-function showError(res, message) {
-	res.status(401).set({
-		'Access-Control-Allow-Origin': '*',
-		'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-	}).json({error: message});
-}
+	return {
+		requestId: body.requestId,
+		payload: payload
+	};
+});
 
+exports.openhabGoogleAssistant = app;

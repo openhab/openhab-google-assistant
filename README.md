@@ -12,7 +12,6 @@ The Google related parts of any Smart Home action rely on Google Home Graph, a d
 ## Requirements
 
 * Google account with "Actions on Google" and "Google Cloud Functions" access
-* oAuth2 Server/Provider (like Google Cloud or Amazon Login)
 * openHAB server that a Google Cloud service endpoint can access
 
 ## Google Cloud Functions
@@ -23,27 +22,42 @@ The Google related parts of any Smart Home action rely on Google Home Graph, a d
 curl -O https://dl.google.com/gactions/updates/bin/linux/amd64/gactions/gactions
 chmod +x gactions
 ```
-* Modify `functions\config.js`
+* Modify `functions/config.js`
   1. Change `host` to point to your openHAB Cloud instance, for example: `openhab.myserver.com`. Do not include `https`, if you do you'll get DNS errors.
   1. Change `path` to the rest API. Defaults to `/rest/items/`.
 
 Deploy the `openhabGoogleAssistant` (openHAB home automation) function:
 
 * Create a storage bucket (https://console.cloud.google.com/storage/browser)
-* cd openhab-google-assistant/functions
-* gcloud beta functions deploy openhabGoogleAssistant --runtime nodejs6 --stage-bucket <BUCKET_NAME> --trigger-http
+* `cd openhab-google-assistant/functions`
+* `gcloud beta functions deploy openhabGoogleAssistant --runtime nodejs10 --stage-bucket <BUCKET_NAME> --trigger-http --project <PROJECT ID>`
 * This commands will deploy the function to Google Cloud and give you the endpoint address.
 
 Keep the address somewhere, you'll need it (something like `https://us-central1-<PROJECT ID>.cloudfunctions.net/openhabGoogleAssistant`).
 
-## Create OAuth Credentials on Google Cloud
+## Create OAuth Credentials
 
 You'll need to create OAuth credentials to enable API access.
 
-* Visit the [Credentials Page](https://console.cloud.google.com/apis/credentials)
-  1. Select "Create Credentials" -> "OAuth client id"
-  1. Select Web Application and give it a name. I left the restrictions open.
-* Copy the client id and the client secret, you'll need these in the next step.
+Since this is only used between your Google Cloud function and your openHAB cloud server, you can choose them on your own.
+See [The Client ID and Secret - OAuth](https://www.oauth.com/oauth2-servers/client-registration/client-id-secret/) for details.
+
+* You will need a client ID and a client secret:
+  1. Create a client ID (non-guessable public identifier)
+  1. Create a client secret (sufficiently random private secret, e.g. minimum 32 char random string)
+* You'll need these in the next steps.
+
+## Setup your Database
+
+* SSH into to your openHAB Cloud instance
+* Open the MongoDB client `mongo` and enter these commands
+
+```
+use openhab
+db.oauth2clients.insert({ clientId: "<CLIENT-ID>", clientSecret: "<CLIENT SECRET>"})
+db.oauth2scopes.insert({ name: "any"})
+db.oauth2scopes.insert( { name : "google-assistant", description: "Access to openHAB Cloud specific API for Actions on Google Assistant", } )
+```
 
 ## Actions on Google
 
@@ -59,7 +73,7 @@ Here you need to develop your actions to engage users on Google Home, Pixel, and
     * Enter the client ID and client secret from the OAuth Credentials you created earlier
     * Authorization URL should be something like: `https://openhab.myserver.com/oauth2/authorize`
     * Token URL should be something like `https://openhab.myserver.com/oauth2/token`
-    * Set the scope to `google-assistant`. This links to the records you will insert into the MongoDB table `oauth2scopes` later in [Setup your Database](#setup-your-database) step below.
+    * Set the scope to `google-assistant`. This links to the records that you have inserted into the MongoDB table `oauth2scopes` in [Setup your Database](#setup-your-database).
     * Testing instructions: "None"
   1. Hit save. You're not actually going to submit this for testing, we just need to set it up so we can deploy it later.
 
@@ -115,18 +129,6 @@ gactions test --action_package action.json --project <PROJECT ID>
 
 Note: Anytime you make changes to the settings to your Action on the _Actions By Google_ interface, you'll need to repeat this step.
 
-## Setup your Database
-
-* SSH into to your openHAB Cloud instance
-* Open the mongodb client `mongo` and enter these commands
-
-```
-use openhab
-db.oauth2clients.insert({ clientId: "<CLIENT-ID>", clientSecret: "<CLIENT SECRET>"})
-db.oauth2scopes.insert({ name: "any"})
-db.oauth2scopes.insert( { name : "google-assistant", description: "Access to openHAB Cloud specific API for Actions on Google Assistant", } )
-```
-
 ## Testing & Usage on Google App
 
 * Make sure Google Play Services is up to date
@@ -142,7 +144,7 @@ db.oauth2scopes.insert( { name : "google-assistant", description: "Access to ope
 If you're lucky this works! You'll need to configure your items (below) and then sync again.
 If it didn't work, try the workaround below.
 
-To resync changes in tagging or other OpenHAB configuration, tell Google Home to `sync my devices`. In a few seconds any changes will appear.
+To resync changes in tagging or other openHAB configuration, tell Google Home to `sync my devices`. In a few seconds any changes will appear.
 
 ## Workarounds
 
@@ -174,10 +176,9 @@ To fix:
 
 Return back to the Google Home app and try to add the OpenHAB service again. You should now be able to see `[test] open hab` and add it successfully.
 
-
 ## Item configuration
 
-* In openHAB Items are exposed via HomeKit tags, the following is taken from the [HomeKit Add-on]({{base}}addons/integrations/homekit/) documentation in openHAB:
+* In openHAB Items are exposed via HomeKit tags, the following is taken from the [HomeKit Add-on](https://www.openhab.org/addons/integrations/homekit/) documentation in openHAB:
 
   ```
   Switch KitchenLights "Kitchen Lights" <light> (gKitchen) [ "Switchable" ]
@@ -185,26 +186,44 @@ Return back to the Google Home app and try to add the OpenHAB service again. You
   Color LivingroomLights "Livingroom Lights" <light> (gLivingroom) [ "Lighting" ]
   Switch SceneMovie "Livingroom Scene Movie" (gLivingroom) [ "Scene" ]
   Switch CristmasTree "Cristmas Tree" (gLivingroom) [ "Outlet" ]
- 
-  //Standalone Thermostat Sensor (just reports current ambient temperature)
-  Number HK_SF_Bedroom_Temp "Bedroom Temperature [%.1f]" [ "CurrentTemperature", "Fahrenheit"]
- 
+  Switch DoorLock "Door Lock" [ "Lock" ]
+
   //Thermostat Setup (Google requires a mode, even if you manually set it up in openHAB)
   Group g_HK_Basement_TSTAT "Basement Thermostat" [ "Thermostat", "Fahrenheit" ]
-  Number HK_Basement_Mode "Basement Heating/Cooling Mode" (g_HK_Basement_TSTAT) [ "homekit:HeatingCoolingMode" ]
-  Number HK_Basement_Temp    "Basement Temperature" (g_HK_Basement_TSTAT) [ "CurrentTemperature" ]
-  Number HK_Basement_Setpoint "Basement Setpoint" (g_HK_Basement_TSTAT) [ "TargetTemperature" ]
+  Number HK_Basement_Mode "Basement Heating/Cooling Mode" (g_HK_Basement_TSTAT) [ "homekit:TargetHeatingCoolingMode" ]
+  Number HK_Basement_Temp "Basement Temperature" (g_HK_Basement_TSTAT) [ "CurrentTemperature" ]
+  Number HK_Basement_Humid "Basement Humidity" (g_HK_Basement_TSTAT) [ "CurrentHumidity" ]
+  Number HK_Basement_Setpoint "Basement Setpoint" (g_HK_Basement_TSTAT) [ "homekit:TargetTemperature" ]
   ```
 
 Currently the following Tags are supported (also depending on Googles API capabilities):
 
-* ["Lighting"]
-* ["Switchable"]
-* ["Blinds"]
-* ["Scene"]
-* ["Outlet"]
-* ["CurrentTemperature"]
-* ["Thermostat"]
+* Switch / Dimmer / Color ["Lighting"]
+* Switch ["Switchable"]
+* Switch ["Outlet"]
+* Switch ["Fan"]
+* Switch ["CoffeeMaker"]
+* Switch ["WaterHeater"]
+* Switch ["Fireplace"]
+* Switch ["Valve"]
+* Switch ["Sprinkler"]
+* Switch ["Vacuum"]
+* Switch ["Scene"]
+* Switch ["Lock"]
+* Rollershutter ["Awning"]
+* Rollershutter ["Blinds"]
+* Rollershutter ["Curtain"]
+* Rollershutter ["Door"]
+* Rollershutter ["Garage"]
+* Rollershutter ["Gate"]
+* Rollershutter ["Pergola"]
+* Rollershutter ["Shutter"]
+* Rollershutter ["Window"]
+* Group ["Thermostat"]
+* Number ["CurrentTemperature"] as part of Thermostat.
+* Number ["CurrentHumidity"] as part of Thermostat.
+* Number ["homekit:TargetTemperature"] as part of Thermostat.
+* Number / String ["homekit:TargetHeatingCoolingMode"] as part of Thermostat.
 
 Notes Regarding Thermostat Items:
 
@@ -214,11 +233,9 @@ Notes Regarding Thermostat Items:
   * Current Temperature: Number
   * TargetTemperature: Number
 - If your thermostat does not have a mode, you should create one and manually assign a value (e.g. heat, cool, on, etc.) to have proper functionality
-- See also [HomeKit Add-on]({{base}}addons/integrations/homekit/) for further formatting details.
+- See also [HomeKit Add-on](https://www.openhab.org/addons/integrations/homekit/) for further formatting details.
 
-The following screenshots show the setup and the service linkage (https://myopenhab.org) procedure within the Google App:
-
-![openHAB Google App](/docs/openhab_google_app.png)
+More details about the setup and the service linkage (https://myopenhab.org) procedure within the Google App can be found in the [USAGE documentation](docs/USAGE.md).
 
 ## Example Voice Commands
 
@@ -253,4 +270,4 @@ gcloud beta functions logs read openhabGoogleAssistant
 * https://developers.google.com/actions/extending-the-assistant
 * https://developers.google.com/actions/smarthome/
 * https://cloud.google.com/functions/docs/how-to
-* {{base}}addons/integrations/homekit/
+* https://www.openhab.org/addons/integrations/homekit/
