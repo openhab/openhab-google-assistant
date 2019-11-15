@@ -86,7 +86,7 @@ class OpenHAB {
 				const CommandType = getCommandType(execution.command, execution.params);
 				if (!CommandType) {
 					promises.push(Promise.resolve({
-						ids: command.devices.map((device) => (device.id)),
+						ids: command.devices.map((device) => device.id),
 						status: 'ERROR',
 						errorCode: 'functionNotSupported'
 					}));

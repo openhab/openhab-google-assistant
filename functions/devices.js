@@ -39,28 +39,29 @@ class GenericDevice {
   }
 
   static getMetadata(item = {}) {
+    const config = item.metadata.ga.config;
     const customData = {
       itemType: item.type,
       deviceType: this.type
     };
-    if (item.metadata.ga.config && item.metadata.ga.config.tfaAck) {
-      customData.tfaAck = item.metadata.ga.config.tfaAck;
+    if (config && config.tfaAck) {
+      customData.tfaAck = config.tfaAck;
     }
-    if (item.metadata.ga.config && item.metadata.ga.config.tfaPin) {
-      customData.tfaPin = item.metadata.ga.config.tfaPin;
+    if (config && config.tfaPin) {
+      customData.tfaPin = config.tfaPin;
     }
     return {
       id: item.name,
       type: this.type,
       traits: this.traits,
       name: {
-        name: item.name,
-        nicknames: [],
-        defaultNames: [item.name]
+        name: item.label,
+        defaultNames: [item.label],
+        nicknames: [item.label, ...(item.metadata.synonyms ? item.metadata.synonyms.value.split(',') : [])]
       },
       willReportState: false,
-      roomHint: '',
-      structureHint: '',
+      roomHint: config && config.roomHint || '',
+      structureHint: config && config.structureHint || '',
       deviceInfo: {
         manufacturer: 'openHAB',
         model: item.type,
