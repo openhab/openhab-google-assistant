@@ -325,6 +325,9 @@ class OpenCloseCommand extends GenericCommand {
   }
 
   static convertParamsToValue(params, item, device) {
+    if (device.customData && device.customData.inverted === true) {
+      params.openPercent = 100 - params.openPercent;
+    }
     let value = params.openPercent === 0 ? 'DOWN' : params.openPercent === 100 ? 'UP' : (100 - params.openPercent).toString();
     // item can not handle OpenClose --> we will send "ON" / "OFF"
     if (device.customData && device.customData.itemType !== 'Rollershutter') {

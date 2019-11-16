@@ -358,13 +358,21 @@ class GenericOpenCloseDevice extends GenericDevice {
     ];
   }
 
+  static getMetadata(item) {
+    const metadata = super.getMetadata(item);
+    const config = item.metadata.ga.config;
+    metadata.customData.inverted = config && config.inverted === true || false;
+    return metadata;
+  }
+
   static get requiredItemType() {
     return 'Rollershutter';
   }
 
   static getState(item) {
+    const config = item.metadata.ga.config;
     return {
-      openPercent: 100 - Number(item.state)
+      openPercent: (config && config.inverted === true) ? Number(item.state) : 100 - Number(item.state)
     };
   }
 }
