@@ -583,16 +583,16 @@ class Thermostat extends GenericDevice {
     const members = {};
     item.members.forEach((member) => {
       if (member.metadata && member.metadata.ga) {
-        if (member.metadata.ga.value.toLowerCase() === 'heatingcoolingmode') {
+        if (member.metadata.ga.value.toLowerCase() === 'thermostatmode') {
           members.thermostatMode = { name: member.name, state: member.state };
         }
-        if (member.metadata.ga.value.toLowerCase() === 'targettemperature') {
+        if (member.metadata.ga.value.toLowerCase() === 'thermostattemperaturesetpoint') {
           members.thermostatTemperatureSetpoint = { name: member.name, state: member.state };
         }
-        if (member.metadata.ga.value.toLowerCase() === 'currenttemperature') {
+        if (member.metadata.ga.value.toLowerCase() === 'thermostattemperatureambient') {
           members.thermostatTemperatureAmbient = { name: member.name, state: member.state };
         }
-        if (member.metadata.ga.value.toLowerCase() === 'currenthumidity') {
+        if (member.metadata.ga.value.toLowerCase() === 'thermostathumidityambient') {
           members.thermostatHumidityAmbient = { name: member.name, state: member.state };
         }
       }
