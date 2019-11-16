@@ -60,11 +60,14 @@ class OpenHAB {
 				if (!DeviceType) {
 					throw { statusCode: 404 };
 				}
+				if (item.state === 'NULL') {
+					throw { statusCode: 406 };
+				}
 				payload.devices[device.id] = Object.assign({ online: true }, DeviceType.getState(item));
 			}).catch((error) => {
 				payload.devices[device.id] = {
 					status: 'ERROR',
-					errorCode: error.statusCode == 404 ? 'deviceNotFound' : error.statusCode == 400 ? 'notSupported' : 'deviceOffline'
+					errorCode: error.statusCode == 404 ? 'deviceNotFound' : error.statusCode == 400 ? 'notSupported' : error.statusCode == 406 ? 'deviceNotReady' : 'deviceOffline'
 				};
 			});
 		});
