@@ -23,6 +23,9 @@ const https = require('https');
 
 class ApiHandler {
   constructor(config = {}, authToken = '') {
+    if (!config.path.endsWith('/')) {
+      config.path += '/';
+    }
     this._config = config;
     this._authToken = authToken;
   }
