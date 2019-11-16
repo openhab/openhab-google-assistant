@@ -554,10 +554,19 @@ class Thermostat extends GenericDevice {
   }
 
   static getAttributes(item) {
-    return {
-      availableThermostatModes: 'off,heat,cool,on,heatcool',
+    const attributes = {
       thermostatTemperatureUnit: this.usesFahrenheit(item) ? 'F' : 'C'
     };
+    const members = this.getMembers(item);
+    if (('thermostatTemperatureAmbient' in members) &&
+      !('thermostatMode' in members) &&
+      !('thermostatTemperatureSetpoint' in members)) {
+      attributes.queryOnlyTemperatureSetting = true;
+    } else {
+      const config = item.metadata.ga.config;
+      attributes.availableThermostatModes = config && config.mode || 'off,heat,cool,on,heatcool';
+    }
+    return attributes;
   }
 
   static getMetadata(item) {
