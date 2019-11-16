@@ -78,7 +78,7 @@ class GenericCommand {
   static handlAuthAck(device = {}, challenge = {}, responseStates = {}) {
     // check if acknowledge is supported for that command
     if (!ackSupported.includes(this.type) ||
-        !device.customData || !device.customData.tfaAck || challenge.ack === true) {
+      !device.customData || !device.customData.tfaAck || challenge.ack === true) {
       return;
     }
     return {
@@ -103,12 +103,12 @@ class GenericCommand {
         return Promise.resolve();
       }
 
-      let promise = Promise.resolve(({}));
+      let getItemPromise = Promise.resolve(({}));
       if (this.requiresItem) {
-        promise = apiHandler.getItem(device.id);
+        getItemPromise = apiHandler.getItem(device.id);
       }
 
-      return promise.then((item) => {
+      return getItemPromise.then((item) => {
         const responseStates = this.getResponseStates(params, item);
         if (Object.keys(responseStates).length) {
           responseStates.online = true;
@@ -122,7 +122,11 @@ class GenericCommand {
 
         const targetItem = this.getItemName(device);
         const targetValue = this.convertParamsToValue(params, item, device);
-        return apiHandler.sendCommand(targetItem, targetValue).then(() => {
+        let sendCommandPromise = Promise.resolve();
+        if (typeof targetItem === 'string' && typeof targetValue === 'string') {
+          sendCommandPromise = apiHandler.sendCommand(targetItem, targetValue);
+        }
+        return sendCommandPromise.then(() => {
           commandsResponse.push({
             ids: [device.id],
             status: 'SUCCESS',
@@ -130,6 +134,7 @@ class GenericCommand {
           });
         });
       }).catch((error) => {
+        console.error(`openhabGoogleAssistant - ${this.type}: ERROR ${JSON.stringify(error)}`);
         commandsResponse.push({
           ids: [device.id],
           status: 'ERROR',
@@ -292,10 +297,9 @@ class ColorAbsoluteCommand extends GenericCommand {
   }
 
   static appliesTo(command, params) {
-    return command === this.type && (
-      (('color' in params) && typeof params.color === 'object') &&
-      (('spectrumHSV' in params.color) && typeof params.color.spectrumHSV === 'object')
-    );
+    return command === this.type &&
+      ('color' in params) && typeof params.color === 'object' &&
+      ('spectrumHSV' in params.color) && typeof params.color.spectrumHSV === 'object';
   }
 
   static convertParamsToValue(params) {
