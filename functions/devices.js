@@ -60,8 +60,8 @@ class GenericDevice {
         nicknames: [item.label, ...(item.metadata.synonyms ? item.metadata.synonyms.value.split(',') : [])]
       },
       willReportState: false,
-      roomHint: config && config.roomHint || '',
-      structureHint: config && config.structureHint || '',
+      roomHint: config && config.roomHint || '',
+      structureHint: config && config.structureHint || '',
       deviceInfo: {
         manufacturer: 'openHAB',
         model: item.type,
@@ -446,6 +446,31 @@ class Speaker extends GenericDevice {
   }
 }
 
+class Camera extends GenericDevice {
+  static get type() {
+    return 'action.devices.types.CAMERA';
+  }
+
+  static get traits() {
+    return [
+      'action.devices.traits.CameraStream'
+    ];
+  }
+
+  static getAttributes(item) {
+    const config = item.metadata.ga.config;
+    return {
+      cameraStreamSupportedProtocols: config && config.protocols ? config.protocols.split(',') : ['hls', 'dash'],
+      cameraStreamNeedAuthToken: config && config.token ? true : false,
+      cameraStreamNeedDrmEncryption: false
+    };
+  }
+
+  static get requiredItemType() {
+    return 'String';
+  }
+}
+
 class Thermostat extends GenericDevice {
   static get type() {
     return 'action.devices.types.THERMOSTAT';
@@ -570,6 +595,7 @@ const Devices = [
   SimpleLight, DimmableLight, ColorLight,
   Awning, Blinds, Curtain, Door, Garage, Gate, Shutter, Pergola, Window,
   Speaker,
+  Camera,
   Thermostat
 ];
 

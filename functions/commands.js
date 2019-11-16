@@ -362,6 +362,32 @@ class StartStopCommand extends GenericCommand {
   }
 }
 
+class GetCameraStreamCommand extends GenericCommand {
+  static get type() {
+    return 'action.devices.commands.GetCameraStream';
+  }
+
+  static appliesTo(command, params) {
+    return command === this.type &&
+      ('StreamToChromecast' in params) && typeof params.StreamToChromecast === 'boolean' &&
+      ('SupportedStreamProtocols' in params) && typeof params.SupportedStreamProtocols === 'object';
+  }
+
+  static get requiresItem() {
+    return true;
+  }
+
+  static convertParamsToValue() {
+    return null;
+  }
+
+  static getResponseStates(params, item) {
+    return {
+      cameraStreamAccessUrl: item.state
+    };
+  }
+}
+
 class ThermostatTemperatureSetpointCommand extends GenericCommand {
   static get type() {
     return 'action.devices.commands.ThermostatTemperatureSetpoint';
@@ -443,6 +469,7 @@ const CommandTypes = [
   ColorAbsoluteCommand,
   OpenCloseCommand,
   StartStopCommand,
+  GetCameraStreamCommand,
   ThermostatTemperatureSetpointCommand,
   ThermostatSetModeCommand
 ];
