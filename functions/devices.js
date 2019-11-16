@@ -473,6 +473,12 @@ class Camera extends GenericDevice {
   }
 }
 
+class SimpleFan extends Switch {
+  static get type() {
+    return 'action.devices.types.FAN';
+  }
+}
+
 class Fan extends GenericDevice {
   static get type() {
     return 'action.devices.types.FAN';
@@ -638,7 +644,7 @@ class Thermostat extends GenericDevice {
 }
 
 const Devices = [
-  Switch, Outlet, Fan, CoffeeMaker, WaterHeater, Fireplace,
+  Switch, Outlet, CoffeeMaker, WaterHeater, Fireplace,
   Valve,
   Sprinkler, Vacuum,
   Scene,
@@ -648,6 +654,7 @@ const Devices = [
   Awning, Blinds, Curtain, Door, Garage, Gate, Shutter, Pergola, Window,
   Speaker,
   Camera,
+  SimpleFan, Fan,
   Thermostat
 ];
 
