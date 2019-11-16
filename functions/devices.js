@@ -564,7 +564,7 @@ class Thermostat extends GenericDevice {
       attributes.queryOnlyTemperatureSetting = true;
     } else {
       const config = item.metadata.ga.config;
-      attributes.availableThermostatModes = config && config.mode || 'off,heat,cool,on,heatcool';
+      attributes.availableThermostatModes = config && config.modes || 'off,heat,cool,on,heatcool';
     }
     return attributes;
   }
