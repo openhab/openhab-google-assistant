@@ -369,6 +369,26 @@ class StartStopCommand extends GenericCommand {
   }
 }
 
+class SetFanSpeedCommand extends GenericCommand {
+  static get type() {
+    return 'action.devices.commands.SetFanSpeed';
+  }
+
+  static appliesTo(command, params) {
+    return command === this.type && ('fanSpeed' in params) && typeof params.fanSpeed === 'string';
+  }
+
+  static convertParamsToValue(params) {
+    return params.fanSpeed.toString();
+  }
+
+  static getResponseStates(params) {
+    return {
+      currentFanSpeedSetting: params.fanSpeed
+    };
+  }
+}
+
 class GetCameraStreamCommand extends GenericCommand {
   static get type() {
     return 'action.devices.commands.GetCameraStream';
@@ -476,6 +496,7 @@ const CommandTypes = [
   ColorAbsoluteCommand,
   OpenCloseCommand,
   StartStopCommand,
+  SetFanSpeedCommand,
   GetCameraStreamCommand,
   ThermostatTemperatureSetpointCommand,
   ThermostatSetModeCommand

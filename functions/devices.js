@@ -120,12 +120,6 @@ class Outlet extends Switch {
   }
 }
 
-class Fan extends Switch {
-  static get type() {
-    return 'action.devices.types.FAN';
-  }
-}
-
 class CoffeeMaker extends Switch {
   static get type() {
     return 'action.devices.types.COFFEE_MAKER';
@@ -476,6 +470,56 @@ class Camera extends GenericDevice {
 
   static get requiredItemType() {
     return 'String';
+  }
+}
+
+class Fan extends GenericDevice {
+  static get type() {
+    return 'action.devices.types.FAN';
+  }
+
+  static get traits() {
+    return [
+      'action.devices.traits.OnOff',
+      'action.devices.traits.FanSpeed'
+    ];
+  }
+
+  static getAttributes(item) {
+    const config = item.metadata.ga.config;
+    if (!config || !config.speeds) {
+      return {};
+    }
+    const attributes = {
+      availableFanSpeeds: {
+        speeds: [],
+        ordered: config.ordered === true
+      },
+      reversible: false
+    };
+    config.speeds.split(',').forEach((speedEntry) => {
+      try {
+        const [speedName, speedSynonyms] = speedEntry.split('=');
+        attributes.availableFanSpeeds.speeds.push({
+          speed_name: speedName,
+          speed_values: [{
+            speed_synonym: speedSynonyms.split(':'),
+            lang: config.lang || 'en'
+          }]
+        });
+      } catch (e) { }
+    });
+    return attributes;
+  }
+
+  static get requiredItemType() {
+    return 'Dimmer';
+  }
+
+  static getState(item) {
+    return {
+      currentFanSpeedSetting: item.state
+    };
   }
 }
 
