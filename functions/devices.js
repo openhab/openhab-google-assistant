@@ -138,6 +138,18 @@ class Fireplace extends Switch {
   }
 }
 
+class SimpleFan extends Switch {
+  static get type() {
+    return 'action.devices.types.FAN';
+  }
+}
+
+class SimpleHood extends Switch {
+  static get type() {
+    return 'action.devices.types.HOOD';
+  }
+}
+
 /* Switch items that act as open-close devices */
 
 class Valve extends GenericDevice {
@@ -473,12 +485,6 @@ class Camera extends GenericDevice {
   }
 }
 
-class SimpleFan extends Switch {
-  static get type() {
-    return 'action.devices.types.FAN';
-  }
-}
-
 class Fan extends GenericDevice {
   static get type() {
     return 'action.devices.types.FAN';
@@ -527,6 +533,12 @@ class Fan extends GenericDevice {
       currentFanSpeedSetting: item.state.toString(),
       on: item.state > 0
     };
+  }
+}
+
+class Hood extends Fan {
+  static get type() {
+    return 'action.devices.types.HOOD';
   }
 }
 
@@ -656,6 +668,7 @@ const Devices = [
   Speaker,
   Camera,
   SimpleFan, Fan,
+  SimpleHood, Hood,
   Thermostat
 ];
 
