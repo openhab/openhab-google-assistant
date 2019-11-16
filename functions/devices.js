@@ -524,7 +524,8 @@ class Fan extends GenericDevice {
 
   static getState(item) {
     return {
-      currentFanSpeedSetting: item.state
+      currentFanSpeedSetting: item.state.toString(),
+      on: item.state > 0
     };
   }
 }
