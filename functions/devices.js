@@ -554,20 +554,22 @@ class Thermostat extends GenericDevice {
 
   static getMembers(item) {
     const members = {};
-    item.members.forEach((member) => {
-      if (this.hasTag(member, 'HeatingCoolingMode') || this.hasTag(member, 'homekit:HeatingCoolingMode') || this.hasTag(member, 'homekit:TargetHeatingCoolingMode') || this.hasTag(member, 'homekit:CurrentHeatingCoolingMode')) {
-        members.thermostatMode = { name: member.name, state: member.state };
-      }
-      if (this.hasTag(member, 'TargetTemperature') || this.hasTag(member, 'homekit:TargetTemperature')) {
-        members.thermostatTemperatureSetpoint = { name: member.name, state: member.state };
-      }
-      if (this.hasTag(member, 'CurrentTemperature')) {
-        members.thermostatTemperatureAmbient = { name: member.name, state: member.state };
-      }
-      if (this.hasTag(member, 'CurrentHumidity')) {
-        members.thermostatHumidityAmbient = { name: member.name, state: member.state };
-      }
-    });
+    if (item.members && item.members.length) {
+      item.members.forEach((member) => {
+        if (this.hasTag(member, 'HeatingCoolingMode') || this.hasTag(member, 'homekit:HeatingCoolingMode') || this.hasTag(member, 'homekit:TargetHeatingCoolingMode') || this.hasTag(member, 'homekit:CurrentHeatingCoolingMode')) {
+          members.thermostatMode = { name: member.name, state: member.state };
+        }
+        if (this.hasTag(member, 'TargetTemperature') || this.hasTag(member, 'homekit:TargetTemperature')) {
+          members.thermostatTemperatureSetpoint = { name: member.name, state: member.state };
+        }
+        if (this.hasTag(member, 'CurrentTemperature')) {
+          members.thermostatTemperatureAmbient = { name: member.name, state: member.state };
+        }
+        if (this.hasTag(member, 'CurrentHumidity')) {
+          members.thermostatHumidityAmbient = { name: member.name, state: member.state };
+        }
+      });
+    }
     return members;
   }
 
@@ -604,7 +606,7 @@ class Thermostat extends GenericDevice {
   }
 
   static convertToCelsius(value = 0) {
-    return ((value - 32) * 5 / 9).toFixed(2);
+    return Number(((value - 32) * 5 / 9).toFixed(1));
   }
 }
 
