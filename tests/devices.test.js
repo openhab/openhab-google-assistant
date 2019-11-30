@@ -1,5 +1,64 @@
 const Devices = require('../functions/devices.js');
 
+describe('Test Lighting items', () => {
+  test('Switch Lighting type', () => {
+    expect(Devices.SimpleLight.appliesTo({
+      type: 'Switch',
+      tags: [
+        'Lighting'
+      ]
+    })).toBe(true);
+  });
+
+  test('Switch Group Lighting type', () => {
+    expect(Devices.SimpleLight.appliesTo({
+      type: 'Group',
+      groupType: 'Switch',
+      tags: [
+        'Lighting'
+      ]
+    })).toBe(true);
+  });
+
+  test('Dimmer Lighting type', () => {
+    expect(Devices.DimmableLight.appliesTo({
+      type: 'Dimmer',
+      tags: [
+        'Lighting'
+      ]
+    })).toBe(true);
+  });
+
+  test('Dimmer Group Lighting type', () => {
+    expect(Devices.DimmableLight.appliesTo({
+      type: 'Group',
+      groupType: 'Dimmer',
+      tags: [
+        'Lighting'
+      ]
+    })).toBe(true);
+  });
+
+  test('Color Lighting type', () => {
+    expect(Devices.ColorLight.appliesTo({
+      type: 'Color',
+      tags: [
+        'Lighting'
+      ]
+    })).toBe(true);
+  });
+
+  test('Color Group Lighting type', () => {
+    expect(Devices.ColorLight.appliesTo({
+      type: 'Group',
+      groupType: 'Color',
+      tags: [
+        'Lighting'
+      ]
+    })).toBe(true);
+  });
+});
+
 describe('Test item for containing tag', () => {
   const item = {
     tags: [
@@ -130,13 +189,13 @@ describe('Test Thermostat item', () => {
           'CurrentTemperature'
         ],
         state: '10'
-      },{
+      }, {
         type: 'Number',
         tags: [
           'TargetTemperature'
         ],
         state: '10'
-      },{
+      }, {
         type: 'Number',
         tags: [
           'HeatingCoolingMode'
@@ -160,19 +219,19 @@ describe('Test Thermostat item', () => {
           'CurrentTemperature'
         ],
         state: '10'
-      },{
+      }, {
         type: 'Number',
         tags: [
           'TargetTemperature'
         ],
         state: '10'
-      },{
+      }, {
         type: 'Number',
         tags: [
           'HeatingCoolingMode'
         ],
         state: '1'
-      },{
+      }, {
         type: 'Number',
         tags: [
           'CurrentHumidity'
