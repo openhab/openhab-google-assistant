@@ -1,5 +1,5 @@
 {
-  "name": "openHAB.google-assistant-smarthome",
+  "name": "openhab.google-assistant-smarthome",
   "version": "2.0.0",
   "description": "A Google Assistant, Actions on Google based implementation for openHAB",
   "main": "functions/index.js",
@@ -11,6 +11,10 @@
   "contributors": [
     "Michael Krug"
   ],
+  "scripts": {
+    "start": "node testServer.js",
+    "test": "jest"
+  },
   "license": "EPL-2.0",
   "bugs": {
     "url": "https://github.com/openhab/openhab-google-assistant/issues"
@@ -19,5 +23,9 @@
   "dependencies": {
     "body-parser": "^1.19.0",
     "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.23",
+    "jest": "^24.9.0"
   }
 }
