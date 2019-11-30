@@ -313,9 +313,13 @@ class DimmableLight extends GenericDevice {
   }
 
   static getState(item) {
+    let brightness = Number(item.state);
+    if (isNaN(brightness)) {
+      brightness = 0;
+    }
     return {
-      on: item.state > 0,
-      brightness: item.state
+      on: brightness > 0,
+      brightness: brightness
     };
   }
 }
@@ -583,16 +587,16 @@ class Thermostat extends GenericDevice {
 
   static normalizeThermostatMode(mode) {
     let normalizedMode = mode.replace('-', '');
-    const intMode = parseInt(mode);
+    const intMode = Number(mode);
     if (!isNaN(intMode)) {
       normalizedMode = intMode in this._modeMap ? this._modeMap[intMode] : 'off';
     }
-    return normalizedMode.toLowerCase()
+    return normalizedMode.toLowerCase();
   }
 
   static denormalizeThermostatMode(oldMode, newMode) {
     let denormalizedMode = newMode.replace('-', '').replace('heatcool', 'on');
-    if (!isNaN(parseInt(oldMode))) {
+    if (!isNaN(Number(oldMode))) {
       denormalizedMode = this._modeMap.indexOf(newMode);
       if (denormalizedMode < 0) {
         denormalizedMode = 0;
