@@ -613,22 +613,24 @@ class Thermostat extends GenericDevice {
 
   static getMembers(item) {
     const members = {};
-    item.members.forEach((member) => {
-      if (member.metadata && member.metadata.ga) {
-        if (member.metadata.ga.value.toLowerCase() === 'thermostatmode') {
-          members.thermostatMode = { name: member.name, state: member.state };
+    if (item.members && item.members.length) {
+      item.members.forEach((member) => {
+        if (member.metadata && member.metadata.ga) {
+          if (member.metadata.ga.value.toLowerCase() === 'thermostatmode') {
+            members.thermostatMode = { name: member.name, state: member.state };
+          }
+          if (member.metadata.ga.value.toLowerCase() === 'thermostattemperaturesetpoint') {
+            members.thermostatTemperatureSetpoint = { name: member.name, state: member.state };
+          }
+          if (member.metadata.ga.value.toLowerCase() === 'thermostattemperatureambient') {
+            members.thermostatTemperatureAmbient = { name: member.name, state: member.state };
+          }
+          if (member.metadata.ga.value.toLowerCase() === 'thermostathumidityambient') {
+            members.thermostatHumidityAmbient = { name: member.name, state: member.state };
+          }
         }
-        if (member.metadata.ga.value.toLowerCase() === 'thermostattemperaturesetpoint') {
-          members.thermostatTemperatureSetpoint = { name: member.name, state: member.state };
-        }
-        if (member.metadata.ga.value.toLowerCase() === 'thermostattemperatureambient') {
-          members.thermostatTemperatureAmbient = { name: member.name, state: member.state };
-        }
-        if (member.metadata.ga.value.toLowerCase() === 'thermostathumidityambient') {
-          members.thermostatHumidityAmbient = { name: member.name, state: member.state };
-        }
-      }
-    });
+      });
+    }
     return members;
   }
 
@@ -665,7 +667,7 @@ class Thermostat extends GenericDevice {
   }
 
   static convertToCelsius(value = 0) {
-    return ((value - 32) * 5 / 9).toFixed(2);
+    return Number(((value - 32) * 5 / 9).toFixed(1));
   }
 }
 
