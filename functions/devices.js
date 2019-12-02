@@ -17,12 +17,16 @@
  * @author Michael Krug
  *
  */
-const getDeviceForItem = (item) => {
+const getDeviceForItem = (item = {}) => {
   return Devices.find((device) => (
     item.metadata && item.metadata.ga &&
     device.type.toLowerCase() === `action.devices.types.${item.metadata.ga.value}`.toLowerCase() &&
     device.checkItemType(item)
   ));
+};
+
+const getConfig = (item = {}) => {
+  return item && item.metadata && item.metadata.ga && item.metadata.ga.config || {};
 };
 
 class GenericDevice {
@@ -39,17 +43,7 @@ class GenericDevice {
   }
 
   static getMetadata(item = {}) {
-    const config = item.metadata.ga.config;
-    const customData = {
-      itemType: item.type,
-      deviceType: this.type
-    };
-    if (config && config.tfaAck) {
-      customData.tfaAck = config.tfaAck;
-    }
-    if (config && config.tfaPin) {
-      customData.tfaPin = config.tfaPin;
-    }
+    const config = getConfig(item);
     return {
       id: item.name,
       type: this.type,
@@ -57,11 +51,11 @@ class GenericDevice {
       name: {
         name: item.label,
         defaultNames: [item.label],
-        nicknames: [item.label, ...(item.metadata.synonyms ? item.metadata.synonyms.value.split(',') : [])]
+        nicknames: [item.label, ...(item.metadata && item.metadata.synonyms ? item.metadata.synonyms.value.split(',') : [])]
       },
       willReportState: false,
-      roomHint: config && config.roomHint || '',
-      structureHint: config && config.structureHint || '',
+      roomHint: config.roomHint,
+      structureHint: config.structureHint,
       deviceInfo: {
         manufacturer: 'openHAB',
         model: item.type,
@@ -69,7 +63,12 @@ class GenericDevice {
         swVersion: '2.4.0'
       },
       attributes: this.getAttributes(item),
-      customData: customData
+      customData: {
+        itemType: item.type,
+        deviceType: this.type,
+        tfaAck: config.tfaAck,
+        tfaPin: config.tfaPin
+      }
     };
   }
 
@@ -370,8 +369,7 @@ class GenericOpenCloseDevice extends GenericDevice {
 
   static getMetadata(item) {
     const metadata = super.getMetadata(item);
-    const config = item.metadata.ga.config;
-    metadata.customData.inverted = config && config.inverted === true || false;
+    metadata.customData.inverted = getConfig(item).inverted === true || false;
     return metadata;
   }
 
@@ -380,9 +378,8 @@ class GenericOpenCloseDevice extends GenericDevice {
   }
 
   static getState(item) {
-    const config = item.metadata.ga.config;
     return {
-      openPercent: (config && config.inverted === true) ? Number(item.state) : 100 - Number(item.state)
+      openPercent: getConfig(item).inverted === true ? Number(item.state) : 100 - Number(item.state)
     };
   }
 }
@@ -476,10 +473,9 @@ class Camera extends GenericDevice {
   }
 
   static getAttributes(item) {
-    const config = item.metadata.ga.config;
     return {
-      cameraStreamSupportedProtocols: config && config.protocols ? config.protocols.split(',') : ['hls', 'dash'],
-      cameraStreamNeedAuthToken: config && config.token ? true : false,
+      cameraStreamSupportedProtocols: (getConfig(item).protocols || 'hls,dash').split(','),
+      cameraStreamNeedAuthToken: getConfig(item).token ? true : false,
       cameraStreamNeedDrmEncryption: false
     };
   }
@@ -502,7 +498,7 @@ class Fan extends GenericDevice {
   }
 
   static getAttributes(item) {
-    const config = item.metadata.ga.config;
+    const config = getConfig(item);
     if (!config || !config.speeds) {
       return {};
     }
@@ -567,8 +563,7 @@ class Thermostat extends GenericDevice {
       !('thermostatTemperatureSetpoint' in members)) {
       attributes.queryOnlyTemperatureSetting = true;
     } else {
-      const config = item.metadata.ga.config;
-      attributes.availableThermostatModes = config && config.modes || 'off,heat,cool,on,heatcool';
+      attributes.availableThermostatModes = getConfig(item).modes || 'off,heat,cool,on,heatcool';
     }
     return attributes;
   }
@@ -635,7 +630,7 @@ class Thermostat extends GenericDevice {
   }
 
   static usesFahrenheit(item) {
-    return item.metadata.ga.config && item.metadata.ga.config.useFahrenheit === true;
+    return getConfig(item).useFahrenheit === true;
   }
 
   static get _modeMap() {
