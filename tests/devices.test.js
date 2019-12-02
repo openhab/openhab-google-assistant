@@ -60,7 +60,7 @@ describe('Test Lighting items', () => {
 });
 
 describe('Test Thermostat item', () => {
-  test('appliesTo', () => {
+  test('getDeviceForItem tag', () => {
     expect(Devices.getDeviceForItem({
       type: 'Group',
       tags: [
@@ -83,6 +83,35 @@ describe('Test Thermostat item', () => {
     })).toBe(undefined);
   });
 
+  test('getDeviceForItem metadata', () => {
+    expect(Devices.getDeviceForItem({
+      type: 'Group',
+      metadata: {
+        ga: {
+          value: 'Thermostat'
+        }
+      }
+    }).name).toBe('Thermostat');
+
+    expect(Devices.getDeviceForItem({
+      type: 'Switch',
+      metadata: {
+        ga: {
+          value: 'Thermostat'
+        }
+      }
+    })).toBe(undefined);
+
+    expect(Devices.getDeviceForItem({
+      type: 'Group',
+      metadata: {
+        ga: {
+          value: 'Something'
+        }
+      }
+    })).toBe(undefined);
+  });
+
   test('usesFahrenheit tag', () => {
     expect(Devices.Thermostat.usesFahrenheit({
       tags: [
@@ -92,7 +121,20 @@ describe('Test Thermostat item', () => {
     })).toBe(true);
   });
 
-  test('getAttributes', () => {
+  test('usesFahrenheit metadata', () => {
+    expect(Devices.Thermostat.usesFahrenheit({
+      metadata: {
+        ga: {
+          value: 'Thermostat',
+          config: {
+            useFahrenheit: true
+          }
+        }
+      }
+    })).toBe(true);
+  });
+
+  test('getAttributes tag', () => {
     expect(Devices.Thermostat.getAttributes({
       tags: [
         'Thermostat',
@@ -109,6 +151,36 @@ describe('Test Thermostat item', () => {
       ]
     })).toStrictEqual({
       'availableThermostatModes': 'off,heat,cool,on,heatcool',
+      'thermostatTemperatureUnit': 'C',
+    });
+  });
+
+  test('getAttributes metadata', () => {
+    expect(Devices.Thermostat.getAttributes({
+      metadata: {
+        ga: {
+          value: 'Thermostat',
+          config: {
+            useFahrenheit: true
+          }
+        }
+      }
+    })).toStrictEqual({
+      'availableThermostatModes': 'off,heat,cool,on,heatcool',
+      'thermostatTemperatureUnit': 'F',
+    });
+
+    expect(Devices.Thermostat.getAttributes({
+      metadata: {
+        ga: {
+          value: 'Thermostat',
+          config: {
+            modes: 'on,off'
+          }
+        }
+      }
+    })).toStrictEqual({
+      'availableThermostatModes': 'on,off',
       'thermostatTemperatureUnit': 'C',
     });
   });
@@ -145,7 +217,7 @@ describe('Test Thermostat item', () => {
     expect(Devices.Thermostat.denormalizeThermostatMode('3', 'on')).toEqual('3');
   });
 
-  test('getState', () => {
+  test('getState tag', () => {
     expect(Devices.Thermostat.getState({
       type: 'Group',
       tags: [
@@ -170,7 +242,7 @@ describe('Test Thermostat item', () => {
         tags: [
           'TargetTemperature'
         ],
-        state: '10'
+        state: '20'
       }, {
         type: 'Number',
         tags: [
@@ -180,7 +252,7 @@ describe('Test Thermostat item', () => {
       }]
     })).toStrictEqual({
       'thermostatTemperatureAmbient': -12.2,
-      'thermostatTemperatureSetpoint': -12.2,
+      'thermostatTemperatureSetpoint': -6.7,
       'thermostatMode': 'off'
     });
 
@@ -200,7 +272,7 @@ describe('Test Thermostat item', () => {
         tags: [
           'TargetTemperature'
         ],
-        state: '10'
+        state: '20'
       }, {
         type: 'Number',
         tags: [
@@ -216,9 +288,109 @@ describe('Test Thermostat item', () => {
       }]
     })).toStrictEqual({
       'thermostatTemperatureAmbient': 10,
-      'thermostatTemperatureSetpoint': 10,
+      'thermostatTemperatureSetpoint': 20,
       'thermostatMode': 'heat',
       'thermostatHumidityAmbient': 50,
     });
   });
+
+  test('getState metadata', () => {
+    expect(Devices.Thermostat.getState({
+      type: 'Group',
+      metadata: {
+        ga: {
+          value: 'Thermostat'
+        }
+      }
+    })).toStrictEqual({});
+
+    expect(Devices.Thermostat.getState({
+      type: 'Group',
+      metadata: {
+        ga: {
+          value: 'Thermostat',
+          config: {
+            useFahrenheit: true
+          }
+        }
+      },
+      members: [{
+        type: 'Number',
+        metadata: {
+          ga: {
+            value: 'thermostatTemperatureAmbient'
+          }
+        },
+        state: '10'
+      }, {
+        type: 'Number',
+        metadata: {
+          ga: {
+            value: 'thermostatTemperatureSetpoint'
+          }
+        },
+        state: '20'
+      }, {
+        type: 'Number',
+        metadata: {
+          ga: {
+            value: 'thermostatMode'
+          }
+        },
+        state: 'off'
+      }]
+    })).toStrictEqual({
+      'thermostatTemperatureAmbient': -12.2,
+      'thermostatTemperatureSetpoint': -6.7,
+      'thermostatMode': 'off'
+    });
+
+    expect(Devices.Thermostat.getState({
+      type: 'Group',
+      metadata: {
+        ga: {
+          value: 'Thermostat'
+        }
+      },
+      members: [{
+        type: 'Number',
+        metadata: {
+          ga: {
+            value: 'thermostatTemperatureAmbient'
+          }
+        },
+        state: '10'
+      }, {
+        type: 'Number',
+        metadata: {
+          ga: {
+            value: 'thermostatTemperatureSetpoint'
+          }
+        },
+        state: '20'
+      }, {
+        type: 'Number',
+        metadata: {
+          ga: {
+            value: 'thermostatMode'
+          }
+        },
+        state: '1'
+      }, {
+        type: 'Number',
+        metadata: {
+          ga: {
+            value: 'thermostatHumidityAmbient'
+          }
+        },
+        state: '50'
+      }]
+    })).toStrictEqual({
+      'thermostatTemperatureAmbient': 10,
+      'thermostatTemperatureSetpoint': 20,
+      'thermostatMode': 'heat',
+      'thermostatHumidityAmbient': 50,
+    });
+  });
+
 });
