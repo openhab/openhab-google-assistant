@@ -2,112 +2,88 @@ const Devices = require('../functions/devices.js');
 
 describe('Test Lighting items', () => {
   test('Switch Lighting type', () => {
-    expect(Devices.SimpleLight.appliesTo({
+    expect(Devices.getDeviceForItem({
       type: 'Switch',
       tags: [
         'Lighting'
       ]
-    })).toBe(true);
+    }).name).toBe('SimpleLight');
   });
 
   test('Switch Group Lighting type', () => {
-    expect(Devices.SimpleLight.appliesTo({
+    expect(Devices.getDeviceForItem({
       type: 'Group',
       groupType: 'Switch',
       tags: [
         'Lighting'
       ]
-    })).toBe(true);
+    }).name).toBe('SimpleLight');
   });
 
   test('Dimmer Lighting type', () => {
-    expect(Devices.DimmableLight.appliesTo({
+    expect(Devices.getDeviceForItem({
       type: 'Dimmer',
       tags: [
         'Lighting'
       ]
-    })).toBe(true);
+    }).name).toBe('DimmableLight');
   });
 
   test('Dimmer Group Lighting type', () => {
-    expect(Devices.DimmableLight.appliesTo({
+    expect(Devices.getDeviceForItem({
       type: 'Group',
       groupType: 'Dimmer',
       tags: [
         'Lighting'
       ]
-    })).toBe(true);
+    }).name).toBe('DimmableLight');
   });
 
   test('Color Lighting type', () => {
-    expect(Devices.ColorLight.appliesTo({
+    expect(Devices.getDeviceForItem({
       type: 'Color',
       tags: [
         'Lighting'
       ]
-    })).toBe(true);
+    }).name).toBe('ColorLight');
   });
 
   test('Color Group Lighting type', () => {
-    expect(Devices.ColorLight.appliesTo({
+    expect(Devices.getDeviceForItem({
       type: 'Group',
       groupType: 'Color',
       tags: [
         'Lighting'
       ]
-    })).toBe(true);
-  });
-});
-
-describe('Test item for containing tag', () => {
-  const item = {
-    tags: [
-      'testTag'
-    ]
-  };
-
-  test('same case', () => {
-    expect(Devices.Switch.hasTag(item, 'testTag')).toBe(true);
-  });
-
-  test('different case', () => {
-    expect(Devices.Switch.hasTag(item, 'testtag')).toBe(true);
-  });
-
-  test('wrong writing', () => {
-    expect(Devices.Switch.hasTag(item, 'test-tag')).toBe(false);
-  });
-
-  test('empty tags', () => {
-    expect(Devices.Switch.hasTag({ tags: [] }, 'testTag')).toBe(false);
+    }).name).toBe('ColorLight');
   });
 });
 
 describe('Test Thermostat item', () => {
   test('appliesTo', () => {
-    expect(Devices.Thermostat.appliesTo({
+    expect(Devices.getDeviceForItem({
       type: 'Group',
       tags: [
         'Thermostat'
       ]
-    })).toBe(true);
+    }).name).toBe('Thermostat');
 
-    expect(Devices.Thermostat.appliesTo({
+    expect(Devices.getDeviceForItem({
       type: 'Switch',
       tags: [
         'Thermostat'
       ]
-    })).toBe(false);
+    })).toBe(undefined);
 
-    expect(Devices.Thermostat.appliesTo({
+    expect(Devices.getDeviceForItem({
       type: 'Group',
       tags: [
         'Something'
       ]
-    })).toBe(false);
+    })).toBe(undefined);
   });
 
-  test('usesFahrenheit', () => {
+  test('usesFahrenheit tag', () => {
     expect(Devices.Thermostat.usesFahrenheit({
       tags: [
         'Thermostat',

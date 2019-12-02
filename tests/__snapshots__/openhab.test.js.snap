@@ -6,20 +6,29 @@ Object {
     Object {
       "attributes": Object {},
       "customData": Object {
-        "itemTag": "Lighting",
+        "deviceType": "action.devices.types.LIGHT",
         "itemType": "Switch",
-        "openhabVersion": "2.4.0",
+        "tfaAck": undefined,
+        "tfaPin": undefined,
       },
       "deviceInfo": Object {
         "hwVersion": "2.4.0",
         "manufacturer": "openHAB",
-        "model": "Lighting",
+        "model": "Switch",
         "swVersion": "2.4.0",
       },
       "id": "MySwitch",
       "name": Object {
+        "defaultNames": Array [
+          "SwitchLight",
+        ],
         "name": "SwitchLight",
+        "nicknames": Array [
+          "SwitchLight",
+        ],
       },
+      "roomHint": undefined,
+      "structureHint": undefined,
       "traits": Array [
         "action.devices.traits.OnOff",
       ],
@@ -29,20 +38,29 @@ Object {
     Object {
       "attributes": Object {},
       "customData": Object {
-        "itemTag": "Lighting",
+        "deviceType": "action.devices.types.LIGHT",
         "itemType": "Dimmer",
-        "openhabVersion": "2.4.0",
+        "tfaAck": undefined,
+        "tfaPin": undefined,
       },
       "deviceInfo": Object {
         "hwVersion": "2.4.0",
         "manufacturer": "openHAB",
-        "model": "Lighting",
+        "model": "Dimmer",
         "swVersion": "2.4.0",
       },
       "id": "MyDimmer",
       "name": Object {
+        "defaultNames": Array [
+          "DimmLight",
+        ],
         "name": "DimmLight",
+        "nicknames": Array [
+          "DimmLight",
+        ],
       },
+      "roomHint": undefined,
+      "structureHint": undefined,
       "traits": Array [
         "action.devices.traits.OnOff",
         "action.devices.traits.Brightness",
@@ -55,20 +73,29 @@ Object {
         "colorModel": "hsv",
       },
       "customData": Object {
-        "itemTag": "Lighting",
+        "deviceType": "action.devices.types.LIGHT",
         "itemType": "Color",
-        "openhabVersion": "2.4.0",
+        "tfaAck": undefined,
+        "tfaPin": undefined,
       },
       "deviceInfo": Object {
         "hwVersion": "2.4.0",
         "manufacturer": "openHAB",
-        "model": "Lighting",
+        "model": "Color",
         "swVersion": "2.4.0",
       },
       "id": "MyLight",
       "name": Object {
+        "defaultNames": Array [
+          "ColorLight",
+        ],
         "name": "ColorLight",
+        "nicknames": Array [
+          "ColorLight",
+        ],
       },
+      "roomHint": undefined,
+      "structureHint": undefined,
       "traits": Array [
         "action.devices.traits.OnOff",
         "action.devices.traits.Brightness",
@@ -80,20 +107,29 @@ Object {
     Object {
       "attributes": Object {},
       "customData": Object {
-        "itemTag": "Lighting",
+        "deviceType": "action.devices.types.LIGHT",
         "itemType": "Group",
-        "openhabVersion": "2.4.0",
+        "tfaAck": undefined,
+        "tfaPin": undefined,
       },
       "deviceInfo": Object {
         "hwVersion": "2.4.0",
         "manufacturer": "openHAB",
-        "model": "Lighting",
+        "model": "Group",
         "swVersion": "2.4.0",
       },
       "id": "MyLightGroup",
       "name": Object {
+        "defaultNames": Array [
+          "GroupLight",
+        ],
         "name": "GroupLight",
+        "nicknames": Array [
+          "GroupLight",
+        ],
       },
+      "roomHint": undefined,
+      "structureHint": undefined,
       "traits": Array [
         "action.devices.traits.OnOff",
       ],
@@ -103,20 +139,29 @@ Object {
     Object {
       "attributes": Object {},
       "customData": Object {
-        "itemTag": "Lighting",
+        "deviceType": "action.devices.types.LIGHT",
         "itemType": "Group",
-        "openhabVersion": "2.4.0",
+        "tfaAck": undefined,
+        "tfaPin": undefined,
       },
       "deviceInfo": Object {
         "hwVersion": "2.4.0",
         "manufacturer": "openHAB",
-        "model": "Lighting",
+        "model": "Group",
         "swVersion": "2.4.0",
       },
       "id": "MyDimmerGroup",
       "name": Object {
+        "defaultNames": Array [
+          "GroupDimmer",
+        ],
         "name": "GroupDimmer",
+        "nicknames": Array [
+          "GroupDimmer",
+        ],
       },
+      "roomHint": undefined,
+      "structureHint": undefined,
       "traits": Array [
         "action.devices.traits.OnOff",
         "action.devices.traits.Brightness",
@@ -129,20 +174,29 @@ Object {
         "colorModel": "hsv",
       },
       "customData": Object {
-        "itemTag": "Lighting",
+        "deviceType": "action.devices.types.LIGHT",
         "itemType": "Group",
-        "openhabVersion": "2.4.0",
+        "tfaAck": undefined,
+        "tfaPin": undefined,
       },
       "deviceInfo": Object {
         "hwVersion": "2.4.0",
         "manufacturer": "openHAB",
-        "model": "Lighting",
+        "model": "Group",
         "swVersion": "2.4.0",
       },
       "id": "MyColorGroup",
       "name": Object {
+        "defaultNames": Array [
+          "GroupColor",
+        ],
         "name": "GroupColor",
+        "nicknames": Array [
+          "GroupColor",
+        ],
       },
+      "roomHint": undefined,
+      "structureHint": undefined,
       "traits": Array [
         "action.devices.traits.OnOff",
         "action.devices.traits.Brightness",

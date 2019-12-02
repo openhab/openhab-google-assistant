@@ -17,11 +17,18 @@
  * @author Michael Krug
  *
  */
+
+const hasTag = (item = {}, tag = '') => {
+  return item.tags && item.tags.map(t => t.toLowerCase()).includes(tag.toLowerCase());
+};
+
 const getDeviceForItem = (item = {}) => {
   return Devices.find((device) => (
-    item.metadata && item.metadata.ga &&
-    device.type.toLowerCase() === `action.devices.types.${item.metadata.ga.value}`.toLowerCase() &&
-    device.checkItemType(item)
+    (
+      item.metadata && item.metadata.ga &&
+      device.type.toLowerCase() === `action.devices.types.${item.metadata.ga.value}`.toLowerCase() ||
+      hasTag(item, device.type.substr(21).replace('SWITCH', 'SWITCHABLE').replace('LIGHT', 'LIGHTING'))
+    ) && device.checkItemType(item)
   ));
 };
 
@@ -623,6 +630,19 @@ class Thermostat extends GenericDevice {
           if (member.metadata.ga.value.toLowerCase() === 'thermostathumidityambient') {
             members.thermostatHumidityAmbient = { name: member.name, state: member.state };
           }
+        } else {
+          if (hasTag(member, 'HeatingCoolingMode') || hasTag(member, 'homekit:HeatingCoolingMode') || hasTag(member, 'homekit:TargetHeatingCoolingMode') || hasTag(member, 'homekit:CurrentHeatingCoolingMode')) {
+            members.thermostatMode = { name: member.name, state: member.state };
+          }
+          if (hasTag(member, 'TargetTemperature') || hasTag(member, 'homekit:TargetTemperature')) {
+            members.thermostatTemperatureSetpoint = { name: member.name, state: member.state };
+          }
+          if (hasTag(member, 'CurrentTemperature')) {
+            members.thermostatTemperatureAmbient = { name: member.name, state: member.state };
+          }
+          if (hasTag(member, 'CurrentHumidity')) {
+            members.thermostatHumidityAmbient = { name: member.name, state: member.state };
+          }
         }
       });
     }
@@ -630,7 +650,7 @@ class Thermostat extends GenericDevice {
   }
 
   static usesFahrenheit(item) {
-    return getConfig(item).useFahrenheit === true;
+    return getConfig(item).useFahrenheit === true || hasTag(item, 'Fahrenheit');
   }
 
   static get _modeMap() {
