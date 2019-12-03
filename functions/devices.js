@@ -312,10 +312,7 @@ class DimmableLight extends GenericDevice {
   }
 
   static getState(item) {
-    let brightness = Number(item.state);
-    if (isNaN(brightness)) {
-      brightness = 0;
-    }
+    let brightness = Number(item.state) || 0;
     return {
       on: brightness > 0,
       brightness: brightness
@@ -376,7 +373,7 @@ class GenericOpenCloseDevice extends GenericDevice {
 
   static getMetadata(item) {
     const metadata = super.getMetadata(item);
-    metadata.customData.inverted = getConfig(item).inverted === true || false;
+    metadata.customData.inverted = getConfig(item).inverted === true;
     return metadata;
   }
 
@@ -461,9 +458,10 @@ class Speaker extends GenericDevice {
   }
 
   static getState(item) {
+    const volume = Number(item.state) || 0;
     return {
-      currentVolume: item.state,
-      isMuted: item.state === 0
+      currentVolume: volume,
+      isMuted: volume === 0
     };
   }
 }
@@ -538,7 +536,7 @@ class Fan extends GenericDevice {
   static getState(item) {
     return {
       currentFanSpeedSetting: item.state.toString(),
-      on: item.state > 0
+      on: Number(item.state) > 0
     };
   }
 }
