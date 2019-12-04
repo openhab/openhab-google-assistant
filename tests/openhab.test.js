@@ -654,8 +654,24 @@ describe('Test EXECUTE', () => {
   });
 
   test('ColorAbsolute Temperature', async () => {
+    const item =
+    {
+      "link": "https://openhab.example.org/rest/items/MyColor",
+      "state": "50,50,50",
+      "type": "Switch",
+      "name": "MyColor",
+      "label": "ColorLight",
+      "metadata": {
+        "ga": {
+          "value": "LIGHT"
+        }
+      },
+      "groupNames": []
+    };
+
     const getItemMock = jest.fn();
     const sendCommandMock = jest.fn();
+    getItemMock.mockReturnValue(Promise.resolve(item));
     sendCommandMock.mockReturnValue(Promise.resolve());
 
     const apiHandler = {
@@ -679,8 +695,8 @@ describe('Test EXECUTE', () => {
 
     const payload = await new OpenHAB(apiHandler).handleExecute(commands);
 
-    expect(getItemMock).not.toHaveBeenCalled();
-    expect(sendCommandMock).toBeCalledWith('MyColor', '26.97,0,100');
+    expect(getItemMock).toHaveBeenCalled();
+    expect(sendCommandMock).toBeCalledWith('MyColor', '26.97,34.9,50');
     expect(payload).toStrictEqual({
       "commands": [{
         "ids": [

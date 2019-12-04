@@ -322,9 +322,14 @@ class ColorAbsoluteTemperatureCommand extends GenericCommand {
       ('temperature' in params.color) && typeof params.color.temperature === 'number';
   }
 
-  static convertParamsToValue(params) {
+  static get requiresItem() {
+    return true;
+  }
+
+  static convertParamsToValue(params, item) {
     const hsv = this.rgb2hsv(this.kelvin2rgb(params.color.temperature));
-    return [hsv.hue, hsv.saturation * 100, hsv.value * 100].join(',');
+    const hsvArray = item.state.split(",").map((val) => Number(val));
+    return [Math.round(hsv.hue * 100) / 100, Math.round(hsv.saturation * 1000) / 10, hsvArray[2]].join(',');
   }
 
   static getResponseStates(params) {
@@ -354,8 +359,8 @@ class ColorAbsoluteTemperatureCommand extends GenericCommand {
     let v = Math.max(r, g, b), n = v - Math.min(r, g, b);
     let h = n && ((v == r) ? (g - b) / n : ((v == g) ? 2 + (b - r) / n : 4 + (r - g) / n));
     return {
-      hue: Math.round(6000 * (h < 0 ? h + 6 : h)) / 100,
-      saturation: Math.round(v && n / v),
+      hue: 60 * (h < 0 ? h + 6 : h),
+      saturation: v && n / v,
       value: v
     };
   }
