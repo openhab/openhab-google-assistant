@@ -392,5 +392,4 @@ describe('Test Thermostat item', () => {
       'thermostatHumidityAmbient': 50,
     });
   });
-
 });

@@ -7,7 +7,6 @@ describe('Test SYNC', () => {
       {
         "link": "https://openhab.example.org/rest/items/MySwitch",
         "state": "OFF",
-        "editable": false,
         "type": "Switch",
         "name": "MySwitch",
         "label": "SwitchLight",
@@ -19,7 +18,6 @@ describe('Test SYNC', () => {
       {
         "link": "https://openhab.example.org/rest/items/MyDimmer",
         "state": "0",
-        "editable": false,
         "type": "Dimmer",
         "name": "MyDimmer",
         "label": "DimmLight",
@@ -31,7 +29,6 @@ describe('Test SYNC', () => {
       {
         "link": "https://openhab.example.org/rest/items/MyLight",
         "state": "0,0,0",
-        "editable": false,
         "type": "Color",
         "name": "MyLight",
         "label": "ColorLight",
@@ -44,7 +41,6 @@ describe('Test SYNC', () => {
         "members": [],
         "link": "https://openhab.example.org/rest/items/MyLightGroup",
         "state": "NULL",
-        "editable": false,
         "type": "Group",
         "groupType": "Switch",
         "name": "MyLightGroup",
@@ -58,7 +54,6 @@ describe('Test SYNC', () => {
         "members": [],
         "link": "https://openhab.example.org/rest/items/MyDimmerGroup",
         "state": "NULL",
-        "editable": false,
         "type": "Group",
         "groupType": "Dimmer",
         "name": "MyDimmerGroup",
@@ -72,7 +67,6 @@ describe('Test SYNC', () => {
         "members": [],
         "link": "https://openhab.example.org/rest/items/MyColorGroup",
         "state": "NULL",
-        "editable": false,
         "type": "Group",
         "groupType": "Color",
         "name": "MyColorGroup",
@@ -103,7 +97,6 @@ describe('Test QUERY', () => {
     {
       "link": "https://openhab.example.org/rest/items/MySwitch",
       "state": "OFF",
-      "editable": false,
       "type": "Switch",
       "name": "MySwitch",
       "label": "SwitchLight",
@@ -139,7 +132,6 @@ describe('Test QUERY', () => {
     {
       "link": "https://openhab.example.org/rest/items/MySwitch",
       "state": "OFF",
-      "editable": false,
       "type": "Switch",
       "name": "MySwitch",
       "label": "SwitchLight",
@@ -153,7 +145,6 @@ describe('Test QUERY', () => {
     {
       "link": "https://openhab.example.org/rest/items/MyDimmer",
       "state": "20",
-      "editable": false,
       "type": "Dimmer",
       "name": "MyDimmer",
       "label": "DimmerLight",
@@ -199,7 +190,6 @@ describe('Test EXECUTE', () => {
     {
       "link": "https://openhab.example.org/rest/items/MyThermostat",
       "state": "NULL",
-      "editable": false,
       "type": "Group",
       "name": "MyThermostat",
       "label": "Thermostat",
@@ -286,7 +276,6 @@ describe('Test EXECUTE', () => {
     {
       "link": "https://openhab.example.org/rest/items/MyThermostat",
       "state": "NULL",
-      "editable": false,
       "type": "Group",
       "name": "MyThermostat",
       "label": "Thermostat",
@@ -374,6 +363,101 @@ describe('Test EXECUTE', () => {
           "thermostatMode": "heat",
           "thermostatTemperatureAmbient": -12.2,
           "thermostatTemperatureSetpoint": 25
+        },
+        "status": "SUCCESS"
+      }]
+    });
+  });
+
+  test('ThermostatSetMode metadata', async () => {
+    const item =
+    {
+      "link": "https://openhab.example.org/rest/items/MyThermostat",
+      "state": "NULL",
+      "type": "Group",
+      "name": "MyThermostat",
+      "label": "Thermostat",
+      "metadata": {
+        "ga": {
+          "value": "Thermostat"
+        }
+      },
+      "members": [{
+        type: 'Number',
+        metadata: {
+          ga: {
+            value: 'thermostatTemperatureAmbient'
+          }
+        },
+        state: '20'
+      }, {
+        name: 'MyTargetTemperature',
+        type: 'Number',
+        metadata: {
+          ga: {
+            value: 'thermostatTemperatureSetpoint'
+          }
+        },
+        state: '10'
+      }, {
+        type: 'Number',
+        metadata: {
+          ga: {
+            value: 'thermostatMode'
+          }
+        },
+        state: '1'
+      }, {
+        type: 'Number',
+        metadata: {
+          ga: {
+            value: 'thermostatHumidityAmbient'
+          }
+        },
+        state: '50'
+      }],
+      "groupNames": []
+    };
+
+    const getItemMock = jest.fn();
+    const sendCommandMock = jest.fn();
+    getItemMock.mockReturnValue(Promise.resolve(item));
+    sendCommandMock.mockReturnValue(Promise.resolve());
+
+    const apiHandler = {
+      getItem: getItemMock,
+      sendCommand: sendCommandMock
+    };
+
+    const commands = [{
+      "devices": [{
+        "customData": {
+          "thermostatMode": "MyMode"
+        },
+        "id": "MyThermostat"
+      }],
+      "execution": [{
+        "command": "action.devices.commands.ThermostatSetMode",
+        "params": {
+          "thermostatMode": "off"
+        }
+      }]
+    }];
+
+    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
+
+    expect(sendCommandMock).toBeCalledWith('MyMode', '0');
+    expect(payload).toStrictEqual({
+      "commands": [{
+        "ids": [
+          "MyThermostat"
+        ],
+        "states": {
+          "online": true,
+          "thermostatHumidityAmbient": 50,
+          "thermostatMode": "off",
+          "thermostatTemperatureAmbient": 20,
+          "thermostatTemperatureSetpoint": 10
         },
         "status": "SUCCESS"
       }]
