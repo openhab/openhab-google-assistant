@@ -312,7 +312,7 @@ class DimmableLight extends GenericDevice {
   }
 
   static getState(item) {
-    let brightness = Number(item.state) || 0;
+    let brightness = Number(item.state) || 0;
     return {
       on: brightness > 0,
       brightness: brightness
@@ -335,10 +335,21 @@ class ColorLight extends GenericDevice {
     ];
   }
 
-  static getAttributes() {
-    return {
+  static getAttributes(item) {
+    const attributes = {
       colorModel: 'hsv'
     };
+    const colorTemperatureRange = getConfig(item).colorTemperatureRange;
+    if (colorTemperatureRange) {
+      try {
+        const range = colorTemperatureRange.split(',');
+        attributes.colorTemperatureRange = {
+          temperatureMinK: Number(range[0]),
+          temperatureMaxK: Number(range[1])
+        };
+      } catch (err) { }
+    }
+    return attributes;
   }
 
   static get requiredItemType() {

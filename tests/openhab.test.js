@@ -600,4 +600,100 @@ describe('Test EXECUTE', () => {
       }]
     });
   });
+
+  test('ColorAbsolute HSV', async () => {
+    const getItemMock = jest.fn();
+    const sendCommandMock = jest.fn();
+    sendCommandMock.mockReturnValue(Promise.resolve());
+
+    const apiHandler = {
+      getItem: getItemMock,
+      sendCommand: sendCommandMock
+    };
+
+    const commands = [{
+      "devices": [{
+        "id": "MyColor"
+      }],
+      "execution": [{
+        "command": "action.devices.commands.ColorAbsolute",
+        "params": {
+          "color": {
+            "spectrumHSV": {
+              "hue": 240.0,
+              "saturation": 1.0,
+              "value": 1.0
+            }
+          }
+        }
+      }]
+    }];
+
+    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
+
+    expect(getItemMock).not.toHaveBeenCalled();
+    expect(sendCommandMock).toBeCalledWith('MyColor', '240,100,100');
+    expect(payload).toStrictEqual({
+      "commands": [{
+        "ids": [
+          "MyColor"
+        ],
+        "states": {
+          "online": true,
+          "color": {
+            "spectrumHsv": {
+              "hue": 240.0,
+              "saturation": 1.0,
+              "value": 1.0
+            }
+          }
+        },
+        "status": "SUCCESS"
+      }]
+    });
+  });
+
+  test('ColorAbsolute Temperature', async () => {
+    const getItemMock = jest.fn();
+    const sendCommandMock = jest.fn();
+    sendCommandMock.mockReturnValue(Promise.resolve());
+
+    const apiHandler = {
+      getItem: getItemMock,
+      sendCommand: sendCommandMock
+    };
+
+    const commands = [{
+      "devices": [{
+        "id": "MyColor"
+      }],
+      "execution": [{
+        "command": "action.devices.commands.ColorAbsolute",
+        "params": {
+          "color": {
+            "temperature": 4000
+          }
+        }
+      }]
+    }];
+
+    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
+
+    expect(getItemMock).not.toHaveBeenCalled();
+    expect(sendCommandMock).toBeCalledWith('MyColor', '26.97,0,100');
+    expect(payload).toStrictEqual({
+      "commands": [{
+        "ids": [
+          "MyColor"
+        ],
+        "states": {
+          "online": true,
+          "color": {
+            "temperatureK": 4000
+          }
+        },
+        "status": "SUCCESS"
+      }]
+    });
+  });
 });

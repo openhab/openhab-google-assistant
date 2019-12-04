@@ -57,6 +57,43 @@ describe('Test Lighting items', () => {
       ]
     }).name).toBe('ColorLight');
   });
+
+  test('Color Lighting type metadata', () => {
+    const item = {
+      type: 'Color',
+      metadata: {
+        ga: {
+          value: 'LIGHT'
+        }
+      }
+    };
+    expect(Devices.getDeviceForItem(item).name).toBe('ColorLight');
+    expect(Devices.getDeviceForItem(item).getAttributes(item)).toStrictEqual({
+      colorModel: 'hsv'
+    });
+  });
+
+  test('Color Lighting type colorTemperatureRange', () => {
+    const item = {
+      type: 'Color',
+      metadata: {
+        ga: {
+          value: 'LIGHT',
+          config: {
+            colorTemperatureRange: "1000,4000"
+          }
+        }
+      }
+    };
+    expect(Devices.getDeviceForItem(item).name).toBe('ColorLight');
+    expect(Devices.getDeviceForItem(item).getAttributes(item)).toStrictEqual({
+      colorModel: 'hsv',
+      colorTemperatureRange: {
+        temperatureMinK: 1000,
+        temperatureMaxK: 4000
+      }
+    });
+  });
 });
 
 describe('Test Thermostat item', () => {
