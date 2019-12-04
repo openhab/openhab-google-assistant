@@ -437,11 +437,11 @@ class ThermostatTemperatureSetpointCommand extends GenericCommand {
   }
 
   static convertParamsToValue(params, item) {
-    let value = params.thermostatTemperatureSetpoint.toString();
+    let value = params.thermostatTemperatureSetpoint;
     if (Thermostat.usesFahrenheit(item)) {
-      value = Thermostat.convertToFahrenheit(params.thermostatTemperatureSetpoint).toString();
+      value = Thermostat.convertToFahrenheit(value);
     }
-    return value;
+    return value.toString();
   }
 
   static getResponseStates(params, item) {
