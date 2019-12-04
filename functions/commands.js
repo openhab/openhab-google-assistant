@@ -33,7 +33,7 @@ const ackSupported = [
 ];
 
 const getCommandType = (command = '', params = {}) => {
-  return CommandTypes.find((commandType) => commandType.appliesTo(command, params));
+  return CommandTypes.find((commandType) => command === commandType.type && commandType.validateParams(params));
 };
 
 class GenericCommand {
@@ -41,7 +41,7 @@ class GenericCommand {
     return '';
   }
 
-  static appliesTo(command = '', params = {}) {
+  static validateParams(params = {}) {
     return false;
   }
 
@@ -151,8 +151,8 @@ class OnOffCommand extends GenericCommand {
     return 'action.devices.commands.OnOff';
   }
 
-  static appliesTo(command, params) {
-    return command === this.type && ('on' in params) && typeof params.on === 'boolean';
+  static validateParams(params) {
+    return ('on' in params) && typeof params.on === 'boolean';
   }
 
   static convertParamsToValue(params) {
@@ -171,8 +171,8 @@ class LockUnlockCommand extends GenericCommand {
     return 'action.devices.commands.LockUnlock';
   }
 
-  static appliesTo(command, params) {
-    return command === this.type && ('lock' in params) && typeof params.lock === 'boolean';
+  static validateParams(params) {
+    return ('lock' in params) && typeof params.lock === 'boolean';
   }
 
   static convertParamsToValue(params) {
@@ -191,8 +191,8 @@ class ArmDisarmCommand extends GenericCommand {
     return 'action.devices.commands.ArmDisarm';
   }
 
-  static appliesTo(command, params) {
-    return command === this.type && ('arm' in params) && typeof params.arm === 'boolean';
+  static validateParams(params) {
+    return ('arm' in params) && typeof params.arm === 'boolean';
   }
 
   static convertParamsToValue(params) {
@@ -211,11 +211,8 @@ class ActivateSceneCommand extends GenericCommand {
     return 'action.devices.commands.ActivateScene';
   }
 
-  static appliesTo(command, params) {
-    return command === this.type && (
-      (('deactivate' in params) && typeof params.deactivate === 'boolean') ||
-      !('deactivate' in params)
-    );
+  static validateParams(params) {
+    return (('deactivate' in params) && typeof params.deactivate === 'boolean') || !('deactivate' in params);
   }
 
   static convertParamsToValue(params) {
@@ -229,8 +226,8 @@ class SetVolumeCommand extends GenericCommand {
     return 'action.devices.commands.setVolume';
   }
 
-  static appliesTo(command, params) {
-    return command === this.type && ('volumeLevel' in params) && typeof params.volumeLevel === 'number';
+  static validateParams(params) {
+    return ('volumeLevel' in params) && typeof params.volumeLevel === 'number';
   }
 
   static convertParamsToValue(params) {
@@ -250,8 +247,8 @@ class VolumeRelativeCommand extends GenericCommand {
     return 'action.devices.commands.volumeRelative';
   }
 
-  static appliesTo(command, params) {
-    return command === this.type && ('volumeRelativeLevel' in params) && typeof params.volumeRelativeLevel === 'number';
+  static validateParams(params) {
+    return ('volumeRelativeLevel' in params) && typeof params.volumeRelativeLevel === 'number';
   }
 
   static get requiresItem() {
@@ -276,8 +273,8 @@ class BrightnessAbsoluteCommand extends GenericCommand {
     return 'action.devices.commands.BrightnessAbsolute';
   }
 
-  static appliesTo(command, params) {
-    return command === this.type && ('brightness' in params) && typeof params.brightness === 'number';
+  static validateParams(params) {
+    return ('brightness' in params) && typeof params.brightness === 'number';
   }
 
   static convertParamsToValue(params) {
@@ -296,9 +293,8 @@ class ColorAbsoluteCommand extends GenericCommand {
     return 'action.devices.commands.ColorAbsolute';
   }
 
-  static appliesTo(command, params) {
-    return command === this.type &&
-      ('color' in params) && typeof params.color === 'object' &&
+  static validateParams(params) {
+    return ('color' in params) && typeof params.color === 'object' &&
       ('spectrumHSV' in params.color) && typeof params.color.spectrumHSV === 'object';
   }
 
@@ -320,8 +316,8 @@ class OpenCloseCommand extends GenericCommand {
     return 'action.devices.commands.OpenClose';
   }
 
-  static appliesTo(command, params) {
-    return command === this.type && ('openPercent' in params) && typeof params.openPercent === 'number';
+  static validateParams(params) {
+    return ('openPercent' in params) && typeof params.openPercent === 'number';
   }
 
   static convertParamsToValue(params, item, device) {
@@ -349,8 +345,8 @@ class StartStopCommand extends GenericCommand {
     return 'action.devices.commands.StartStop';
   }
 
-  static appliesTo(command, params) {
-    return command === this.type && ('start' in params) && typeof params.start === 'boolean';
+  static validateParams(params) {
+    return ('start' in params) && typeof params.start === 'boolean';
   }
 
   static convertParamsToValue(params, item, device) {
@@ -375,8 +371,8 @@ class SetFanSpeedCommand extends GenericCommand {
     return 'action.devices.commands.SetFanSpeed';
   }
 
-  static appliesTo(command, params) {
-    return command === this.type && ('fanSpeed' in params) && typeof params.fanSpeed === 'string';
+  static validateParams(params) {
+    return ('fanSpeed' in params) && typeof params.fanSpeed === 'string';
   }
 
   static convertParamsToValue(params) {
@@ -395,9 +391,8 @@ class GetCameraStreamCommand extends GenericCommand {
     return 'action.devices.commands.GetCameraStream';
   }
 
-  static appliesTo(command, params) {
-    return command === this.type &&
-      ('StreamToChromecast' in params) && typeof params.StreamToChromecast === 'boolean' &&
+  static validateParams(params) {
+    return ('StreamToChromecast' in params) && typeof params.StreamToChromecast === 'boolean' &&
       ('SupportedStreamProtocols' in params) && typeof params.SupportedStreamProtocols === 'object';
   }
 
@@ -421,8 +416,8 @@ class ThermostatTemperatureSetpointCommand extends GenericCommand {
     return 'action.devices.commands.ThermostatTemperatureSetpoint';
   }
 
-  static appliesTo(command, params) {
-    return command === this.type && ('thermostatTemperatureSetpoint' in params) && typeof params.thermostatTemperatureSetpoint === 'number';
+  static validateParams(params) {
+    return ('thermostatTemperatureSetpoint' in params) && typeof params.thermostatTemperatureSetpoint === 'number';
   }
 
   static get requiresItem() {
@@ -456,8 +451,8 @@ class ThermostatSetModeCommand extends GenericCommand {
     return 'action.devices.commands.ThermostatSetMode';
   }
 
-  static appliesTo(command, params) {
-    return command === this.type && ('thermostatMode' in params) && typeof params.thermostatMode === 'string';
+  static validateParams(params) {
+    return ('thermostatMode' in params) && typeof params.thermostatMode === 'string';
   }
 
   static get requiresItem() {
