@@ -378,14 +378,14 @@ class ThermostatTemperatureSetpointCommand extends GenericCommand {
         if (!members.thermostatTemperatureSetpoint) {
           return Promise.reject({ statusCode: 400 });
         }
-        let targetState = params.thermostatTemperatureSetpoint.toString();
+        let targetState = params.thermostatTemperatureSetpoint;
         if (Thermostat.usesFahrenheit(item)) {
           targetState = Thermostat.convertToFahrenheit(targetState);
         }
         const states = Thermostat.getState(item);
         states.thermostatTemperatureSetpoint = params.thermostatTemperatureSetpoint;
         states.online = true;
-        return this._apiHandler.sendCommand(members.thermostatTemperatureSetpoint.name, targetState).then(() => {
+        return this._apiHandler.sendCommand(members.thermostatTemperatureSetpoint.name, targetState.toString()).then(() => {
           commandsResponse.push({
             ids: [device.id],
             status: 'SUCCESS',
