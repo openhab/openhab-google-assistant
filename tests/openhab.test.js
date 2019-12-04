@@ -87,6 +87,7 @@ describe('Test SYNC', () => {
 
     const payload = await new OpenHAB(apiHandler).handleSync();
 
+    expect(getItemsMock).toHaveBeenCalledTimes(1);
     expect(payload).toMatchSnapshot();
   });
 });
@@ -117,6 +118,7 @@ describe('Test QUERY', () => {
       "id": "MySwitch"
     }]);
 
+    expect(getItemMock).toHaveBeenCalledTimes(1);
     expect(payload).toStrictEqual({
       "devices": {
         "MySwitch": {
@@ -168,6 +170,7 @@ describe('Test QUERY', () => {
       "id": "MyDimmer"
     }]);
 
+    expect(getItemMock).toHaveBeenCalledTimes(2);
     expect(payload).toStrictEqual({
       "devices": {
         "MySwitch": {
@@ -253,6 +256,7 @@ describe('Test EXECUTE', () => {
 
     const payload = await new OpenHAB(apiHandler).handleExecute(commands);
 
+    expect(getItemMock).toHaveBeenCalledTimes(1);
     expect(sendCommandMock).toBeCalledWith('MyTargetTemperature', '77');
     expect(payload).toStrictEqual({
       "commands": [{
@@ -351,6 +355,7 @@ describe('Test EXECUTE', () => {
 
     const payload = await new OpenHAB(apiHandler).handleExecute(commands);
 
+    expect(getItemMock).toHaveBeenCalledTimes(1);
     expect(sendCommandMock).toBeCalledWith('MyTargetTemperature', '77');
     expect(payload).toStrictEqual({
       "commands": [{
@@ -446,6 +451,7 @@ describe('Test EXECUTE', () => {
 
     const payload = await new OpenHAB(apiHandler).handleExecute(commands);
 
+    expect(getItemMock).toHaveBeenCalledTimes(1);
     expect(sendCommandMock).toBeCalledWith('MyMode', '0');
     expect(payload).toStrictEqual({
       "commands": [{
@@ -458,6 +464,137 @@ describe('Test EXECUTE', () => {
           "thermostatMode": "off",
           "thermostatTemperatureAmbient": 20,
           "thermostatTemperatureSetpoint": 10
+        },
+        "status": "SUCCESS"
+      }]
+    });
+  });
+
+  test('OpenClose Rollershutter', async () => {
+    const getItemMock = jest.fn();
+    const sendCommandMock = jest.fn();
+    sendCommandMock.mockReturnValue(Promise.resolve());
+
+    const apiHandler = {
+      getItem: getItemMock,
+      sendCommand: sendCommandMock
+    };
+
+    const commands = [{
+      "devices": [{
+        "customData": {
+          "itemType": "Rollershutter"
+        },
+        "id": "MyRollershutter"
+      }],
+      "execution": [{
+        "command": "action.devices.commands.OpenClose",
+        "params": {
+          "openPercent": 0
+        }
+      }]
+    }];
+
+    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
+
+    expect(getItemMock).not.toHaveBeenCalled();
+    expect(sendCommandMock).toBeCalledWith('MyRollershutter', 'DOWN');
+    expect(payload).toStrictEqual({
+      "commands": [{
+        "ids": [
+          "MyRollershutter"
+        ],
+        "states": {
+          "online": true,
+          "openPercent": 0
+        },
+        "status": "SUCCESS"
+      }]
+    });
+  });
+
+
+  test('OpenClose Rollershutter inverted', async () => {
+    const getItemMock = jest.fn();
+    const sendCommandMock = jest.fn();
+    sendCommandMock.mockReturnValue(Promise.resolve());
+
+    const apiHandler = {
+      getItem: getItemMock,
+      sendCommand: sendCommandMock
+    };
+
+    const commands = [{
+      "devices": [{
+        "customData": {
+          "itemType": "Rollershutter",
+          "inverted": true
+        },
+        "id": "MyRollershutter"
+      }],
+      "execution": [{
+        "command": "action.devices.commands.OpenClose",
+        "params": {
+          "openPercent": 0
+        }
+      }]
+    }];
+
+    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
+
+    expect(getItemMock).not.toHaveBeenCalled();
+    expect(sendCommandMock).toBeCalledWith('MyRollershutter', 'UP');
+    expect(payload).toStrictEqual({
+      "commands": [{
+        "ids": [
+          "MyRollershutter"
+        ],
+        "states": {
+          "online": true,
+          "openPercent": 0
+        },
+        "status": "SUCCESS"
+      }]
+    });
+  });
+
+  test('OpenClose Switch', async () => {
+    const getItemMock = jest.fn();
+    const sendCommandMock = jest.fn();
+    sendCommandMock.mockReturnValue(Promise.resolve());
+
+    const apiHandler = {
+      getItem: getItemMock,
+      sendCommand: sendCommandMock
+    };
+
+    const commands = [{
+      "devices": [{
+        "customData": {
+          "itemType": "Switch"
+        },
+        "id": "MyRollershutter"
+      }],
+      "execution": [{
+        "command": "action.devices.commands.OpenClose",
+        "params": {
+          "openPercent": 0
+        }
+      }]
+    }];
+
+    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
+
+    expect(getItemMock).not.toHaveBeenCalled();
+    expect(sendCommandMock).toBeCalledWith('MyRollershutter', 'OFF');
+    expect(payload).toStrictEqual({
+      "commands": [{
+        "ids": [
+          "MyRollershutter"
+        ],
+        "states": {
+          "online": true,
+          "openPercent": 0
         },
         "status": "SUCCESS"
       }]
