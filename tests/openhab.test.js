@@ -2,7 +2,7 @@
 const OpenHAB = require('../functions/openhab.js').OpenHAB;
 
 describe('Test SYNC', () => {
-  test('light items', async () => {
+  test('light items tag', async () => {
     const items = [
       {
         "link": "https://openhab.example.org/rest/items/MySwitch",
@@ -12,8 +12,7 @@ describe('Test SYNC', () => {
         "label": "SwitchLight",
         "tags": [
           "Lighting"
-        ],
-        "groupNames": []
+        ]
       },
       {
         "link": "https://openhab.example.org/rest/items/MyDimmer",
@@ -23,8 +22,7 @@ describe('Test SYNC', () => {
         "label": "DimmLight",
         "tags": [
           "Lighting"
-        ],
-        "groupNames": []
+        ]
       },
       {
         "link": "https://openhab.example.org/rest/items/MyLight",
@@ -34,8 +32,7 @@ describe('Test SYNC', () => {
         "label": "ColorLight",
         "tags": [
           "Lighting"
-        ],
-        "groupNames": []
+        ]
       },
       {
         "members": [],
@@ -47,8 +44,7 @@ describe('Test SYNC', () => {
         "label": "GroupLight",
         "tags": [
           "Lighting"
-        ],
-        "groupNames": []
+        ]
       },
       {
         "members": [],
@@ -60,8 +56,7 @@ describe('Test SYNC', () => {
         "label": "GroupDimmer",
         "tags": [
           "Lighting"
-        ],
-        "groupNames": []
+        ]
       },
       {
         "members": [],
@@ -73,8 +68,108 @@ describe('Test SYNC', () => {
         "label": "GroupColor",
         "tags": [
           "Lighting"
-        ],
-        "groupNames": []
+        ]
+      }
+    ];
+
+    const getItemsMock = jest.fn();
+    getItemsMock.mockReturnValue(Promise.resolve(items));
+
+    const apiHandler = {
+      getItems: getItemsMock
+    };
+
+    const payload = await new OpenHAB(apiHandler).handleSync();
+
+    expect(getItemsMock).toHaveBeenCalledTimes(1);
+    expect(payload).toMatchSnapshot();
+  });
+
+  test('light items metadata', async () => {
+    const items = [
+      {
+        "link": "https://openhab.example.org/rest/items/MySwitch",
+        "state": "OFF",
+        "type": "Switch",
+        "name": "MySwitch",
+        "label": "SwitchLight",
+        "metadata": {
+          "ga": {
+            "value": "Light",
+            "config": {
+              "name": "Light Switch"
+            }
+          },
+          "synonyms": {
+            "value": "Testlight,Cool Light"
+          }
+        }
+      },
+      {
+        "link": "https://openhab.example.org/rest/items/MyDimmer",
+        "state": "0",
+        "type": "Dimmer",
+        "name": "MyDimmer",
+        "label": "DimmLight",
+        "metadata": {
+          "ga": {
+            "value": "Light"
+          }
+        }
+      },
+      {
+        "link": "https://openhab.example.org/rest/items/MyLight",
+        "state": "0,0,0",
+        "type": "Color",
+        "name": "MyLight",
+        "label": "ColorLight",
+        "metadata": {
+          "ga": {
+            "value": "Light"
+          }
+        }
+      },
+      {
+        "members": [],
+        "link": "https://openhab.example.org/rest/items/MyLightGroup",
+        "state": "NULL",
+        "type": "Group",
+        "groupType": "Switch",
+        "name": "MyLightGroup",
+        "label": "GroupLight",
+        "metadata": {
+          "ga": {
+            "value": "Light"
+          }
+        }
+      },
+      {
+        "members": [],
+        "link": "https://openhab.example.org/rest/items/MyDimmerGroup",
+        "state": "NULL",
+        "type": "Group",
+        "groupType": "Dimmer",
+        "name": "MyDimmerGroup",
+        "label": "GroupDimmer",
+        "metadata": {
+          "ga": {
+            "value": "Light"
+          }
+        }
+      },
+      {
+        "members": [],
+        "link": "https://openhab.example.org/rest/items/MyColorGroup",
+        "state": "NULL",
+        "type": "Group",
+        "groupType": "Color",
+        "name": "MyColorGroup",
+        "label": "GroupColor",
+        "metadata": {
+          "ga": {
+            "value": "Light"
+          }
+        }
       }
     ];
 
@@ -93,7 +188,7 @@ describe('Test SYNC', () => {
 });
 
 describe('Test QUERY', () => {
-  test('single light item', async () => {
+  test('single light item tag', async () => {
     const item =
     {
       "link": "https://openhab.example.org/rest/items/MySwitch",
@@ -129,7 +224,7 @@ describe('Test QUERY', () => {
     });
   });
 
-  test('multiple light items', async () => {
+  test('multiple light items tag', async () => {
     const item1 =
     {
       "link": "https://openhab.example.org/rest/items/MySwitch",

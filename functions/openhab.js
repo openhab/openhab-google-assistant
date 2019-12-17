@@ -28,7 +28,6 @@ class OpenHAB {
 	 */
 	constructor(apiHandler) {
 		this._apiHandler = apiHandler;
-		this.openhabVersion = '2.4.0'
 	}
 
 	handleSync() {

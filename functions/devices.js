@@ -56,9 +56,9 @@ class GenericDevice {
       type: this.type,
       traits: this.traits,
       name: {
-        name: item.label,
-        defaultNames: [item.label],
-        nicknames: [item.label, ...(item.metadata && item.metadata.synonyms ? item.metadata.synonyms.value.split(',') : [])]
+        name: config.name || item.label,
+        defaultNames: [config.name || item.label],
+        nicknames: [config.name || item.label, ...(item.metadata && item.metadata.synonyms ? item.metadata.synonyms.value.split(',') : [])]
       },
       willReportState: false,
       roomHint: config.roomHint,
@@ -66,8 +66,8 @@ class GenericDevice {
       deviceInfo: {
         manufacturer: 'openHAB',
         model: item.type,
-        hwVersion: '2.4.0',
-        swVersion: '2.4.0'
+        hwVersion: '2.5.0',
+        swVersion: '2.5.0'
       },
       attributes: this.getAttributes(item),
       customData: {
