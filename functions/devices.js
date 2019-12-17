@@ -601,43 +601,35 @@ class Thermostat extends GenericDevice {
   static getState(item) {
     const state = {};
     const members = this.getMembers(item);
-    if (members.thermostatMode) {
-      state.thermostatMode = this.normalizeThermostatMode(members.thermostatMode.state);
-    }
-    if (members.thermostatTemperatureSetpoint) {
-      state.thermostatTemperatureSetpoint = Number(parseFloat(members.thermostatTemperatureSetpoint.state).toFixed(1));
-      if (this.usesFahrenheit(item)) {
-        state.thermostatTemperatureSetpoint = this.convertToCelsius(state.thermostatTemperatureSetpoint);
+    for (const member in members) {
+      if (member == 'thermostatMode') {
+        state[member] = this.normalizeThermostatMode(members[member].state);
+      } else {
+        state[member] = Number(parseFloat(members[member].state).toFixed(1));
+        if (member.indexOf('Temperature') > 0 && this.usesFahrenheit(item)) {
+          state[member] = this.convertToCelsius(state[member]);
+        }
       }
-    }
-    if (members.thermostatTemperatureAmbient) {
-      state.thermostatTemperatureAmbient = Number(parseFloat(members.thermostatTemperatureAmbient.state).toFixed(1));
-      if (this.usesFahrenheit(item)) {
-        state.thermostatTemperatureAmbient = this.convertToCelsius(state.thermostatTemperatureAmbient);
-      }
-    }
-    if (members.thermostatHumidityAmbient) {
-      state.thermostatHumidityAmbient = Number(parseFloat(members.thermostatHumidityAmbient.state).toFixed(0));
     }
     return state;
   }
 
   static getMembers(item) {
+    const supportedMembers = [
+      'thermostatMode',
+      'thermostatTemperatureSetpoint',
+      'thermostatTemperatureSetpointHigh',
+      'thermostatTemperatureSetpointLow',
+      'thermostatTemperatureAmbient',
+      'thermostatHumidityAmbient'
+    ];
     const members = {};
     if (item.members && item.members.length) {
       item.members.forEach((member) => {
         if (member.metadata && member.metadata.ga) {
-          if (member.metadata.ga.value.toLowerCase() === 'thermostatmode') {
-            members.thermostatMode = { name: member.name, state: member.state };
-          }
-          if (member.metadata.ga.value.toLowerCase() === 'thermostattemperaturesetpoint') {
-            members.thermostatTemperatureSetpoint = { name: member.name, state: member.state };
-          }
-          if (member.metadata.ga.value.toLowerCase() === 'thermostattemperatureambient') {
-            members.thermostatTemperatureAmbient = { name: member.name, state: member.state };
-          }
-          if (member.metadata.ga.value.toLowerCase() === 'thermostathumidityambient') {
-            members.thermostatHumidityAmbient = { name: member.name, state: member.state };
+          const memberType = supportedMembers.find(m => member.metadata.ga.value.toLowerCase() === m.toLowerCase());
+          if (memberType) {
+            members[memberType] = { name: member.name, state: member.state };
           }
         } else {
           if (hasTag(member, 'HeatingCoolingMode') || hasTag(member, 'homekit:HeatingCoolingMode') || hasTag(member, 'homekit:TargetHeatingCoolingMode') || hasTag(member, 'homekit:CurrentHeatingCoolingMode')) {
