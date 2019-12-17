@@ -501,6 +501,76 @@ class ThermostatTemperatureSetpointCommand extends GenericCommand {
   }
 }
 
+class ThermostatTemperatureSetpointHighCommand extends GenericCommand {
+  static get type() {
+    return 'action.devices.commands.ThermostatTemperatureSetpointHigh';
+  }
+
+  static validateParams(params) {
+    return ('thermostatTemperatureSetpointHigh' in params) && typeof params.thermostatTemperatureSetpointHigh === 'number';
+  }
+
+  static get requiresItem() {
+    return true;
+  }
+
+  static getItemName(device) {
+    if (!device.customData || !device.customData.thermostatTemperatureSetpointHigh) {
+      throw { statusCode: 400 };
+    }
+    return device.customData.thermostatTemperatureSetpointHigh;
+  }
+
+  static convertParamsToValue(params, item) {
+    let value = params.thermostatTemperatureSetpointHigh;
+    if (Thermostat.usesFahrenheit(item)) {
+      value = Thermostat.convertToFahrenheit(value);
+    }
+    return value.toString();
+  }
+
+  static getResponseStates(params, item) {
+    const states = Thermostat.getState(item);
+    states.thermostatTemperatureSetpointHigh = params.thermostatTemperatureSetpointHigh;
+    return states;
+  }
+}
+
+class ThermostatTemperatureSetpointLowCommand extends GenericCommand {
+  static get type() {
+    return 'action.devices.commands.ThermostatTemperatureSetpointLow';
+  }
+
+  static validateParams(params) {
+    return ('thermostatTemperatureSetpointLow' in params) && typeof params.thermostatTemperatureSetpointLow === 'number';
+  }
+
+  static get requiresItem() {
+    return true;
+  }
+
+  static getItemName(device) {
+    if (!device.customData || !device.customData.thermostatTemperatureSetpointLow) {
+      throw { statusCode: 400 };
+    }
+    return device.customData.thermostatTemperatureSetpointLow;
+  }
+
+  static convertParamsToValue(params, item) {
+    let value = params.thermostatTemperatureSetpointLow;
+    if (Thermostat.usesFahrenheit(item)) {
+      value = Thermostat.convertToFahrenheit(value);
+    }
+    return value.toString();
+  }
+
+  static getResponseStates(params, item) {
+    const states = Thermostat.getState(item);
+    states.thermostatTemperatureSetpointLow = params.thermostatTemperatureSetpointLow;
+    return states;
+  }
+}
+
 class ThermostatSetModeCommand extends GenericCommand {
   static get type() {
     return 'action.devices.commands.ThermostatSetMode';
@@ -551,6 +621,8 @@ const CommandTypes = [
   SetFanSpeedCommand,
   GetCameraStreamCommand,
   ThermostatTemperatureSetpointCommand,
+  ThermostatTemperatureSetpointHighCommand,
+  ThermostatTemperatureSetpointLowCommand,
   ThermostatSetModeCommand
 ];
 

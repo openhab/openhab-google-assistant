@@ -85,6 +85,17 @@ class OpenHAB {
 		const promises = [];
 		commands.forEach((command) => {
 			command.execution.forEach((execution) => {
+				// Special handling of ThermostatTemperatureSetRange that requires updating two values
+				if (execution.command === 'action.devices.commands.ThermostatTemperatureSetRange') {
+					const SetHigh = getCommandType('action.devices.commands.ThermostatTemperatureSetpointHigh', execution.params);
+					const SetLow = getCommandType('action.devices.commands.ThermostatTemperatureSetpointLow', execution.params);
+					if (SetHigh && SetLow) {
+						promises.push(SetHigh.execute(this._apiHandler, command.devices, execution.params, execution.challenge).then(() => {
+							return SetLow.execute(this._apiHandler, command.devices, execution.params, execution.challenge);
+						}));
+						return;
+					}
+				}
 				const CommandType = getCommandType(execution.command, execution.params);
 				if (!CommandType) {
 					promises.push(Promise.resolve({
@@ -94,7 +105,7 @@ class OpenHAB {
 					}));
 					return;
 				}
-				promises.push((CommandType.execute(this._apiHandler, command.devices, execution.params, execution.challenge)));
+				promises.push(CommandType.execute(this._apiHandler, command.devices, execution.params, execution.challenge));
 			});
 		});
 		return Promise.all(promises).then((result) => {

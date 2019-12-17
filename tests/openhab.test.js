@@ -469,6 +469,191 @@ describe('Test EXECUTE', () => {
     });
   });
 
+  test('ThermostatTemperatureSetRange metadata', async () => {
+    const item1 =
+    {
+      "link": "https://openhab.example.org/rest/items/MyThermostat",
+      "state": "NULL",
+      "type": "Group",
+      "name": "MyThermostat",
+      "label": "Thermostat",
+      "metadata": {
+        "ga": {
+          "value": "Thermostat"
+        }
+      },
+      "members": [{
+        type: 'Number',
+        metadata: {
+          ga: {
+            value: 'thermostatTemperatureAmbient'
+          }
+        },
+        state: '10'
+      }, {
+        type: 'Number',
+        metadata: {
+          ga: {
+            value: 'thermostatTemperatureSetpoint'
+          }
+        },
+        state: '10'
+      }, {
+        name: 'MyTargetTemperatureHigh',
+        type: 'Number',
+        metadata: {
+          ga: {
+            value: 'thermostatTemperatureSetpointHigh'
+          }
+        },
+        state: '13'
+      }, {
+        name: 'MyTargetTemperatureLow',
+        type: 'Number',
+        metadata: {
+          ga: {
+            value: 'thermostatTemperatureSetpointLow'
+          }
+        },
+        state: '7'
+      }, {
+        type: 'Number',
+        metadata: {
+          ga: {
+            value: 'thermostatMode'
+          }
+        },
+        state: 'heatcool'
+      }, {
+        type: 'Number',
+        metadata: {
+          ga: {
+            value: 'thermostatHumidityAmbient'
+          }
+        },
+        state: '50'
+      }],
+      "groupNames": []
+    };
+
+    const item2 =
+    {
+      "link": "https://openhab.example.org/rest/items/MyThermostat",
+      "state": "NULL",
+      "type": "Group",
+      "name": "MyThermostat",
+      "label": "Thermostat",
+      "metadata": {
+        "ga": {
+          "value": "Thermostat"
+        }
+      },
+      "members": [{
+        type: 'Number',
+        metadata: {
+          ga: {
+            value: 'thermostatTemperatureAmbient'
+          }
+        },
+        state: '10'
+      }, {
+        type: 'Number',
+        metadata: {
+          ga: {
+            value: 'thermostatTemperatureSetpoint'
+          }
+        },
+        state: '10'
+      }, {
+        name: 'MyTargetTemperatureHigh',
+        type: 'Number',
+        metadata: {
+          ga: {
+            value: 'thermostatTemperatureSetpointHigh'
+          }
+        },
+        state: '25'
+      }, {
+        name: 'MyTargetTemperatureLow',
+        type: 'Number',
+        metadata: {
+          ga: {
+            value: 'thermostatTemperatureSetpointLow'
+          }
+        },
+        state: '7'
+      }, {
+        type: 'Number',
+        metadata: {
+          ga: {
+            value: 'thermostatMode'
+          }
+        },
+        state: 'heatcool'
+      }, {
+        type: 'Number',
+        metadata: {
+          ga: {
+            value: 'thermostatHumidityAmbient'
+          }
+        },
+        state: '50'
+      }],
+      "groupNames": []
+    };
+
+    const getItemMock = jest.fn();
+    const sendCommandMock = jest.fn();
+    getItemMock.mockReturnValueOnce(Promise.resolve(item1))
+      .mockReturnValueOnce(Promise.resolve(item2));
+    sendCommandMock.mockReturnValue(Promise.resolve());
+
+    const apiHandler = {
+      getItem: getItemMock,
+      sendCommand: sendCommandMock
+    };
+
+    const commands = [{
+      "devices": [{
+        "customData": {
+          "thermostatTemperatureSetpointHigh": "MyTargetTemperatureHigh",
+          "thermostatTemperatureSetpointLow": "MyTargetTemperatureLow"
+        },
+        "id": "MyThermostat"
+      }],
+      "execution": [{
+        "command": "action.devices.commands.ThermostatTemperatureSetRange",
+        "params": {
+          "thermostatTemperatureSetpointHigh": 25,
+          "thermostatTemperatureSetpointLow": 15
+        }
+      }]
+    }];
+
+    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
+
+    expect(getItemMock).toHaveBeenCalledTimes(2);
+    expect(sendCommandMock).toBeCalledWith('MyTargetTemperatureHigh', '25');
+    expect(sendCommandMock).toBeCalledWith('MyTargetTemperatureLow', '15');
+    expect(payload).toStrictEqual({
+      "commands": [{
+        "ids": [
+          "MyThermostat"
+        ],
+        "states": {
+          "online": true,
+          "thermostatHumidityAmbient": 50,
+          "thermostatMode": "heatcool",
+          "thermostatTemperatureAmbient": 10,
+          "thermostatTemperatureSetpoint": 10,
+          "thermostatTemperatureSetpointHigh": 25,
+          "thermostatTemperatureSetpointLow": 15
+        },
+        "status": "SUCCESS"
+      }]
+    });
+  });
+
   test('ThermostatSetMode metadata', async () => {
     const item =
     {

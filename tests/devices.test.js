@@ -409,6 +409,22 @@ describe('Test Thermostat item', () => {
         type: 'Number',
         metadata: {
           ga: {
+            value: 'thermostatTemperatureSetpointHigh'
+          }
+        },
+        state: '22'
+      }, {
+        type: 'Number',
+        metadata: {
+          ga: {
+            value: 'thermostatTemperatureSetpointLow'
+          }
+        },
+        state: '18'
+      }, {
+        type: 'Number',
+        metadata: {
+          ga: {
             value: 'thermostatMode'
           }
         },
@@ -425,6 +441,8 @@ describe('Test Thermostat item', () => {
     })).toStrictEqual({
       'thermostatTemperatureAmbient': 10,
       'thermostatTemperatureSetpoint': 20,
+      'thermostatTemperatureSetpointHigh': 22,
+      'thermostatTemperatureSetpointLow': 18,
       'thermostatMode': 'heat',
       'thermostatHumidityAmbient': 50,
     });
