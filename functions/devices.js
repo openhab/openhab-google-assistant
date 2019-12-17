@@ -655,7 +655,7 @@ class Thermostat extends GenericDevice {
   }
 
   static get _modeMap() {
-    return ['off', 'heat', 'cool', 'on'];
+    return ['off', 'heat', 'cool', 'on', 'heatcool', 'auto'];
   }
 
   static normalizeThermostatMode(mode) {
@@ -668,7 +668,7 @@ class Thermostat extends GenericDevice {
   }
 
   static denormalizeThermostatMode(oldMode, newMode) {
-    let denormalizedMode = newMode.replace('-', '').replace('heatcool', 'on');
+    let denormalizedMode = newMode.replace('-', '');
     if (!isNaN(Number(oldMode))) {
       denormalizedMode = this._modeMap.indexOf(newMode);
       if (denormalizedMode < 0) {
