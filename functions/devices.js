@@ -313,9 +313,13 @@ class DimmableLight extends GenericDevice {
   }
 
   static getState(item) {
+    let brightness = Number(item.state);
+    if (isNaN(brightness)) {
+      brightness = 0;
+    }
     return {
-      on: item.state > 0,
-      brightness: item.state
+      on: brightness > 0,
+      brightness: brightness
     };
   }
 }
@@ -554,20 +558,22 @@ class Thermostat extends GenericDevice {
 
   static getMembers(item) {
     const members = {};
-    item.members.forEach((member) => {
-      if (this.hasTag(member, 'HeatingCoolingMode') || this.hasTag(member, 'homekit:HeatingCoolingMode') || this.hasTag(member, 'homekit:TargetHeatingCoolingMode') || this.hasTag(member, 'homekit:CurrentHeatingCoolingMode')) {
-        members.thermostatMode = { name: member.name, state: member.state };
-      }
-      if (this.hasTag(member, 'TargetTemperature') || this.hasTag(member, 'homekit:TargetTemperature')) {
-        members.thermostatTemperatureSetpoint = { name: member.name, state: member.state };
-      }
-      if (this.hasTag(member, 'CurrentTemperature')) {
-        members.thermostatTemperatureAmbient = { name: member.name, state: member.state };
-      }
-      if (this.hasTag(member, 'CurrentHumidity')) {
-        members.thermostatHumidityAmbient = { name: member.name, state: member.state };
-      }
-    });
+    if (item.members && item.members.length) {
+      item.members.forEach((member) => {
+        if (this.hasTag(member, 'HeatingCoolingMode') || this.hasTag(member, 'homekit:HeatingCoolingMode') || this.hasTag(member, 'homekit:TargetHeatingCoolingMode') || this.hasTag(member, 'homekit:CurrentHeatingCoolingMode')) {
+          members.thermostatMode = { name: member.name, state: member.state };
+        }
+        if (this.hasTag(member, 'TargetTemperature') || this.hasTag(member, 'homekit:TargetTemperature')) {
+          members.thermostatTemperatureSetpoint = { name: member.name, state: member.state };
+        }
+        if (this.hasTag(member, 'CurrentTemperature')) {
+          members.thermostatTemperatureAmbient = { name: member.name, state: member.state };
+        }
+        if (this.hasTag(member, 'CurrentHumidity')) {
+          members.thermostatHumidityAmbient = { name: member.name, state: member.state };
+        }
+      });
+    }
     return members;
   }
 
@@ -581,16 +587,16 @@ class Thermostat extends GenericDevice {
 
   static normalizeThermostatMode(mode) {
     let normalizedMode = mode.replace('-', '');
-    const intMode = parseInt(mode);
+    const intMode = Number(mode);
     if (!isNaN(intMode)) {
       normalizedMode = intMode in this._modeMap ? this._modeMap[intMode] : 'off';
     }
-    return normalizedMode.toLowerCase()
+    return normalizedMode.toLowerCase();
   }
 
   static denormalizeThermostatMode(oldMode, newMode) {
     let denormalizedMode = newMode.replace('-', '').replace('heatcool', 'on');
-    if (!isNaN(parseInt(oldMode))) {
+    if (!isNaN(Number(oldMode))) {
       denormalizedMode = this._modeMap.indexOf(newMode);
       if (denormalizedMode < 0) {
         denormalizedMode = 0;
@@ -604,7 +610,7 @@ class Thermostat extends GenericDevice {
   }
 
   static convertToCelsius(value = 0) {
-    return ((value - 32) * 5 / 9).toFixed(2);
+    return Number(((value - 32) * 5 / 9).toFixed(1));
   }
 }
 
