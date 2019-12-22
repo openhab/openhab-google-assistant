@@ -1,332 +1,10 @@
 
 const OpenHAB = require('../functions/openhab.js').OpenHAB;
 
-describe('Test SYNC', () => {
-  test('light items tag', async () => {
-    const items = [
-      {
-        "link": "https://openhab.example.org/rest/items/MySwitch",
-        "state": "OFF",
-        "type": "Switch",
-        "name": "MySwitch",
-        "label": "SwitchLight",
-        "tags": [
-          "Lighting"
-        ]
-      },
-      {
-        "link": "https://openhab.example.org/rest/items/MyDimmer",
-        "state": "0",
-        "type": "Dimmer",
-        "name": "MyDimmer",
-        "label": "DimmLight",
-        "tags": [
-          "Lighting"
-        ]
-      },
-      {
-        "link": "https://openhab.example.org/rest/items/MyLight",
-        "state": "0,0,0",
-        "type": "Color",
-        "name": "MyLight",
-        "label": "ColorLight",
-        "tags": [
-          "Lighting"
-        ]
-      },
-      {
-        "members": [],
-        "link": "https://openhab.example.org/rest/items/MyLightGroup",
-        "state": "NULL",
-        "type": "Group",
-        "groupType": "Switch",
-        "name": "MyLightGroup",
-        "label": "GroupLight",
-        "tags": [
-          "Lighting"
-        ]
-      },
-      {
-        "members": [],
-        "link": "https://openhab.example.org/rest/items/MyDimmerGroup",
-        "state": "NULL",
-        "type": "Group",
-        "groupType": "Dimmer",
-        "name": "MyDimmerGroup",
-        "label": "GroupDimmer",
-        "tags": [
-          "Lighting"
-        ]
-      },
-      {
-        "members": [],
-        "link": "https://openhab.example.org/rest/items/MyColorGroup",
-        "state": "NULL",
-        "type": "Group",
-        "groupType": "Color",
-        "name": "MyColorGroup",
-        "label": "GroupColor",
-        "tags": [
-          "Lighting"
-        ]
-      }
-    ];
-
-    const getItemsMock = jest.fn();
-    getItemsMock.mockReturnValue(Promise.resolve(items));
-
-    const apiHandler = {
-      getItems: getItemsMock
-    };
-
-    const payload = await new OpenHAB(apiHandler).handleSync();
-
-    expect(getItemsMock).toHaveBeenCalledTimes(1);
-    expect(payload).toMatchSnapshot();
-  });
-
-  test('light items metadata', async () => {
-    const items = [
-      {
-        "link": "https://openhab.example.org/rest/items/MySwitch",
-        "state": "OFF",
-        "type": "Switch",
-        "name": "MySwitch",
-        "label": "SwitchLight",
-        "metadata": {
-          "ga": {
-            "value": "Light",
-            "config": {
-              "name": "Light Switch"
-            }
-          },
-          "synonyms": {
-            "value": "Testlight,Cool Light"
-          }
-        }
-      },
-      {
-        "link": "https://openhab.example.org/rest/items/MyDimmer",
-        "state": "0",
-        "type": "Dimmer",
-        "name": "MyDimmer",
-        "label": "DimmLight",
-        "metadata": {
-          "ga": {
-            "value": "Light"
-          }
-        }
-      },
-      {
-        "link": "https://openhab.example.org/rest/items/MyLight",
-        "state": "0,0,0",
-        "type": "Color",
-        "name": "MyLight",
-        "label": "ColorLight",
-        "metadata": {
-          "ga": {
-            "value": "Light"
-          }
-        }
-      },
-      {
-        "members": [],
-        "link": "https://openhab.example.org/rest/items/MyLightGroup",
-        "state": "NULL",
-        "type": "Group",
-        "groupType": "Switch",
-        "name": "MyLightGroup",
-        "label": "GroupLight",
-        "metadata": {
-          "ga": {
-            "value": "Light"
-          }
-        }
-      },
-      {
-        "members": [],
-        "link": "https://openhab.example.org/rest/items/MyDimmerGroup",
-        "state": "NULL",
-        "type": "Group",
-        "groupType": "Dimmer",
-        "name": "MyDimmerGroup",
-        "label": "GroupDimmer",
-        "metadata": {
-          "ga": {
-            "value": "Light"
-          }
-        }
-      },
-      {
-        "members": [],
-        "link": "https://openhab.example.org/rest/items/MyColorGroup",
-        "state": "NULL",
-        "type": "Group",
-        "groupType": "Color",
-        "name": "MyColorGroup",
-        "label": "GroupColor",
-        "metadata": {
-          "ga": {
-            "value": "Light"
-          }
-        }
-      }
-    ];
-
-    const getItemsMock = jest.fn();
-    getItemsMock.mockReturnValue(Promise.resolve(items));
-
-    const apiHandler = {
-      getItems: getItemsMock
-    };
-
-    const payload = await new OpenHAB(apiHandler).handleSync();
-
-    expect(getItemsMock).toHaveBeenCalledTimes(1);
-    expect(payload).toMatchSnapshot();
-  });
-});
-
-describe('Test QUERY', () => {
-  test('single light item tag', async () => {
-    const item =
-    {
-      "link": "https://openhab.example.org/rest/items/MySwitch",
-      "state": "OFF",
-      "type": "Switch",
-      "name": "MySwitch",
-      "label": "SwitchLight",
-      "tags": [
-        "Lighting"
-      ],
-      "groupNames": []
-    };
-
-    const getItemMock = jest.fn();
-    getItemMock.mockReturnValue(Promise.resolve(item));
-
-    const apiHandler = {
-      getItem: getItemMock
-    };
-
-    const payload = await new OpenHAB(apiHandler).handleQuery([{
-      "id": "MySwitch"
-    }]);
-
-    expect(getItemMock).toHaveBeenCalledTimes(1);
-    expect(payload).toStrictEqual({
-      "devices": {
-        "MySwitch": {
-          "on": false,
-          "online": true,
-        },
-      },
-    });
-  });
-
-  test('multiple light items tag', async () => {
-    const item1 =
-    {
-      "link": "https://openhab.example.org/rest/items/MySwitch",
-      "state": "OFF",
-      "type": "Switch",
-      "name": "MySwitch",
-      "label": "SwitchLight",
-      "tags": [
-        "Lighting"
-      ],
-      "groupNames": []
-    };
-
-    const item2 =
-    {
-      "link": "https://openhab.example.org/rest/items/MyDimmer",
-      "state": "20",
-      "type": "Dimmer",
-      "name": "MyDimmer",
-      "label": "DimmerLight",
-      "tags": [
-        "Lighting"
-      ],
-      "groupNames": []
-    };
-
-    const getItemMock = jest.fn();
-    getItemMock.mockReturnValueOnce(Promise.resolve(item1))
-      .mockReturnValueOnce(Promise.resolve(item2));
-
-    const apiHandler = {
-      getItem: getItemMock
-    };
-
-    const payload = await new OpenHAB(apiHandler).handleQuery([{
-      "id": "MySwitch"
-    }, {
-      "id": "MyDimmer"
-    }]);
-
-    expect(getItemMock).toHaveBeenCalledTimes(2);
-    expect(payload).toStrictEqual({
-      "devices": {
-        "MySwitch": {
-          "on": false,
-          "online": true,
-        },
-        "MyDimmer": {
-          "on": true,
-          "brightness": 20,
-          "online": true,
-        },
-      },
-    });
-  });
-});
-
 describe('Test EXECUTE', () => {
-  test('ThermostatTemperatureSetpoint tag', async () => {
-    const item =
-    {
-      "link": "https://openhab.example.org/rest/items/MyThermostat",
-      "state": "NULL",
-      "type": "Group",
-      "name": "MyThermostat",
-      "label": "Thermostat",
-      "tags": [
-        "Thermostat",
-        "Fahrenheit"
-      ],
-      "members": [{
-        type: 'Number',
-        tags: [
-          'CurrentTemperature'
-        ],
-        state: '10'
-      }, {
-        name: 'MyTargetTemperature',
-        type: 'Number',
-        tags: [
-          'TargetTemperature'
-        ],
-        state: '10'
-      }, {
-        type: 'Number',
-        tags: [
-          'HeatingCoolingMode'
-        ],
-        state: '1'
-      }, {
-        type: 'Number',
-        tags: [
-          'CurrentHumidity'
-        ],
-        state: '50'
-      }],
-      "groupNames": []
-    };
-
+  test('OnOff Switch', async () => {
     const getItemMock = jest.fn();
     const sendCommandMock = jest.fn();
-    getItemMock.mockReturnValue(Promise.resolve(item));
     sendCommandMock.mockReturnValue(Promise.resolve());
 
     const apiHandler = {
@@ -337,14 +15,115 @@ describe('Test EXECUTE', () => {
     const commands = [{
       "devices": [{
         "customData": {
-          "thermostatTemperatureSetpoint": "MyTargetTemperature"
+          "itemType": "Switch"
         },
-        "id": "MyThermostat"
+        "id": "MySwitch"
       }],
       "execution": [{
-        "command": "action.devices.commands.ThermostatTemperatureSetpoint",
+        "command": "action.devices.commands.OnOff",
         "params": {
-          "thermostatTemperatureSetpoint": 25
+          "on": false
+        }
+      }]
+    }];
+
+    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
+
+    expect(getItemMock).not.toHaveBeenCalled();
+    expect(sendCommandMock).toBeCalledWith('MySwitch', 'OFF');
+    expect(payload).toStrictEqual({
+      "commands": [{
+        "ids": [
+          "MySwitch"
+        ],
+        "states": {
+          "online": true,
+          "on": false
+        },
+        "status": "SUCCESS"
+      }]
+    });
+  });
+
+  test('setVolume Dimmer', async () => {
+    const getItemMock = jest.fn();
+    const sendCommandMock = jest.fn();
+    sendCommandMock.mockReturnValue(Promise.resolve());
+
+    const apiHandler = {
+      getItem: getItemMock,
+      sendCommand: sendCommandMock
+    };
+
+    const commands = [{
+      "devices": [{
+        "customData": {
+          "itemType": "Dimmer"
+        },
+        "id": "MySpeaker"
+      }],
+      "execution": [{
+        "command": "action.devices.commands.setVolume",
+        "params": {
+          "volumeLevel": 40
+        }
+      }]
+    }];
+
+    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
+
+    expect(getItemMock).not.toHaveBeenCalled();
+    expect(sendCommandMock).toBeCalledWith('MySpeaker', '40');
+    expect(payload).toStrictEqual({
+      "commands": [{
+        "ids": [
+          "MySpeaker"
+        ],
+        "states": {
+          "currentVolume": 40,
+          "isMuted": false,
+          "online": true
+        },
+        "status": "SUCCESS"
+      }]
+    });
+  });
+
+  test('volumeRelative Dimmer', async () => {
+    const item =
+    {
+      "state": "40",
+      "type": "Dimmer",
+      "name": "MySpeaker",
+      "metadata": {
+        "ga": {
+          "value": "Speaker"
+        }
+      }
+    };
+
+    const getItemMock = jest.fn();
+    getItemMock.mockReturnValue(Promise.resolve(item));
+
+    const sendCommandMock = jest.fn();
+    sendCommandMock.mockReturnValue(Promise.resolve());
+
+    const apiHandler = {
+      getItem: getItemMock,
+      sendCommand: sendCommandMock
+    };
+
+    const commands = [{
+      "devices": [{
+        "customData": {
+          "itemType": "Dimmer"
+        },
+        "id": "MySpeaker"
+      }],
+      "execution": [{
+        "command": "action.devices.commands.volumeRelative",
+        "params": {
+          "volumeRelativeLevel": 20
         }
       }]
     }];
@@ -352,398 +131,16 @@ describe('Test EXECUTE', () => {
     const payload = await new OpenHAB(apiHandler).handleExecute(commands);
 
     expect(getItemMock).toHaveBeenCalledTimes(1);
-    expect(sendCommandMock).toBeCalledWith('MyTargetTemperature', '77');
+    expect(sendCommandMock).toBeCalledWith('MySpeaker', '60');
     expect(payload).toStrictEqual({
       "commands": [{
         "ids": [
-          "MyThermostat"
+          "MySpeaker"
         ],
         "states": {
-          "online": true,
-          "thermostatHumidityAmbient": 50,
-          "thermostatMode": "heat",
-          "thermostatTemperatureAmbient": -12.2,
-          "thermostatTemperatureSetpoint": 25
-        },
-        "status": "SUCCESS"
-      }]
-    });
-  });
-
-  test('ThermostatTemperatureSetpoint metadata', async () => {
-    const item =
-    {
-      "link": "https://openhab.example.org/rest/items/MyThermostat",
-      "state": "NULL",
-      "type": "Group",
-      "name": "MyThermostat",
-      "label": "Thermostat",
-      "metadata": {
-        "ga": {
-          "value": "Thermostat",
-          "config": {
-            "useFahrenheit": true
-          }
-        }
-      },
-      "members": [{
-        type: 'Number',
-        metadata: {
-          ga: {
-            value: 'thermostatTemperatureAmbient'
-          }
-        },
-        state: '10'
-      }, {
-        name: 'MyTargetTemperature',
-        type: 'Number',
-        metadata: {
-          ga: {
-            value: 'thermostatTemperatureSetpoint'
-          }
-        },
-        state: '10'
-      }, {
-        type: 'Number',
-        metadata: {
-          ga: {
-            value: 'thermostatMode'
-          }
-        },
-        state: '1'
-      }, {
-        type: 'Number',
-        metadata: {
-          ga: {
-            value: 'thermostatHumidityAmbient'
-          }
-        },
-        state: '50'
-      }],
-      "groupNames": []
-    };
-
-    const getItemMock = jest.fn();
-    const sendCommandMock = jest.fn();
-    getItemMock.mockReturnValue(Promise.resolve(item));
-    sendCommandMock.mockReturnValue(Promise.resolve());
-
-    const apiHandler = {
-      getItem: getItemMock,
-      sendCommand: sendCommandMock
-    };
-
-    const commands = [{
-      "devices": [{
-        "customData": {
-          "thermostatTemperatureSetpoint": "MyTargetTemperature"
-        },
-        "id": "MyThermostat"
-      }],
-      "execution": [{
-        "command": "action.devices.commands.ThermostatTemperatureSetpoint",
-        "params": {
-          "thermostatTemperatureSetpoint": 25
-        }
-      }]
-    }];
-
-    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
-
-    expect(getItemMock).toHaveBeenCalledTimes(1);
-    expect(sendCommandMock).toBeCalledWith('MyTargetTemperature', '77');
-    expect(payload).toStrictEqual({
-      "commands": [{
-        "ids": [
-          "MyThermostat"
-        ],
-        "states": {
-          "online": true,
-          "thermostatHumidityAmbient": 50,
-          "thermostatMode": "heat",
-          "thermostatTemperatureAmbient": -12.2,
-          "thermostatTemperatureSetpoint": 25
-        },
-        "status": "SUCCESS"
-      }]
-    });
-  });
-
-  test('ThermostatTemperatureSetRange metadata', async () => {
-    const item1 =
-    {
-      "link": "https://openhab.example.org/rest/items/MyThermostat",
-      "state": "NULL",
-      "type": "Group",
-      "name": "MyThermostat",
-      "label": "Thermostat",
-      "metadata": {
-        "ga": {
-          "value": "Thermostat"
-        }
-      },
-      "members": [{
-        type: 'Number',
-        metadata: {
-          ga: {
-            value: 'thermostatTemperatureAmbient'
-          }
-        },
-        state: '10'
-      }, {
-        type: 'Number',
-        metadata: {
-          ga: {
-            value: 'thermostatTemperatureSetpoint'
-          }
-        },
-        state: '10'
-      }, {
-        name: 'MyTargetTemperatureHigh',
-        type: 'Number',
-        metadata: {
-          ga: {
-            value: 'thermostatTemperatureSetpointHigh'
-          }
-        },
-        state: '13'
-      }, {
-        name: 'MyTargetTemperatureLow',
-        type: 'Number',
-        metadata: {
-          ga: {
-            value: 'thermostatTemperatureSetpointLow'
-          }
-        },
-        state: '7'
-      }, {
-        type: 'Number',
-        metadata: {
-          ga: {
-            value: 'thermostatMode'
-          }
-        },
-        state: 'heatcool'
-      }, {
-        type: 'Number',
-        metadata: {
-          ga: {
-            value: 'thermostatHumidityAmbient'
-          }
-        },
-        state: '50'
-      }],
-      "groupNames": []
-    };
-
-    const item2 =
-    {
-      "link": "https://openhab.example.org/rest/items/MyThermostat",
-      "state": "NULL",
-      "type": "Group",
-      "name": "MyThermostat",
-      "label": "Thermostat",
-      "metadata": {
-        "ga": {
-          "value": "Thermostat"
-        }
-      },
-      "members": [{
-        type: 'Number',
-        metadata: {
-          ga: {
-            value: 'thermostatTemperatureAmbient'
-          }
-        },
-        state: '10'
-      }, {
-        type: 'Number',
-        metadata: {
-          ga: {
-            value: 'thermostatTemperatureSetpoint'
-          }
-        },
-        state: '10'
-      }, {
-        name: 'MyTargetTemperatureHigh',
-        type: 'Number',
-        metadata: {
-          ga: {
-            value: 'thermostatTemperatureSetpointHigh'
-          }
-        },
-        state: '25'
-      }, {
-        name: 'MyTargetTemperatureLow',
-        type: 'Number',
-        metadata: {
-          ga: {
-            value: 'thermostatTemperatureSetpointLow'
-          }
-        },
-        state: '7'
-      }, {
-        type: 'Number',
-        metadata: {
-          ga: {
-            value: 'thermostatMode'
-          }
-        },
-        state: 'heatcool'
-      }, {
-        type: 'Number',
-        metadata: {
-          ga: {
-            value: 'thermostatHumidityAmbient'
-          }
-        },
-        state: '50'
-      }],
-      "groupNames": []
-    };
-
-    const getItemMock = jest.fn();
-    const sendCommandMock = jest.fn();
-    getItemMock.mockReturnValueOnce(Promise.resolve(item1))
-      .mockReturnValueOnce(Promise.resolve(item2));
-    sendCommandMock.mockReturnValue(Promise.resolve());
-
-    const apiHandler = {
-      getItem: getItemMock,
-      sendCommand: sendCommandMock
-    };
-
-    const commands = [{
-      "devices": [{
-        "customData": {
-          "thermostatTemperatureSetpointHigh": "MyTargetTemperatureHigh",
-          "thermostatTemperatureSetpointLow": "MyTargetTemperatureLow"
-        },
-        "id": "MyThermostat"
-      }],
-      "execution": [{
-        "command": "action.devices.commands.ThermostatTemperatureSetRange",
-        "params": {
-          "thermostatTemperatureSetpointHigh": 25,
-          "thermostatTemperatureSetpointLow": 15
-        }
-      }]
-    }];
-
-    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
-
-    expect(getItemMock).toHaveBeenCalledTimes(2);
-    expect(sendCommandMock).toBeCalledWith('MyTargetTemperatureHigh', '25');
-    expect(sendCommandMock).toBeCalledWith('MyTargetTemperatureLow', '15');
-    expect(payload).toStrictEqual({
-      "commands": [{
-        "ids": [
-          "MyThermostat"
-        ],
-        "states": {
-          "online": true,
-          "thermostatHumidityAmbient": 50,
-          "thermostatMode": "heatcool",
-          "thermostatTemperatureAmbient": 10,
-          "thermostatTemperatureSetpoint": 10,
-          "thermostatTemperatureSetpointHigh": 25,
-          "thermostatTemperatureSetpointLow": 15
-        },
-        "status": "SUCCESS"
-      }]
-    });
-  });
-
-  test('ThermostatSetMode metadata', async () => {
-    const item =
-    {
-      "link": "https://openhab.example.org/rest/items/MyThermostat",
-      "state": "NULL",
-      "type": "Group",
-      "name": "MyThermostat",
-      "label": "Thermostat",
-      "metadata": {
-        "ga": {
-          "value": "Thermostat"
-        }
-      },
-      "members": [{
-        type: 'Number',
-        metadata: {
-          ga: {
-            value: 'thermostatTemperatureAmbient'
-          }
-        },
-        state: '20'
-      }, {
-        name: 'MyTargetTemperature',
-        type: 'Number',
-        metadata: {
-          ga: {
-            value: 'thermostatTemperatureSetpoint'
-          }
-        },
-        state: '10'
-      }, {
-        type: 'Number',
-        metadata: {
-          ga: {
-            value: 'thermostatMode'
-          }
-        },
-        state: '1'
-      }, {
-        type: 'Number',
-        metadata: {
-          ga: {
-            value: 'thermostatHumidityAmbient'
-          }
-        },
-        state: '50'
-      }],
-      "groupNames": []
-    };
-
-    const getItemMock = jest.fn();
-    const sendCommandMock = jest.fn();
-    getItemMock.mockReturnValue(Promise.resolve(item));
-    sendCommandMock.mockReturnValue(Promise.resolve());
-
-    const apiHandler = {
-      getItem: getItemMock,
-      sendCommand: sendCommandMock
-    };
-
-    const commands = [{
-      "devices": [{
-        "customData": {
-          "thermostatMode": "MyMode"
-        },
-        "id": "MyThermostat"
-      }],
-      "execution": [{
-        "command": "action.devices.commands.ThermostatSetMode",
-        "params": {
-          "thermostatMode": "off"
-        }
-      }]
-    }];
-
-    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
-
-    expect(getItemMock).toHaveBeenCalledTimes(1);
-    expect(sendCommandMock).toBeCalledWith('MyMode', '0');
-    expect(payload).toStrictEqual({
-      "commands": [{
-        "ids": [
-          "MyThermostat"
-        ],
-        "states": {
-          "online": true,
-          "thermostatHumidityAmbient": 50,
-          "thermostatMode": "off",
-          "thermostatTemperatureAmbient": 20,
-          "thermostatTemperatureSetpoint": 10
+          "currentVolume": 60,
+          "isMuted": false,
+          "online": true
         },
         "status": "SUCCESS"
       }]
@@ -792,7 +189,6 @@ describe('Test EXECUTE', () => {
       }]
     });
   });
-
 
   test('OpenClose Rollershutter inverted', async () => {
     const getItemMock = jest.fn();
@@ -936,7 +332,6 @@ describe('Test EXECUTE', () => {
   test('ColorAbsolute Temperature', async () => {
     const item =
     {
-      "link": "https://openhab.example.org/rest/items/MyColor",
       "state": "50,50,50",
       "type": "Switch",
       "name": "MyColor",
@@ -945,8 +340,7 @@ describe('Test EXECUTE', () => {
         "ga": {
           "value": "LIGHT"
         }
-      },
-      "groupNames": []
+      }
     };
 
     const getItemMock = jest.fn();
