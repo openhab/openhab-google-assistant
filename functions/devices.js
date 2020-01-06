@@ -156,6 +156,12 @@ class SimpleHood extends Switch {
   }
 }
 
+class SimpleAirPurifier extends Switch {
+  static get type() {
+    return 'action.devices.types.AIRPURIFIER'
+  }
+}
+
 /* Switch items that act as open-close devices */
 
 class Valve extends GenericDevice {
@@ -558,6 +564,12 @@ class Hood extends Fan {
   }
 }
 
+class AirPurifier extends Fan {
+  static get type() {
+    return 'action.devices.types.AIRPURIFIER';
+  }
+}
+
 class Thermostat extends GenericDevice {
   static get type() {
     return 'action.devices.types.THERMOSTAT';
@@ -700,6 +712,7 @@ const Devices = [
   Camera,
   SimpleFan, Fan,
   SimpleHood, Hood,
+  SimpleAirPurifier, AirPurifier,
   Thermostat
 ];
 
