@@ -96,10 +96,43 @@ describe('Test SYNC with Metadata', () => {
     expect(getItemsMock).toHaveBeenCalledTimes(1);
     expect(payload).toMatchSnapshot();
   });
+
+  test('Fan Device', async () => {
+    const items = [
+      {
+        "state": "50",
+        "metadata": {
+          "ga": {
+            "value": "FAN",
+            "config": {
+              "ordered": true,
+              "speeds": "0\u003dnull:off,50\u003dslow,100\u003dfull:fast",
+              "lang": "en"
+            }
+          }
+        },
+        "type": "Dimmer",
+        "name": "MyFan",
+        "label": "My Fan",
+        "tags": []
+      }
+    ];
+    const getItemsMock = jest.fn();
+    getItemsMock.mockReturnValue(Promise.resolve(items));
+
+    const apiHandler = {
+      getItems: getItemsMock
+    };
+
+    const payload = await new OpenHAB(apiHandler).handleSync();
+
+    expect(getItemsMock).toHaveBeenCalledTimes(1);
+    expect(payload).toMatchSnapshot();
+  });
 });
 
 describe('Test QUERY with Metadata', () => {
-  test('Single Light Device ', async () => {
+  test('Single Light Device', async () => {
     const item =
     {
       "state": "OFF",
@@ -183,6 +216,45 @@ describe('Test QUERY with Metadata', () => {
         "MyDimmer": {
           "on": true,
           "brightness": 20,
+          "online": true,
+        },
+      },
+    });
+  });
+
+  test('Fan Device', async () => {
+    const item = {
+      "state": "50",
+      "metadata": {
+        "ga": {
+          "value": "FAN",
+          "config": {
+            "ordered": true,
+            "speeds": "0\u003dnull:off,50\u003dslow,100\u003dfull:fast",
+            "lang": "en"
+          }
+        }
+      },
+      "type": "Dimmer",
+      "name": "MyFan",
+    };
+    const getItemMock = jest.fn();
+    getItemMock.mockReturnValue(Promise.resolve(item));
+
+    const apiHandler = {
+      getItem: getItemMock
+    };
+
+    const payload = await new OpenHAB(apiHandler).handleQuery([{
+      "id": "MyFan"
+    }]);
+
+    expect(getItemMock).toHaveBeenCalledTimes(1);
+    expect(payload).toStrictEqual({
+      "devices": {
+        "MyFan": {
+          "on": true,
+          "currentFanSpeedSetting": "50",
           "online": true,
         },
       },

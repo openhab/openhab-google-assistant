@@ -1,5 +1,87 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Test SYNC with Metadata Fan Device 1`] = `
+Object {
+  "devices": Array [
+    Object {
+      "attributes": Object {
+        "availableFanSpeeds": Object {
+          "ordered": true,
+          "speeds": Array [
+            Object {
+              "speed_name": "0",
+              "speed_values": Array [
+                Object {
+                  "lang": "en",
+                  "speed_synonym": Array [
+                    "null",
+                    "off",
+                  ],
+                },
+              ],
+            },
+            Object {
+              "speed_name": "50",
+              "speed_values": Array [
+                Object {
+                  "lang": "en",
+                  "speed_synonym": Array [
+                    "slow",
+                  ],
+                },
+              ],
+            },
+            Object {
+              "speed_name": "100",
+              "speed_values": Array [
+                Object {
+                  "lang": "en",
+                  "speed_synonym": Array [
+                    "full",
+                    "fast",
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        "reversible": false,
+      },
+      "customData": Object {
+        "deviceType": "action.devices.types.FAN",
+        "itemType": "Dimmer",
+        "tfaAck": undefined,
+        "tfaPin": undefined,
+      },
+      "deviceInfo": Object {
+        "hwVersion": "2.5.0",
+        "manufacturer": "openHAB",
+        "model": "Dimmer",
+        "swVersion": "2.5.0",
+      },
+      "id": "MyFan",
+      "name": Object {
+        "defaultNames": Array [
+          "My Fan",
+        ],
+        "name": "My Fan",
+        "nicknames": Array [
+          "My Fan",
+        ],
+      },
+      "roomHint": undefined,
+      "structureHint": undefined,
+      "traits": Array [
+        "action.devices.traits.OnOff",
+        "action.devices.traits.FanSpeed",
+      ],
+      "type": "action.devices.types.FAN",
+      "willReportState": false,
+    },
+  ],
+}
+`;
+
 exports[`Test SYNC with Metadata Light Devices 1`] = `
 Object {
   "devices": Array [
