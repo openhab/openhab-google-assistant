@@ -23,6 +23,9 @@ const https = require('https');
 
 class ApiHandler {
   constructor(config = {}, authToken = '') {
+    if (!config.path.endsWith('/')) {
+      config.path += '/';
+    }
     this._config = config;
     this._authToken = authToken;
   }
@@ -31,7 +34,7 @@ class ApiHandler {
     const options = {
       hostname: this._config.host,
       port: this._config.port,
-      path: this._config.path + (itemName || ''),
+      path: this._config.path + (itemName ? itemName + '?metadata=ga' : '?metadata=ga&recursive=true'),
       method: method,
       headers: {
         'Accept': 'application/json'

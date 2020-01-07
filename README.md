@@ -144,7 +144,7 @@ Note: Anytime you make changes to the settings to your Action on the _Actions By
 If you're lucky this works! You'll need to configure your items (below) and then sync again.
 If it didn't work, try the workaround below.
 
-To resync changes in tagging or other openHAB configuration, tell Google Home to `sync my devices`. In a few seconds any changes will appear.
+To resync changes in the metadata or other openHAB configuration, tell Google Home to `sync my devices`. In a few seconds any changes will appear.
 
 ## Workarounds
 
@@ -178,62 +178,63 @@ Return back to the Google Home app and try to add the OpenHAB service again. You
 
 ## Item configuration
 
-* In openHAB Items are exposed via HomeKit tags, the following is taken from the [HomeKit Add-on](https://www.openhab.org/addons/integrations/homekit/) documentation in openHAB:
+* In openHAB items are exposed using metadata in the namespace `ga`:
 
   ```
-  Switch KitchenLights "Kitchen Lights" <light> (gKitchen) [ "Switchable" ]
-  Dimmer BedroomLights "Bedroom Lights" <light> (gBedroom) [ "Lighting" ]
-  Color LivingroomLights "Livingroom Lights" <light> (gLivingroom) [ "Lighting" ]
-  Switch SceneMovie "Livingroom Scene Movie" (gLivingroom) [ "Scene" ]
-  Switch CristmasTree "Cristmas Tree" (gLivingroom) [ "Outlet" ]
-  Switch DoorLock "Door Lock" [ "Lock" ]
+  Switch KitchenLights "Kitchen Lights" <light> (gKitchen) { ga="Switch" }
+  Dimmer BedroomLights "Bedroom Lights" <light> (gBedroom) { ga="Light" }
+  Color LivingroomLights "Livingroom Lights" <light> (gLivingroom) { ga="Light" }
+  Switch SceneMovie "Livingroom Scene Movie" (gLivingroom) { synonyms="Movie Scene", ga="Scene" }
+  Switch CristmasTree "Cristmas Tree" (gLivingroom) { ga="Outlet" }
+  Switch DoorLock "Door Lock" { ga="Lock" }
 
   //Thermostat Setup (Google requires a mode, even if you manually set it up in openHAB)
-  Group g_HK_Basement_TSTAT "Basement Thermostat" [ "Thermostat", "Fahrenheit" ]
-  Number HK_Basement_Mode "Basement Heating/Cooling Mode" (g_HK_Basement_TSTAT) [ "homekit:TargetHeatingCoolingMode" ]
-  Number HK_Basement_Temp "Basement Temperature" (g_HK_Basement_TSTAT) [ "CurrentTemperature" ]
-  Number HK_Basement_Humid "Basement Humidity" (g_HK_Basement_TSTAT) [ "CurrentHumidity" ]
-  Number HK_Basement_Setpoint "Basement Setpoint" (g_HK_Basement_TSTAT) [ "homekit:TargetTemperature" ]
+  Group g_HK_Basement_TSTAT "Basement Thermostat" { ga="Thermostat" [ useFahrenheit=true ] }
+  Number HK_Basement_Mode "Basement Heating/Cooling Mode" (g_HK_Basement_TSTAT) { ga="thermostatMode" }
+  Number HK_Basement_Setpoint "Basement Setpoint" (g_HK_Basement_TSTAT) { ga="thermostatTemperatureSetpoint" }
+  Number HK_Basement_Temp "Basement Temperature" (g_HK_Basement_TSTAT) { ga="thermostatTemperatureAmbient" }
+  Number HK_Basement_Humid "Basement Humidity" (g_HK_Basement_TSTAT) { ga="thermostatHumidityAmbient" }
   ```
 
-Currently the following Tags are supported (also depending on Googles API capabilities):
+Currently the following metadata values are supported (also depending on Googles API capabilities):
 
-* Switch / Dimmer / Color ["Lighting"]
-* Switch ["Switchable"]
-* Switch ["Outlet"]
-* Switch ["Fan"]
-* Switch ["CoffeeMaker"]
-* Switch ["WaterHeater"]
-* Switch ["Fireplace"]
-* Switch ["Valve"]
-* Switch ["Sprinkler"]
-* Switch ["Vacuum"]
-* Switch ["Scene"]
-* Switch ["Lock"]
-* Rollershutter ["Awning"]
-* Rollershutter ["Blinds"]
-* Rollershutter ["Curtain"]
-* Rollershutter ["Door"]
-* Rollershutter ["Garage"]
-* Rollershutter ["Gate"]
-* Rollershutter ["Pergola"]
-* Rollershutter ["Shutter"]
-* Rollershutter ["Window"]
-* Group ["Thermostat"]
-* Number ["CurrentTemperature"] as part of Thermostat.
-* Number ["CurrentHumidity"] as part of Thermostat.
-* Number ["homekit:TargetTemperature"] as part of Thermostat.
-* Number / String ["homekit:TargetHeatingCoolingMode"] as part of Thermostat.
+* Switch / Dimmer / Color { ga="Light" }
+* Switch { ga="Switch" }
+* Switch { ga="Outlet" }
+* Switch { ga="CoffeeMaker" }
+* Switch { ga="WaterHeater" }
+* Switch { ga="Fireplace" }
+* Switch { ga="Valve" }
+* Switch { ga="Sprinkler" }
+* Switch { ga="Vacuum" }
+* Switch { ga="Scene" }
+* Switch { ga="Lock" [ tfaAck=true ] }
+* Switch { ga="SecuritySystem" [ tfaPin="1234" ] }
+* Dimmer { ga="Speaker" }
+* Switch / Dimmer { ga="Fan" [ speeds="0=away:zero,50=default:standard:one,100=high:two", lang="en", ordered=true ] } (for Dimmer the options have to be set)
+* Rollershutter { ga="Awning" [ inverted=true ] } (all Rollershutter items can use the inverted option)
+* Rollershutter { ga="Blinds" }
+* Rollershutter { ga="Curtain" }
+* Rollershutter { ga="Door" }
+* Rollershutter { ga="Garage" }
+* Rollershutter { ga="Gate" }
+* Rollershutter { ga="Pergola" }
+* Rollershutter { ga="Shutter" }
+* Rollershutter { ga="Window" }
+* Group { ga="Thermostat" }
+* Number { ga="thermostatTemperatureAmbient" } as part of Thermostat.
+* Number { ga="thermostatHumidityAmbient" } as part of Thermostat.
+* Number { ga="thermostatTemperatureSetpoint" } as part of Thermostat.
+* Number / String { ga="thermostatMode" } as part of Thermostat.
 
 Notes Regarding Thermostat Items:
 
 - Thermostat requires a group to be properly setup with Google Assistant, default format is Celsius
 - There must be 3 elements:
   * Mode: May be Number (Zwave THERMOSTAT_MODE Format) or String (off, heat, cool, on)
-  * Current Temperature: Number
-  * TargetTemperature: Number
+  * Temperature Ambient: Number
+  * Temperature Setpoint: Number
 - If your thermostat does not have a mode, you should create one and manually assign a value (e.g. heat, cool, on, etc.) to have proper functionality
-- See also [HomeKit Add-on](https://www.openhab.org/addons/integrations/homekit/) for further formatting details.
 
 More details about the setup and the service linkage (https://myopenhab.org) procedure within the Google App can be found in the [USAGE documentation](docs/USAGE.md).
 

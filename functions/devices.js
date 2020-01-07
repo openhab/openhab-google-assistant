@@ -17,11 +17,26 @@
  * @author Michael Krug
  *
  */
-class GenericDevice {
-  static hasTag(item = { tags: [] }, tag = '') {
-    return item.tags && item.tags.map(t => t.toLowerCase()).includes(tag.toLowerCase());
-  }
 
+const hasTag = (item = {}, tag = '') => {
+  return item.tags && item.tags.map(t => t.toLowerCase()).includes(tag.toLowerCase());
+};
+
+const getDeviceForItem = (item = {}) => {
+  return Devices.find((device) => (
+    (
+      item.metadata && item.metadata.ga &&
+      device.type.toLowerCase() === `action.devices.types.${item.metadata.ga.value}`.toLowerCase() ||
+      hasTag(item, device.type.substr(21).replace('SWITCH', 'SWITCHABLE').replace('LIGHT', 'LIGHTING'))
+    ) && device.checkItemType(item)
+  ));
+};
+
+const getConfig = (item = {}) => {
+  return item && item.metadata && item.metadata.ga && item.metadata.ga.config || {};
+};
+
+class GenericDevice {
   static get type() {
     return '';
   }
@@ -30,19 +45,53 @@ class GenericDevice {
     return [];
   }
 
-  static getAttributes(item) {
+  static getAttributes(item = {}) {
     return {};
   }
 
-  static get tag() {
+  static getMetadata(item = {}) {
+    const config = getConfig(item);
+    return {
+      id: item.name,
+      type: this.type,
+      traits: this.traits,
+      name: {
+        name: config.name || item.label,
+        defaultNames: [config.name || item.label],
+        nicknames: [config.name || item.label, ...(item.metadata && item.metadata.synonyms ? item.metadata.synonyms.value.split(',') : [])]
+      },
+      willReportState: false,
+      roomHint: config.roomHint,
+      structureHint: config.structureHint,
+      deviceInfo: {
+        manufacturer: 'openHAB',
+        model: item.type,
+        hwVersion: '2.5.0',
+        swVersion: '2.5.0'
+      },
+      attributes: this.getAttributes(item),
+      customData: {
+        itemType: item.type,
+        deviceType: this.type,
+        tfaAck: config.tfaAck,
+        tfaPin: config.tfaPin
+      }
+    };
+  }
+
+  static get requiredItemType() {
     return '';
   }
 
-  static appliesTo(item) {
-    return this.hasTag(item, this.tag);
+  static checkItemType(item = {}) {
+    return (
+      !this.requiredItemType ||
+      item.type === this.requiredItemType ||
+      (item.type === 'Group' && item.groupType && item.groupType === this.requiredItemType)
+    );
   }
 
-  static getState(item) {
+  static getState(item = {}) {
     return {};
   }
 }
@@ -60,12 +109,8 @@ class Switch extends GenericDevice {
     ];
   }
 
-  static get tag() {
-    return 'Switchable';
-  }
-
-  static appliesTo(item) {
-    return this.hasTag(item, this.tag) && (item.type === 'Switch' || (item.type === 'Group' && item.groupType && item.groupType === 'Switch'));
+  static get requiredItemType() {
+    return 'Switch';
   }
 
   static getState(item) {
@@ -79,29 +124,11 @@ class Outlet extends Switch {
   static get type() {
     return 'action.devices.types.OUTLET';
   }
-
-  static get tag() {
-    return 'Outlet';
-  }
-}
-
-class Fan extends Switch {
-  static get type() {
-    return 'action.devices.types.FAN';
-  }
-
-  static get tag() {
-    return 'Fan';
-  }
 }
 
 class CoffeeMaker extends Switch {
   static get type() {
     return 'action.devices.types.COFFEE_MAKER';
-  }
-
-  static get tag() {
-    return 'CoffeeMaker';
   }
 }
 
@@ -109,19 +136,29 @@ class WaterHeater extends Switch {
   static get type() {
     return 'action.devices.types.WATERHEATER';
   }
-
-  static get tag() {
-    return 'WaterHeater';
-  }
 }
 
 class Fireplace extends Switch {
   static get type() {
     return 'action.devices.types.FIREPLACE';
   }
+}
 
-  static get tag() {
-    return 'Fireplace';
+class SimpleFan extends Switch {
+  static get type() {
+    return 'action.devices.types.FAN';
+  }
+}
+
+class SimpleHood extends Switch {
+  static get type() {
+    return 'action.devices.types.HOOD';
+  }
+}
+
+class SimpleAirPurifier extends Switch {
+  static get type() {
+    return 'action.devices.types.AIRPURIFIER'
   }
 }
 
@@ -138,12 +175,8 @@ class Valve extends GenericDevice {
     ];
   }
 
-  static get tag() {
-    return 'Valve';
-  }
-
-  static appliesTo(item) {
-    return this.hasTag(item, this.tag) && (item.type === 'Switch' || (item.type === 'Group' && item.groupType && item.groupType === 'Switch'));
+  static get requiredItemType() {
+    return 'Switch';
   }
 
   static getState(item) {
@@ -162,8 +195,8 @@ class StartStopSwitch extends GenericDevice {
     ];
   }
 
-  static appliesTo(item) {
-    return this.hasTag(item, this.tag) && (item.type === 'Switch' || (item.type === 'Group' && item.groupType && item.groupType === 'Switch'));
+  static get requiredItemType() {
+    return 'Switch';
   }
 
   static getState(item) {
@@ -178,19 +211,11 @@ class Sprinkler extends StartStopSwitch {
   static get type() {
     return 'action.devices.types.SPRINKLER';
   }
-
-  static get tag() {
-    return 'Sprinkler';
-  }
 }
 
 class Vacuum extends StartStopSwitch {
   static get type() {
     return 'action.devices.types.VACUUM';
-  }
-
-  static get tag() {
-    return 'Vacuum';
   }
 }
 
@@ -207,18 +232,14 @@ class Scene extends GenericDevice {
     ];
   }
 
-  static getAttributes(item) {
+  static get requiredItemType() {
+    return 'Switch'
+  }
+
+  static getAttributes() {
     return {
       sceneReversible: true
     };
-  }
-
-  static get tag() {
-    return 'Scene';
-  }
-
-  static appliesTo(item) {
-    return this.hasTag(item, this.tag) && (item.type === 'Switch' || (item.type === 'Group' && item.groupType && item.groupType === 'Switch'));
   }
 }
 
@@ -235,12 +256,8 @@ class Lock extends GenericDevice {
     ];
   }
 
-  static get tag() {
-    return 'Lock';
-  }
-
-  static appliesTo(item) {
-    return this.hasTag(item, this.tag) && (item.type === 'Switch' || (item.type === 'Group' && item.groupType && item.groupType === 'Switch'));
+  static get requiredItemType() {
+    return 'Switch';
   }
 
   static getState(item) {
@@ -263,12 +280,8 @@ class SecuritySystem extends GenericDevice {
     ];
   }
 
-  static get tag() {
-    return 'SecuritySystem';
-  }
-
-  static appliesTo(item) {
-    return this.hasTag(item, this.tag) && (item.type === 'Switch' || (item.type === 'Group' && item.groupType && item.groupType === 'Switch'));
+  static get requiredItemType() {
+    return 'Switch';
   }
 
   static getState(item) {
@@ -283,10 +296,6 @@ class SecuritySystem extends GenericDevice {
 class SimpleLight extends Switch {
   static get type() {
     return 'action.devices.types.LIGHT';
-  }
-
-  static get tag() {
-    return 'Lighting';
   }
 }
 
@@ -304,19 +313,12 @@ class DimmableLight extends GenericDevice {
     ];
   }
 
-  static get tag() {
-    return 'Lighting';
-  }
-
-  static appliesTo(item) {
-    return this.hasTag(item, this.tag) && (item.type === 'Dimmer' || (item.type === 'Group' && item.groupType && item.groupType === 'Dimmer'));
+  static get requiredItemType() {
+    return 'Dimmer';
   }
 
   static getState(item) {
-    let brightness = Number(item.state);
-    if (isNaN(brightness)) {
-      brightness = 0;
-    }
+    let brightness = Number(item.state) || 0;
     return {
       on: brightness > 0,
       brightness: brightness
@@ -340,16 +342,24 @@ class ColorLight extends GenericDevice {
   }
 
   static getAttributes(item) {
-    return {
+    const attributes = {
       colorModel: 'hsv'
     };
+    const colorTemperatureRange = getConfig(item).colorTemperatureRange;
+    if (colorTemperatureRange) {
+      try {
+        const range = colorTemperatureRange.split(',');
+        attributes.colorTemperatureRange = {
+          temperatureMinK: Number(range[0]),
+          temperatureMaxK: Number(range[1])
+        };
+      } catch (err) { }
+    }
+    return attributes;
   }
 
-  static get tag() {
-    return 'Lighting';
-  }
-  static appliesTo(item) {
-    return this.hasTag(item, this.tag) && (item.type === 'Color' || (item.type === 'Group' && item.groupType && item.groupType === 'Color'));
+  static get requiredItemType() {
+    return 'Color';
   }
 
   static getState(item) {
@@ -378,13 +388,19 @@ class GenericOpenCloseDevice extends GenericDevice {
     ];
   }
 
-  static appliesTo(item) {
-    return this.hasTag(item, this.tag) && (item.type === 'Rollershutter' || (item.type === 'Group' && item.groupType && item.groupType === 'Rollershutter'));
+  static getMetadata(item) {
+    const metadata = super.getMetadata(item);
+    metadata.customData.inverted = getConfig(item).inverted === true;
+    return metadata;
+  }
+
+  static get requiredItemType() {
+    return 'Rollershutter';
   }
 
   static getState(item) {
     return {
-      openPercent: 100 - Number(item.state)
+      openPercent: getConfig(item).inverted === true ? Number(item.state) : 100 - Number(item.state)
     };
   }
 }
@@ -393,19 +409,11 @@ class Awning extends GenericOpenCloseDevice {
   static get type() {
     return 'action.devices.types.AWNING';
   }
-
-  static get tag() {
-    return 'Awning';
-  }
 }
 
 class Blinds extends GenericOpenCloseDevice {
   static get type() {
     return 'action.devices.types.BLINDS';
-  }
-
-  static get tag() {
-    return 'Blinds';
   }
 }
 
@@ -413,19 +421,11 @@ class Curtain extends GenericOpenCloseDevice {
   static get type() {
     return 'action.devices.types.CURTAIN';
   }
-
-  static get tag() {
-    return 'Curtain';
-  }
 }
 
 class Door extends GenericOpenCloseDevice {
   static get type() {
     return 'action.devices.types.DOOR';
-  }
-
-  static get tag() {
-    return 'Door';
   }
 }
 
@@ -433,19 +433,11 @@ class Garage extends GenericOpenCloseDevice {
   static get type() {
     return 'action.devices.types.GARAGE';
   }
-
-  static get tag() {
-    return 'Garage';
-  }
 }
 
 class Gate extends GenericOpenCloseDevice {
   static get type() {
     return 'action.devices.types.GATE';
-  }
-
-  static get tag() {
-    return 'Gate';
   }
 }
 
@@ -453,29 +445,17 @@ class Pergola extends GenericOpenCloseDevice {
   static get type() {
     return 'action.devices.types.PERGOLA';
   }
-
-  static get tag() {
-    return 'Pergola';
-  }
 }
 
 class Shutter extends GenericOpenCloseDevice {
   static get type() {
     return 'action.devices.types.SHUTTER';
   }
-
-  static get tag() {
-    return 'Shutter';
-  }
 }
 
 class Window extends GenericOpenCloseDevice {
   static get type() {
     return 'action.devices.types.WINDOW';
-  }
-
-  static get tag() {
-    return 'Window';
   }
 }
 
@@ -490,19 +470,103 @@ class Speaker extends GenericDevice {
     ];
   }
 
-  static get tag() {
-    return 'Speaker';
+  static get requiredItemType() {
+    return 'Dimmer';
   }
 
-  static appliesTo(item) {
-    return this.hasTag(item, this.tag) && (item.type === 'Dimmer' || (item.type === 'Group' && item.groupType && item.groupType === 'Dimmer'));
+  static getState(item) {
+    const volume = Number(item.state) || 0;
+    return {
+      currentVolume: volume,
+      isMuted: volume === 0
+    };
+  }
+}
+
+class Camera extends GenericDevice {
+  static get type() {
+    return 'action.devices.types.CAMERA';
+  }
+
+  static get traits() {
+    return [
+      'action.devices.traits.CameraStream'
+    ];
+  }
+
+  static getAttributes(item) {
+    return {
+      cameraStreamSupportedProtocols: (getConfig(item).protocols || 'hls,dash').split(','),
+      cameraStreamNeedAuthToken: getConfig(item).token ? true : false,
+      cameraStreamNeedDrmEncryption: false
+    };
+  }
+
+  static get requiredItemType() {
+    return 'String';
+  }
+}
+
+class Fan extends GenericDevice {
+  static get type() {
+    return 'action.devices.types.FAN';
+  }
+
+  static get traits() {
+    return [
+      'action.devices.traits.OnOff',
+      'action.devices.traits.FanSpeed'
+    ];
+  }
+
+  static getAttributes(item) {
+    const config = getConfig(item);
+    if (!config || !config.speeds) {
+      return {};
+    }
+    const attributes = {
+      availableFanSpeeds: {
+        speeds: [],
+        ordered: config.ordered === true
+      },
+      reversible: false
+    };
+    config.speeds.split(',').forEach((speedEntry) => {
+      try {
+        const [speedName, speedSynonyms] = speedEntry.split('=');
+        attributes.availableFanSpeeds.speeds.push({
+          speed_name: speedName,
+          speed_values: [{
+            speed_synonym: speedSynonyms.split(':'),
+            lang: config.lang || 'en'
+          }]
+        });
+      } catch (e) { }
+    });
+    return attributes;
+  }
+
+  static get requiredItemType() {
+    return 'Dimmer';
   }
 
   static getState(item) {
     return {
-      currentVolume: item.state,
-      isMuted: item.state === 0
+      currentFanSpeedSetting: item.state.toString(),
+      on: Number(item.state) > 0
     };
+  }
+}
+
+class Hood extends Fan {
+  static get type() {
+    return 'action.devices.types.HOOD';
+  }
+}
+
+class AirPurifier extends Fan {
+  static get type() {
+    return 'action.devices.types.AIRPURIFIER';
   }
 }
 
@@ -518,59 +582,80 @@ class Thermostat extends GenericDevice {
   }
 
   static getAttributes(item) {
-    return {
-      availableThermostatModes: 'off,heat,cool,on,heatcool',
+    const attributes = {
       thermostatTemperatureUnit: this.usesFahrenheit(item) ? 'F' : 'C'
     };
+    const members = this.getMembers(item);
+    if (('thermostatTemperatureAmbient' in members) &&
+      !('thermostatMode' in members) &&
+      !('thermostatTemperatureSetpoint' in members)) {
+      attributes.queryOnlyTemperatureSetting = true;
+    } else {
+      attributes.availableThermostatModes = getConfig(item).modes || 'off,heat,cool,on,heatcool';
+    }
+    return attributes;
   }
 
-  static get tag() {
-    return 'Thermostat';
+  static getMetadata(item) {
+    const metadata = super.getMetadata(item);
+    const members = this.getMembers(item);
+    for (const member in members) {
+      metadata.customData[member] = members[member].name;
+    }
+    metadata.customData.useFahrenheit = this.usesFahrenheit(item);
+    return metadata;
   }
 
-  static appliesTo(item) {
-    return this.hasTag(item, this.tag) && item.type === 'Group';
+  static checkItemType(item) {
+    return item.type === 'Group';
   }
 
   static getState(item) {
     const state = {};
     const members = this.getMembers(item);
-    if (members.thermostatMode) {
-      state.thermostatMode = this.normalizeThermostatMode(members.thermostatMode.state);
-    }
-    if (members.thermostatTemperatureSetpoint) {
-      state.thermostatTemperatureSetpoint = Number(parseFloat(members.thermostatTemperatureSetpoint.state).toFixed(1));
-      if (this.usesFahrenheit(item)) {
-        state.thermostatTemperatureSetpoint = this.convertToCelsius(state.thermostatTemperatureSetpoint);
+    for (const member in members) {
+      if (member == 'thermostatMode') {
+        state[member] = this.normalizeThermostatMode(members[member].state);
+      } else {
+        state[member] = Number(parseFloat(members[member].state).toFixed(1));
+        if (member.indexOf('Temperature') > 0 && this.usesFahrenheit(item)) {
+          state[member] = this.convertToCelsius(state[member]);
+        }
       }
-    }
-    if (members.thermostatTemperatureAmbient) {
-      state.thermostatTemperatureAmbient = Number(parseFloat(members.thermostatTemperatureAmbient.state).toFixed(1));
-      if (this.usesFahrenheit(item)) {
-        state.thermostatTemperatureAmbient = this.convertToCelsius(state.thermostatTemperatureAmbient);
-      }
-    }
-    if (members.thermostatHumidityAmbient) {
-      state.thermostatHumidityAmbient = Number(parseFloat(members.thermostatHumidityAmbient.state).toFixed(0));
     }
     return state;
   }
 
   static getMembers(item) {
+    const supportedMembers = [
+      'thermostatMode',
+      'thermostatTemperatureSetpoint',
+      'thermostatTemperatureSetpointHigh',
+      'thermostatTemperatureSetpointLow',
+      'thermostatTemperatureAmbient',
+      'thermostatHumidityAmbient'
+    ];
     const members = {};
     if (item.members && item.members.length) {
       item.members.forEach((member) => {
-        if (this.hasTag(member, 'HeatingCoolingMode') || this.hasTag(member, 'homekit:HeatingCoolingMode') || this.hasTag(member, 'homekit:TargetHeatingCoolingMode') || this.hasTag(member, 'homekit:CurrentHeatingCoolingMode')) {
-          members.thermostatMode = { name: member.name, state: member.state };
-        }
-        if (this.hasTag(member, 'TargetTemperature') || this.hasTag(member, 'homekit:TargetTemperature')) {
-          members.thermostatTemperatureSetpoint = { name: member.name, state: member.state };
-        }
-        if (this.hasTag(member, 'CurrentTemperature')) {
-          members.thermostatTemperatureAmbient = { name: member.name, state: member.state };
-        }
-        if (this.hasTag(member, 'CurrentHumidity')) {
-          members.thermostatHumidityAmbient = { name: member.name, state: member.state };
+        if (member.metadata && member.metadata.ga) {
+          const memberType = supportedMembers.find(m => member.metadata.ga.value.toLowerCase() === m.toLowerCase());
+          if (memberType) {
+            members[memberType] = { name: member.name, state: member.state };
+          }
+        } else {
+          if (hasTag(member, 'HeatingCoolingMode') || hasTag(member, 'homekit:HeatingCoolingMode') || hasTag(member, 'homekit:TargetHeatingCoolingMode') || hasTag(member, 'homekit:CurrentHeatingCoolingMode')) {
+            members.thermostatMode = { name: member.name, state: member.state };
+          }
+          if (hasTag(member, 'TargetTemperature') || hasTag(member, 'homekit:TargetTemperature')) {
+            members.thermostatTemperatureSetpoint = { name: member.name, state: member.state };
+          }
+          if (hasTag(member, 'CurrentTemperature')) {
+            members.thermostatTemperatureAmbient = { name: member.name, state: member.state };
+          }
+          if (hasTag(member, 'CurrentHumidity')) {
+            members.thermostatHumidityAmbient = { name: member.name, state: member.state };
+          }
         }
       });
     }
@@ -578,11 +663,11 @@ class Thermostat extends GenericDevice {
   }
 
   static usesFahrenheit(item) {
-    return this.hasTag(item, 'Fahrenheit');
+    return getConfig(item).useFahrenheit === true || hasTag(item, 'Fahrenheit');
   }
 
   static get _modeMap() {
-    return ['off', 'heat', 'cool', 'on'];
+    return ['off', 'heat', 'cool', 'on', 'heatcool', 'auto'];
   }
 
   static normalizeThermostatMode(mode) {
@@ -595,7 +680,7 @@ class Thermostat extends GenericDevice {
   }
 
   static denormalizeThermostatMode(oldMode, newMode) {
-    let denormalizedMode = newMode.replace('-', '').replace('heatcool', 'on');
+    let denormalizedMode = newMode.replace('-', '');
     if (!isNaN(Number(oldMode))) {
       denormalizedMode = this._modeMap.indexOf(newMode);
       if (denormalizedMode < 0) {
@@ -615,7 +700,7 @@ class Thermostat extends GenericDevice {
 }
 
 const Devices = [
-  Switch, Outlet, Fan, CoffeeMaker, WaterHeater, Fireplace,
+  Switch, Outlet, CoffeeMaker, WaterHeater, Fireplace,
   Valve,
   Sprinkler, Vacuum,
   Scene,
@@ -624,19 +709,14 @@ const Devices = [
   SimpleLight, DimmableLight, ColorLight,
   Awning, Blinds, Curtain, Door, Garage, Gate, Shutter, Pergola, Window,
   Speaker,
+  Camera,
+  SimpleFan, Fan,
+  SimpleHood, Hood,
+  SimpleAirPurifier, AirPurifier,
   Thermostat
 ];
 
 module.exports = {
-  Devices,
-  Switch, Outlet, Fan, CoffeeMaker, WaterHeater, Fireplace,
-  Valve,
-  Sprinkler, Vacuum,
-  Scene,
-  Lock,
-  SecuritySystem,
-  SimpleLight, DimmableLight, ColorLight,
-  Awning, Blinds, Curtain, Door, Garage, Gate, Shutter, Pergola, Window,
-  Speaker,
+  getDeviceForItem,
   Thermostat
 }
