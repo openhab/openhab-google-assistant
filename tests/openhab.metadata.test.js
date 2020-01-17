@@ -662,4 +662,296 @@ describe('Test EXECUTE with Metadata', () => {
       }]
     });
   });
+
+  test('Lock with required acknowledge', async () => {
+    const item =
+    {
+      "state": "OFF",
+      "type": "Switch",
+      "name": "MyLock",
+      "label": "My Lock",
+      "metadata": {
+        "ga": {
+          "value": "Lock",
+          "config": {
+            "tfaAck": true
+          }
+        }
+      },
+      "tags": []
+    };
+
+    const getItemMock = jest.fn();
+    const sendCommandMock = jest.fn();
+    getItemMock.mockReturnValue(Promise.resolve(item));
+    sendCommandMock.mockReturnValue(Promise.resolve());
+
+    const apiHandler = {
+      getItem: getItemMock,
+      sendCommand: sendCommandMock
+    };
+
+    const commands = [{
+      "devices": [{
+        "customData": {
+          "tfaAck": true
+        },
+        "id": "MyLock"
+      }],
+      "execution": [{
+        "command": "action.devices.commands.LockUnlock",
+        "params": {
+          lock: true
+        }
+      }]
+    }];
+
+    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
+
+    expect(getItemMock).toHaveBeenCalledTimes(1);
+    expect(payload).toStrictEqual({
+      "commands": [{
+        "ids": [
+          "MyLock"
+        ],
+        "states": {
+          "online": true,
+          "isLocked": true
+        },
+        "status": "ERROR",
+        "errorCode": "challengeNeeded",
+        "challengeNeeded": {
+          "type": "ackNeeded",
+        }
+      }]
+    });
+  });
+
+  test('Lock with acknowledged challenge', async () => {
+    const getItemMock = jest.fn();
+    const sendCommandMock = jest.fn();
+    getItemMock.mockReturnValue(Promise.resolve());
+    sendCommandMock.mockReturnValue(Promise.resolve());
+
+    const apiHandler = {
+      getItem: getItemMock,
+      sendCommand: sendCommandMock
+    };
+
+    const commands = [{
+      "devices": [{
+        "customData": {
+          "tfaAck": true
+        },
+        "id": "MyLock"
+      }],
+      "execution": [{
+        "command": "action.devices.commands.LockUnlock",
+        "params": {
+          lock: true
+        },
+        "challenge": {
+          "ack": true
+        }
+      }]
+    }];
+
+    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
+
+    expect(getItemMock).toHaveBeenCalledTimes(0);
+    expect(payload).toStrictEqual({
+      "commands": [{
+        "ids": [
+          "MyLock"
+        ],
+        "states": {
+          "online": true,
+          "isLocked": true
+        },
+        "status": "SUCCESS"
+      }]
+    });
+  });
+
+  test('BrightnessAbsolute with required acknowledge', async () => {
+    const getItemMock = jest.fn();
+    const sendCommandMock = jest.fn();
+    getItemMock.mockReturnValue(Promise.resolve());
+    sendCommandMock.mockReturnValue(Promise.resolve());
+
+    const apiHandler = {
+      getItem: getItemMock,
+      sendCommand: sendCommandMock
+    };
+
+    const commands = [{
+      "devices": [{
+        "customData": {
+          "tfaAck": true
+        },
+        "id": "MyLight"
+      }],
+      "execution": [{
+        "command": "action.devices.commands.BrightnessAbsolute",
+        "params": {
+          "brightness": 30
+        }
+      }]
+    }];
+
+    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
+
+    expect(getItemMock).toHaveBeenCalledTimes(0);
+    expect(payload).toStrictEqual({
+      "commands": [{
+        "ids": [
+          "MyLight"
+        ],
+        "states": {
+          "online": true,
+          "brightness": 30
+        },
+        "status": "ERROR",
+        "errorCode": "challengeNeeded",
+        "challengeNeeded": {
+          "type": "ackNeeded",
+        }
+      }]
+    });
+  });
+
+  test('Arm with required pin', async () => {
+    const getItemMock = jest.fn();
+    const sendCommandMock = jest.fn();
+    getItemMock.mockReturnValue(Promise.resolve());
+    sendCommandMock.mockReturnValue(Promise.resolve());
+
+    const apiHandler = {
+      getItem: getItemMock,
+      sendCommand: sendCommandMock
+    };
+
+    const commands = [{
+      "devices": [{
+        "customData": {
+          "tfaPin": "1234"
+        },
+        "id": "MyAlarm"
+      }],
+      "execution": [{
+        "command": "action.devices.commands.ArmDisarm",
+        "params": {
+          arm: true
+        }
+      }]
+    }];
+
+    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
+
+    expect(getItemMock).toHaveBeenCalledTimes(0);
+    expect(payload).toStrictEqual({
+      "commands": [{
+        "ids": [
+          "MyAlarm"
+        ],
+        "status": "ERROR",
+        "errorCode": "challengeNeeded",
+        "challengeNeeded": {
+          "type": "pinNeeded",
+        }
+      }]
+    });
+  });
+
+  test('Arm with wrong pin', async () => {
+    const getItemMock = jest.fn();
+    const sendCommandMock = jest.fn();
+    getItemMock.mockReturnValue(Promise.resolve());
+    sendCommandMock.mockReturnValue(Promise.resolve());
+
+    const apiHandler = {
+      getItem: getItemMock,
+      sendCommand: sendCommandMock
+    };
+
+    const commands = [{
+      "devices": [{
+        "customData": {
+          "tfaPin": "1234"
+        },
+        "id": "MyAlarm"
+      }],
+      "execution": [{
+        "command": "action.devices.commands.ArmDisarm",
+        "params": {
+          "arm": true
+        },
+        "challenge": {
+          "pin": "3456"
+        }
+      }]
+    }];
+
+    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
+
+    expect(getItemMock).toHaveBeenCalledTimes(0);
+    expect(payload).toStrictEqual({
+      "commands": [{
+        "ids": [
+          "MyAlarm"
+        ],
+        "status": "ERROR",
+        "errorCode": "challengeNeeded",
+        "challengeNeeded": {
+          "type": "challengeFailedPinNeeded"
+        }
+      }]
+    });
+  });
+
+  test('Arm with correct pin', async () => {
+    const getItemMock = jest.fn();
+    const sendCommandMock = jest.fn();
+    getItemMock.mockReturnValue(Promise.resolve());
+    sendCommandMock.mockReturnValue(Promise.resolve());
+
+    const apiHandler = {
+      getItem: getItemMock,
+      sendCommand: sendCommandMock
+    };
+
+    const commands = [{
+      "devices": [{
+        "customData": {
+          "tfaPin": "1234"
+        },
+        "id": "MyAlarm"
+      }],
+      "execution": [{
+        "command": "action.devices.commands.ArmDisarm",
+        "params": {
+          "arm": true
+        },
+        "challenge": {
+          "pin": "1234"
+        }
+      }]
+    }];
+
+    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
+
+    expect(getItemMock).toHaveBeenCalledTimes(0);
+    expect(payload).toStrictEqual({
+      "commands": [{
+        "ids": [
+          "MyAlarm"
+        ],
+        "states": {
+          "online": true,
+          "isArmed": true
+        },
+        "status": "SUCCESS"
+      }]
+    });
+  });
 });
