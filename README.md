@@ -178,63 +178,140 @@ Return back to the Google Home app and try to add the OpenHAB service again. You
 
 ## Item configuration
 
-* In openHAB items are exposed using metadata in the namespace `ga`:
+In openHAB items are exposed using metadata in the namespace `ga`:
 
-  ```
-  Switch KitchenLights "Kitchen Lights" <light> (gKitchen) { ga="Switch" }
-  Dimmer BedroomLights "Bedroom Lights" <light> (gBedroom) { ga="Light" }
-  Color LivingroomLights "Livingroom Lights" <light> (gLivingroom) { ga="Light" }
-  Switch SceneMovie "Livingroom Scene Movie" (gLivingroom) { synonyms="Movie Scene", ga="Scene" }
-  Switch CristmasTree "Cristmas Tree" (gLivingroom) { ga="Outlet" }
-  Switch DoorLock "Door Lock" { ga="Lock" }
+```
+Switch KitchenLights "Kitchen Lights" <light> (gKitchen) { ga="Switch" }
+Dimmer BedroomLights "Bedroom Lights" <light> (gBedroom) { ga="Light" }
+Color LivingroomLights "Livingroom Lights" <light> (gLivingroom) { ga="Light" }
+Switch SceneMovie "Livingroom Scene Movie" (gLivingroom) { synonyms="Movie Scene", ga="Scene" }
+Switch CristmasTree "Cristmas Tree" (gLivingroom) { ga="Outlet" }
+Switch DoorLock "Door Lock" { ga="Lock" }
 
-  //Thermostat Setup (Google requires a mode, even if you manually set it up in openHAB)
-  Group g_HK_Basement_TSTAT "Basement Thermostat" { ga="Thermostat" [ useFahrenheit=true ] }
-  Number HK_Basement_Mode "Basement Heating/Cooling Mode" (g_HK_Basement_TSTAT) { ga="thermostatMode" }
-  Number HK_Basement_Setpoint "Basement Setpoint" (g_HK_Basement_TSTAT) { ga="thermostatTemperatureSetpoint" }
-  Number HK_Basement_Temp "Basement Temperature" (g_HK_Basement_TSTAT) { ga="thermostatTemperatureAmbient" }
-  Number HK_Basement_Humid "Basement Humidity" (g_HK_Basement_TSTAT) { ga="thermostatHumidityAmbient" }
-  ```
+//Thermostat Setup (Google requires a mode, even if you manually set it up in openHAB)
+Group g_HK_Basement_TSTAT "Basement Thermostat" { ga="Thermostat" [ useFahrenheit=true ] }
+Number HK_Basement_Mode "Basement Heating/Cooling Mode" (g_HK_Basement_TSTAT) { ga="thermostatMode" }
+Number HK_Basement_Setpoint "Basement Setpoint" (g_HK_Basement_TSTAT) { ga="thermostatTemperatureSetpoint" }
+Number HK_Basement_Temp "Basement Temperature" (g_HK_Basement_TSTAT) { ga="thermostatTemperatureAmbient" }
+Number HK_Basement_Humid "Basement Humidity" (g_HK_Basement_TSTAT) { ga="thermostatHumidityAmbient" }
+```
 
 Currently the following metadata values are supported (also depending on Googles API capabilities):
 
-* Switch / Dimmer / Color { ga="Light" }
-* Switch { ga="Switch" }
-* Switch { ga="Outlet" }
-* Switch { ga="CoffeeMaker" }
-* Switch { ga="WaterHeater" }
-* Switch { ga="Fireplace" }
-* Switch { ga="Valve" }
-* Switch { ga="Sprinkler" }
-* Switch { ga="Vacuum" }
-* Switch { ga="Scene" }
-* Switch { ga="Lock" [ tfaAck=true ] }
-* Switch { ga="SecuritySystem" [ tfaPin="1234" ] }
-* Dimmer { ga="Speaker" }
-* Switch / Dimmer { ga="Fan" [ speeds="0=away:zero,50=default:standard:one,100=high:two", lang="en", ordered=true ] } (for Dimmer the options have to be set)
-* Rollershutter { ga="Awning" [ inverted=true ] } (all Rollershutter items can use the inverted option)
-* Rollershutter { ga="Blinds" }
-* Rollershutter { ga="Curtain" }
-* Rollershutter { ga="Door" }
-* Rollershutter { ga="Garage" }
-* Rollershutter { ga="Gate" }
-* Rollershutter { ga="Pergola" }
-* Rollershutter { ga="Shutter" }
-* Rollershutter { ga="Window" }
-* Group { ga="Thermostat" }
-* Number { ga="thermostatTemperatureAmbient" } as part of Thermostat.
-* Number { ga="thermostatHumidityAmbient" } as part of Thermostat.
-* Number { ga="thermostatTemperatureSetpoint" } as part of Thermostat.
-* Number / String { ga="thermostatMode" } as part of Thermostat.
+* `Switch / Dimmer / Color { ga="Light" }`
+* `Switch { ga="Switch" }`
+* `Switch { ga="Outlet" }`
+* `Switch { ga="CoffeeMaker" }`
+* `Switch { ga="WaterHeater" }`
+* `Switch { ga="Fireplace" }`
+* `Switch { ga="Valve" }`
+* `Switch { ga="Sprinkler" }`
+* `Switch { ga="Vacuum" }`
+* `Switch { ga="Scene" }`
+* `Switch { ga="Lock" [ tfaAck=true ] }`
+* `Switch { ga="SecuritySystem" [ tfaPin="1234" ] }`
+* `Dimmer { ga="Speaker" }`
+* `Switch / Dimmer { ga="Fan" [ speeds="0=away:zero,50=default:standard:one,100=high:two", lang="en", ordered=true ] }` (for Dimmer the options have to be set)
+* `Switch / Dimmer { ga="Hood" }`
+* `Switch / Dimmer { ga="AirPurifier" }`
+* `Rollershutter { ga="Awning" [ inverted=true ] }` (all Rollershutter items can use the inverted option)
+* `Rollershutter { ga="Blinds" }`
+* `Rollershutter { ga="Curtain" }`
+* `Rollershutter { ga="Door" }`
+* `Rollershutter { ga="Garage" }`
+* `Rollershutter { ga="Gate" }`
+* `Rollershutter { ga="Pergola" }`
+* `Rollershutter { ga="Shutter" }`
+* `Rollershutter { ga="Window" }`
+* `Group { ga="Thermostat" }`
+* `Number { ga="thermostatTemperatureAmbient" }` as part of Thermostat group
+* `Number { ga="thermostatHumidityAmbient" }` as part of Thermostat group
+* `Number { ga="thermostatTemperatureSetpoint" }` as part of Thermostat group
+* `Number / String { ga="thermostatMode" }` as part of Thermostat group
+* `String { ga="Camera" [ protocols="hls,dash" ] }`
 
-Notes Regarding Thermostat Items:
+Item labels are not mandatory in openHAB, but for the Google Assistant Action they are absolutely necessary!
 
-- Thermostat requires a group to be properly setup with Google Assistant, default format is Celsius
-- There must be 3 elements:
-  * Mode: May be Number (Zwave THERMOSTAT_MODE Format) or String (off, heat, cool, on)
-  * Temperature Ambient: Number
-  * Temperature Setpoint: Number
-- If your thermostat does not have a mode, you should create one and manually assign a value (e.g. heat, cool, on, etc.) to have proper functionality
+It is the "label text" (e.g. "Kitchen Lights" for example above) and not the item's name that will be available to you via voice commands or in the Google Home app, so make it unique and easy to say!
+
+If you do not want to adjust your labels to be human spellable, you can use the "name" config option in the metadata: `[ name="Kitchen Lights" ]`. This will overwrite the label as the device's name.
+
+Furthermore, you can state synonyms for the device name: `Switch KitchenLight "Kitchen Lights" { synonyms="Top Light", ga="Light" }`.
+
+To ease setting up new devices you can add a room hint: `[ roomHint="Living Room" ]`.
+
+
+NOTE: metadata is not (yet?) available via paperUI. Either you create your items via ".items" files, or you can:
+- add metadata via console:
+ ```
+ smarthome:metadata add BedroomLights ga Light
+ ```
+
+- add metadata using the REST API:
+ ```
+ PUT /rest/items/BedroomLights/metadata/ga
+
+ {
+   "value": "Light"
+ }
+ ```
+
+### Special item configurations
+
+#### Two-Factor-Authentication
+
+For some actions, Google recommends to use TFA (Two-Factor-Authentication) to prevent accidential or unauthorized triggers of sensitive actions. See [Two-factor authentication &nbsp;|&nbsp; Actions on Google Smart Home](https://developers.google.com/assistant/smarthome/develop/two-factor-authenticatiob).
+
+The openHAB Google Assistant integration supports both _ackNeeded_ and _pinNeeded_. You can use both types on all devices types and traits.
+
+_ackNeeded_: "A two-factor authentication that requires explicit acknowledgement (yes or no) and can also use trait states as response feedback. This challenge type is not recommended for security devices and traits."
+
+_pinNeeded_: "A two-factor authentication that requires a personal identification number (PIN), which is ideal for security devices and traits."
+
+Example:
+
+```
+Switch DoorLock "Front Door" { ga="Lock" [ tfaAck=true ] }
+Switch HouseAlarm "House Alarm" { ga="SecuritySystem" [ tfaPin="1234" ] }
+```
+
+#### Thermostats
+
+Thermostat requires a group of items to be properly configured to be used with Google Assistant. The default temperature unit is Celsius. `{ ga="Thermostat" }`
+
+To change the temperature unit to Fahrenheit, add the config option `[ useFahrenheit=true ]` to the thermostat group.
+
+There must be at least three items as members of the group:
+
+* (Mandatory) Mode: Number (Zwave THERMOSTAT_MODE Format) or String (off, heat, cool, on, ...). `{ ga="thermostatMode" }`
+  * you can define the supported modes with the config option `[ modes="on,off,heat,cool" ]`
+* (Mandatory) Temperature Ambient: Number. `{ ga="thermostatTemperatureAmbient" }`
+* (Mandatory) Temperature Setpoint: Number. `{ ga="thermostatTemperatureSetpoint" }`
+* (Optional) Humidity Setpoint High: Number. `{ ga="thermostatTemperatureSetpointHigh" }`
+* (Optional) Humidity Setpoint Low: Number. `{ ga="thermostatTemperatureSetpointLow" }`
+* (Optional) Humidity Ambient: Number. `{ ga="thermostatHumidityAmbient" }`
+
+If your thermostat does not have a mode, you should create one and manually assign a value (e.g. heat, cool, on, etc.) to have proper functionality.
+
+You can also set up a Thermostat for using it as a temperature sensor. To do so, create a Thermostat group and only add one item member as "thermostatTemperatureAmbient".
+
+#### Fans
+
+_Fans_ (and similar device types, like _AirPurifier_ or _Hood_) support the _FanSpeed_ trait.
+With that you will be able to set up and use human speakable modes, e.g. "fast" for 100% or "slow" for 25%.
+
+To set up those modes use a _Dimmer_ item and the following metadata config: `[ speeds="0=away:zero,50=default:standard:one,100=high:two", lang="en", ordered=true ]`.
+
+_speeds_ will be a comma-separated list of modes with a percentage number followed by an equal sign and different aliases for that mode after a colon.
+So here both "high" and "two" would set the speed to 100%.
+You are also able to define the language of those aliases.
+The option _ordered_ will tell the system that your list is ordered and you will then be able to also say "faster" or "slower" and Google will use the next or previous speed.
+
+#### Blinds and similar devices
+
+Blinds should always use the `Rollershutter` item type.
+Since Google and openHAB use the oposite percentage value for "opened" or "closed", the action will tranlate this automatically.
+If the values are still inverted in your case, you can state the `[ inverted=true ]` option for all `Rollershutter` items.
 
 More details about the setup and the service linkage (https://myopenhab.org) procedure within the Google App can be found in the [USAGE documentation](docs/USAGE.md).
 
