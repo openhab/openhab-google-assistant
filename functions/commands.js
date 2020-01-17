@@ -76,9 +76,7 @@ class GenericCommand {
   }
 
   static handlAuthAck(device = {}, challenge = {}, responseStates = {}) {
-    // check if acknowledge is supported for that command
-    if (!ackSupported.includes(this.type) ||
-      !device.customData || !device.customData.tfaAck || challenge.ack === true) {
+    if (!device.customData || !device.customData.tfaAck || challenge.ack === true) {
       return;
     }
     return {
@@ -103,8 +101,10 @@ class GenericCommand {
         return Promise.resolve();
       }
 
+      const ackWithState = ackSupported.includes(this.type) && device.customData && device.customData.tfaAck && !challenge.ack;
+
       let getItemPromise = Promise.resolve(({}));
-      if (this.requiresItem) {
+      if (this.requiresItem || ackWithState) {
         getItemPromise = apiHandler.getItem(device.id);
       }
 
