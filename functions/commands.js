@@ -181,7 +181,7 @@ class LockUnlockCommand extends GenericCommand {
 
   static getResponseStates(params) {
     return {
-      on: params.on
+      isLocked: params.lock
     };
   }
 }
