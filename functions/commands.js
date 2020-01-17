@@ -256,11 +256,12 @@ class VolumeRelativeCommand extends GenericCommand {
   }
 
   static convertParamsToValue(params, item) {
-    return (parseInt(item.state) + params.volumeRelativeLevel).toString();
+    let level = parseInt(item.state) + params.volumeRelativeLevel;
+    return (level < 0 ? 0 : level > 100 ? 100 : level).toString();
   }
 
   static getResponseStates(params, item) {
-    const state = parseInt(item.state) + params.volumeRelativeLevel;
+    const state = parseInt(this.convertParamsToValue(params, item));
     return {
       currentVolume: state,
       isMuted: state === 0
