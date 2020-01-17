@@ -129,6 +129,34 @@ describe('Test SYNC with Metadata', () => {
     expect(getItemsMock).toHaveBeenCalledTimes(1);
     expect(payload).toMatchSnapshot();
   });
+
+  test('Scene Device', async () => {
+    const items = [
+      {
+        "state": "OFF",
+        "metadata": {
+          "ga": {
+            "value": "Scene"
+          }
+        },
+        "type": "Switch",
+        "name": "MyScene",
+        "label": "My Scene",
+        "tags": []
+      }
+    ];
+    const getItemsMock = jest.fn();
+    getItemsMock.mockReturnValue(Promise.resolve(items));
+
+    const apiHandler = {
+      getItems: getItemsMock
+    };
+
+    const payload = await new OpenHAB(apiHandler).handleSync();
+
+    expect(getItemsMock).toHaveBeenCalledTimes(1);
+    expect(payload).toMatchSnapshot();
+  });
 });
 
 describe('Test QUERY with Metadata', () => {
