@@ -76,9 +76,7 @@ class GenericCommand {
   }
 
   static handlAuthAck(device = {}, challenge = {}, responseStates = {}) {
-    // check if acknowledge is supported for that command
-    if (!ackSupported.includes(this.type) ||
-      !device.customData || !device.customData.tfaAck || challenge.ack === true) {
+    if (!device.customData || !device.customData.tfaAck || challenge.ack === true) {
       return;
     }
     return {
@@ -103,8 +101,10 @@ class GenericCommand {
         return Promise.resolve();
       }
 
+      const ackWithState = ackSupported.includes(this.type) && device.customData && device.customData.tfaAck && !challenge.ack;
+
       let getItemPromise = Promise.resolve(({}));
-      if (this.requiresItem) {
+      if (this.requiresItem || ackWithState) {
         getItemPromise = apiHandler.getItem(device.id);
       }
 
@@ -181,7 +181,7 @@ class LockUnlockCommand extends GenericCommand {
 
   static getResponseStates(params) {
     return {
-      on: params.on
+      isLocked: params.lock
     };
   }
 }
@@ -256,11 +256,12 @@ class VolumeRelativeCommand extends GenericCommand {
   }
 
   static convertParamsToValue(params, item) {
-    return (parseInt(item.state) + params.volumeRelativeLevel).toString();
+    let level = parseInt(item.state) + params.volumeRelativeLevel;
+    return (level < 0 ? 0 : level > 100 ? 100 : level).toString();
   }
 
   static getResponseStates(params, item) {
-    const state = parseInt(item.state) + params.volumeRelativeLevel;
+    const state = parseInt(this.convertParamsToValue(params, item));
     return {
       currentVolume: state,
       isMuted: state === 0

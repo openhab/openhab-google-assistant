@@ -292,3 +292,44 @@ Object {
   ],
 }
 `;
+
+exports[`Test SYNC with Metadata Scene Device 1`] = `
+Object {
+  "devices": Array [
+    Object {
+      "attributes": Object {
+        "sceneReversible": true,
+      },
+      "customData": Object {
+        "deviceType": "action.devices.types.SCENE",
+        "itemType": "Switch",
+        "tfaAck": undefined,
+        "tfaPin": undefined,
+      },
+      "deviceInfo": Object {
+        "hwVersion": "2.5.0",
+        "manufacturer": "openHAB",
+        "model": "Switch",
+        "swVersion": "2.5.0",
+      },
+      "id": "MyScene",
+      "name": Object {
+        "defaultNames": Array [
+          "My Scene",
+        ],
+        "name": "My Scene",
+        "nicknames": Array [
+          "My Scene",
+        ],
+      },
+      "roomHint": undefined,
+      "structureHint": undefined,
+      "traits": Array [
+        "action.devices.traits.Scene",
+      ],
+      "type": "action.devices.types.SCENE",
+      "willReportState": false,
+    },
+  ],
+}
+`;

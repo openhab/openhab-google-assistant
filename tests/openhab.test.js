@@ -147,6 +147,123 @@ describe('Test EXECUTE', () => {
     });
   });
 
+
+  test('volumeRelative Dimmer max overflow', async () => {
+    const item =
+    {
+      "state": "100",
+      "type": "Dimmer",
+      "name": "MySpeaker",
+      "metadata": {
+        "ga": {
+          "value": "Speaker"
+        }
+      }
+    };
+
+    const getItemMock = jest.fn();
+    getItemMock.mockReturnValue(Promise.resolve(item));
+
+    const sendCommandMock = jest.fn();
+    sendCommandMock.mockReturnValue(Promise.resolve());
+
+    const apiHandler = {
+      getItem: getItemMock,
+      sendCommand: sendCommandMock
+    };
+
+    const commands = [{
+      "devices": [{
+        "customData": {
+          "itemType": "Dimmer"
+        },
+        "id": "MySpeaker"
+      }],
+      "execution": [{
+        "command": "action.devices.commands.volumeRelative",
+        "params": {
+          "volumeRelativeLevel": 20
+        }
+      }]
+    }];
+
+    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
+
+    expect(getItemMock).toHaveBeenCalledTimes(1);
+    expect(sendCommandMock).toBeCalledWith('MySpeaker', '100');
+    expect(payload).toStrictEqual({
+      "commands": [{
+        "ids": [
+          "MySpeaker"
+        ],
+        "states": {
+          "currentVolume": 100,
+          "isMuted": false,
+          "online": true
+        },
+        "status": "SUCCESS"
+      }]
+    });
+  });
+
+  test('volumeRelative Dimmer min overflow', async () => {
+    const item =
+    {
+      "state": "10",
+      "type": "Dimmer",
+      "name": "MySpeaker",
+      "metadata": {
+        "ga": {
+          "value": "Speaker"
+        }
+      }
+    };
+
+    const getItemMock = jest.fn();
+    getItemMock.mockReturnValue(Promise.resolve(item));
+
+    const sendCommandMock = jest.fn();
+    sendCommandMock.mockReturnValue(Promise.resolve());
+
+    const apiHandler = {
+      getItem: getItemMock,
+      sendCommand: sendCommandMock
+    };
+
+    const commands = [{
+      "devices": [{
+        "customData": {
+          "itemType": "Dimmer"
+        },
+        "id": "MySpeaker"
+      }],
+      "execution": [{
+        "command": "action.devices.commands.volumeRelative",
+        "params": {
+          "volumeRelativeLevel": -20
+        }
+      }]
+    }];
+
+    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
+
+    expect(getItemMock).toHaveBeenCalledTimes(1);
+    expect(sendCommandMock).toBeCalledWith('MySpeaker', '0');
+    expect(payload).toStrictEqual({
+      "commands": [{
+        "ids": [
+          "MySpeaker"
+        ],
+        "states": {
+          "currentVolume": 0,
+          "isMuted": true,
+          "online": true
+        },
+        "status": "SUCCESS"
+      }]
+    });
+  });
+
   test('OpenClose Rollershutter', async () => {
     const getItemMock = jest.fn();
     const sendCommandMock = jest.fn();
