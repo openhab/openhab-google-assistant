@@ -203,7 +203,7 @@ describe('Test Thermostat Device with Tags', () => {
         'Fahrenheit'
       ]
     })).toStrictEqual({
-      'availableThermostatModes': 'off,heat,cool,on,heatcool',
+      'availableThermostatModes': 'off,heat,cool,on,heatcool,auto,eco',
       'thermostatTemperatureUnit': 'F',
     });
 
@@ -212,7 +212,7 @@ describe('Test Thermostat Device with Tags', () => {
         'Thermostat'
       ]
     })).toStrictEqual({
-      'availableThermostatModes': 'off,heat,cool,on,heatcool',
+      'availableThermostatModes': 'off,heat,cool,on,heatcool,auto,eco',
       'thermostatTemperatureUnit': 'C',
     });
   });
@@ -278,7 +278,7 @@ describe('Test Thermostat Device with Tags', () => {
         tags: [
           'HeatingCoolingMode'
         ],
-        state: '1'
+        state: 'heat'
       }, {
         type: 'Number',
         tags: [

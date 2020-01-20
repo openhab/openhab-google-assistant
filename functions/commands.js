@@ -597,7 +597,7 @@ class ThermostatSetModeCommand extends GenericCommand {
     if (!members.thermostatMode) {
       throw { statusCode: 400 };
     }
-    return Thermostat.denormalizeThermostatMode(members.thermostatMode.state, params.thermostatMode);
+    return Thermostat.translateModeToOpenhab(item, params.thermostatMode);
   }
 
   static getResponseStates(params, item) {

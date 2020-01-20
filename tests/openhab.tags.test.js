@@ -196,7 +196,7 @@ describe('Test EXECUTE with Tags', () => {
         tags: [
           'HeatingCoolingMode'
         ],
-        state: '1'
+        state: 'heat'
       }, {
         type: 'Number',
         tags: [
