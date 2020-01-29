@@ -482,7 +482,7 @@ class ThermostatTemperatureSetpointCommand extends GenericCommand {
 
   static getItemName(item) {
     const members = Thermostat.getMembers(item);
-    if (!members.thermostatTemperatureSetpoint) {
+    if (!('thermostatTemperatureSetpoint' in members)) {
       throw { statusCode: 400 };
     }
     return members.thermostatTemperatureSetpoint.name;
@@ -518,7 +518,7 @@ class ThermostatTemperatureSetpointHighCommand extends GenericCommand {
 
   static getItemName(item) {
     const members = Thermostat.getMembers(item);
-    if (!members.thermostatTemperatureSetpointHigh) {
+    if (!('thermostatTemperatureSetpointHigh' in members)) {
       throw { statusCode: 400 };
     }
     return members.thermostatTemperatureSetpointHigh.name;
@@ -554,7 +554,7 @@ class ThermostatTemperatureSetpointLowCommand extends GenericCommand {
 
   static getItemName(item) {
     const members = Thermostat.getMembers(item);
-    if (!members.thermostatTemperatureSetpointLow) {
+    if (!('thermostatTemperatureSetpointLow' in members)) {
       throw { statusCode: 400 };
     }
     return members.thermostatTemperatureSetpointLow.name;
@@ -590,7 +590,7 @@ class ThermostatSetModeCommand extends GenericCommand {
 
   static getItemName(item) {
     const members = Thermostat.getMembers(item);
-    if (!members.thermostatMode) {
+    if (!('thermostatMode' in members)) {
       throw { statusCode: 400 };
     }
     return members.thermostatMode.name;
