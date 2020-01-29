@@ -466,10 +466,7 @@ describe('Test Thermostat Device with Metadata', () => {
           "deviceType": "action.devices.types.THERMOSTAT",
           "itemType": "Group",
           "tfaAck": undefined,
-          "tfaPin": undefined,
-          "thermostatMode": "Mode",
-          "thermostatTemperatureAmbient": "Ambient",
-          "thermostatTemperatureSetpoint": "SetPoint"
+          "tfaPin": undefined
         },
         "roomHint": undefined,
         "structureHint": undefined,

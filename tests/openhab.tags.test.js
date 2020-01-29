@@ -192,7 +192,7 @@ describe('Test EXECUTE with Tags', () => {
         ],
         state: '10'
       }, {
-        type: 'Number',
+        type: 'String',
         tags: [
           'HeatingCoolingMode'
         ],
@@ -218,9 +218,6 @@ describe('Test EXECUTE with Tags', () => {
 
     const commands = [{
       "devices": [{
-        "customData": {
-          "thermostatTemperatureSetpoint": "MyTargetTemperature"
-        },
         "id": "MyThermostat"
       }],
       "execution": [{
@@ -246,6 +243,87 @@ describe('Test EXECUTE with Tags', () => {
           "thermostatMode": "heat",
           "thermostatTemperatureAmbient": -12.2,
           "thermostatTemperatureSetpoint": 25
+        },
+        "status": "SUCCESS"
+      }]
+    });
+  });
+
+  test('ThermostatSetModeCommand', async () => {
+    const item =
+    {
+      "state": "NULL",
+      "type": "Group",
+      "name": "MyThermostat",
+      "label": "Thermostat",
+      "tags": [
+        "Thermostat"
+      ],
+      "members": [{
+        type: 'Number',
+        tags: [
+          'CurrentTemperature'
+        ],
+        state: '10'
+      }, {
+        type: 'Number',
+        tags: [
+          'TargetTemperature'
+        ],
+        state: '10'
+      }, {
+        name: 'MyHeatingCoolingMode',
+        type: 'String',
+        tags: [
+          'HeatingCoolingMode'
+        ],
+        state: 'cool'
+      }, {
+        type: 'Number',
+        tags: [
+          'CurrentHumidity'
+        ],
+        state: '50'
+      }]
+    };
+
+    const getItemMock = jest.fn();
+    const sendCommandMock = jest.fn();
+    getItemMock.mockReturnValue(Promise.resolve(item));
+    sendCommandMock.mockReturnValue(Promise.resolve());
+
+    const apiHandler = {
+      getItem: getItemMock,
+      sendCommand: sendCommandMock
+    };
+
+    const commands = [{
+      "devices": [{
+        "id": "MyThermostat"
+      }],
+      "execution": [{
+        "command": "action.devices.commands.ThermostatSetMode",
+        "params": {
+          "thermostatMode": "heat"
+        }
+      }]
+    }];
+
+    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
+
+    expect(getItemMock).toHaveBeenCalledTimes(1);
+    expect(sendCommandMock).toBeCalledWith('MyHeatingCoolingMode', 'heat');
+    expect(payload).toStrictEqual({
+      "commands": [{
+        "ids": [
+          "MyThermostat"
+        ],
+        "states": {
+          "online": true,
+          "thermostatHumidityAmbient": 50,
+          "thermostatMode": "heat",
+          "thermostatTemperatureAmbient": 10,
+          "thermostatTemperatureSetpoint": 10
         },
         "status": "SUCCESS"
       }]

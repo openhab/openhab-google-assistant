@@ -53,8 +53,8 @@ class GenericCommand {
     return {};
   }
 
-  static getItemName(device = {}) {
-    return device.id;
+  static getItemName(item = {}) {
+    return item.name;
   }
 
   static get requiresItem() {
@@ -103,7 +103,7 @@ class GenericCommand {
 
       const ackWithState = ackSupported.includes(this.type) && device.customData && device.customData.tfaAck && !challenge.ack;
 
-      let getItemPromise = Promise.resolve(({}));
+      let getItemPromise = Promise.resolve(({ name: device.id }));
       if (this.requiresItem || ackWithState) {
         getItemPromise = apiHandler.getItem(device.id);
       }
@@ -120,7 +120,7 @@ class GenericCommand {
           return;
         }
 
-        const targetItem = this.getItemName(device);
+        const targetItem = this.getItemName(item);
         const targetValue = this.convertParamsToValue(params, item, device);
         let sendCommandPromise = Promise.resolve();
         if (typeof targetItem === 'string' && typeof targetValue === 'string') {
@@ -480,11 +480,12 @@ class ThermostatTemperatureSetpointCommand extends GenericCommand {
     return true;
   }
 
-  static getItemName(device) {
-    if (!device.customData || !device.customData.thermostatTemperatureSetpoint) {
+  static getItemName(item) {
+    const members = Thermostat.getMembers(item);
+    if (!members.thermostatTemperatureSetpoint) {
       throw { statusCode: 400 };
     }
-    return device.customData.thermostatTemperatureSetpoint;
+    return members.thermostatTemperatureSetpoint.name;
   }
 
   static convertParamsToValue(params, item) {
@@ -515,11 +516,12 @@ class ThermostatTemperatureSetpointHighCommand extends GenericCommand {
     return true;
   }
 
-  static getItemName(device) {
-    if (!device.customData || !device.customData.thermostatTemperatureSetpointHigh) {
+  static getItemName(item) {
+    const members = Thermostat.getMembers(item);
+    if (!members.thermostatTemperatureSetpointHigh) {
       throw { statusCode: 400 };
     }
-    return device.customData.thermostatTemperatureSetpointHigh;
+    return members.thermostatTemperatureSetpointHigh.name;
   }
 
   static convertParamsToValue(params, item) {
@@ -550,11 +552,12 @@ class ThermostatTemperatureSetpointLowCommand extends GenericCommand {
     return true;
   }
 
-  static getItemName(device) {
-    if (!device.customData || !device.customData.thermostatTemperatureSetpointLow) {
+  static getItemName(item) {
+    const members = Thermostat.getMembers(item);
+    if (!members.thermostatTemperatureSetpointLow) {
       throw { statusCode: 400 };
     }
-    return device.customData.thermostatTemperatureSetpointLow;
+    return members.thermostatTemperatureSetpointLow.name;
   }
 
   static convertParamsToValue(params, item) {
@@ -585,18 +588,15 @@ class ThermostatSetModeCommand extends GenericCommand {
     return true;
   }
 
-  static getItemName(device) {
-    if (!device.customData || !device.customData.thermostatMode) {
-      throw { statusCode: 400 };
-    }
-    return device.customData.thermostatMode;
-  }
-
-  static convertParamsToValue(params, item) {
+  static getItemName(item) {
     const members = Thermostat.getMembers(item);
     if (!members.thermostatMode) {
       throw { statusCode: 400 };
     }
+    return members.thermostatMode.name;
+  }
+
+  static convertParamsToValue(params, item) {
     return Thermostat.translateModeToOpenhab(item, params.thermostatMode);
   }
 

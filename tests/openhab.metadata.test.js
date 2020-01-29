@@ -430,9 +430,6 @@ describe('Test EXECUTE with Metadata', () => {
 
     const commands = [{
       "devices": [{
-        "customData": {
-          "thermostatTemperatureSetpoint": "MyTargetTemperature"
-        },
         "id": "MyThermostat"
       }],
       "execution": [{
@@ -606,10 +603,6 @@ describe('Test EXECUTE with Metadata', () => {
 
     const commands = [{
       "devices": [{
-        "customData": {
-          "thermostatTemperatureSetpointHigh": "MyTargetTemperatureHigh",
-          "thermostatTemperatureSetpointLow": "MyTargetTemperatureLow"
-        },
         "id": "MyThermostat"
       }],
       "execution": [{
@@ -678,6 +671,7 @@ describe('Test EXECUTE with Metadata', () => {
         },
         state: '10'
       }, {
+        name: 'MyMode',
         type: 'Number',
         metadata: {
           ga: {
@@ -708,9 +702,6 @@ describe('Test EXECUTE with Metadata', () => {
 
     const commands = [{
       "devices": [{
-        "customData": {
-          "thermostatMode": "MyMode"
-        },
         "id": "MyThermostat"
       }],
       "execution": [{
@@ -769,6 +760,7 @@ describe('Test EXECUTE with Metadata', () => {
         },
         state: '10'
       }, {
+        name: 'MyMode',
         type: 'Number',
         metadata: {
           ga: {
@@ -799,9 +791,6 @@ describe('Test EXECUTE with Metadata', () => {
 
     const commands = [{
       "devices": [{
-        "customData": {
-          "thermostatMode": "MyMode"
-        },
         "id": "MyThermostat"
       }],
       "execution": [{

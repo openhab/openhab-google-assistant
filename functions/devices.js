@@ -596,15 +596,6 @@ class Thermostat extends GenericDevice {
     return attributes;
   }
 
-  static getMetadata(item) {
-    const metadata = super.getMetadata(item);
-    const members = this.getMembers(item);
-    for (const member in members) {
-      metadata.customData[member] = members[member].name;
-    }
-    return metadata;
-  }
-
   static checkItemType(item) {
     return item.type === 'Group';
   }
@@ -669,7 +660,7 @@ class Thermostat extends GenericDevice {
     const config = getConfig(item);
     let modes = ['off', 'heat', 'cool', 'on', 'heatcool', 'auto', 'eco'];
     if ('modes' in config) {
-      modes = getConfig(item).modes.split(',');
+      modes = config.modes.split(',');
     }
     const modeMap = {};
     modes.forEach(pair => {
