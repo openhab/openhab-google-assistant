@@ -71,7 +71,7 @@ class GenericDevice {
       },
       attributes: this.getAttributes(item),
       customData: {
-        itemType: item.type,
+        itemType: item.type === 'Group' ? item.groupType : item.type,
         deviceType: this.type,
         tfaAck: config.tfaAck,
         tfaPin: config.tfaPin
