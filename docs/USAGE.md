@@ -129,11 +129,11 @@ To change the temperature unit to Fahrenheit, add the config option `[ useFahren
 There must be at least three items as members of the group:
 
 * (Mandatory) Mode: Number (Zwave THERMOSTAT_MODE Format) or String (off, heat, cool, on, ...). `{ ga="thermostatMode" }`
-  * you can define the supported modes with the config option `[ modes="on,off,heat,cool" ]`
+  * You can define the supported modes with the config option `[ modes="on,off,heat,cool" ]`. This option has to be set on the thermostat group.
 * (Mandatory) Temperature Ambient: Number. `{ ga="thermostatTemperatureAmbient" }`
 * (Mandatory) Temperature Setpoint: Number. `{ ga="thermostatTemperatureSetpoint" }`
-* (Optional) Humidity Setpoint High: Number. `{ ga="thermostatTemperatureSetpointHigh" }`
-* (Optional) Humidity Setpoint Low: Number. `{ ga="thermostatTemperatureSetpointLow" }`
+* (Optional) Temperature Setpoint High: Number. `{ ga="thermostatTemperatureSetpointHigh" }`
+* (Optional) Temperature Setpoint Low: Number. `{ ga="thermostatTemperatureSetpointLow" }`
 * (Optional) Humidity Ambient: Number. `{ ga="thermostatHumidityAmbient" }`
 
 If your thermostat does not have a mode, you should create one and manually assign a value (e.g. heat, cool, on, etc.) to have proper functionality.
