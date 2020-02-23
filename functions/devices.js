@@ -19,7 +19,7 @@
  */
 
 const hasTag = (item = {}, tag = '') => {
-  return item.tags && item.tags.map(t => t.toLowerCase()).includes(tag.toLowerCase());
+  return item.tags && item.tags.map(t => t.toLowerCase()).includes(tag.toLowerCase()) || false;
 };
 
 const getDeviceForItem = (item = {}) => {
@@ -56,9 +56,9 @@ class GenericDevice {
       type: this.type,
       traits: this.traits,
       name: {
-        name: config.name || item.label,
-        defaultNames: [config.name || item.label],
-        nicknames: [config.name || item.label, ...(item.metadata && item.metadata.synonyms ? item.metadata.synonyms.value.split(',') : [])]
+        name: config.name || item.label,
+        defaultNames: [config.name || item.label],
+        nicknames: [config.name || item.label, ...(item.metadata && item.metadata.synonyms ? item.metadata.synonyms.value.split(',') : [])]
       },
       willReportState: false,
       roomHint: config.roomHint,
@@ -591,19 +591,9 @@ class Thermostat extends GenericDevice {
       !('thermostatTemperatureSetpoint' in members)) {
       attributes.queryOnlyTemperatureSetting = true;
     } else {
-      attributes.availableThermostatModes = getConfig(item).modes || 'off,heat,cool,on,heatcool';
+      attributes.availableThermostatModes = Object.keys(this.getModeMap(item)).join(',');
     }
     return attributes;
-  }
-
-  static getMetadata(item) {
-    const metadata = super.getMetadata(item);
-    const members = this.getMembers(item);
-    for (const member in members) {
-      metadata.customData[member] = members[member].name;
-    }
-    metadata.customData.useFahrenheit = this.usesFahrenheit(item);
-    return metadata;
   }
 
   static checkItemType(item) {
@@ -615,7 +605,7 @@ class Thermostat extends GenericDevice {
     const members = this.getMembers(item);
     for (const member in members) {
       if (member == 'thermostatMode') {
-        state[member] = this.normalizeThermostatMode(members[member].state);
+        state[member] = this.translateModeToGoogle(item, members[member].state);
       } else {
         state[member] = Number(parseFloat(members[member].state).toFixed(1));
         if (member.indexOf('Temperature') > 0 && this.usesFahrenheit(item)) {
@@ -666,28 +656,36 @@ class Thermostat extends GenericDevice {
     return getConfig(item).useFahrenheit === true || hasTag(item, 'Fahrenheit');
   }
 
-  static get _modeMap() {
-    return ['off', 'heat', 'cool', 'on', 'heatcool', 'auto'];
-  }
-
-  static normalizeThermostatMode(mode) {
-    let normalizedMode = mode.replace('-', '');
-    const intMode = Number(mode);
-    if (!isNaN(intMode)) {
-      normalizedMode = intMode in this._modeMap ? this._modeMap[intMode] : 'off';
+  static getModeMap(item) {
+    const config = getConfig(item);
+    let modes = ['off', 'heat', 'cool', 'on', 'heatcool', 'auto', 'eco'];
+    if ('modes' in config) {
+      modes = config.modes.split(',');
     }
-    return normalizedMode.toLowerCase();
+    const modeMap = {};
+    modes.forEach(pair => {
+      const [ key, value ] = pair.split('=');
+      modeMap[key] = value ? value.split(':') : [key];
+    });
+    return modeMap;
   }
 
-  static denormalizeThermostatMode(oldMode, newMode) {
-    let denormalizedMode = newMode.replace('-', '');
-    if (!isNaN(Number(oldMode))) {
-      denormalizedMode = this._modeMap.indexOf(newMode);
-      if (denormalizedMode < 0) {
-        denormalizedMode = 0;
+  static translateModeToOpenhab(item, mode) {
+    const modeMap = this.getModeMap(item);
+    if (mode in modeMap) {
+      return modeMap[mode][0];
+    }
+    throw { statusCode: 400 };
+  }
+
+  static translateModeToGoogle(item, mode) {
+    const modeMap = this.getModeMap(item);
+    for (const key in modeMap) {
+      if (modeMap[key].includes(mode)) {
+        return key;
       }
     }
-    return denormalizedMode.toString();
+    return 'on';
   }
 
   static convertToFahrenheit(value = 0) {

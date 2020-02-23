@@ -17,7 +17,7 @@ describe('Test Switch Devices with Metadata', () => {
       on: true
     });
   });
-  
+
   test('Valve Switch Type', () => {
     const item = {
       type: 'Switch',
@@ -282,7 +282,7 @@ describe('Test Thermostat Device with Metadata', () => {
         }
       }
     })).toStrictEqual({
-      'availableThermostatModes': 'off,heat,cool,on,heatcool',
+      'availableThermostatModes': 'off,heat,cool,on,heatcool,auto,eco',
       'thermostatTemperatureUnit': 'F',
     });
 
@@ -299,6 +299,199 @@ describe('Test Thermostat Device with Metadata', () => {
       'availableThermostatModes': 'on,off',
       'thermostatTemperatureUnit': 'C',
     });
+
+    expect(Devices.Thermostat.getAttributes({
+      metadata: {
+        ga: {
+          value: 'Thermostat',
+          config: {
+            modes: 'off=OFF:WINDOW_OPEN,heat=COMFORT:BOOST,eco=ECO,on=ON,auto'
+          }
+        }
+      }
+    })).toStrictEqual({
+      'availableThermostatModes': 'off,heat,eco,on,auto',
+      'thermostatTemperatureUnit': 'C',
+    });
+  });
+
+  test('getModeMap', () => {
+    expect(Devices.Thermostat.getModeMap({
+      metadata: {
+        ga: {
+          value: 'Thermostat'
+        }
+      }
+    })).toStrictEqual({
+      'off': ['off'],
+      'heat': ['heat'],
+      'cool': ['cool'],
+      'on': ['on'],
+      'heatcool': ['heatcool'],
+      'auto': ['auto'],
+      'eco': ['eco']
+    });
+
+    expect(Devices.Thermostat.getModeMap({
+      metadata: {
+        ga: {
+          value: 'Thermostat',
+          config: {
+            modes: 'on,off,heat,cool'
+          }
+        }
+      }
+    })).toStrictEqual({
+      'on': ['on'],
+      'off': ['off'],
+      'heat': ['heat'],
+      'cool': ['cool']
+    });
+
+    expect(Devices.Thermostat.getModeMap({
+      metadata: {
+        ga: {
+          value: 'Thermostat',
+          config: {
+            modes: 'off=OFF:WINDOW_OPEN,heat=COMFORT:BOOST,eco=ECO,on=ON,auto'
+          }
+        }
+      }
+    })).toStrictEqual({
+      'off': ['OFF', 'WINDOW_OPEN'],
+      'heat': ['COMFORT', 'BOOST'],
+      'eco': ['ECO'],
+      'on': ['ON'],
+      'auto': ['auto']
+    });
+  });
+
+  test('translateModeToGoogle', () => {
+    expect(Devices.Thermostat.translateModeToGoogle({
+      metadata: {
+        ga: {
+          value: 'Thermostat',
+          config: {
+            modes: 'off=OFF:WINDOW_OPEN,heat=COMFORT:BOOST,eco=ECO,on=ON,auto'
+          }
+        }
+      }
+    }, 'COMFORT')).toBe('heat');
+
+    expect(Devices.Thermostat.translateModeToGoogle({
+      metadata: {
+        ga: {
+          value: 'Thermostat',
+          config: {
+            modes: 'off=OFF:WINDOW_OPEN,heat=COMFORT:BOOST,eco=ECO,on=ON,auto'
+          }
+        }
+      }
+    }, 'WINDOW_OPEN')).toBe('off');
+  });
+
+  test('translateModeToOpenhab', () => {
+    expect(Devices.Thermostat.translateModeToOpenhab({
+      metadata: {
+        ga: {
+          value: 'Thermostat',
+          config: {
+            modes: 'off=OFF:WINDOW_OPEN,heat=COMFORT:BOOST,eco=ECO,on=ON,auto'
+          }
+        }
+      }
+    }, 'heat')).toBe('COMFORT');
+
+    expect(Devices.Thermostat.translateModeToOpenhab({
+      metadata: {
+        ga: {
+          value: 'Thermostat',
+          config: {
+            modes: 'off=OFF:WINDOW_OPEN,heat=COMFORT:BOOST,eco=ECO,on=ON,auto'
+          }
+        }
+      }
+    }, 'auto')).toBe('auto');
+  });
+
+  test('getMetadata', () => {
+    expect(Devices.Thermostat.getMetadata(
+      {
+        name: 'MyItem',
+        label: 'MyThermostat',
+        type: 'Group',
+        metadata: {
+          ga: {
+            value: 'Thermostat',
+            config: {
+              name: 'My Thermostat',
+              modes: 'off=OFF:WINDOW_OPEN,heat=COMFORT:BOOST,eco=ECO,on=ON,auto=AUTOMATIC'
+            }
+          }
+        },
+        members: [{
+          name: 'Ambient',
+          type: 'Number',
+          metadata: {
+            ga: {
+              value: 'thermostatTemperatureAmbient'
+            }
+          },
+          state: '10'
+        }, {
+          name: 'SetPoint',
+          type: 'Number',
+          metadata: {
+            ga: {
+              value: 'thermostatTemperatureSetpoint'
+            }
+          },
+          state: '20'
+        }, {
+          name: 'Mode',
+          type: 'Number',
+          metadata: {
+            ga: {
+              value: 'thermostatMode'
+            }
+          },
+          state: 'off'
+        }]
+      })).toStrictEqual({
+        "attributes": {
+          "availableThermostatModes": "off,heat,eco,on,auto",
+          "thermostatTemperatureUnit": "C"
+        },
+        "customData": {
+          "deviceType": "action.devices.types.THERMOSTAT",
+          "itemType": "Group",
+          "tfaAck": undefined,
+          "tfaPin": undefined
+        },
+        "roomHint": undefined,
+        "structureHint": undefined,
+        "deviceInfo": {
+          "hwVersion": "2.5.0",
+          "manufacturer": "openHAB",
+          "model": "Group",
+          "swVersion": "2.5.0",
+        },
+        "id": "MyItem",
+        "name": {
+          "defaultNames": [
+            "My Thermostat",
+          ],
+          "name": "My Thermostat",
+          "nicknames": [
+            "My Thermostat",
+          ]
+        },
+        "traits": [
+          "action.devices.traits.TemperatureSetting",
+        ],
+        "type": "action.devices.types.THERMOSTAT",
+        "willReportState": false
+      });
   });
 
   test('getState', () => {
@@ -356,7 +549,10 @@ describe('Test Thermostat Device with Metadata', () => {
       type: 'Group',
       metadata: {
         ga: {
-          value: 'Thermostat'
+          value: 'Thermostat',
+          config: {
+            modes: 'heat=1,off=2'
+          }
         }
       },
       members: [{
