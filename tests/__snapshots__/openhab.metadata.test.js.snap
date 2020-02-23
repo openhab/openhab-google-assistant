@@ -192,7 +192,7 @@ Object {
       "attributes": Object {},
       "customData": Object {
         "deviceType": "action.devices.types.LIGHT",
-        "itemType": "Group",
+        "itemType": "Switch",
         "tfaAck": undefined,
         "tfaPin": undefined,
       },
@@ -224,7 +224,7 @@ Object {
       "attributes": Object {},
       "customData": Object {
         "deviceType": "action.devices.types.LIGHT",
-        "itemType": "Group",
+        "itemType": "Dimmer",
         "tfaAck": undefined,
         "tfaPin": undefined,
       },
@@ -259,7 +259,7 @@ Object {
       },
       "customData": Object {
         "deviceType": "action.devices.types.LIGHT",
-        "itemType": "Group",
+        "itemType": "Color",
         "tfaAck": undefined,
         "tfaPin": undefined,
       },

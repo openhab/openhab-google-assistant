@@ -954,4 +954,92 @@ describe('Test EXECUTE with Metadata', () => {
       }]
     });
   });
+
+  test('OpenClose Blinds Group as Rollershutter', async () => {
+    const getItemMock = jest.fn();
+    const sendCommandMock = jest.fn();
+    getItemMock.mockReturnValue(Promise.resolve());
+    sendCommandMock.mockReturnValue(Promise.resolve());
+
+    const apiHandler = {
+      getItem: getItemMock,
+      sendCommand: sendCommandMock
+    };
+
+    const commands = [{
+      "devices": [{
+        "id": "MyBlinds",
+        "customData": {
+          "itemType": "Rollershutter"
+        }
+      }],
+      "execution": [{
+        "command": "action.devices.commands.OpenClose",
+        "params": {
+          "openPercent": 0
+        }
+      }]
+    }];
+
+    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
+
+    expect(getItemMock).toHaveBeenCalledTimes(0);
+    expect(sendCommandMock).toBeCalledWith('MyBlinds', 'DOWN');
+    expect(payload).toStrictEqual({
+      "commands": [{
+        "ids": [
+          "MyBlinds"
+        ],
+        "states": {
+          "online": true,
+          "openPercent": 0
+        },
+        "status": "SUCCESS"
+      }]
+    });
+  });
+
+  test('OpenClose Blinds Group as Switch', async () => {
+    const getItemMock = jest.fn();
+    const sendCommandMock = jest.fn();
+    getItemMock.mockReturnValue(Promise.resolve());
+    sendCommandMock.mockReturnValue(Promise.resolve());
+
+    const apiHandler = {
+      getItem: getItemMock,
+      sendCommand: sendCommandMock
+    };
+
+    const commands = [{
+      "devices": [{
+        "id": "MyBlinds",
+        "customData": {
+          "itemType": "Switch"
+        }
+      }],
+      "execution": [{
+        "command": "action.devices.commands.OpenClose",
+        "params": {
+          "openPercent": 0
+        }
+      }]
+    }];
+
+    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
+
+    expect(getItemMock).toHaveBeenCalledTimes(0);
+    expect(sendCommandMock).toBeCalledWith('MyBlinds', 'OFF');
+    expect(payload).toStrictEqual({
+      "commands": [{
+        "ids": [
+          "MyBlinds"
+        ],
+        "states": {
+          "online": true,
+          "openPercent": 0
+        },
+        "status": "SUCCESS"
+      }]
+    });
+  });
 });
