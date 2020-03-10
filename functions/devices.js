@@ -592,6 +592,68 @@ class AirPurifier extends Fan {
   }
 }
 
+/* Sensor items */
+
+class Sensor extends GenericDevice {
+  static get type() {
+    return 'action.devices.types.SENSOR';
+  }
+
+  static get traits() {
+    return [
+      'action.devices.traits.SensorState'
+    ];
+  }
+
+  static getAttributes(item) {
+    const config = getConfig(item);
+    if (!config || !config.sensorName) {
+      return {};
+    }
+    const attributes = {
+      sensorStatesSupported: {
+        name: config.sensorName
+      }
+    };
+    if (config.valueUnit) {
+      attributes.sensorStatesSupported.numericCapabilities = {}
+      attributes.sensorStatesSupported.numericCapabilities.rawValueUnit = config.valueUnit
+    }
+    if (config.states) {
+      attributes.sensorStatesSupported.descriptiveCapabilities = {}
+      attributes.sensorStatesSupported.descriptiveCapabilities.availableStates = config.states.split(',').map((state) => state.split('=')[0]);
+    }
+    return attributes;
+  }
+
+  static getState(item) {
+    const config = getConfig(item);
+    return {
+      currentSensorStateData: {
+        name: config.sensorName,
+        currentSensorState: this.translateStateToGoogle(item),
+        rawValue: Number(item.state) || 0
+      }
+    };
+  }
+
+  static translateStateToGoogle(item) {
+    const config = getConfig(item);
+    if ('states' in config) {
+      const states = config.states.split(',')
+      for (const state of states) {
+        const [ key, value ] = state.split('=');
+        if (value == item.state) {
+          return key;
+        }
+      }
+    }
+    return '';
+  }
+}
+
+/* Thermostat items formed by a group of items */
+
 class Thermostat extends GenericDevice {
   static get type() {
     return 'action.devices.types.THERMOSTAT';
@@ -743,6 +805,7 @@ const Devices = [
   SimpleFan, Fan,
   SimpleHood, Hood,
   SimpleAirPurifier, AirPurifier,
+  Sensor,
   Thermostat
 ];
 

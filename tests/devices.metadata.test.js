@@ -248,6 +248,94 @@ describe('Test Rollershutter Devices with Metadata', () => {
   });
 });
 
+describe('Test Sensor Device with Metadata', () => {
+  const item = {
+    type: 'Number',
+    metadata: {
+      ga: {
+        value: 'Sensor',
+        config: {
+          sensorName: 'MySensor',
+          valueUnit: 'Percent',
+          states: 'off=0,low=50,high=100'
+        }
+      }
+    },
+    state: '100'
+  };
+  const device = Devices.getDeviceForItem(item);
+
+  test('getAttributes', () => {
+    expect(device.getAttributes({
+      metadata: {
+        ga: {
+          value: 'Sensor',
+          config: {
+            sensorName: 'AirQuality'
+          }
+        }
+      }
+    })).toStrictEqual({
+      'sensorStatesSupported': {
+        'name': 'AirQuality'
+      }
+    });
+
+    expect(device.getAttributes({
+      metadata: {
+        ga: {
+          value: 'Sensor',
+          config: {
+            sensorName: 'MySensor',
+            valueUnit: 'Percent'
+          }
+        }
+      }
+    })).toStrictEqual({
+      'sensorStatesSupported': {
+        'name': 'MySensor',
+        'numericCapabilities': {
+          'rawValueUnit': 'Percent'
+        }
+      }
+    });
+
+    expect(device.getAttributes({
+      metadata: {
+        ga: {
+          value: 'Sensor',
+          config: {
+            sensorName: 'MySensor',
+            states: 'off=0,low=50,high=100'
+          }
+        }
+      }
+    })).toStrictEqual({
+      'sensorStatesSupported': {
+        'name': 'MySensor',
+        'descriptiveCapabilities': {
+          'availableStates': ['off', 'low', 'high']
+        }
+      }
+    });
+  });
+
+  test('translateModeToGoogle', () => {
+    expect(device.name).toBe('Sensor');
+    expect(device.translateStateToGoogle(item)).toBe('high');
+  });
+
+  test('getState', () => {
+    expect(device.getState(item)).toStrictEqual({
+      "currentSensorStateData": {
+        "currentSensorState": "high",
+        "name": "MySensor",
+        "rawValue": 100,
+      }
+    });
+  });
+});
+
 describe('Test Thermostat Device with Metadata', () => {
   test('getDeviceForItem', () => {
     expect(Devices.getDeviceForItem({
@@ -474,6 +562,7 @@ describe('Test Thermostat Device with Metadata', () => {
         name: 'MyItem',
         label: 'MyThermostat',
         type: 'Group',
+        groupType: 'Group',
         metadata: {
           ga: {
             value: 'Thermostat',
