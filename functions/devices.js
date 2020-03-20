@@ -65,7 +65,7 @@ class GenericDevice {
       structureHint: config.structureHint,
       deviceInfo: {
         manufacturer: 'openHAB',
-        model: item.type,
+        model: item.label,
         hwVersion: '2.5.0',
         swVersion: '2.5.0'
       },
@@ -109,13 +109,23 @@ class Switch extends GenericDevice {
     ];
   }
 
+  static getMetadata(item) {
+    const metadata = super.getMetadata(item);
+    metadata.customData.inverted = getConfig(item).inverted === true;
+    return metadata;
+  }
+
   static get requiredItemTypes() {
     return ['Switch'];
   }
 
   static getState(item) {
+    let state = item.state === 'ON';
+    if (getConfig(item).inverted === true) {
+      state = !state;
+    }
     return {
-      on: item.state === 'ON'
+      on: state
     };
   }
 }

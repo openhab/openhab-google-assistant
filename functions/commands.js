@@ -155,8 +155,12 @@ class OnOffCommand extends GenericCommand {
     return ('on' in params) && typeof params.on === 'boolean';
   }
 
-  static convertParamsToValue(params) {
-    return params.on ? 'ON' : 'OFF';
+  static convertParamsToValue(params, item, device) {
+    let on = params.on;
+    if (device.customData && device.customData.inverted === true) {
+      on = !on;
+    }
+    return on ? 'ON' : 'OFF';
   }
 
   static getResponseStates(params) {
