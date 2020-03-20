@@ -250,6 +250,114 @@ describe('Test QUERY with Metadata', () => {
     });
   });
 
+  test('Blinds as Rollershutter Device', async () => {
+    const item =
+    {
+      "state": "20",
+      "type": "Rollershutter",
+      "name": "MyBlinds",
+      "metadata": {
+        "ga": {
+          "value": "Blinds"
+        }
+      }
+    };
+
+    const getItemMock = jest.fn();
+    getItemMock.mockReturnValue(Promise.resolve(item));
+
+    const apiHandler = {
+      getItem: getItemMock
+    };
+
+    const payload = await new OpenHAB(apiHandler).handleQuery([{
+      "id": "MyBlinds"
+    }]);
+
+    expect(getItemMock).toHaveBeenCalledTimes(1);
+    expect(payload).toStrictEqual({
+      "devices": {
+        "MyBlinds": {
+          "openPercent": 80,
+          "online": true,
+        },
+      },
+    });
+  });
+
+  test('Inverted Blinds as Rollershutter Device', async () => {
+    const item =
+    {
+      "state": "20",
+      "type": "Rollershutter",
+      "name": "MyBlinds",
+      "metadata": {
+        "ga": {
+          "value": "Blinds",
+          "config": {
+            "inverted": true
+          }
+        }
+      }
+    };
+
+    const getItemMock = jest.fn();
+    getItemMock.mockReturnValue(Promise.resolve(item));
+
+    const apiHandler = {
+      getItem: getItemMock
+    };
+
+    const payload = await new OpenHAB(apiHandler).handleQuery([{
+      "id": "MyBlinds"
+    }]);
+
+    expect(getItemMock).toHaveBeenCalledTimes(1);
+    expect(payload).toStrictEqual({
+      "devices": {
+        "MyBlinds": {
+          "openPercent": 20,
+          "online": true,
+        },
+      },
+    });
+  });
+
+  test('Blinds as Switch Device', async () => {
+    const item =
+    {
+      "state": "OFF",
+      "type": "Switch",
+      "name": "MyBlinds",
+      "metadata": {
+        "ga": {
+          "value": "Blinds"
+        }
+      }
+    };
+
+    const getItemMock = jest.fn();
+    getItemMock.mockReturnValue(Promise.resolve(item));
+
+    const apiHandler = {
+      getItem: getItemMock
+    };
+
+    const payload = await new OpenHAB(apiHandler).handleQuery([{
+      "id": "MyBlinds"
+    }]);
+
+    expect(getItemMock).toHaveBeenCalledTimes(1);
+    expect(payload).toStrictEqual({
+      "devices": {
+        "MyBlinds": {
+          "openPercent": 0,
+          "online": true,
+        },
+      },
+    });
+  });
+
   test('Fan Device', async () => {
     const item = {
       "state": "50",
