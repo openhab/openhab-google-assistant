@@ -15,7 +15,6 @@
  * openHAB handler for incoming intents from Google Assistant platform
  *
  * @author Mehmet Arziman - Initial contribution
- * @author Dan Cunningham - Foundations
  * @author Michael Krug - Rework
  *
  */

@@ -15,7 +15,6 @@
  * openHAB REST API handler for requests towards the openHAB REST API
  *
  * @author Mehmet Arziman - Initial contribution
- * @author Dan Cunningham - Foundations
  * @author Michael Krug - Rework
  *
  */
