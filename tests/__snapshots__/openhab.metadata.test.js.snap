@@ -56,7 +56,7 @@ Object {
       "deviceInfo": Object {
         "hwVersion": "2.5.0",
         "manufacturer": "openHAB",
-        "model": "Dimmer",
+        "model": "My Fan",
         "swVersion": "2.5.0",
       },
       "id": "MyFan",
@@ -89,6 +89,7 @@ Object {
       "attributes": Object {},
       "customData": Object {
         "deviceType": "action.devices.types.LIGHT",
+        "inverted": false,
         "itemType": "Switch",
         "tfaAck": undefined,
         "tfaPin": undefined,
@@ -96,7 +97,7 @@ Object {
       "deviceInfo": Object {
         "hwVersion": "2.5.0",
         "manufacturer": "openHAB",
-        "model": "Switch",
+        "model": "SwitchLight",
         "swVersion": "2.5.0",
       },
       "id": "MySwitch",
@@ -130,7 +131,7 @@ Object {
       "deviceInfo": Object {
         "hwVersion": "2.5.0",
         "manufacturer": "openHAB",
-        "model": "Dimmer",
+        "model": "DimmLight",
         "swVersion": "2.5.0",
       },
       "id": "MyDimmer",
@@ -165,7 +166,7 @@ Object {
       "deviceInfo": Object {
         "hwVersion": "2.5.0",
         "manufacturer": "openHAB",
-        "model": "Color",
+        "model": "ColorLight",
         "swVersion": "2.5.0",
       },
       "id": "MyLight",
@@ -192,6 +193,7 @@ Object {
       "attributes": Object {},
       "customData": Object {
         "deviceType": "action.devices.types.LIGHT",
+        "inverted": false,
         "itemType": "Switch",
         "tfaAck": undefined,
         "tfaPin": undefined,
@@ -199,7 +201,7 @@ Object {
       "deviceInfo": Object {
         "hwVersion": "2.5.0",
         "manufacturer": "openHAB",
-        "model": "Group",
+        "model": "GroupLight",
         "swVersion": "2.5.0",
       },
       "id": "MyLightGroup",
@@ -231,7 +233,7 @@ Object {
       "deviceInfo": Object {
         "hwVersion": "2.5.0",
         "manufacturer": "openHAB",
-        "model": "Group",
+        "model": "GroupDimmer",
         "swVersion": "2.5.0",
       },
       "id": "MyDimmerGroup",
@@ -266,7 +268,7 @@ Object {
       "deviceInfo": Object {
         "hwVersion": "2.5.0",
         "manufacturer": "openHAB",
-        "model": "Group",
+        "model": "GroupColor",
         "swVersion": "2.5.0",
       },
       "id": "MyColorGroup",
@@ -309,7 +311,7 @@ Object {
       "deviceInfo": Object {
         "hwVersion": "2.5.0",
         "manufacturer": "openHAB",
-        "model": "Switch",
+        "model": "My Scene",
         "swVersion": "2.5.0",
       },
       "id": "MyScene",

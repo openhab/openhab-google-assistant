@@ -65,7 +65,7 @@ class GenericDevice {
       structureHint: config.structureHint,
       deviceInfo: {
         manufacturer: 'openHAB',
-        model: item.type,
+        model: item.label,
         hwVersion: '2.5.0',
         swVersion: '2.5.0'
       },
@@ -79,15 +79,15 @@ class GenericDevice {
     };
   }
 
-  static get requiredItemType() {
-    return '';
+  static get requiredItemTypes() {
+    return [];
   }
 
   static checkItemType(item = {}) {
     return (
-      !this.requiredItemType ||
-      item.type === this.requiredItemType ||
-      (item.type === 'Group' && item.groupType && item.groupType === this.requiredItemType)
+      !this.requiredItemTypes.length ||
+      this.requiredItemTypes.includes(item.type) ||
+      (item.type === 'Group' && item.groupType && this.requiredItemTypes.includes(item.groupType))
     );
   }
 
@@ -109,13 +109,23 @@ class Switch extends GenericDevice {
     ];
   }
 
-  static get requiredItemType() {
-    return 'Switch';
+  static getMetadata(item) {
+    const metadata = super.getMetadata(item);
+    metadata.customData.inverted = getConfig(item).inverted === true;
+    return metadata;
+  }
+
+  static get requiredItemTypes() {
+    return ['Switch'];
   }
 
   static getState(item) {
+    let state = item.state === 'ON';
+    if (getConfig(item).inverted === true) {
+      state = !state;
+    }
     return {
-      on: item.state === 'ON'
+      on: state
     };
   }
 }
@@ -175,8 +185,8 @@ class Valve extends GenericDevice {
     ];
   }
 
-  static get requiredItemType() {
-    return 'Switch';
+  static get requiredItemTypes() {
+    return ['Switch'];
   }
 
   static getState(item) {
@@ -195,8 +205,8 @@ class StartStopSwitch extends GenericDevice {
     ];
   }
 
-  static get requiredItemType() {
-    return 'Switch';
+  static get requiredItemTypes() {
+    return ['Switch'];
   }
 
   static getState(item) {
@@ -232,8 +242,8 @@ class Scene extends GenericDevice {
     ];
   }
 
-  static get requiredItemType() {
-    return 'Switch'
+  static get requiredItemTypes() {
+    return ['Switch'];
   }
 
   static getAttributes() {
@@ -256,8 +266,8 @@ class Lock extends GenericDevice {
     ];
   }
 
-  static get requiredItemType() {
-    return 'Switch';
+  static get requiredItemTypes() {
+    return ['Switch'];
   }
 
   static getState(item) {
@@ -280,8 +290,8 @@ class SecuritySystem extends GenericDevice {
     ];
   }
 
-  static get requiredItemType() {
-    return 'Switch';
+  static get requiredItemTypes() {
+    return ['Switch'];
   }
 
   static getState(item) {
@@ -313,8 +323,8 @@ class DimmableLight extends GenericDevice {
     ];
   }
 
-  static get requiredItemType() {
-    return 'Dimmer';
+  static get requiredItemTypes() {
+    return ['Dimmer'];
   }
 
   static getState(item) {
@@ -358,8 +368,8 @@ class ColorLight extends GenericDevice {
     return attributes;
   }
 
-  static get requiredItemType() {
-    return 'Color';
+  static get requiredItemTypes() {
+    return ['Color'];
   }
 
   static getState(item) {
@@ -394,13 +404,20 @@ class GenericOpenCloseDevice extends GenericDevice {
     return metadata;
   }
 
-  static get requiredItemType() {
-    return 'Rollershutter';
+  static get requiredItemTypes() {
+    return ['Rollershutter', 'Switch'];
   }
 
   static getState(item) {
+    let state = 0;
+    const itemType = item.type === 'Group' ? item.groupType : item.type;
+    if (itemType == 'Switch') {
+      state = item.state === 'ON' ? 0 : 100;
+    } else {
+      state = Number(item.state);
+    }
     return {
-      openPercent: getConfig(item).inverted === true ? Number(item.state) : 100 - Number(item.state)
+      openPercent: getConfig(item).inverted !== true ? 100 - state : state
     };
   }
 }
@@ -470,8 +487,8 @@ class Speaker extends GenericDevice {
     ];
   }
 
-  static get requiredItemType() {
-    return 'Dimmer';
+  static get requiredItemTypes() {
+    return ['Dimmer'];
   }
 
   static getState(item) {
@@ -502,8 +519,8 @@ class Camera extends GenericDevice {
     };
   }
 
-  static get requiredItemType() {
-    return 'String';
+  static get requiredItemTypes() {
+    return ['String'];
   }
 }
 
@@ -546,8 +563,8 @@ class Fan extends GenericDevice {
     return attributes;
   }
 
-  static get requiredItemType() {
-    return 'Dimmer';
+  static get requiredItemTypes() {
+    return ['Dimmer'];
   }
 
   static getState(item) {
