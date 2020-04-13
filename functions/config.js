@@ -16,7 +16,6 @@
  * Change the values according your deployment
  *
  * @author Mehmet Arziman - Initial contribution
- * @author Dan Cunningham - Foundations
  *
  * host
  *    REST https host
