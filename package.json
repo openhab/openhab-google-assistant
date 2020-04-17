@@ -1,6 +1,6 @@
 {
   "name": "openhab.google-assistant-smarthome",
-  "version": "2.0.0",
+  "version": "2.0.22",
   "description": "A Google Assistant, Actions on Google based implementation for openHAB",
   "main": "functions/index.js",
   "repository": {
@@ -25,7 +25,7 @@
     "express": "^4.17.1"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.23",
+    "@types/jest": "^24.9.1",
     "jest": "^24.9.0"
   }
 }
