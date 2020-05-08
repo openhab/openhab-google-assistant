@@ -199,7 +199,7 @@ Number HK_Basement_Humid "Basement Humidity" (g_HK_Basement_TSTAT) { ga="thermos
 Currently the following metadata values are supported (also depending on Googles API capabilities):
 
 * `Switch / Dimmer / Color { ga="Light" }`
-* `Switch { ga="Switch" }`
+* `Switch { ga="Switch" [ inverted=true ] }` (all Switch items can use the inverted option)
 * `Switch { ga="Outlet" }`
 * `Switch { ga="CoffeeMaker" }`
 * `Switch { ga="WaterHeater" }`
@@ -223,12 +223,14 @@ Currently the following metadata values are supported (also depending on Googles
 * `Rollershutter { ga="Pergola" }`
 * `Rollershutter { ga="Shutter" }`
 * `Rollershutter { ga="Window" }`
-* `Group { ga="Thermostat" }`
+* `Group { ga="Thermostat" [ modes="..." ] }`
 * `Number { ga="thermostatTemperatureAmbient" }` as part of Thermostat group
 * `Number { ga="thermostatHumidityAmbient" }` as part of Thermostat group
 * `Number { ga="thermostatTemperatureSetpoint" }` as part of Thermostat group
 * `Number / String { ga="thermostatMode" }` as part of Thermostat group
 * `String { ga="Camera" [ protocols="hls,dash" ] }`
+
+_\* All Rollershutter devices can also be used with a Switch item with the limitation of only supporting open and close states._
 
 Item labels are not mandatory in openHAB, but for the Google Assistant Action they are absolutely necessary!
 

@@ -49,6 +49,7 @@ Object {
       },
       "customData": Object {
         "deviceType": "action.devices.types.FAN",
+        "inverted": false,
         "itemType": "Dimmer",
         "tfaAck": undefined,
         "tfaPin": undefined,
@@ -124,6 +125,7 @@ Object {
       "attributes": Object {},
       "customData": Object {
         "deviceType": "action.devices.types.LIGHT",
+        "inverted": false,
         "itemType": "Dimmer",
         "tfaAck": undefined,
         "tfaPin": undefined,
@@ -159,6 +161,7 @@ Object {
       },
       "customData": Object {
         "deviceType": "action.devices.types.LIGHT",
+        "inverted": false,
         "itemType": "Color",
         "tfaAck": undefined,
         "tfaPin": undefined,
@@ -226,6 +229,7 @@ Object {
       "attributes": Object {},
       "customData": Object {
         "deviceType": "action.devices.types.LIGHT",
+        "inverted": false,
         "itemType": "Dimmer",
         "tfaAck": undefined,
         "tfaPin": undefined,
@@ -261,6 +265,7 @@ Object {
       },
       "customData": Object {
         "deviceType": "action.devices.types.LIGHT",
+        "inverted": false,
         "itemType": "Color",
         "tfaAck": undefined,
         "tfaPin": undefined,
@@ -304,6 +309,7 @@ Object {
       },
       "customData": Object {
         "deviceType": "action.devices.types.SCENE",
+        "inverted": false,
         "itemType": "Switch",
         "tfaAck": undefined,
         "tfaPin": undefined,
