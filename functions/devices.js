@@ -409,6 +409,21 @@ class GenericOpenCloseDevice extends GenericDevice {
     ];
   }
 
+  static getAttributes(item) {
+    const attributes = {};
+    attributes.discreteOnlyOpenClose = getConfig(item).discreteOnlyOpenClose === true;
+    attributes.queryOnlyOpenClose = getConfig(item).queryOnlyOpenClose === true;
+    const itemType = item.type === 'Group' && item.groupType ? item.groupType : item.type;
+    if (itemType === 'Switch') {
+      attributes.discreteOnlyOpenClose = true;
+    }
+    if (itemType === 'Contact') {
+      attributes.discreteOnlyOpenClose = true;
+      attributes.queryOnlyOpenClose = true;
+    }
+    return attributes;
+  }
+
   static get requiredItemTypes() {
     return ['Rollershutter', 'Switch'];
   }
