@@ -258,6 +258,9 @@ NOTE: metadata is not (yet?) available via paperUI. Either you create your items
  }
  ```
 
+NOTE: Please be aware that for backward compatibilty also the former usage of tags (ref. [Google Assistant Action Documentation v2.5](https://www.openhab.org/v2.5/docs/ecosystem/google-assistant/)) to specify items to be exposed to Google Assistent is supported and may cause unexpected behavior.
+Items that contain tags that refer to a valid Google Assistent device will be exposed regardless of having metadata set. E.g.: `Switch MyBulb ["Lighting"]`.
+
 ### Special item configurations
 
 #### Two-Factor-Authentication
