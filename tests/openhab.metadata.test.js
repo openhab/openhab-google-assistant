@@ -321,6 +321,41 @@ describe('Test QUERY with Metadata', () => {
     });
   });
 
+  test('Lock Device as Contact', async () => {
+    const item =
+    {
+      "state": "CLOSED",
+      "type": "Contact",
+      "name": "MyLock",
+      "metadata": {
+        "ga": {
+          "value": "Lock"
+        }
+      }
+    };
+
+    const getItemMock = jest.fn();
+    getItemMock.mockReturnValue(Promise.resolve(item));
+
+    const apiHandler = {
+      getItem: getItemMock
+    };
+
+    const payload = await new OpenHAB(apiHandler).handleQuery([{
+      "id": "MyLock"
+    }]);
+
+    expect(getItemMock).toHaveBeenCalledTimes(1);
+    expect(payload).toStrictEqual({
+      "devices": {
+        "MyLock": {
+          "isLocked": true,
+          "online": true,
+        },
+      },
+    });
+  });
+
   test('Multiple Light Devices', async () => {
     const item1 =
     {
@@ -477,6 +512,41 @@ describe('Test QUERY with Metadata', () => {
     expect(payload).toStrictEqual({
       "devices": {
         "MyBlinds": {
+          "openPercent": 0,
+          "online": true,
+        },
+      },
+    });
+  });
+
+  test('Window as Contact', async () => {
+    const item =
+    {
+      "state": "CLOSED",
+      "type": "Contact",
+      "name": "MyWindow",
+      "metadata": {
+        "ga": {
+          "value": "Window"
+        }
+      }
+    };
+
+    const getItemMock = jest.fn();
+    getItemMock.mockReturnValue(Promise.resolve(item));
+
+    const apiHandler = {
+      getItem: getItemMock
+    };
+
+    const payload = await new OpenHAB(apiHandler).handleQuery([{
+      "id": "MyWindow"
+    }]);
+
+    expect(getItemMock).toHaveBeenCalledTimes(1);
+    expect(payload).toStrictEqual({
+      "devices": {
+        "MyWindow": {
           "openPercent": 0,
           "online": true,
         },
@@ -1141,7 +1211,7 @@ describe('Test EXECUTE with Metadata', () => {
     });
   });
 
-  test('Lock with required acknowledge', async () => {
+  test('LockUnlock with Lock and required acknowledge', async () => {
     const item =
     {
       "state": "OFF",
@@ -1206,7 +1276,7 @@ describe('Test EXECUTE with Metadata', () => {
     });
   });
 
-  test('Lock with acknowledged challenge', async () => {
+  test('LockUnlock with Lock and acknowledged challenge', async () => {
     const getItemMock = jest.fn();
     const sendCommandMock = jest.fn();
     getItemMock.mockReturnValue(Promise.resolve());
@@ -1253,7 +1323,7 @@ describe('Test EXECUTE with Metadata', () => {
     });
   });
 
-  test('Lock inverted', async () => {
+  test('LockUnlock with Lock inverted', async () => {
     const getItemMock = jest.fn();
     const sendCommandMock = jest.fn();
     getItemMock.mockReturnValue(Promise.resolve());
@@ -1274,7 +1344,7 @@ describe('Test EXECUTE with Metadata', () => {
       "execution": [{
         "command": "action.devices.commands.LockUnlock",
         "params": {
-          lock: true
+          "lock": true
         }
       }]
     }];
@@ -1293,6 +1363,88 @@ describe('Test EXECUTE with Metadata', () => {
           "isLocked": true
         },
         "status": "SUCCESS"
+      }]
+    });
+  });
+
+  test('LockUnlock with Lock as Contact', async () => {
+    const getItemMock = jest.fn();
+    const sendCommandMock = jest.fn();
+    getItemMock.mockReturnValue(Promise.resolve());
+    sendCommandMock.mockReturnValue(Promise.resolve());
+
+    const apiHandler = {
+      getItem: getItemMock,
+      sendCommand: sendCommandMock
+    };
+
+    const commands = [{
+      "devices": [{
+        "customData": {
+          "itemType": "Contact"
+        },
+        "id": "MyLock"
+      }],
+      "execution": [{
+        "command": "action.devices.commands.LockUnlock",
+        "params": {
+          "lock": true
+        }
+      }]
+    }];
+
+    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
+
+    expect(getItemMock).toHaveBeenCalledTimes(0);
+    expect(sendCommandMock).toHaveBeenCalledTimes(0);
+    expect(payload).toStrictEqual({
+      "commands": [{
+        "ids": [
+          "MyLock"
+        ],
+        "status": "ERROR",
+        "errorCode": "notSupported"
+      }]
+    });
+  });
+
+  test('OpenClose with OpenCloseDevice as Contact', async () => {
+    const getItemMock = jest.fn();
+    const sendCommandMock = jest.fn();
+    getItemMock.mockReturnValue(Promise.resolve());
+    sendCommandMock.mockReturnValue(Promise.resolve());
+
+    const apiHandler = {
+      getItem: getItemMock,
+      sendCommand: sendCommandMock
+    };
+
+    const commands = [{
+      "devices": [{
+        "customData": {
+          "itemType": "Contact"
+        },
+        "id": "MyLock"
+      }],
+      "execution": [{
+        "command": "action.devices.commands.OpenClose",
+        "params": {
+          "openPercent": 0
+        }
+      }]
+    }];
+
+    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
+
+    expect(getItemMock).toHaveBeenCalledTimes(0);
+    expect(sendCommandMock).toHaveBeenCalledTimes(0);
+    expect(payload).toStrictEqual({
+      "commands": [{
+        "ids": [
+          "MyLock"
+        ],
+        "status": "ERROR",
+        "errorCode": "notSupported"
       }]
     });
   });
