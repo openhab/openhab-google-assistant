@@ -57,7 +57,7 @@ Object {
       "deviceInfo": Object {
         "hwVersion": "2.5.0",
         "manufacturer": "openHAB",
-        "model": "My Fan",
+        "model": "Dimmer:MyFan",
         "swVersion": "2.5.0",
       },
       "id": "MyFan",
@@ -98,7 +98,7 @@ Object {
       "deviceInfo": Object {
         "hwVersion": "2.5.0",
         "manufacturer": "openHAB",
-        "model": "SwitchLight",
+        "model": "Switch:MySwitch",
         "swVersion": "2.5.0",
       },
       "id": "MySwitch",
@@ -133,7 +133,7 @@ Object {
       "deviceInfo": Object {
         "hwVersion": "2.5.0",
         "manufacturer": "openHAB",
-        "model": "DimmLight",
+        "model": "Dimmer:MyDimmer",
         "swVersion": "2.5.0",
       },
       "id": "MyDimmer",
@@ -169,7 +169,7 @@ Object {
       "deviceInfo": Object {
         "hwVersion": "2.5.0",
         "manufacturer": "openHAB",
-        "model": "ColorLight",
+        "model": "Color:MyLight",
         "swVersion": "2.5.0",
       },
       "id": "MyLight",
@@ -204,7 +204,7 @@ Object {
       "deviceInfo": Object {
         "hwVersion": "2.5.0",
         "manufacturer": "openHAB",
-        "model": "GroupLight",
+        "model": "Switch:MyLightGroup",
         "swVersion": "2.5.0",
       },
       "id": "MyLightGroup",
@@ -237,7 +237,7 @@ Object {
       "deviceInfo": Object {
         "hwVersion": "2.5.0",
         "manufacturer": "openHAB",
-        "model": "GroupDimmer",
+        "model": "Dimmer:MyDimmerGroup",
         "swVersion": "2.5.0",
       },
       "id": "MyDimmerGroup",
@@ -273,7 +273,7 @@ Object {
       "deviceInfo": Object {
         "hwVersion": "2.5.0",
         "manufacturer": "openHAB",
-        "model": "GroupColor",
+        "model": "Color:MyColorGroup",
         "swVersion": "2.5.0",
       },
       "id": "MyColorGroup",
@@ -317,7 +317,7 @@ Object {
       "deviceInfo": Object {
         "hwVersion": "2.5.0",
         "manufacturer": "openHAB",
-        "model": "My Scene",
+        "model": "Switch:MyScene",
         "swVersion": "2.5.0",
       },
       "id": "MyScene",

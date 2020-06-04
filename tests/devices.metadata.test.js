@@ -518,8 +518,8 @@ describe('Test Thermostat Device with Metadata', () => {
         },
         "customData": {
           "deviceType": "action.devices.types.THERMOSTAT",
-          "itemType": undefined,
           "inverted": false,
+          "itemType": "Group",
           "tfaAck": undefined,
           "tfaPin": undefined
         },
@@ -528,7 +528,7 @@ describe('Test Thermostat Device with Metadata', () => {
         "deviceInfo": {
           "hwVersion": "2.5.0",
           "manufacturer": "openHAB",
-          "model": "MyThermostat",
+          "model": "Group:MyItem",
           "swVersion": "2.5.0",
         },
         "id": "MyItem",

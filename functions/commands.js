@@ -180,6 +180,9 @@ class LockUnlockCommand extends GenericCommand {
   }
 
   static convertParamsToValue(params, item, device) {
+    if (device.customData && device.customData.itemType === 'Contact') {
+      throw { statusCode: 400 };
+    }
     let lock = params.lock;
     if (device.customData && device.customData.inverted === true) {
       lock = !lock;
@@ -393,6 +396,9 @@ class OpenCloseCommand extends GenericCommand {
   }
 
   static convertParamsToValue(params, item, device) {
+    if (device.customData && device.customData.itemType === 'Contact') {
+      throw { statusCode: 400 };
+    }
     let openPercent = params.openPercent;
     if (device.customData && device.customData.inverted === true) {
       openPercent = 100 - openPercent;
@@ -422,6 +428,9 @@ class StartStopCommand extends GenericCommand {
   }
 
   static convertParamsToValue(params, item, device) {
+    if (device.customData && device.customData.itemType === 'Contact') {
+      throw { statusCode: 400 };
+    }
     let value = params.start ? 'MOVE' : 'STOP';
     // item can not handle StartStop --> we will send "ON" / "OFF"
     if (device.customData && device.customData.itemType !== 'Rollershutter') {
