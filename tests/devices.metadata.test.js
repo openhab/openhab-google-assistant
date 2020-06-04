@@ -198,7 +198,7 @@ describe('Test Light Devices with Metadata', () => {
   });
 });
 
-describe('Test Rollershutter Devices with Metadata', () => {
+describe('Test OpenClose Devices', () => {
   test('Invalid Blinds Type', () => {
     expect(Devices.getDeviceForItem({
       type: 'Dimmer',
@@ -222,6 +222,10 @@ describe('Test Rollershutter Devices with Metadata', () => {
     };
     const device = Devices.getDeviceForItem(item);
     expect(device.name).toBe('Blinds');
+    expect(device.getAttributes(item)).toStrictEqual({
+      discreteOnlyOpenClose: false,
+      queryOnlyOpenClose: false
+    });
     expect(device.getState(item)).toStrictEqual({
       openPercent: 100
     });
@@ -235,15 +239,41 @@ describe('Test Rollershutter Devices with Metadata', () => {
         ga: {
           value: 'BLINDS',
           config: {
-            inverted: true
+            inverted: true,
+            discreteOnlyOpenClose: true
           }
         }
       }
     };
     const device = Devices.getDeviceForItem(item);
     expect(device.name).toBe('Blinds');
+    expect(device.getAttributes(item)).toStrictEqual({
+      discreteOnlyOpenClose: true,
+      queryOnlyOpenClose: false
+    });
     expect(device.getState(item)).toStrictEqual({
       openPercent: 0
+    });
+  });
+
+  test('Window as Contact', () => {
+    const item = {
+      type: 'Contact',
+      state: 'OPEN',
+      metadata: {
+        ga: {
+          value: 'WINDOW'
+        }
+      }
+    };
+    const device = Devices.getDeviceForItem(item);
+    expect(device.name).toBe('Window');
+    expect(device.getAttributes(item)).toStrictEqual({
+      discreteOnlyOpenClose: true,
+      queryOnlyOpenClose: true
+    });
+    expect(device.getState(item)).toStrictEqual({
+      openPercent: 100
     });
   });
 });
