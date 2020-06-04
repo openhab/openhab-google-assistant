@@ -62,7 +62,7 @@ class GenericCommand {
   }
 
   static handlAuthPin(device = {}, challenge = {}) {
-    if (!device.customData || !device.customData.tfaPin || challenge.pin === device.customData.tfaPin) {
+    if (!device.customData || !device.customData.pinNeeded || challenge.pin === device.customData.pinNeeded) {
       return;
     }
     return {
@@ -76,7 +76,7 @@ class GenericCommand {
   }
 
   static handlAuthAck(device = {}, challenge = {}, responseStates = {}) {
-    if (!device.customData || !device.customData.tfaAck || challenge.ack === true) {
+    if (!device.customData || !device.customData.ackNeeded || challenge.ack === true) {
       return;
     }
     return {
@@ -101,7 +101,7 @@ class GenericCommand {
         return Promise.resolve();
       }
 
-      const ackWithState = ackSupported.includes(this.type) && device.customData && device.customData.tfaAck && !challenge.ack;
+      const ackWithState = ackSupported.includes(this.type) && device.customData && device.customData.ackNeeded && !challenge.ack;
 
       let getItemPromise = Promise.resolve(({ name: device.id }));
       if (this.requiresItem || ackWithState) {

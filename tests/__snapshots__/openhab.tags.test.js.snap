@@ -6,11 +6,7 @@ Object {
     Object {
       "attributes": Object {},
       "customData": Object {
-        "deviceType": "action.devices.types.LIGHT",
-        "inverted": false,
         "itemType": "Switch",
-        "tfaAck": undefined,
-        "tfaPin": undefined,
       },
       "deviceInfo": Object {
         "hwVersion": "2.5.0",
@@ -39,11 +35,7 @@ Object {
     Object {
       "attributes": Object {},
       "customData": Object {
-        "deviceType": "action.devices.types.LIGHT",
-        "inverted": false,
         "itemType": "Dimmer",
-        "tfaAck": undefined,
-        "tfaPin": undefined,
       },
       "deviceInfo": Object {
         "hwVersion": "2.5.0",
@@ -75,11 +67,7 @@ Object {
         "colorModel": "hsv",
       },
       "customData": Object {
-        "deviceType": "action.devices.types.LIGHT",
-        "inverted": false,
         "itemType": "Color",
-        "tfaAck": undefined,
-        "tfaPin": undefined,
       },
       "deviceInfo": Object {
         "hwVersion": "2.5.0",
@@ -110,11 +98,7 @@ Object {
     Object {
       "attributes": Object {},
       "customData": Object {
-        "deviceType": "action.devices.types.LIGHT",
-        "inverted": false,
         "itemType": "Switch",
-        "tfaAck": undefined,
-        "tfaPin": undefined,
       },
       "deviceInfo": Object {
         "hwVersion": "2.5.0",
@@ -143,11 +127,7 @@ Object {
     Object {
       "attributes": Object {},
       "customData": Object {
-        "deviceType": "action.devices.types.LIGHT",
-        "inverted": false,
         "itemType": "Dimmer",
-        "tfaAck": undefined,
-        "tfaPin": undefined,
       },
       "deviceInfo": Object {
         "hwVersion": "2.5.0",
@@ -179,11 +159,7 @@ Object {
         "colorModel": "hsv",
       },
       "customData": Object {
-        "deviceType": "action.devices.types.LIGHT",
-        "inverted": false,
         "itemType": "Color",
-        "tfaAck": undefined,
-        "tfaPin": undefined,
       },
       "deviceInfo": Object {
         "hwVersion": "2.5.0",

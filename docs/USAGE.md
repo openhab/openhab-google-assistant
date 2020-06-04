@@ -36,8 +36,8 @@ Currently the following metadata values are supported (also depending on Googles
 * `Switch { ga="Sprinkler" }`
 * `Switch { ga="Vacuum" }`
 * `Switch { ga="Scene" }`
-* `Switch { ga="Lock" [ tfaAck=true ] }`
-* `Switch { ga="SecuritySystem" [ tfaPin="1234" ] }`
+* `Switch { ga="Lock" [ ackNeeded=true ] }`
+* `Switch { ga="SecuritySystem" [ pinNeeded="1234" ] }`
 * `Dimmer { ga="Speaker" }`
 * `Switch / Dimmer { ga="Fan" [ speeds="0=away:zero,50=default:standard:one,100=high:two", lang="en", ordered=true ] }` (for Dimmer the options have to be set)
 * `Switch / Dimmer { ga="Hood" }`
@@ -118,8 +118,8 @@ _pinNeeded_: "A two-factor authentication that requires a personal identificatio
 Example:
 
 ```
-Switch DoorLock "Front Door" { ga="Lock" [ tfaAck=true ] }
-Switch HouseAlarm "House Alarm" { ga="SecuritySystem" [ tfaPin="1234" ] }
+Switch DoorLock "Front Door" { ga="Lock" [ ackNeeded=true ] }
+Switch HouseAlarm "House Alarm" { ga="SecuritySystem" [ pinNeeded="1234" ] }
 ```
 
 #### Thermostats
