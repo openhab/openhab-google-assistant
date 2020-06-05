@@ -30,10 +30,11 @@ class ApiHandler {
   }
 
   getOptions(method = 'GET', itemName = '', length = 0) {
+    const queryString = '?metadata=ga,synonyms' + (itemName ? '' : '&fields=groupNames,groupType,name,label,metadata,tags,type');
     const options = {
       hostname: this._config.host,
       port: this._config.port,
-      path: this._config.path + (itemName ? itemName + '?metadata=ga' : '?metadata=ga&recursive=true'),
+      path: this._config.path + (itemName ? itemName : '') + queryString,
       method: method,
       headers: {
         'Accept': 'application/json'

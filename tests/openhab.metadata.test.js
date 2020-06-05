@@ -157,6 +157,94 @@ describe('Test SYNC with Metadata', () => {
     expect(getItemsMock).toHaveBeenCalledTimes(1);
     expect(payload).toMatchSnapshot();
   });
+
+  test('Thermostat Device', async () => {
+    const items = [
+      {
+        "state": "NULL",
+        "metadata": {
+          "ga": {
+            "value": "Thermostat",
+            "config": {
+              "modes": "off=OFF:WINDOW_OPEN,heat=COMFORT:BOOST:ON,eco=ECO,auto=AUTOMATIC"
+            }
+          }
+        },
+        "type": "Group",
+        "name": "MyThermostat",
+        "label": "My Thermostat",
+        "tags": [],
+        "groupNames": [],
+      },
+      {
+        "state": "AUTOMATIC",
+        "type": "String",
+        "name": "MyThermostat_Mode",
+        "label": "My Thermostat Mode",
+        "tags": [],
+        "groupNames": [
+          "MyThermostat"
+        ],
+      },
+      {
+        "state": "OFF",
+        "metadata": {
+          "ga": {
+            "value": "thermostatMode"
+          }
+        },
+        "type": "String",
+        "name": "MyThermostat_RadiatorMode",
+        "label": "My Thermostat Mode",
+        "tags": [],
+        "groupNames": [
+          "MyThermostat"
+        ],
+      },
+      {
+        "state": "6.0 °C",
+        "metadata": {
+          "ga": {
+            "value": "thermostatTemperatureSetpoint"
+          }
+        },
+        "type": "Number:Temperature",
+        "name": "MyThermostat_SetpointTemperature",
+        "label": "My Thermostat Setpoint Temperature",
+        "tags": [],
+        "groupNames": [
+          "MyThermostat"
+        ],
+      },
+      {
+        "state": "22.5 °C",
+        "metadata": {
+          "ga": {
+            "value": "thermostatTemperatureAmbient"
+          }
+        },
+        "type": "Number:Temperature",
+        "name": "MyThermostat_CurrentTemperature",
+        "label": "My Thermostat Current Temperature",
+        "tags": [],
+        "groupNames": [
+          "MyThermostat"
+        ],
+      }
+    ];
+    const getItemsMock = jest.fn();
+    getItemsMock.mockReturnValue(Promise.resolve(items));
+
+    const apiHandler = {
+      getItems: getItemsMock
+    };
+
+    const payload = await new OpenHAB(apiHandler).handleSync();
+
+    expect(getItemsMock).toHaveBeenCalledTimes(1);
+    expect(payload).toMatchSnapshot();
+  });
+
 });
 
 describe('Test QUERY with Metadata', () => {

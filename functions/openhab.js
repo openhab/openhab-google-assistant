@@ -34,6 +34,7 @@ class OpenHAB {
 		return this._apiHandler.getItems().then((items) => {
 			let discoveredDevicesList = [];
 			items.forEach((item) => {
+				item.members = items.filter((member) => member.groupNames && member.groupNames.includes(item.name));
 				const DeviceType = getDeviceForItem(item);
 				if (DeviceType) {
 					console.log(`openhabGoogleAssistant - handleSync - SYNC is adding: ${item.type}:${item.name} with type: ${DeviceType.type}`);
