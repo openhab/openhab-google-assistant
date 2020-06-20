@@ -599,9 +599,19 @@ class Thermostat extends GenericDevice {
   }
 
   static getAttributes(item) {
+    const config = getConfig(item);
     const attributes = {
       thermostatTemperatureUnit: this.usesFahrenheit(item) ? 'F' : 'C'
     };
+    if (('thermostatTemperatureRange' in config)) {
+      const range = config.thermostatTemperatureRange.split(',');
+      if (range.length > 1) {
+        attributes.thermostatTemperatureRange = {
+          minThresholdCelsius: parseFloat(range[0]),
+          maxThresholdCelsius: parseFloat(range[1])
+        }
+      }
+    }
     const members = this.getMembers(item);
     if (('thermostatTemperatureAmbient' in members) &&
       !('thermostatMode' in members) &&
