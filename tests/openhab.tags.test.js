@@ -1,5 +1,4 @@
-
-const OpenHAB = require('../functions/openhab.js').OpenHAB;
+const OpenHAB = require('../functions/openhab.js');
 
 describe('Test SYNC with Tags', () => {
   test('Light Devices', async () => {

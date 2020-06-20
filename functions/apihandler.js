@@ -104,4 +104,4 @@ class ApiHandler {
   }
 }
 
-module.exports = { ApiHandler };
+module.exports = ApiHandler;

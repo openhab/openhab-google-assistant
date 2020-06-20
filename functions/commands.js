@@ -17,7 +17,7 @@
  * @author Michael Krug
  *
  */
-const Thermostat = require('./devices.js').Thermostat;
+const Thermostat = require('../functions/devices/thermostat.js');
 
 const ackSupported = [
   'action.devices.commands.ArmDisarm',
@@ -507,10 +507,10 @@ class ThermostatTemperatureSetpointCommand extends GenericCommand {
 
   static getItemName(item) {
     const members = Thermostat.getMembers(item);
-    if (!('thermostatTemperatureSetpoint' in members)) {
-      throw { statusCode: 400 };
+    if ('thermostatTemperatureSetpoint' in members) {
+      return members.thermostatTemperatureSetpoint.name;
     }
-    return members.thermostatTemperatureSetpoint.name;
+    throw { statusCode: 400 };
   }
 
   static convertParamsToValue(params, item) {
@@ -543,10 +543,10 @@ class ThermostatTemperatureSetpointHighCommand extends GenericCommand {
 
   static getItemName(item) {
     const members = Thermostat.getMembers(item);
-    if (!('thermostatTemperatureSetpointHigh' in members)) {
-      throw { statusCode: 400 };
+    if ('thermostatTemperatureSetpointHigh' in members) {
+      return members.thermostatTemperatureSetpointHigh.name;
     }
-    return members.thermostatTemperatureSetpointHigh.name;
+    throw { statusCode: 400 };
   }
 
   static convertParamsToValue(params, item) {
@@ -579,10 +579,10 @@ class ThermostatTemperatureSetpointLowCommand extends GenericCommand {
 
   static getItemName(item) {
     const members = Thermostat.getMembers(item);
-    if (!('thermostatTemperatureSetpointLow' in members)) {
-      throw { statusCode: 400 };
+    if ('thermostatTemperatureSetpointLow' in members) {
+      return members.thermostatTemperatureSetpointLow.name;
     }
-    return members.thermostatTemperatureSetpointLow.name;
+    throw { statusCode: 400 };
   }
 
   static convertParamsToValue(params, item) {

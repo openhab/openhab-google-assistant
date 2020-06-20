@@ -1,4 +1,5 @@
 const Devices = require('../functions/devices.js');
+const Thermostat = require('../functions/devices/thermostat.js');
 
 describe('Test Switch Devices with Tags', () => {
   test('Switch Type', () => {
@@ -188,7 +189,7 @@ describe('Test Thermostat Device with Tags', () => {
   });
 
   test('usesFahrenheit', () => {
-    expect(Devices.Thermostat.usesFahrenheit({
+    expect(Thermostat.usesFahrenheit({
       tags: [
         'Thermostat',
         'Fahrenheit'
@@ -197,7 +198,7 @@ describe('Test Thermostat Device with Tags', () => {
   });
 
   test('getAttributes', () => {
-    expect(Devices.Thermostat.getAttributes({
+    expect(Thermostat.getAttributes({
       tags: [
         'Thermostat',
         'Fahrenheit'
@@ -207,7 +208,7 @@ describe('Test Thermostat Device with Tags', () => {
       'thermostatTemperatureUnit': 'F',
     });
 
-    expect(Devices.Thermostat.getAttributes({
+    expect(Thermostat.getAttributes({
       tags: [
         'Thermostat'
       ]
@@ -218,14 +219,14 @@ describe('Test Thermostat Device with Tags', () => {
   });
 
   test('getState', () => {
-    expect(Devices.Thermostat.getState({
+    expect(Thermostat.getState({
       type: 'Group',
       tags: [
         'Thermostat'
       ]
     })).toStrictEqual({});
 
-    expect(Devices.Thermostat.getState({
+    expect(Thermostat.getState({
       type: 'Group',
       tags: [
         'Thermostat',
@@ -256,7 +257,7 @@ describe('Test Thermostat Device with Tags', () => {
       'thermostatMode': 'off'
     });
 
-    expect(Devices.Thermostat.getState({
+    expect(Thermostat.getState({
       type: 'Group',
       tags: [
         'Thermostat'

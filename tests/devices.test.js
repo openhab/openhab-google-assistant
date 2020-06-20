@@ -1,13 +1,13 @@
-const Devices = require('../functions/devices.js');
+const Thermostat = require('../functions/devices/thermostat.js');
 
 describe('Test Thermostat Device', () => {
   test('convertToCelsius', () => {
-    expect(Devices.Thermostat.convertToCelsius(10.0)).toEqual(-12.2);
-    expect(Devices.Thermostat.convertToCelsius(0.0)).toEqual(-17.8);
+    expect(Thermostat.convertToCelsius(10.0)).toEqual(-12.2);
+    expect(Thermostat.convertToCelsius(0.0)).toEqual(-17.8);
   });
 
   test('convertToFahrenheit', () => {
-    expect(Devices.Thermostat.convertToFahrenheit(10.0)).toEqual(50);
-    expect(Devices.Thermostat.convertToFahrenheit(0.0)).toEqual(32);
+    expect(Thermostat.convertToFahrenheit(10.0)).toEqual(50);
+    expect(Thermostat.convertToFahrenheit(0.0)).toEqual(32);
   });
 });
