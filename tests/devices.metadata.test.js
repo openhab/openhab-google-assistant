@@ -181,7 +181,7 @@ describe('Test Light Devices with Metadata', () => {
         ga: {
           value: 'LIGHT',
           config: {
-            colorTemperatureRange: "1000,4000"
+            colorTemperatureRange: '1000,4000'
           }
         }
       }
@@ -194,6 +194,25 @@ describe('Test Light Devices with Metadata', () => {
         temperatureMinK: 1000,
         temperatureMaxK: 4000
       }
+    });
+  });
+
+  test('Color Light Type colorTemperatureRange with invalid value', () => {
+    const item = {
+      type: 'Color',
+      metadata: {
+        ga: {
+          value: 'LIGHT',
+          config: {
+            colorTemperatureRange: 'a,b'
+          }
+        }
+      }
+    };
+    const device = Devices.getDeviceForItem(item);
+    expect(device.name).toBe('ColorLight');
+    expect(device.getAttributes(item)).toStrictEqual({
+      colorModel: 'hsv'
     });
   });
 });
@@ -478,6 +497,21 @@ describe('Test Thermostat Device with Metadata', () => {
           value: 'Thermostat',
           config: {
             thermostatTemperatureRange: '100'
+          }
+        }
+      }
+    })).toStrictEqual({
+      availableThermostatModes: 'off,heat,cool,on,heatcool,auto,eco',
+      thermostatTemperatureUnit: 'C'
+    });
+
+    // wrong value for thermostatTemperatureRange should not throw error
+    expect(Devices.Thermostat.getAttributes({
+      metadata: {
+        ga: {
+          value: 'Thermostat',
+          config: {
+            thermostatTemperatureRange: 'a,b'
           }
         }
       }
