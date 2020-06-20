@@ -280,6 +280,7 @@ Switch HouseAlarm "House Alarm" { ga="SecuritySystem" [ tfaPin="1234" ] }
 Thermostat requires a group of items to be properly configured to be used with Google Assistant. The default temperature unit is Celsius. `{ ga="Thermostat" }`
 
 To change the temperature unit to Fahrenheit, add the config option `[ useFahrenheit=true ]` to the thermostat group.
+To set the temperature range your thermostat supports, add the config option `[ thermostatTemperatureRange="10,30" ]` to the thermostat group.
 
 There must be at least three items as members of the group:
 
