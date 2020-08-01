@@ -1,6 +1,6 @@
 {
   "name": "openhab.google-assistant-smarthome",
-  "version": "2.0.22",
+  "version": "2.1.0",
   "description": "A Google Assistant, Actions on Google based implementation for openHAB",
   "main": "functions/index.js",
   "repository": {
@@ -25,12 +25,12 @@
     "express": "^4.17.1"
   },
   "devDependencies": {
-    "@types/jest": "^24.9.1",
+    "@types/jest": "^26.0.8",
     "eslint-config-standard": "^14.1.1",
-    "eslint-plugin-import": "^2.21.2",
+    "eslint-plugin-import": "^2.22.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
-    "jest": "^24.9.0"
+    "jest": "^26.2.2"
   }
 }
