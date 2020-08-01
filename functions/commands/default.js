@@ -17,7 +17,7 @@ class DefaultCommand {
   }
 
   static validateParams(params = {}) {
-    return false;
+    return true;
   }
 
   static convertParamsToValue(params = {}, item = {}, device = {}) {

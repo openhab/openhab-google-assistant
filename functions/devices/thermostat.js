@@ -71,7 +71,7 @@ class Thermostat extends DefaultDevice {
     ];
     const members = Object();
     if (item.members && item.members.length) {
-      item.members.forEach((member) => {
+      item.members.forEach(member => {
         if (member.metadata && member.metadata.ga) {
           const memberType = supportedMembers.find(m => member.metadata.ga.value.toLowerCase() === m.toLowerCase());
           if (memberType) {

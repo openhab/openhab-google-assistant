@@ -34,7 +34,7 @@ class Fan extends DefaultDevice {
             lang: config.lang || 'en'
           }]
         });
-      } catch (e) { }
+      } catch { }
     });
     return attributes;
   }
