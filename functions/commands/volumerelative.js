@@ -15,7 +15,7 @@ class VolumeRelative extends DefaultCommand {
   }
 
   static getItemName(item) {
-    if (item.metadata && item.metadata.ga && item.metadata.ga.value.toLowerCase() == 'tv') {
+    if (item.metadata && item.metadata.ga && item.metadata.ga.value.toLowerCase() === 'tv') {
       const members = TV.getMembers(item);
       if ('volume' in members) {
         return members.volume.name;
@@ -27,12 +27,13 @@ class VolumeRelative extends DefaultCommand {
 
   static convertParamsToValue(params, item) {
     let state = item.state;
-    if (item.metadata && item.metadata.ga && item.metadata.ga.value.toLowerCase() == 'tv') {
+    if (item.metadata && item.metadata.ga && item.metadata.ga.value.toLowerCase() === 'tv') {
       const members = TV.getMembers(item);
       if ('volume' in members) {
         state = members.volume.state;
+      } else {
+        throw { statusCode: 400 };
       }
-      throw { statusCode: 400 };
     }
     let level = parseInt(state) + params.volumeRelativeLevel;
     return (level < 0 ? 0 : level > 100 ? 100 : level).toString();

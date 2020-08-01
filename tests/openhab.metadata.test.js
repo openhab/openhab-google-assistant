@@ -1828,7 +1828,7 @@ describe('Test EXECUTE with Metadata', () => {
         "id": "MyTV"
       }],
       "execution": [{
-        "command": "action.devices.commands.SelectChannel",
+        "command": "action.devices.commands.selectChannel",
         "params": {
           "channelName": "Channel 1"
         }
@@ -1977,6 +1977,71 @@ describe('Test EXECUTE with Metadata', () => {
         ],
         "states": {
           'currentVolume': 10,
+          'isMuted': false,
+          'online': true
+        },
+        "status": "SUCCESS"
+      }]
+    });
+  });
+
+  test('volumeRelative for TV', async () => {
+    const item =
+    {
+      "state": "NULL",
+      "type": "Group",
+      "name": "MyTV",
+      "label": "TV",
+      "metadata": {
+        "ga": {
+          "value": "TV"
+        }
+      },
+      "members": [{
+        type: 'Dimmer',
+        name: 'MyVolume',
+        metadata: {
+          ga: {
+            value: 'volume'
+          }
+        },
+        state: '40'
+      }]
+    };
+
+    const getItemMock = jest.fn();
+    const sendCommandMock = jest.fn();
+    getItemMock.mockReturnValue(Promise.resolve(item));
+    sendCommandMock.mockReturnValue(Promise.resolve());
+
+    const apiHandler = {
+      getItem: getItemMock,
+      sendCommand: sendCommandMock
+    };
+
+    const commands = [{
+      "devices": [{
+        "id": "MyTV"
+      }],
+      "execution": [{
+        "command": "action.devices.commands.volumeRelative",
+        "params": {
+          "volumeRelativeLevel": 1
+        }
+      }]
+    }];
+
+    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
+
+    expect(getItemMock).toHaveBeenCalledTimes(1);
+    expect(sendCommandMock).toBeCalledWith('MyVolume', '41');
+    expect(payload).toStrictEqual({
+      "commands": [{
+        "ids": [
+          "MyTV"
+        ],
+        "states": {
+          'currentVolume': 41,
           'isMuted': false,
           'online': true
         },

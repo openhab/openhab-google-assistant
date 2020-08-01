@@ -7,6 +7,7 @@ class TV extends DefaultDevice {
 
   static get traits() {
     return [
+      'action.devices.traits.OnOff',
       'action.devices.traits.Channel',
       'action.devices.traits.Volume',
       'action.devices.traits.InputSelector',
