@@ -3,7 +3,7 @@ const TV = require('../devices/tv.js');
 
 class SelectChannel extends DefaultCommand {
   static get type() {
-    return 'action.devices.commands.SelectChannel';
+    return 'action.devices.commands.selectChannel';
   }
 
   static validateParams(params) {
