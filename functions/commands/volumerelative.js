@@ -1,4 +1,5 @@
 const DefaultCommand = require('./default.js');
+const TV = require('../devices/tv.js');
 
 class VolumeRelative extends DefaultCommand {
   static get type() {
@@ -13,8 +14,27 @@ class VolumeRelative extends DefaultCommand {
     return true;
   }
 
+  static getItemName(item) {
+    if (item.metadata && item.metadata.ga && item.metadata.ga.value.toLowerCase() == 'tv') {
+      const members = TV.getMembers(item);
+      if ('volume' in members) {
+        return members.volume.name;
+      }
+      throw { statusCode: 400 };
+    }
+    return item.name;
+  }
+
   static convertParamsToValue(params, item) {
-    let level = parseInt(item.state) + params.volumeRelativeLevel;
+    let state = item.state;
+    if (item.metadata && item.metadata.ga && item.metadata.ga.value.toLowerCase() == 'tv') {
+      const members = TV.getMembers(item);
+      if ('volume' in members) {
+        state = members.volume.state;
+      }
+      throw { statusCode: 400 };
+    }
+    let level = parseInt(state) + params.volumeRelativeLevel;
     return (level < 0 ? 0 : level > 100 ? 100 : level).toString();
   }
 

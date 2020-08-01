@@ -45,7 +45,21 @@ describe('Test EXECUTE', () => {
   });
 
   test('setVolume Dimmer', async () => {
+    const item =
+    {
+      "state": "10",
+      "type": "Dimmer",
+      "name": "MySpeaker",
+      "metadata": {
+        "ga": {
+          "value": "Speaker"
+        }
+      }
+    };
+
     const getItemMock = jest.fn();
+    getItemMock.mockReturnValue(Promise.resolve(item));
+
     const sendCommandMock = jest.fn();
     sendCommandMock.mockReturnValue(Promise.resolve());
 
@@ -71,7 +85,7 @@ describe('Test EXECUTE', () => {
 
     const payload = await new OpenHAB(apiHandler).handleExecute(commands);
 
-    expect(getItemMock).not.toHaveBeenCalled();
+    expect(getItemMock).toHaveBeenCalledTimes(1);
     expect(sendCommandMock).toBeCalledWith('MySpeaker', '40');
     expect(payload).toStrictEqual({
       "commands": [{

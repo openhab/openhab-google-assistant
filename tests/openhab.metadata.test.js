@@ -1717,4 +1717,330 @@ describe('Test EXECUTE with Metadata', () => {
       }]
     });
   });
+
+
+  test('SelectChannel with Number for TV', async () => {
+    const item =
+    {
+      "state": "NULL",
+      "type": "Group",
+      "name": "MyTV",
+      "label": "TV",
+      "metadata": {
+        "ga": {
+          "value": "TV",
+          "config": {
+            "availableChannels": "20=channel1=Channel 1:Kanal 1,10=channel2=Channel 2:Kanal 2"
+          }
+        }
+      },
+      "members": [{
+        type: 'Number',
+        name: 'MyChannel',
+        metadata: {
+          ga: {
+            value: 'channel'
+          }
+        },
+        state: '10'
+      }]
+    };
+
+    const getItemMock = jest.fn();
+    const sendCommandMock = jest.fn();
+    getItemMock.mockReturnValue(Promise.resolve(item));
+    sendCommandMock.mockReturnValue(Promise.resolve());
+
+    const apiHandler = {
+      getItem: getItemMock,
+      sendCommand: sendCommandMock
+    };
+
+    const commands = [{
+      "devices": [{
+        "id": "MyTV"
+      }],
+      "execution": [{
+        "command": "action.devices.commands.SelectChannel",
+        "params": {
+          "channelNumber": "20"
+        }
+      }]
+    }];
+
+    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
+
+    expect(getItemMock).toHaveBeenCalledTimes(1);
+    expect(sendCommandMock).toBeCalledWith('MyChannel', '20');
+    expect(payload).toStrictEqual({
+      "commands": [{
+        "ids": [
+          "MyTV"
+        ],
+        "states": {
+          'channelNumber': '20',
+          'online': true
+        },
+        "status": "SUCCESS"
+      }]
+    });
+  });
+
+  test('SelectChannel with Name for TV', async () => {
+    const item =
+    {
+      "state": "NULL",
+      "type": "Group",
+      "name": "MyTV",
+      "label": "TV",
+      "metadata": {
+        "ga": {
+          "value": "TV",
+          "config": {
+            "availableChannels": "20=channel1=Channel 1:Kanal 1,10=channel2=Channel 2:Kanal 2"
+          }
+        }
+      },
+      "members": [{
+        type: 'Number',
+        name: 'MyChannel',
+        metadata: {
+          ga: {
+            value: 'channel'
+          }
+        },
+        state: '10'
+      }]
+    };
+
+    const getItemMock = jest.fn();
+    const sendCommandMock = jest.fn();
+    getItemMock.mockReturnValue(Promise.resolve(item));
+    sendCommandMock.mockReturnValue(Promise.resolve());
+
+    const apiHandler = {
+      getItem: getItemMock,
+      sendCommand: sendCommandMock
+    };
+
+    const commands = [{
+      "devices": [{
+        "id": "MyTV"
+      }],
+      "execution": [{
+        "command": "action.devices.commands.SelectChannel",
+        "params": {
+          "channelName": "Channel 1"
+        }
+      }]
+    }];
+
+    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
+
+    expect(getItemMock).toHaveBeenCalledTimes(1);
+    expect(sendCommandMock).toBeCalledWith('MyChannel', '20');
+    expect(payload).toStrictEqual({
+      "commands": [{
+        "ids": [
+          "MyTV"
+        ],
+        "states": {
+          'channelNumber': '20',
+          'online': true
+        },
+        "status": "SUCCESS"
+      }]
+    });
+  });
+
+  test('SelectInput for TV', async () => {
+    const item =
+    {
+      "state": "NULL",
+      "type": "Group",
+      "name": "MyTV",
+      "label": "TV",
+      "metadata": {
+        "ga": {
+          "value": "TV",
+          "config": {
+            "availableInputs": "tv=TV,hdmi1=HDMI1,hdmi2=HDMI2"
+          }
+        }
+      },
+      "members": [{
+        type: 'String',
+        name: 'MyInput',
+        metadata: {
+          ga: {
+            value: 'input'
+          }
+        },
+        state: 'tv'
+      }]
+    };
+
+    const getItemMock = jest.fn();
+    const sendCommandMock = jest.fn();
+    getItemMock.mockReturnValue(Promise.resolve(item));
+    sendCommandMock.mockReturnValue(Promise.resolve());
+
+    const apiHandler = {
+      getItem: getItemMock,
+      sendCommand: sendCommandMock
+    };
+
+    const commands = [{
+      "devices": [{
+        "id": "MyTV"
+      }],
+      "execution": [{
+        "command": "action.devices.commands.SetInput",
+        "params": {
+          "newInput": "hdmi1"
+        }
+      }]
+    }];
+
+    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
+
+    expect(getItemMock).toHaveBeenCalledTimes(1);
+    expect(sendCommandMock).toBeCalledWith('MyInput', 'hdmi1');
+    expect(payload).toStrictEqual({
+      "commands": [{
+        "ids": [
+          "MyTV"
+        ],
+        "states": {
+          'currentInput': 'hdmi1',
+          'online': true
+        },
+        "status": "SUCCESS"
+      }]
+    });
+  });
+
+  test('SetVolume for TV', async () => {
+    const item =
+    {
+      "state": "NULL",
+      "type": "Group",
+      "name": "MyTV",
+      "label": "TV",
+      "metadata": {
+        "ga": {
+          "value": "TV"
+        }
+      },
+      "members": [{
+        type: 'Dimmer',
+        name: 'MyVolume',
+        metadata: {
+          ga: {
+            value: 'volume'
+          }
+        },
+        state: '40'
+      }]
+    };
+
+    const getItemMock = jest.fn();
+    const sendCommandMock = jest.fn();
+    getItemMock.mockReturnValue(Promise.resolve(item));
+    sendCommandMock.mockReturnValue(Promise.resolve());
+
+    const apiHandler = {
+      getItem: getItemMock,
+      sendCommand: sendCommandMock
+    };
+
+    const commands = [{
+      "devices": [{
+        "id": "MyTV"
+      }],
+      "execution": [{
+        "command": "action.devices.commands.setVolume",
+        "params": {
+          "volumeLevel": 10
+        }
+      }]
+    }];
+
+    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
+
+    expect(getItemMock).toHaveBeenCalledTimes(1);
+    expect(sendCommandMock).toBeCalledWith('MyVolume', '10');
+    expect(payload).toStrictEqual({
+      "commands": [{
+        "ids": [
+          "MyTV"
+        ],
+        "states": {
+          'currentVolume': 10,
+          'isMuted': false,
+          'online': true
+        },
+        "status": "SUCCESS"
+      }]
+    });
+  });
+
+  test('MediaPause for TV', async () => {
+    const item =
+    {
+      "state": "NULL",
+      "type": "Group",
+      "name": "MyTV",
+      "label": "TV",
+      "metadata": {
+        "ga": {
+          "value": "TV"
+        }
+      },
+      "members": [{
+        type: 'Player',
+        name: 'MyTransport',
+        metadata: {
+          ga: {
+            value: 'transport'
+          }
+        },
+        state: 'PLAY'
+      }]
+    };
+
+    const getItemMock = jest.fn();
+    const sendCommandMock = jest.fn();
+    getItemMock.mockReturnValue(Promise.resolve(item));
+    sendCommandMock.mockReturnValue(Promise.resolve());
+
+    const apiHandler = {
+      getItem: getItemMock,
+      sendCommand: sendCommandMock
+    };
+
+    const commands = [{
+      "devices": [{
+        "id": "MyTV"
+      }],
+      "execution": [{
+        "command": "action.devices.commands.mediaPause"
+      }]
+    }];
+
+    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
+
+    expect(getItemMock).toHaveBeenCalledTimes(1);
+    expect(sendCommandMock).toBeCalledWith('MyTransport', 'PAUSE');
+    expect(payload).toStrictEqual({
+      "commands": [{
+        "ids": [
+          "MyTV"
+        ],
+        "states": {
+        },
+        "status": "SUCCESS"
+      }]
+    });
+  });
 });

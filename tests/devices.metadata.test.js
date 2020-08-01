@@ -1,5 +1,6 @@
 const Devices = require('../functions/devices.js');
 const Thermostat = require('../functions/devices/thermostat.js');
+const TV = require('../functions/devices/tv.js');
 
 describe('Test Switch Devices with Metadata', () => {
   test('Switch Type', () => {
@@ -820,6 +821,169 @@ describe('Test Thermostat Device with Metadata', () => {
       'thermostatTemperatureSetpointLow': 18,
       'thermostatMode': 'heat',
       'thermostatHumidityAmbient': 50,
+    });
+  });
+
+  describe('Test TV Device with Metadata', () => {
+    test('getAttributes', () => {
+      expect(TV.getAttributes({
+        metadata: {
+          ga: {
+            value: 'TV',
+            config: {
+              availableInputs: 'tv=TV,hdmi1=HDMI1,hdmi2=HDMI2',
+              availableChannels: '20=channel1=Channel 1:Kanal 1,10=channel2=Channel 2:Kanal 2'
+            }
+          }
+        }
+      })).toStrictEqual({
+        "availableInputs": [
+          {
+            "key": "tv",
+            "names": [
+              {
+                "lang": "en",
+                "name_synonym": [
+                  "TV",
+                ],
+              },
+            ],
+          },
+          {
+            "key": "hdmi1",
+            "names": [
+              {
+                "lang": "en",
+                "name_synonym": [
+                  "HDMI1",
+                ],
+              },
+            ],
+          },
+          {
+            "key": "hdmi2",
+            "names": [
+              {
+                "lang": "en",
+                "name_synonym": [
+                  "HDMI2",
+                ],
+              },
+            ],
+          },
+        ],
+        "orderedInputs": false,
+        "availableChannels": [
+          {
+            "key": "channel1",
+            "names": [
+              "Channel 1",
+              "Kanal 1",
+            ],
+            "number": "20",
+          },
+          {
+            "key": "channel2",
+            "names": [
+              "Channel 2",
+              "Kanal 2",
+            ],
+            "number": "10",
+          },
+        ],
+        "transportControlSupportedCommands": [
+          "NEXT",
+          "PREVIOUS",
+          "PAUSE",
+          "RESUME",
+        ],
+      });
+    });
+
+    test('getChannelMap', () => {
+      expect(TV.getChannelMap({
+        metadata: {
+          ga: {
+            value: 'TV',
+            config: {
+              availableChannels: '20=channel1=Channel 1:Kanal 1,10=channel2=Channel 2:Kanal 2'
+            }
+          }
+        }
+      })).toStrictEqual({
+        "10": [
+          "Channel 2",
+          "Kanal 2",
+          "channel2",
+        ],
+        "20": [
+          "Channel 1",
+          "Kanal 1",
+          "channel1",
+        ],
+      });
+    });
+
+    test('getState', () => {
+      expect(TV.getState({
+        type: 'Group',
+        metadata: {
+          ga: {
+            value: 'TV'
+          }
+        }
+      })).toStrictEqual({});
+
+      expect(TV.getState({
+        type: 'Group',
+        metadata: {
+          ga: {
+            value: 'TV',
+            config: {
+              availableChannels: '20=channel1=Channel 1:Kanal 1,10=channel2=Channel 2:Kanal 2'
+            }
+          }
+        },
+        members: [{
+          type: 'String',
+          metadata: {
+            ga: {
+              value: 'input'
+            }
+          },
+          state: 'tv'
+        }, {
+          type: 'Number',
+          metadata: {
+            ga: {
+              value: 'channel'
+            }
+          },
+          state: '20'
+        }, {
+          type: 'Number',
+          metadata: {
+            ga: {
+              value: 'volume'
+            }
+          },
+          state: '50'
+        }, {
+          type: 'String',
+          metadata: {
+            ga: {
+              value: 'transport'
+            }
+          },
+          state: 'PLAY'
+        }]
+      })).toStrictEqual({
+        'channelName': 'Channel 1',
+        'channelNumber': '20',
+        'currentInput': 'tv',
+        'currentVolume': 50,
+        'isMuted': false
+      });
     });
   });
 });
