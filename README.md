@@ -208,7 +208,7 @@ Currently the following metadata values are supported (also depending on Googles
 * `Switch { ga="Sprinkler" }`
 * `Switch { ga="Vacuum" }`
 * `Switch { ga="Scene" }`
-* `Switch { ga="Lock" [ ackNeeded=true ] }`
+* `Switch / Contact { ga="Lock" [ ackNeeded=true ] }`
 * `Switch { ga="SecuritySystem" [ pinNeeded="1234" ] }`
 * `Dimmer { ga="Speaker" }`
 * `Switch / Dimmer { ga="Fan" [ speeds="0=away:zero,50=default:standard:one,100=high:two", lang="en", ordered=true ] }` (for Dimmer the options have to be set)
@@ -230,7 +230,7 @@ Currently the following metadata values are supported (also depending on Googles
 * `Number / String { ga="thermostatMode" }` as part of Thermostat group
 * `String { ga="Camera" [ protocols="hls,dash" ] }`
 
-_\* All Rollershutter devices can also be used with a Switch item with the limitation of only supporting open and close states._
+_\* All Rollershutter devices can also be used with a Switch or Contact item with the limitation of only supporting open and close states._
 
 Item labels are not mandatory in openHAB, but for the Google Assistant Action they are absolutely necessary!
 
@@ -242,6 +242,11 @@ Furthermore, you can state synonyms for the device name: `Switch KitchenLight "K
 
 To ease setting up new devices you can add a room hint: `[ roomHint="Living Room" ]`.
 
+For devices supporting the OpenClose trait, the attributes `[ discreteOnlyOpenClose=false, queryOnlyOpenClose=false ]` can be configured.
+- discreteOnlyOpenClose defaults to false. When set to true, this indicates that the device must either be fully open or fully closed (that is, it does not support values between 0% and 100%). An example of such a device may be a valve.
+- queryOnlyOpenClose defaults to false. Is set to true for `Contact` items. Indicates if the device can only be queried for state information and cannot be controlled. Sensors that can only report open state should set this field to true.
+
+---
 
 NOTE: metadata is not (yet?) available via paperUI. Either you create your items via ".items" files, or you can:
 - add metadata via console:
@@ -321,6 +326,11 @@ The option _ordered_ will tell the system that your list is ordered and you will
 Blinds should always use the `Rollershutter` item type.
 Since Google and openHAB use the oposite percentage value for "opened" or "closed", the action will tranlate this automatically.
 If the values are still inverted in your case, you can state the `[ inverted=true ]` option for all `Rollershutter` items.
+
+Since Google only tells the open percentage (and not the verb "close" or "down"), it can not be differentiated between saying "set blind to 100%" or "open blind".
+Therefore, it is not possible to "not invert" the verbs, if the user chooses to invert the numbers.
+
+---
 
 More details about the setup and the service linkage (https://myopenhab.org) procedure within the Google App can be found in the [USAGE documentation](docs/USAGE.md).
 
