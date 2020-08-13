@@ -201,7 +201,7 @@ Currently the following metadata values are supported (also depending on Googles
 * `Switch / Dimmer / Color { ga="Light" }`
 * `Switch { ga="Switch" }`
 * `Switch { ga="Outlet" }`
-* `Switch { ga="CoffeeMaker" }`
+* `Switch { ga="Coffee_Maker" }`
 * `Switch { ga="WaterHeater" }`
 * `Switch { ga="Fireplace" }`
 * `Switch { ga="Valve" }`
