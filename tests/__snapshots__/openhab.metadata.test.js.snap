@@ -352,14 +352,15 @@ Object {
       },
       "customData": Object {
         "deviceType": "action.devices.types.THERMOSTAT",
-        "itemType": undefined,
+        "inverted": false,
+        "itemType": "Group",
         "tfaAck": undefined,
         "tfaPin": undefined,
       },
       "deviceInfo": Object {
         "hwVersion": "2.5.0",
         "manufacturer": "openHAB",
-        "model": "My Thermostat",
+        "model": "Group:MyThermostat",
         "swVersion": "2.5.0",
       },
       "id": "MyThermostat",
