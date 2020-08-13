@@ -1091,7 +1091,7 @@ describe('Test EXECUTE with Metadata', () => {
       "execution": [{
         "command": "action.devices.commands.LockUnlock",
         "params": {
-          lock: true
+          "lock": true
         }
       }]
     }];
@@ -1099,6 +1099,7 @@ describe('Test EXECUTE with Metadata', () => {
     const payload = await new OpenHAB(apiHandler).handleExecute(commands);
 
     expect(getItemMock).toHaveBeenCalledTimes(1);
+    expect(sendCommandMock).toHaveBeenCalledTimes(0);
     expect(payload).toStrictEqual({
       "commands": [{
         "ids": [
@@ -1138,7 +1139,7 @@ describe('Test EXECUTE with Metadata', () => {
       "execution": [{
         "command": "action.devices.commands.LockUnlock",
         "params": {
-          lock: true
+          "lock": true
         },
         "challenge": {
           "ack": true
@@ -1149,6 +1150,51 @@ describe('Test EXECUTE with Metadata', () => {
     const payload = await new OpenHAB(apiHandler).handleExecute(commands);
 
     expect(getItemMock).toHaveBeenCalledTimes(0);
+    expect(sendCommandMock).toBeCalledWith('MyLock', 'ON');
+    expect(payload).toStrictEqual({
+      "commands": [{
+        "ids": [
+          "MyLock"
+        ],
+        "states": {
+          "online": true,
+          "isLocked": true
+        },
+        "status": "SUCCESS"
+      }]
+    });
+  });
+
+  test('Lock inverted', async () => {
+    const getItemMock = jest.fn();
+    const sendCommandMock = jest.fn();
+    getItemMock.mockReturnValue(Promise.resolve());
+    sendCommandMock.mockReturnValue(Promise.resolve());
+
+    const apiHandler = {
+      getItem: getItemMock,
+      sendCommand: sendCommandMock
+    };
+
+    const commands = [{
+      "devices": [{
+        "customData": {
+          "inverted": true
+        },
+        "id": "MyLock"
+      }],
+      "execution": [{
+        "command": "action.devices.commands.LockUnlock",
+        "params": {
+          lock: true
+        }
+      }]
+    }];
+
+    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
+
+    expect(getItemMock).toHaveBeenCalledTimes(0);
+    expect(sendCommandMock).toBeCalledWith('MyLock', 'OFF');
     expect(payload).toStrictEqual({
       "commands": [{
         "ids": [

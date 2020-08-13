@@ -73,6 +73,7 @@ class GenericDevice {
       customData: {
         itemType: item.type === 'Group' ? item.groupType : item.type,
         deviceType: this.type,
+        inverted: config.inverted === true,
         tfaAck: config.tfaAck,
         tfaPin: config.tfaPin
       }
@@ -107,12 +108,6 @@ class Switch extends GenericDevice {
     return [
       'action.devices.traits.OnOff'
     ];
-  }
-
-  static getMetadata(item) {
-    const metadata = super.getMetadata(item);
-    metadata.customData.inverted = getConfig(item).inverted === true;
-    return metadata;
   }
 
   static get requiredItemTypes() {
@@ -190,8 +185,12 @@ class Valve extends GenericDevice {
   }
 
   static getState(item) {
+    let state = item.state === 'ON';
+    if (getConfig(item).inverted === true) {
+      state = !state;
+    }
     return {
-      openPercent: item.state === 'ON' ? 100 : 0
+      openPercent: state ? 100 : 0
     };
   }
 }
@@ -210,9 +209,13 @@ class StartStopSwitch extends GenericDevice {
   }
 
   static getState(item) {
+    let state = item.state === 'ON';
+    if (getConfig(item).inverted === true) {
+      state = !state;
+    }
     return {
-      isRunning: item.state === 'ON',
-      isPaused: item.state !== 'ON'
+      isRunning: state,
+      isPaused: !state
     };
   }
 }
@@ -271,8 +274,12 @@ class Lock extends GenericDevice {
   }
 
   static getState(item) {
+    let state = item.state === 'ON';
+    if (getConfig(item).inverted === true) {
+      state = !state;
+    }
     return {
-      isLocked: item.state === 'ON'
+      isLocked: state
     };
   }
 }
@@ -295,8 +302,12 @@ class SecuritySystem extends GenericDevice {
   }
 
   static getState(item) {
+    let state = item.state === 'ON';
+    if (getConfig(item).inverted === true) {
+      state = !state;
+    }
     return {
-      isArmed: item.state === 'ON'
+      isArmed: state
     };
   }
 }
@@ -396,12 +407,6 @@ class GenericOpenCloseDevice extends GenericDevice {
       'action.devices.traits.OpenClose',
       'action.devices.traits.StartStop'
     ];
-  }
-
-  static getMetadata(item) {
-    const metadata = super.getMetadata(item);
-    metadata.customData.inverted = getConfig(item).inverted === true;
-    return metadata;
   }
 
   static get requiredItemTypes() {

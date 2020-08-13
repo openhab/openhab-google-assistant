@@ -179,8 +179,12 @@ class LockUnlockCommand extends GenericCommand {
     return ('lock' in params) && typeof params.lock === 'boolean';
   }
 
-  static convertParamsToValue(params) {
-    return params.lock ? 'ON' : 'OFF';
+  static convertParamsToValue(params, item, device) {
+    let lock = params.lock;
+    if (device.customData && device.customData.inverted === true) {
+      lock = !lock;
+    }
+    return lock ? 'ON' : 'OFF';
   }
 
   static getResponseStates(params) {
@@ -199,8 +203,12 @@ class ArmDisarmCommand extends GenericCommand {
     return ('arm' in params) && typeof params.arm === 'boolean';
   }
 
-  static convertParamsToValue(params) {
-    return params.arm ? 'ON' : 'OFF';
+  static convertParamsToValue(params, item, device) {
+    let arm = params.arm;
+    if (device.customData && device.customData.inverted === true) {
+      arm = !arm;
+    }
+    return arm ? 'ON' : 'OFF';
   }
 
   static getResponseStates(params) {
@@ -219,8 +227,12 @@ class ActivateSceneCommand extends GenericCommand {
     return (('deactivate' in params) && typeof params.deactivate === 'boolean') || !('deactivate' in params);
   }
 
-  static convertParamsToValue(params) {
-    return !params.deactivate ? 'ON' : 'OFF';
+  static convertParamsToValue(params, item, device) {
+    let deactivate = params.deactivate;
+    if (device.customData && device.customData.inverted === true) {
+      deactivate = !deactivate;
+    }
+    return !deactivate ? 'ON' : 'OFF';
   }
 }
 
