@@ -32,6 +32,11 @@ class Sensor extends DefaultDevice {
     return attributes;
   }
 
+  static checkItemType(item = {}) {
+    const config = this.getConfig(item);
+    return config && config.type && config.type.toLowerCase() === 'sensor';
+  }
+
   static getState(item) {
     const config = this.getConfig(item);
     return {

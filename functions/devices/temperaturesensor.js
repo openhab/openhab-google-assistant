@@ -18,6 +18,11 @@ class TemperatureSensor extends DefaultDevice {
     };
   }
 
+  static checkItemType(item = {}) {
+    const config = this.getConfig(item);
+    return config && config.type && config.type.toLowerCase() === 'temperature';
+  }
+
   static getState(item) {
     var state = Number(parseFloat(item.state).toFixed(1));
     if (this.getConfig(item).useFahrenheit === true) {
