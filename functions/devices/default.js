@@ -75,9 +75,9 @@ class DefaultDevice {
     return {};
   }
 
-  static hasTag = (item = {}, tag = '') => {
+  static hasTag(item = {}, tag = '') {
     return item.tags && item.tags.map(t => t.toLowerCase()).includes(tag.toLowerCase()) || false;
-  };
+  }
 }
 
 module.exports = DefaultDevice;
