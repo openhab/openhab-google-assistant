@@ -29,18 +29,8 @@ glob.sync('./devices/*.js', { cwd: __dirname }).forEach(file => {
   }
 });
 
-const hasTag = (item = {}, tag = '') => {
-  return item.tags && item.tags.map(t => t.toLowerCase()).includes(tag.toLowerCase()) || false;
-};
-
 const getDeviceForItem = (item = {}) => {
-  return Devices.find((device) => (
-    (
-      item.metadata && item.metadata.ga &&
-      device.type.toLowerCase() === `action.devices.types.${item.metadata.ga.value}`.toLowerCase() ||
-      hasTag(item, device.type.substr(21).replace('SWITCH', 'SWITCHABLE').replace('LIGHT', 'LIGHTING'))
-    ) && device.checkItemType(item)
-  ));
+  return Devices.find((device) => device.matchesItemType(item) && device.isCompatible(item));
 };
 
 module.exports = {

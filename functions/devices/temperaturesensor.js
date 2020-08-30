@@ -18,18 +18,18 @@ class TemperatureSensor extends DefaultDevice {
     };
   }
 
-  static checkItemType(item = {}) {
-    const config = this.getConfig(item);
-    return config && config.type && config.type.toLowerCase() === 'temperature';
+  static isCompatible(item = {}) {
+    return item.metadata && item.metadata.ga && item.metadata.ga.value.toLowerCase() == 'temperaturesensor'
   }
 
   static getState(item) {
-    var state = Number(parseFloat(item.state).toFixed(1));
+    let state = Number(parseFloat(item.state).toFixed(1));
     if (this.getConfig(item).useFahrenheit === true) {
       state = this.convertToCelsius(state);
     }
     return {
-      temperatureAmbientCelsius: state,
+      temperatureSetpointCelsius: state,
+      temperatureAmbientCelsius: state
     };
   }
 

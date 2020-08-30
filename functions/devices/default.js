@@ -57,7 +57,13 @@ class DefaultDevice {
     return [];
   }
 
-  static checkItemType(item = {}) {
+  static isCompatible(item = {}) {
+    return item.metadata && item.metadata.ga &&
+      this.type.toLowerCase() === `action.devices.types.${item.metadata.ga.value}`.toLowerCase() ||
+      this.hasTag(item, this.type.substr(21).replace('SWITCH', 'SWITCHABLE').replace('LIGHT', 'LIGHTING'))
+  }
+
+  static matchesItemType(item = {}) {
     return (
       !this.requiredItemTypes.length ||
       this.requiredItemTypes.includes(item.type) ||
@@ -68,6 +74,10 @@ class DefaultDevice {
   static getState(item = {}) {
     return {};
   }
+
+  static hasTag = (item = {}, tag = '') => {
+    return item.tags && item.tags.map(t => t.toLowerCase()).includes(tag.toLowerCase()) || false;
+  };
 }
 
 module.exports = DefaultDevice;

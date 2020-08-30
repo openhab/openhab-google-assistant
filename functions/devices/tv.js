@@ -51,7 +51,7 @@ class TV extends DefaultDevice {
     return attributes;
   }
 
-  static checkItemType(item) {
+  static matchesItemType(item) {
     return item.type === 'Group';
   }
 
