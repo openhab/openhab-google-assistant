@@ -342,6 +342,45 @@ Object {
 }
 `;
 
+exports[`Test SYNC with Metadata Temperature Sensor Device 1`] = `
+Object {
+  "devices": Array [
+    Object {
+      "attributes": Object {
+        "queryOnlyTemperatureControl": true,
+        "temperatureUnitForUX": "F",
+      },
+      "customData": Object {
+        "itemType": "Number",
+      },
+      "deviceInfo": Object {
+        "hwVersion": "2.5.0",
+        "manufacturer": "openHAB",
+        "model": "Number:MySensor",
+        "swVersion": "2.5.0",
+      },
+      "id": "MySensor",
+      "name": Object {
+        "defaultNames": Array [
+          "My Sensor",
+        ],
+        "name": "My Sensor",
+        "nicknames": Array [
+          "My Sensor",
+        ],
+      },
+      "roomHint": undefined,
+      "structureHint": undefined,
+      "traits": Array [
+        "action.devices.traits.TemperatureControl",
+      ],
+      "type": "action.devices.types.SENSOR",
+      "willReportState": false,
+    },
+  ],
+}
+`;
+
 exports[`Test SYNC with Metadata Thermostat Device 1`] = `
 Object {
   "devices": Array [
