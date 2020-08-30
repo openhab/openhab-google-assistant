@@ -157,6 +157,69 @@ describe('Test SYNC with Metadata', () => {
     expect(payload).toMatchSnapshot();
   });
 
+  test('Sensor Device', async () => {
+    const items = [
+      {
+        "state": "14",
+        "metadata": {
+          "ga": {
+            "value": "Sensor",
+            "config": {
+              "sensorName": "AirQuality",
+              "states": "healthy=0,moderate=10,unhealthy=50,very unhealthy=100"
+            }
+          }
+        },
+        "type": "Number",
+        "name": "MySensor",
+        "label": "My Sensor",
+        "tags": []
+      }
+    ];
+    const getItemsMock = jest.fn();
+    getItemsMock.mockReturnValue(Promise.resolve(items));
+
+    const apiHandler = {
+      getItems: getItemsMock
+    };
+
+    const payload = await new OpenHAB(apiHandler).handleSync();
+
+    expect(getItemsMock).toHaveBeenCalledTimes(1);
+    expect(payload).toMatchSnapshot();
+  });
+
+  test('Temperature Sensor Device', async () => {
+    const items = [
+      {
+        "state": "14",
+        "metadata": {
+          "ga": {
+            "value": "TemperatureSensor",
+            "config": {
+              "useFahrenheit": true
+            }
+          }
+        },
+        "type": "Number",
+        "name": "MySensor",
+        "label": "My Sensor",
+        "tags": []
+      }
+    ];
+    const getItemsMock = jest.fn();
+    getItemsMock.mockReturnValue(Promise.resolve(items));
+
+    const apiHandler = {
+      getItems: getItemsMock
+    };
+
+    const payload = await new OpenHAB(apiHandler).handleSync();
+
+    expect(getItemsMock).toHaveBeenCalledTimes(1);
+    expect(payload).toMatchSnapshot();
+  });
+
   test('Thermostat Device', async () => {
     const items = [
       {
@@ -512,7 +575,43 @@ describe('Test QUERY with Metadata', () => {
       "devices": {
         "MyBlinds": {
           "openPercent": 0,
-          "online": true,
+          "online": true
+        },
+      },
+    });
+  });
+
+  test('Temperature Sensor', async () => {
+    const item =
+    {
+      "state": "20",
+      "type": "Number",
+      "name": "MySensor",
+      "metadata": {
+        "ga": {
+          "value": "TemperatureSensor"
+        }
+      }
+    };
+
+    const getItemMock = jest.fn();
+    getItemMock.mockReturnValue(Promise.resolve(item));
+
+    const apiHandler = {
+      getItem: getItemMock
+    };
+
+    const payload = await new OpenHAB(apiHandler).handleQuery([{
+      "id": "MySensor"
+    }]);
+
+    expect(getItemMock).toHaveBeenCalledTimes(1);
+    expect(payload).toStrictEqual({
+      "devices": {
+        "MySensor": {
+          "temperatureAmbientCelsius": 20,
+          "temperatureSetpointCelsius": 20,
+          "online": true
         },
       },
     });
@@ -547,7 +646,7 @@ describe('Test QUERY with Metadata', () => {
       "devices": {
         "MyWindow": {
           "openPercent": 0,
-          "online": true,
+          "online": true
         },
       },
     });
@@ -586,7 +685,7 @@ describe('Test QUERY with Metadata', () => {
         "MyFan": {
           "on": true,
           "currentFanSpeedSetting": "50",
-          "online": true,
+          "online": true
         },
       },
     });
