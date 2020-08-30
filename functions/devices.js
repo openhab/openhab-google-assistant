@@ -23,13 +23,7 @@ const hasTag = (item = {}, tag = '') => {
 };
 
 const getDeviceForItem = (item = {}) => {
-  return Devices.find((device) => (
-    (
-      item.metadata && item.metadata.ga &&
-      device.type.toLowerCase() === `action.devices.types.${item.metadata.ga.value}`.toLowerCase() ||
-      hasTag(item, device.type.substr(21).replace('SWITCH', 'SWITCHABLE').replace('LIGHT', 'LIGHTING'))
-    ) && device.checkItemType(item)
-  ));
+  return Devices.find((device) => device.isCompatible(item) && device.matchesItemType(item));
 };
 
 const getConfig = (item = {}) => {
@@ -84,7 +78,15 @@ class GenericDevice {
     return [];
   }
 
-  static checkItemType(item = {}) {
+  static isCompatible(item = {}) {
+    return (
+      item.metadata && item.metadata.ga &&
+      this.type.toLowerCase() === `action.devices.types.${item.metadata.ga.value}`.toLowerCase() ||
+      hasTag(item, this.type.substr(21).replace('SWITCH', 'SWITCHABLE').replace('LIGHT', 'LIGHTING'))
+    );
+  }
+
+  static matchesItemType(item = {}) {
     return (
       !this.requiredItemTypes.length ||
       this.requiredItemTypes.includes(item.type) ||
@@ -592,6 +594,44 @@ class AirPurifier extends Fan {
   }
 }
 
+class TemperatureSensor extends GenericDevice {
+  static get type() {
+    return 'action.devices.types.SENSOR';
+  }
+
+  static get traits() {
+    return [
+      'action.devices.traits.TemperatureControl'
+    ];
+  }
+
+  static getAttributes(item) {
+    return {
+      queryOnlyTemperatureControl: true,
+      temperatureUnitForUX: getConfig(item).useFahrenheit === true ? 'F' : 'C'
+    };
+  }
+
+  static get requiredItemTypes() {
+    return ['Number'];
+  }
+
+  static isCompatible(item = {}) {
+    return item.metadata && item.metadata.ga && item.metadata.ga.value.toLowerCase() == 'temperaturesensor'
+  }
+
+  static getState(item) {
+    let state = Number(parseFloat(item.state).toFixed(1));
+    if (getConfig(item).useFahrenheit === true) {
+      state = Thermostat.convertToCelsius(state);
+    }
+    return {
+      temperatureSetpointCelsius: state,
+      temperatureAmbientCelsius: state
+    };
+  }
+}
+
 class Thermostat extends GenericDevice {
   static get type() {
     return 'action.devices.types.THERMOSTAT';
@@ -628,7 +668,7 @@ class Thermostat extends GenericDevice {
     return attributes;
   }
 
-  static checkItemType(item) {
+  static matchesItemType(item) {
     return item.type === 'Group';
   }
 
@@ -743,6 +783,7 @@ const Devices = [
   SimpleFan, Fan,
   SimpleHood, Hood,
   SimpleAirPurifier, AirPurifier,
+  TemperatureSensor,
   Thermostat
 ];
 

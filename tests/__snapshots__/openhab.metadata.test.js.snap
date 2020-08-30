@@ -351,12 +351,16 @@ Object {
         "temperatureUnitForUX": "F",
       },
       "customData": Object {
+        "deviceType": "action.devices.types.SENSOR",
+        "inverted": false,
         "itemType": "Number",
+        "tfaAck": undefined,
+        "tfaPin": undefined,
       },
       "deviceInfo": Object {
         "hwVersion": "2.5.0",
         "manufacturer": "openHAB",
-        "model": "Number:MySensor",
+        "model": "My Sensor",
         "swVersion": "2.5.0",
       },
       "id": "MySensor",
@@ -391,6 +395,7 @@ Object {
       },
       "customData": Object {
         "deviceType": "action.devices.types.THERMOSTAT",
+        "inverted": false,
         "itemType": undefined,
         "tfaAck": undefined,
         "tfaPin": undefined,
