@@ -223,11 +223,12 @@ Currently the following metadata values are supported (also depending on Googles
 * `Rollershutter { ga="Pergola" }`
 * `Rollershutter { ga="Shutter" }`
 * `Rollershutter { ga="Window" }`
-* `Group { ga="Thermostat" [ modes="..." ] }`
+* `Group { ga="Thermostat" [ modes="...", useFahrenheit=true ] }`
 * `Number { ga="thermostatTemperatureAmbient" }` as part of Thermostat group
 * `Number { ga="thermostatHumidityAmbient" }` as part of Thermostat group
 * `Number { ga="thermostatTemperatureSetpoint" }` as part of Thermostat group
 * `Number / String { ga="thermostatMode" }` as part of Thermostat group
+* `Number { ga="TemperatureSensor" } [ useFahrenheit=true ] `
 * `String { ga="Camera" [ protocols="hls,dash" ] }`
 
 _\* All Rollershutter devices can also be used with a Switch item with the limitation of only supporting open and close states._
@@ -300,6 +301,7 @@ E.g. `[ modes="off=OFF:WINDOW_OPEN,heat=COMFORT:BOOST,eco=ECO,on=ON,auto" ]` wil
 By default the integration will provide `"off,heat,cool,on,heatcool,auto,eco"`.
 
 You can also set up a Thermostat for using it as a temperature sensor. To do so, create a Thermostat group and only add one item member as "thermostatTemperatureAmbient".
+However, it is recommended to prefer the `TemperatureSensor` type for simple temperature reports (but currently no UI support in Google Assistant).
 
 #### Fans
 
