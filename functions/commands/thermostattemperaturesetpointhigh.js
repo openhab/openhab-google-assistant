@@ -1,5 +1,6 @@
 const DefaultCommand = require('./default.js');
 const Thermostat = require('../devices/thermostat.js');
+const convertToFahrenheit = require('../utilities.js').convertToFahrenheit;
 
 class ThermostatTemperatureSetpointHigh extends DefaultCommand {
   static get type() {
@@ -25,7 +26,7 @@ class ThermostatTemperatureSetpointHigh extends DefaultCommand {
   static convertParamsToValue(params, item) {
     let value = params.thermostatTemperatureSetpointHigh;
     if (Thermostat.usesFahrenheit(item)) {
-      value = Thermostat.convertToFahrenheit(value);
+      value = convertToFahrenheit(value);
     }
     return value.toString();
   }

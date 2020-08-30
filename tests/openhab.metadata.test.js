@@ -849,6 +849,214 @@ describe('Test EXECUTE with Metadata', () => {
     });
   });
 
+  test('ThermostatTemperatureSetpointHigh', async () => {
+    const item =
+    {
+      "state": "NULL",
+      "type": "Group",
+      "name": "MyThermostat",
+      "label": "Thermostat",
+      "metadata": {
+        "ga": {
+          "value": "Thermostat",
+          "config": {
+            "useFahrenheit": true
+          }
+        }
+      },
+      "members": [{
+        type: 'Number',
+        metadata: {
+          ga: {
+            value: 'thermostatTemperatureAmbient'
+          }
+        },
+        state: '10'
+      }, {
+        name: 'MyTargetTemperatureHigh',
+        type: 'Number',
+        metadata: {
+          ga: {
+            value: 'thermostatTemperatureSetpointHigh'
+          }
+        },
+        state: '20'
+      }, {
+        name: 'MyTargetTemperatureLow',
+        type: 'Number',
+        metadata: {
+          ga: {
+            value: 'thermostatTemperatureSetpointLow'
+          }
+        },
+        state: '10'
+      }, {
+        type: 'Number',
+        metadata: {
+          ga: {
+            value: 'thermostatMode'
+          }
+        },
+        state: 'heat'
+      }, {
+        type: 'Number',
+        metadata: {
+          ga: {
+            value: 'thermostatHumidityAmbient'
+          }
+        },
+        state: '50'
+      }]
+    };
+
+    const getItemMock = jest.fn();
+    const sendCommandMock = jest.fn();
+    getItemMock.mockReturnValue(Promise.resolve(item));
+    sendCommandMock.mockReturnValue(Promise.resolve());
+
+    const apiHandler = {
+      getItem: getItemMock,
+      sendCommand: sendCommandMock
+    };
+
+    const commands = [{
+      "devices": [{
+        "id": "MyThermostat"
+      }],
+      "execution": [{
+        "command": "action.devices.commands.ThermostatTemperatureSetpointHigh",
+        "params": {
+          "thermostatTemperatureSetpointHigh": 25
+        }
+      }]
+    }];
+
+    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
+
+    expect(getItemMock).toHaveBeenCalledTimes(1);
+    expect(sendCommandMock).toBeCalledWith('MyTargetTemperatureHigh', '77');
+    expect(payload).toStrictEqual({
+      "commands": [{
+        "ids": [
+          "MyThermostat"
+        ],
+        "states": {
+          "online": true,
+          "thermostatHumidityAmbient": 50,
+          "thermostatMode": "heat",
+          "thermostatTemperatureAmbient": -12.2,
+          "thermostatTemperatureSetpointHigh": 25,
+          "thermostatTemperatureSetpointLow": -12.2,
+        },
+        "status": "SUCCESS"
+      }]
+    });
+  });
+
+  test('ThermostatTemperatureSetpointLow', async () => {
+    const item =
+    {
+      "state": "NULL",
+      "type": "Group",
+      "name": "MyThermostat",
+      "label": "Thermostat",
+      "metadata": {
+        "ga": {
+          "value": "Thermostat",
+          "config": {
+            "useFahrenheit": true
+          }
+        }
+      },
+      "members": [{
+        type: 'Number',
+        metadata: {
+          ga: {
+            value: 'thermostatTemperatureAmbient'
+          }
+        },
+        state: '10'
+      }, {
+        name: 'MyTargetTemperatureHigh',
+        type: 'Number',
+        metadata: {
+          ga: {
+            value: 'thermostatTemperatureSetpointHigh'
+          }
+        },
+        state: '20'
+      }, {
+        name: 'MyTargetTemperatureLow',
+        type: 'Number',
+        metadata: {
+          ga: {
+            value: 'thermostatTemperatureSetpointLow'
+          }
+        },
+        state: '10'
+      }, {
+        type: 'Number',
+        metadata: {
+          ga: {
+            value: 'thermostatMode'
+          }
+        },
+        state: 'heat'
+      }, {
+        type: 'Number',
+        metadata: {
+          ga: {
+            value: 'thermostatHumidityAmbient'
+          }
+        },
+        state: '50'
+      }]
+    };
+
+    const getItemMock = jest.fn();
+    const sendCommandMock = jest.fn();
+    getItemMock.mockReturnValue(Promise.resolve(item));
+    sendCommandMock.mockReturnValue(Promise.resolve());
+
+    const apiHandler = {
+      getItem: getItemMock,
+      sendCommand: sendCommandMock
+    };
+
+    const commands = [{
+      "devices": [{
+        "id": "MyThermostat"
+      }],
+      "execution": [{
+        "command": "action.devices.commands.ThermostatTemperatureSetpointLow",
+        "params": {
+          "thermostatTemperatureSetpointLow": 5
+        }
+      }]
+    }];
+
+    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
+
+    expect(getItemMock).toHaveBeenCalledTimes(1);
+    expect(sendCommandMock).toBeCalledWith('MyTargetTemperatureLow', '41');
+    expect(payload).toStrictEqual({
+      "commands": [{
+        "ids": [
+          "MyThermostat"
+        ],
+        "states": {
+          "online": true,
+          "thermostatHumidityAmbient": 50,
+          "thermostatMode": "heat",
+          "thermostatTemperatureAmbient": -12.2,
+          "thermostatTemperatureSetpointHigh": -6.7,
+          "thermostatTemperatureSetpointLow": 5
+        },
+        "status": "SUCCESS"
+      }]
+    });
+  });
+
   test('ThermostatTemperatureSetRange', async () => {
     const item1 =
     {

@@ -1,4 +1,5 @@
 const DefaultDevice = require('./default.js');
+const convertToCelsius = require('../utilities.js').convertToCelsius;
 
 class TemperatureSensor extends DefaultDevice {
   static get type() {
@@ -18,6 +19,10 @@ class TemperatureSensor extends DefaultDevice {
     };
   }
 
+  static get requiredItemTypes() {
+    return ['Number'];
+  }
+
   static isCompatible(item = {}) {
     return item.metadata && item.metadata.ga && item.metadata.ga.value.toLowerCase() == 'temperaturesensor'
   }
@@ -25,7 +30,7 @@ class TemperatureSensor extends DefaultDevice {
   static getState(item) {
     let state = Number(parseFloat(item.state).toFixed(1));
     if (this.getConfig(item).useFahrenheit === true) {
-      state = this.convertToCelsius(state);
+      state = convertToCelsius(state);
     }
     return {
       temperatureSetpointCelsius: state,

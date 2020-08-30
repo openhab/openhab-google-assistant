@@ -1,8 +1,5 @@
 const DefaultDevice = require('./default.js');
-
-const hasTag = (item = {}, tag = '') => {
-  return item.tags && item.tags.map(t => t.toLowerCase()).includes(tag.toLowerCase()) || false;
-};
+const convertToCelsius = require('../utilities.js').convertToCelsius;
 
 class Thermostat extends DefaultDevice {
   static get type() {
@@ -53,7 +50,7 @@ class Thermostat extends DefaultDevice {
       } else {
         state[member] = Number(parseFloat(members[member].state).toFixed(1));
         if (member.indexOf('Temperature') > 0 && this.usesFahrenheit(item)) {
-          state[member] = this.convertToCelsius(state[member]);
+          state[member] = convertToCelsius(state[member]);
         }
       }
     }
@@ -78,16 +75,16 @@ class Thermostat extends DefaultDevice {
             members[memberType] = { name: member.name, state: member.state };
           }
         } else {
-          if (hasTag(member, 'HeatingCoolingMode') || hasTag(member, 'homekit:HeatingCoolingMode') || hasTag(member, 'homekit:TargetHeatingCoolingMode') || hasTag(member, 'homekit:CurrentHeatingCoolingMode')) {
+          if (this.hasTag(member, 'HeatingCoolingMode') || this.hasTag(member, 'homekit:HeatingCoolingMode') || this.hasTag(member, 'homekit:TargetHeatingCoolingMode') || this.hasTag(member, 'homekit:CurrentHeatingCoolingMode')) {
             members.thermostatMode = { name: member.name, state: member.state };
           }
-          if (hasTag(member, 'TargetTemperature') || hasTag(member, 'homekit:TargetTemperature')) {
+          if (this.hasTag(member, 'TargetTemperature') || this.hasTag(member, 'homekit:TargetTemperature')) {
             members.thermostatTemperatureSetpoint = { name: member.name, state: member.state };
           }
-          if (hasTag(member, 'CurrentTemperature')) {
+          if (this.hasTag(member, 'CurrentTemperature')) {
             members.thermostatTemperatureAmbient = { name: member.name, state: member.state };
           }
-          if (hasTag(member, 'CurrentHumidity')) {
+          if (this.hasTag(member, 'CurrentHumidity')) {
             members.thermostatHumidityAmbient = { name: member.name, state: member.state };
           }
         }
@@ -97,7 +94,7 @@ class Thermostat extends DefaultDevice {
   }
 
   static usesFahrenheit(item) {
-    return this.getConfig(item).useFahrenheit === true || hasTag(item, 'Fahrenheit');
+    return this.getConfig(item).useFahrenheit === true || this.hasTag(item, 'Fahrenheit');
   }
 
   static getModeMap(item) {
@@ -130,14 +127,6 @@ class Thermostat extends DefaultDevice {
       }
     }
     return 'on';
-  }
-
-  static convertToFahrenheit(value = 0) {
-    return Math.round(value * 9 / 5 + 32);
-  }
-
-  static convertToCelsius(value = 0) {
-    return Number(((value - 32) * 5 / 9).toFixed(1));
   }
 }
 
