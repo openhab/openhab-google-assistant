@@ -29,8 +29,8 @@ glob.sync('./commands/*.js', { cwd: __dirname }).forEach(file => {
   }
 });
 
-const getCommandType = (command = '', params = {}) => {
-  return Commands.find((commandType) => command === commandType.type && commandType.validateParams(params));
+module.exports = {
+  getCommandType: (command = '', params = {}) => {
+    return Commands.find((commandType) => command === commandType.type && commandType.validateParams(params));
+  }
 };
-
-module.exports = { getCommandType };

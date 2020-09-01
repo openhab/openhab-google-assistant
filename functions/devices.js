@@ -29,10 +29,8 @@ glob.sync('./devices/*.js', { cwd: __dirname }).forEach(file => {
   }
 });
 
-const getDeviceForItem = (item = {}) => {
-  return Devices.find((device) => device.matchesItemType(item) && device.isCompatible(item));
-};
-
 module.exports = {
-  getDeviceForItem
-}
+  getDeviceForItem: (item = {}) => {
+    return Devices.find((device) => device.matchesItemType(item) && device.isCompatible(item));
+  }
+};
