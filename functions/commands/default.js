@@ -36,7 +36,7 @@ class DefaultCommand {
     return false;
   }
 
-  static handlAuthPin(device = {}, challenge = {}) {
+  static handleAuthPin(device = {}, challenge = {}) {
     if (!device.customData || !device.customData.pinNeeded || challenge.pin === device.customData.pinNeeded) {
       return;
     }
@@ -50,7 +50,7 @@ class DefaultCommand {
     };
   }
 
-  static handlAuthAck(device = {}, challenge = {}, responseStates = {}) {
+  static handleAuthAck(device = {}, challenge = {}, responseStates = {}) {
     if (!device.customData || !device.customData.ackNeeded || challenge.ack === true) {
       return;
     }
@@ -70,7 +70,7 @@ class DefaultCommand {
     const commandsResponse = [];
     const promises = devices.map((device) => {
 
-      const authPinResponse = this.handlAuthPin(device, challenge);
+      const authPinResponse = this.handleAuthPin(device, challenge);
       if (authPinResponse) {
         commandsResponse.push(authPinResponse);
         return Promise.resolve();
@@ -89,7 +89,7 @@ class DefaultCommand {
           responseStates.online = true;
         }
 
-        const authAckResponse = this.handlAuthAck(device, challenge, responseStates);
+        const authAckResponse = this.handleAuthAck(device, challenge, responseStates);
         if (authAckResponse) {
           commandsResponse.push(authAckResponse);
           return;
