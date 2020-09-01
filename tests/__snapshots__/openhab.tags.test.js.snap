@@ -6,6 +6,7 @@ Object {
     Object {
       "attributes": Object {},
       "customData": Object {
+        "deviceType": "SimpleLight",
         "itemType": "Switch",
       },
       "deviceInfo": Object {
@@ -35,6 +36,7 @@ Object {
     Object {
       "attributes": Object {},
       "customData": Object {
+        "deviceType": "DimmableLight",
         "itemType": "Dimmer",
       },
       "deviceInfo": Object {
@@ -67,6 +69,7 @@ Object {
         "colorModel": "hsv",
       },
       "customData": Object {
+        "deviceType": "ColorLight",
         "itemType": "Color",
       },
       "deviceInfo": Object {
@@ -98,6 +101,7 @@ Object {
     Object {
       "attributes": Object {},
       "customData": Object {
+        "deviceType": "SimpleLight",
         "itemType": "Switch",
       },
       "deviceInfo": Object {
@@ -127,6 +131,7 @@ Object {
     Object {
       "attributes": Object {},
       "customData": Object {
+        "deviceType": "DimmableLight",
         "itemType": "Dimmer",
       },
       "deviceInfo": Object {
@@ -159,6 +164,7 @@ Object {
         "colorModel": "hsv",
       },
       "customData": Object {
+        "deviceType": "ColorLight",
         "itemType": "Color",
       },
       "deviceInfo": Object {

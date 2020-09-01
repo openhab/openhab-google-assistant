@@ -10,7 +10,10 @@ class ColorAbsolute extends DefaultCommand {
       ('spectrumHSV' in params.color) && typeof params.color.spectrumHSV === 'object';
   }
 
-  static convertParamsToValue(params) {
+  static convertParamsToValue(params, item, device) {
+    if (device.customData && device.customData.deviceType !== 'ColorLight') {
+      throw { statusCode: 400 };
+    }
     const hsv = params.color.spectrumHSV;
     return [hsv.hue, hsv.saturation * 100, hsv.value * 100].join(',');
   }

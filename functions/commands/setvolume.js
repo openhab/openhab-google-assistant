@@ -14,8 +14,8 @@ class SetVolume extends DefaultCommand {
     return true;
   }
 
-  static getItemName(item) {
-    if (item.metadata && item.metadata.ga && item.metadata.ga.value.toLowerCase() === 'tv') {
+  static getItemName(item, device) {
+    if (device.customData && device.customData.deviceType === 'TV') {
       const members = TV.getMembers(item);
       if ('volume' in members) {
         return members.volume.name;

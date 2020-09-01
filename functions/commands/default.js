@@ -28,7 +28,7 @@ class DefaultCommand {
     return {};
   }
 
-  static getItemName(item = {}) {
+  static getItemName(item = {}, device = {}) {
     return item.name;
   }
 
@@ -95,7 +95,7 @@ class DefaultCommand {
           return;
         }
 
-        const targetItem = this.getItemName(item);
+        const targetItem = this.getItemName(item, device);
         const targetValue = this.convertParamsToValue(params, item, device);
         let sendCommandPromise = Promise.resolve();
         if (typeof targetItem === 'string' && typeof targetValue === 'string') {

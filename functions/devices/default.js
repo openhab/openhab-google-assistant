@@ -38,6 +38,7 @@ class DefaultDevice {
       },
       attributes: this.getAttributes(item),
       customData: {
+        deviceType: this.name,
         itemType: itemType
       }
     };

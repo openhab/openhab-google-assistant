@@ -1783,7 +1783,7 @@ describe('Test EXECUTE with Metadata', () => {
 
     const payload = await new OpenHAB(apiHandler).handleExecute(commands);
 
-    expect(getItemMock).toHaveBeenCalledTimes(0);
+    expect(getItemMock).toHaveBeenCalledTimes(1);
     expect(payload).toStrictEqual({
       "commands": [{
         "ids": [
@@ -2071,6 +2071,9 @@ describe('Test EXECUTE with Metadata', () => {
         "command": "action.devices.commands.selectChannel",
         "params": {
           "channelNumber": "20"
+        },
+        "customData": {
+          "deviceType": "TV"
         }
       }]
     }];
@@ -2138,6 +2141,9 @@ describe('Test EXECUTE with Metadata', () => {
         "command": "action.devices.commands.selectChannel",
         "params": {
           "channelName": "Channel 1"
+        },
+        "customData": {
+          "deviceType": "TV"
         }
       }]
     }];
@@ -2205,6 +2211,9 @@ describe('Test EXECUTE with Metadata', () => {
         "command": "action.devices.commands.SetInput",
         "params": {
           "newInput": "hdmi1"
+        },
+        "customData": {
+          "deviceType": "TV"
         }
       }]
     }];
@@ -2263,7 +2272,10 @@ describe('Test EXECUTE with Metadata', () => {
 
     const commands = [{
       "devices": [{
-        "id": "MyTV"
+        "id": "MyTV",
+        "customData": {
+          "deviceType": "TV"
+        }
       }],
       "execution": [{
         "command": "action.devices.commands.setVolume",
@@ -2328,7 +2340,10 @@ describe('Test EXECUTE with Metadata', () => {
 
     const commands = [{
       "devices": [{
-        "id": "MyTV"
+        "id": "MyTV",
+        "customData": {
+          "deviceType": "TV"
+        }
       }],
       "execution": [{
         "command": "action.devices.commands.volumeRelative",
@@ -2393,7 +2408,10 @@ describe('Test EXECUTE with Metadata', () => {
 
     const commands = [{
       "devices": [{
-        "id": "MyTV"
+        "id": "MyTV",
+        "customData": {
+          "deviceType": "TV"
+        }
       }],
       "execution": [{
         "command": "action.devices.commands.mediaPause"

@@ -81,12 +81,17 @@ describe('Test Switch Devices with Metadata', () => {
       state: 'ON',
       metadata: {
         ga: {
-          value: 'Lock'
+          value: 'Lock',
+          config: {
+            ackNeeded: true
+          }
         }
       }
     };
     const device = Devices.getDeviceForItem(item);
     expect(device.name).toBe('Lock');
+    expect(device.getMetadata(item).customData.ackNeeded).toBe(true);
+    expect(device.getMetadata(item).customData.pinNeeded).toBeUndefined();
     expect(device.getState(item)).toStrictEqual({
       isLocked: true
     });
@@ -98,12 +103,17 @@ describe('Test Switch Devices with Metadata', () => {
       state: 'ON',
       metadata: {
         ga: {
-          value: 'SecuritySystem'
+          value: 'SecuritySystem',
+          config: {
+            pinNeeded: '1234'
+          }
         }
       }
     };
     const device = Devices.getDeviceForItem(item);
     expect(device.name).toBe('SecuritySystem');
+    expect(device.getMetadata(item).customData.ackNeeded).toBeUndefined();
+    expect(device.getMetadata(item).customData.pinNeeded).toBe('1234');
     expect(device.getState(item)).toStrictEqual({
       isArmed: true
     });
@@ -186,7 +196,8 @@ describe('Test Light Devices with Metadata', () => {
             colorTemperatureRange: '1000,4000'
           }
         }
-      }
+      },
+      state: '100,50,20'
     };
     const device = Devices.getDeviceForItem(item);
     expect(device.name).toBe('ColorLight');
@@ -196,6 +207,17 @@ describe('Test Light Devices with Metadata', () => {
         temperatureMinK: 1000,
         temperatureMaxK: 4000
       }
+    });
+    expect(device.getState(item)).toStrictEqual({
+      brightness: 20,
+      color: {
+        spectrumHSV: {
+          hue: 100,
+          saturation: 0.5,
+          value: 0.2,
+        }
+      },
+      on: true
     });
   });
 
@@ -215,6 +237,54 @@ describe('Test Light Devices with Metadata', () => {
     expect(device.name).toBe('ColorLight');
     expect(device.getAttributes(item)).toStrictEqual({
       colorModel: 'hsv'
+    });
+  });
+
+  test('Special Color Light Type', () => {
+    const item = {
+      type: 'Group',
+      metadata: {
+        ga: {
+          value: 'LIGHT',
+          config: {
+            colorTemperatureRange: '1000,4000'
+          }
+        }
+      },
+      members: [{
+        name: 'Brightness',
+        type: 'Dimmer',
+        metadata: {
+          ga: {
+            value: 'lightBrightness'
+          }
+        },
+        state: '10'
+      }, {
+        name: 'ColorTemp',
+        type: 'Dimmer',
+        metadata: {
+          ga: {
+            value: 'lightColorTemperature'
+          }
+        },
+        state: '50'
+      }]
+    };
+    const device = Devices.getDeviceForItem(item);
+    expect(device.name).toBe('SpecialColorLight');
+    expect(device.getAttributes(item)).toStrictEqual({
+      colorTemperatureRange: {
+        temperatureMinK: 1000,
+        temperatureMaxK: 4000
+      }
+    });
+    expect(device.getState(item)).toStrictEqual({
+      brightness: 10,
+      color: {
+        temperatureK: 2500
+      },
+      on: true
     });
   });
 });
@@ -628,7 +698,6 @@ describe('Test Thermostat Device with Metadata', () => {
         name: 'MyItem',
         label: 'MyThermostat',
         type: 'Group',
-        groupType: 'Group',
         metadata: {
           ga: {
             value: 'Thermostat',
@@ -672,18 +741,15 @@ describe('Test Thermostat Device with Metadata', () => {
           "thermostatTemperatureUnit": "C"
         },
         "customData": {
-          "deviceType": "action.devices.types.THERMOSTAT",
-          "itemType": undefined,
-          "inverted": false,
-          "tfaAck": undefined,
-          "tfaPin": undefined
+          "deviceType": "Thermostat",
+          "itemType": "Group"
         },
         "roomHint": undefined,
         "structureHint": undefined,
         "deviceInfo": {
           "hwVersion": "2.5.0",
           "manufacturer": "openHAB",
-          "model": "MyThermostat",
+          "model": "Group:MyItem",
           "swVersion": "2.5.0",
         },
         "id": "MyItem",

@@ -48,16 +48,13 @@ Object {
         "reversible": false,
       },
       "customData": Object {
-        "deviceType": "action.devices.types.FAN",
-        "inverted": false,
+        "deviceType": "Fan",
         "itemType": "Dimmer",
-        "tfaAck": undefined,
-        "tfaPin": undefined,
       },
       "deviceInfo": Object {
         "hwVersion": "2.5.0",
         "manufacturer": "openHAB",
-        "model": "My Fan",
+        "model": "Dimmer:MyFan",
         "swVersion": "2.5.0",
       },
       "id": "MyFan",
@@ -89,16 +86,13 @@ Object {
     Object {
       "attributes": Object {},
       "customData": Object {
-        "deviceType": "action.devices.types.LIGHT",
-        "inverted": false,
+        "deviceType": "SimpleLight",
         "itemType": "Switch",
-        "tfaAck": undefined,
-        "tfaPin": undefined,
       },
       "deviceInfo": Object {
         "hwVersion": "2.5.0",
         "manufacturer": "openHAB",
-        "model": "SwitchLight",
+        "model": "Switch:MySwitch",
         "swVersion": "2.5.0",
       },
       "id": "MySwitch",
@@ -124,16 +118,13 @@ Object {
     Object {
       "attributes": Object {},
       "customData": Object {
-        "deviceType": "action.devices.types.LIGHT",
-        "inverted": false,
+        "deviceType": "DimmableLight",
         "itemType": "Dimmer",
-        "tfaAck": undefined,
-        "tfaPin": undefined,
       },
       "deviceInfo": Object {
         "hwVersion": "2.5.0",
         "manufacturer": "openHAB",
-        "model": "DimmLight",
+        "model": "Dimmer:MyDimmer",
         "swVersion": "2.5.0",
       },
       "id": "MyDimmer",
@@ -160,16 +151,13 @@ Object {
         "colorModel": "hsv",
       },
       "customData": Object {
-        "deviceType": "action.devices.types.LIGHT",
-        "inverted": false,
+        "deviceType": "ColorLight",
         "itemType": "Color",
-        "tfaAck": undefined,
-        "tfaPin": undefined,
       },
       "deviceInfo": Object {
         "hwVersion": "2.5.0",
         "manufacturer": "openHAB",
-        "model": "ColorLight",
+        "model": "Color:MyLight",
         "swVersion": "2.5.0",
       },
       "id": "MyLight",
@@ -195,16 +183,13 @@ Object {
     Object {
       "attributes": Object {},
       "customData": Object {
-        "deviceType": "action.devices.types.LIGHT",
-        "inverted": false,
+        "deviceType": "SimpleLight",
         "itemType": "Switch",
-        "tfaAck": undefined,
-        "tfaPin": undefined,
       },
       "deviceInfo": Object {
         "hwVersion": "2.5.0",
         "manufacturer": "openHAB",
-        "model": "GroupLight",
+        "model": "Switch:MyLightGroup",
         "swVersion": "2.5.0",
       },
       "id": "MyLightGroup",
@@ -228,16 +213,13 @@ Object {
     Object {
       "attributes": Object {},
       "customData": Object {
-        "deviceType": "action.devices.types.LIGHT",
-        "inverted": false,
+        "deviceType": "DimmableLight",
         "itemType": "Dimmer",
-        "tfaAck": undefined,
-        "tfaPin": undefined,
       },
       "deviceInfo": Object {
         "hwVersion": "2.5.0",
         "manufacturer": "openHAB",
-        "model": "GroupDimmer",
+        "model": "Dimmer:MyDimmerGroup",
         "swVersion": "2.5.0",
       },
       "id": "MyDimmerGroup",
@@ -264,16 +246,13 @@ Object {
         "colorModel": "hsv",
       },
       "customData": Object {
-        "deviceType": "action.devices.types.LIGHT",
-        "inverted": false,
+        "deviceType": "ColorLight",
         "itemType": "Color",
-        "tfaAck": undefined,
-        "tfaPin": undefined,
       },
       "deviceInfo": Object {
         "hwVersion": "2.5.0",
         "manufacturer": "openHAB",
-        "model": "GroupColor",
+        "model": "Color:MyColorGroup",
         "swVersion": "2.5.0",
       },
       "id": "MyColorGroup",
@@ -308,16 +287,13 @@ Object {
         "sceneReversible": true,
       },
       "customData": Object {
-        "deviceType": "action.devices.types.SCENE",
-        "inverted": false,
+        "deviceType": "Scene",
         "itemType": "Switch",
-        "tfaAck": undefined,
-        "tfaPin": undefined,
       },
       "deviceInfo": Object {
         "hwVersion": "2.5.0",
         "manufacturer": "openHAB",
-        "model": "My Scene",
+        "model": "Switch:MyScene",
         "swVersion": "2.5.0",
       },
       "id": "MyScene",
@@ -342,42 +318,49 @@ Object {
 }
 `;
 
-exports[`Test SYNC with Metadata Thermostat Device 1`] = `
+exports[`Test SYNC with Metadata Sensor Device 1`] = `
 Object {
   "devices": Array [
     Object {
       "attributes": Object {
-        "availableThermostatModes": "off,heat,eco,auto",
-        "thermostatTemperatureUnit": "C",
+        "sensorStatesSupported": Object {
+          "descriptiveCapabilities": Object {
+            "availableStates": Array [
+              "healthy",
+              "moderate",
+              "unhealthy",
+              "very unhealthy",
+            ],
+          },
+          "name": "AirQuality",
+        },
       },
       "customData": Object {
-        "deviceType": "action.devices.types.THERMOSTAT",
-        "itemType": undefined,
-        "tfaAck": undefined,
-        "tfaPin": undefined,
+        "deviceType": "Sensor",
+        "itemType": "Number",
       },
       "deviceInfo": Object {
         "hwVersion": "2.5.0",
         "manufacturer": "openHAB",
-        "model": "My Thermostat",
+        "model": "Number:MySensor",
         "swVersion": "2.5.0",
       },
-      "id": "MyThermostat",
+      "id": "MySensor",
       "name": Object {
         "defaultNames": Array [
-          "My Thermostat",
+          "My Sensor",
         ],
-        "name": "My Thermostat",
+        "name": "My Sensor",
         "nicknames": Array [
-          "My Thermostat",
+          "My Sensor",
         ],
       },
       "roomHint": undefined,
       "structureHint": undefined,
       "traits": Array [
-        "action.devices.traits.TemperatureSetting",
+        "action.devices.traits.SensorState",
       ],
-      "type": "action.devices.types.THERMOSTAT",
+      "type": "action.devices.types.SENSOR",
       "willReportState": false,
     },
   ],
@@ -393,6 +376,7 @@ Object {
         "temperatureUnitForUX": "F",
       },
       "customData": Object {
+        "deviceType": "TemperatureSensor",
         "itemType": "Number",
       },
       "deviceInfo": Object {
@@ -432,6 +416,7 @@ Object {
         "thermostatTemperatureUnit": "C",
       },
       "customData": Object {
+        "deviceType": "Thermostat",
         "itemType": "Group",
       },
       "deviceInfo": Object {

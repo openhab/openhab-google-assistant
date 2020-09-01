@@ -459,13 +459,12 @@ describe('Test EXECUTE', () => {
     });
   });
 
-  test('ColorAbsolute Temperature', async () => {
+  test('ColorAbsolute Temperature ColorLight', async () => {
     const item =
     {
       "state": "50,50,50",
-      "type": "Switch",
+      "type": "Color",
       "name": "MyColor",
-      "label": "ColorLight",
       "metadata": {
         "ga": {
           "value": "LIGHT"
@@ -501,6 +500,88 @@ describe('Test EXECUTE', () => {
 
     expect(getItemMock).toHaveBeenCalled();
     expect(sendCommandMock).toBeCalledWith('MyColor', '26.97,34.9,50');
+    expect(payload).toStrictEqual({
+      "commands": [{
+        "ids": [
+          "MyColor"
+        ],
+        "states": {
+          "online": true,
+          "color": {
+            "temperatureK": 4000
+          }
+        },
+        "status": "SUCCESS"
+      }]
+    });
+  });
+
+
+  test('ColorAbsolute Temperature SpecialColorLight', async () => {
+    const item =
+    {
+      "type": "Group",
+      "name": "MyColor",
+      "metadata": {
+        "ga": {
+          "value": "LIGHT",
+          "config": {
+            "colorTemperatureRange": "1000,4000"
+          }
+        }
+      },
+      "members": [{
+        "type": "Dimmer",
+        "name": "MyBrightness",
+        "metadata": {
+          "ga": {
+            "value": "lightBrightness"
+          }
+        },
+        "state": "10"
+      }, {
+        "type": "Dimmer",
+        "name": "MyTemperature",
+        "metadata": {
+          "ga": {
+            "value": "lightColorTemperature"
+          }
+        },
+        "state": "50"
+      }]
+    };
+
+    const getItemMock = jest.fn();
+    const sendCommandMock = jest.fn();
+    getItemMock.mockReturnValue(Promise.resolve(item));
+    sendCommandMock.mockReturnValue(Promise.resolve());
+
+    const apiHandler = {
+      getItem: getItemMock,
+      sendCommand: sendCommandMock
+    };
+
+    const commands = [{
+      "devices": [{
+        "id": "MyColor",
+        "customData": {
+          "deviceType": "SpecialColorLight"
+        }
+      }],
+      "execution": [{
+        "command": "action.devices.commands.ColorAbsolute",
+        "params": {
+          "color": {
+            "temperature": 4000
+          }
+        }
+      }]
+    }];
+
+    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
+
+    expect(getItemMock).toHaveBeenCalled();
+    expect(sendCommandMock).toBeCalledWith('MyTemperature', '100');
     expect(payload).toStrictEqual({
       "commands": [{
         "ids": [

@@ -1,4 +1,5 @@
 const DefaultCommand = require('./default.js');
+const SpecialColorLight = require('../devices/specialcolorlight.js');
 
 class ColorAbsoluteTemperature extends DefaultCommand {
   static get type() {
@@ -14,7 +15,26 @@ class ColorAbsoluteTemperature extends DefaultCommand {
     return true;
   }
 
-  static convertParamsToValue(params, item) {
+  static getItemName(item, device) {
+    if (device.customData && device.customData.deviceType === 'SpecialColorLight') {
+      const members = SpecialColorLight.getMembers(item);
+      if ('lightColorTemperature' in members) {
+        return members.lightColorTemperature.name;
+      }
+      throw { statusCode: 400 };
+    }
+    return item.name;
+  }
+
+  static convertParamsToValue(params, item, device) {
+    if (device.customData && device.customData.deviceType === 'SpecialColorLight') {
+      try {
+        const { temperatureMinK, temperatureMaxK } = SpecialColorLight.getAttributes(item).colorTemperatureRange;
+        return ((params.color.temperature - temperatureMinK) / (temperatureMaxK - temperatureMinK) * 100).toString();
+      } catch {
+        return '0';
+      }
+    }
     const hsv = this.rgb2hsv(this.kelvin2rgb(params.color.temperature));
     const hsvArray = item.state.split(",").map((val) => Number(val));
     return [Math.round(hsv.hue * 100) / 100, Math.round(hsv.saturation * 1000) / 10, hsvArray[2]].join(',');
