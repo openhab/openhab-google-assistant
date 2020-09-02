@@ -11,7 +11,7 @@ class ThermostatTemperatureSetpointHigh extends DefaultCommand {
     return ('thermostatTemperatureSetpointHigh' in params) && typeof params.thermostatTemperatureSetpointHigh === 'number';
   }
 
-  static get requiresItem() {
+  static requiresItem() {
     return true;
   }
 

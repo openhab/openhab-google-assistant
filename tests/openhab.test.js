@@ -45,21 +45,8 @@ describe('Test EXECUTE', () => {
   });
 
   test('setVolume Dimmer', async () => {
-    const item =
-    {
-      "state": "10",
-      "type": "Dimmer",
-      "name": "MySpeaker",
-      "metadata": {
-        "ga": {
-          "value": "Speaker"
-        }
-      }
-    };
-
     const getItemMock = jest.fn();
-    getItemMock.mockReturnValue(Promise.resolve(item));
-
+    getItemMock.mockReturnValue(Promise.resolve());
     const sendCommandMock = jest.fn();
     sendCommandMock.mockReturnValue(Promise.resolve());
 
@@ -85,7 +72,7 @@ describe('Test EXECUTE', () => {
 
     const payload = await new OpenHAB(apiHandler).handleExecute(commands);
 
-    expect(getItemMock).toHaveBeenCalledTimes(1);
+    expect(getItemMock).toHaveBeenCalledTimes(0);
     expect(sendCommandMock).toBeCalledWith('MySpeaker', '40');
     expect(payload).toStrictEqual({
       "commands": [{
@@ -516,7 +503,6 @@ describe('Test EXECUTE', () => {
     });
   });
 
-
   test('ColorAbsolute Temperature SpecialColorLight', async () => {
     const item =
     {
@@ -592,6 +578,83 @@ describe('Test EXECUTE', () => {
           "color": {
             "temperatureK": 4000
           }
+        },
+        "status": "SUCCESS"
+      }]
+    });
+  });
+
+  test('OnOff SpecialColorLight', async () => {
+    const item =
+    {
+      "type": "Group",
+      "name": "MyColor",
+      "metadata": {
+        "ga": {
+          "value": "LIGHT",
+          "config": {
+            "colorTemperatureRange": "1000,4000"
+          }
+        }
+      },
+      "members": [{
+        "type": "Dimmer",
+        "name": "MyBrightness",
+        "metadata": {
+          "ga": {
+            "value": "lightBrightness"
+          }
+        },
+        "state": "10"
+      }, {
+        "type": "Dimmer",
+        "name": "MyTemperature",
+        "metadata": {
+          "ga": {
+            "value": "lightColorTemperature"
+          }
+        },
+        "state": "50"
+      }]
+    };
+
+    const getItemMock = jest.fn();
+    const sendCommandMock = jest.fn();
+    getItemMock.mockReturnValue(Promise.resolve(item));
+    sendCommandMock.mockReturnValue(Promise.resolve());
+
+    const apiHandler = {
+      getItem: getItemMock,
+      sendCommand: sendCommandMock
+    };
+
+    const commands = [{
+      "devices": [{
+        "id": "MyColor",
+        "customData": {
+          "deviceType": "SpecialColorLight"
+        }
+      }],
+      "execution": [{
+        "command": "action.devices.commands.OnOff",
+        "params": {
+          "on": false
+        }
+      }]
+    }];
+
+    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
+
+    expect(getItemMock).toHaveBeenCalledTimes(1);
+    expect(sendCommandMock).toBeCalledWith('MyBrightness', 'OFF');
+    expect(payload).toStrictEqual({
+      "commands": [{
+        "ids": [
+          "MyColor"
+        ],
+        "states": {
+          "online": true,
+          "on": false
         },
         "status": "SUCCESS"
       }]

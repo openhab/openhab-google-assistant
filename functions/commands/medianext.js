@@ -6,7 +6,7 @@ class MediaNext extends DefaultCommand {
     return 'action.devices.commands.mediaNext';
   }
 
-  static get requiresItem() {
+  static requiresItem() {
     return true;
   }
 

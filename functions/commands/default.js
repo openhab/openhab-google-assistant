@@ -32,7 +32,7 @@ class DefaultCommand {
     return item.name;
   }
 
-  static get requiresItem() {
+  static requiresItem(device = {}) {
     return false;
   }
 
@@ -79,7 +79,7 @@ class DefaultCommand {
       const ackWithState = ackSupported.includes(this.type) && device.customData && device.customData.ackNeeded && !challenge.ack;
 
       let getItemPromise = Promise.resolve(({ name: device.id }));
-      if (this.requiresItem || ackWithState) {
+      if (this.requiresItem(device) || ackWithState) {
         getItemPromise = apiHandler.getItem(device.id);
       }
 

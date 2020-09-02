@@ -1783,7 +1783,7 @@ describe('Test EXECUTE with Metadata', () => {
 
     const payload = await new OpenHAB(apiHandler).handleExecute(commands);
 
-    expect(getItemMock).toHaveBeenCalledTimes(1);
+    expect(getItemMock).toHaveBeenCalledTimes(0);
     expect(payload).toStrictEqual({
       "commands": [{
         "ids": [

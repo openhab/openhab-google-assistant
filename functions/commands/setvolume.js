@@ -10,8 +10,8 @@ class SetVolume extends DefaultCommand {
     return ('volumeLevel' in params) && typeof params.volumeLevel === 'number';
   }
 
-  static get requiresItem() {
-    return true;
+  static requiresItem(device) {
+    return device.customData && device.customData.deviceType === 'TV';
   }
 
   static getItemName(item, device) {

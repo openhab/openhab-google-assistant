@@ -10,7 +10,7 @@ class VolumeRelative extends DefaultCommand {
     return ('volumeRelativeLevel' in params) && typeof params.volumeRelativeLevel === 'number';
   }
 
-  static get requiresItem() {
+  static requiresItem() {
     return true;
   }
 

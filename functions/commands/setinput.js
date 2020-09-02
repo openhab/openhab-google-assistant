@@ -10,7 +10,7 @@ class SetInput extends DefaultCommand {
     return ('newInput' in params) && typeof params.newInput === 'string';
   }
 
-  static get requiresItem() {
+  static requiresItem() {
     return true;
   }
 

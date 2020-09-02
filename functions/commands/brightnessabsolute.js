@@ -10,8 +10,8 @@ class BrightnessAbsolute extends DefaultCommand {
     return ('brightness' in params) && typeof params.brightness === 'number';
   }
 
-  static get requiresItem() {
-    return true;
+  static requiresItem(device) {
+    return device.customData && device.customData.deviceType === 'SpecialColorLight';
   }
 
   static getItemName(item, device) {

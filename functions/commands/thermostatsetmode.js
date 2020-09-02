@@ -10,7 +10,7 @@ class ThermostatSetMode extends DefaultCommand {
     return ('thermostatMode' in params) && typeof params.thermostatMode === 'string';
   }
 
-  static get requiresItem() {
+  static requiresItem() {
     return true;
   }
 

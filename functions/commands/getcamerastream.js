@@ -10,7 +10,7 @@ class GetCameraStream extends DefaultCommand {
       ('SupportedStreamProtocols' in params) && typeof params.SupportedStreamProtocols === 'object';
   }
 
-  static get requiresItem() {
+  static requiresItem() {
     return true;
   }
 

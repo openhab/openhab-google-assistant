@@ -6,7 +6,7 @@ class MediaPause extends DefaultCommand {
     return 'action.devices.commands.mediaPause';
   }
 
-  static get requiresItem() {
+  static requiresItem() {
     return true;
   }
 

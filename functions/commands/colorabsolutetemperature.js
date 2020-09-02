@@ -11,7 +11,7 @@ class ColorAbsoluteTemperature extends DefaultCommand {
       ('temperature' in params.color) && typeof params.color.temperature === 'number';
   }
 
-  static get requiresItem() {
+  static requiresItem() {
     return true;
   }
 

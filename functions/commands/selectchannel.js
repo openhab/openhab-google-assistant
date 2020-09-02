@@ -12,7 +12,7 @@ class SelectChannel extends DefaultCommand {
       (('channelNumber' in params) && typeof params.channelNumber === 'string');
   }
 
-  static get requiresItem() {
+  static requiresItem() {
     return true;
   }
 

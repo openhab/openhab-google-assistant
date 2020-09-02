@@ -6,7 +6,7 @@ class MediaPrevious extends DefaultCommand {
     return 'action.devices.commands.mediaPrevious';
   }
 
-  static get requiresItem() {
+  static requiresItem() {
     return true;
   }
 

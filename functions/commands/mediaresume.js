@@ -6,7 +6,7 @@ class MediaResume extends DefaultCommand {
     return 'action.devices.commands.mediaResume';
   }
 
-  static get requiresItem() {
+  static requiresItem() {
     return true;
   }
 
