@@ -24,7 +24,7 @@ class SpecialColorLight extends ColorLight {
           try {
             const { temperatureMinK, temperatureMaxK } = this.getAttributes(item).colorTemperatureRange;
             state.color = {};
-            state.color.temperatureK = temperatureMinK + ((temperatureMaxK - temperatureMinK) / 100 * Number(members[member].state) || 0);
+            state.color.temperatureK = temperatureMinK + ((temperatureMaxK - temperatureMinK) / 100 * (100 - Number(members[member].state)) || 0);
           } catch { }
           break;
       }

@@ -581,7 +581,7 @@ describe('Test EXECUTE', () => {
     const payload = await new OpenHAB(apiHandler).handleExecute(commands);
 
     expect(getItemMock).toHaveBeenCalled();
-    expect(sendCommandMock).toBeCalledWith('MyTemperature', '100');
+    expect(sendCommandMock).toBeCalledWith('MyTemperature', '0');
     expect(payload).toStrictEqual({
       "commands": [{
         "ids": [

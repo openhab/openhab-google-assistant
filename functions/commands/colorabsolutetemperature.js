@@ -30,7 +30,7 @@ class ColorAbsoluteTemperature extends DefaultCommand {
     if (device.customData && device.customData.deviceType === 'SpecialColorLight') {
       try {
         const { temperatureMinK, temperatureMaxK } = SpecialColorLight.getAttributes(item).colorTemperatureRange;
-        return ((params.color.temperature - temperatureMinK) / (temperatureMaxK - temperatureMinK) * 100).toString();
+        return (100 - ((params.color.temperature - temperatureMinK) / (temperatureMaxK - temperatureMinK) * 100)).toString();
       } catch {
         return '0';
       }
