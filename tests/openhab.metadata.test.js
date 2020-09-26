@@ -2025,6 +2025,206 @@ describe('Test EXECUTE with Metadata', () => {
     });
   });
 
+  test('OnOff for TV', async () => {
+    const item =
+    {
+      "state": "NULL",
+      "type": "Group",
+      "name": "MyTV",
+      "label": "TV",
+      "metadata": {
+        "ga": {
+          "value": "TV"
+        }
+      },
+      "members": [{
+        type: 'Switch',
+        name: 'MyPower',
+        metadata: {
+          ga: {
+            value: 'tvPower'
+          }
+        },
+        state: 'ON'
+      }]
+    };
+
+    const getItemMock = jest.fn();
+    const sendCommandMock = jest.fn();
+    getItemMock.mockReturnValue(Promise.resolve(item));
+    sendCommandMock.mockReturnValue(Promise.resolve());
+
+    const apiHandler = {
+      getItem: getItemMock,
+      sendCommand: sendCommandMock
+    };
+
+    const commands = [{
+      "devices": [{
+        "id": "MyTV",
+        "customData": {
+          "deviceType": "TV"
+        }
+      }],
+      "execution": [{
+        "command": "action.devices.commands.OnOff",
+        "params": {
+          "on": false
+        }
+      }]
+    }];
+
+    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
+
+    expect(getItemMock).toHaveBeenCalledTimes(1);
+    expect(sendCommandMock).toBeCalledWith('MyPower', 'OFF');
+    expect(payload).toStrictEqual({
+      "commands": [{
+        "ids": [
+          "MyTV"
+        ],
+        "states": {
+          'on': false,
+          'online': true
+        },
+        "status": "SUCCESS"
+      }]
+    });
+  });
+
+  test('Mute for TV with Switch', async () => {
+    const item =
+    {
+      "state": "NULL",
+      "type": "Group",
+      "name": "MyTV",
+      "label": "TV",
+      "metadata": {
+        "ga": {
+          "value": "TV"
+        }
+      },
+      "members": [{
+        type: 'Switch',
+        name: 'MyMute',
+        metadata: {
+          ga: {
+            value: 'tvMute'
+          }
+        },
+        state: 'OFF'
+      }]
+    };
+
+    const getItemMock = jest.fn();
+    const sendCommandMock = jest.fn();
+    getItemMock.mockReturnValue(Promise.resolve(item));
+    sendCommandMock.mockReturnValue(Promise.resolve());
+
+    const apiHandler = {
+      getItem: getItemMock,
+      sendCommand: sendCommandMock
+    };
+
+    const commands = [{
+      "devices": [{
+        "id": "MyTV",
+        "customData": {
+          "deviceType": "TV"
+        }
+      }],
+      "execution": [{
+        "command": "action.devices.commands.mute",
+        "params": {
+          "mute": true
+        }
+      }]
+    }];
+
+    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
+
+    expect(getItemMock).toHaveBeenCalledTimes(1);
+    expect(sendCommandMock).toBeCalledWith('MyMute', 'ON');
+    expect(payload).toStrictEqual({
+      "commands": [{
+        "ids": [
+          "MyTV"
+        ],
+        "states": {
+          'isMuted': true,
+          'online': true
+        },
+        "status": "SUCCESS"
+      }]
+    });
+  });
+
+  test('Mute for TV without Switch', async () => {
+    const item =
+    {
+      "state": "NULL",
+      "type": "Group",
+      "name": "MyTV",
+      "label": "TV",
+      "metadata": {
+        "ga": {
+          "value": "TV"
+        }
+      },
+      "members": [{
+        type: 'Dimmer',
+        name: 'MyVolume',
+        metadata: {
+          ga: {
+            value: 'tvVolume'
+          }
+        },
+        state: '12'
+      }]
+    };
+
+    const getItemMock = jest.fn();
+    const sendCommandMock = jest.fn();
+    getItemMock.mockReturnValue(Promise.resolve(item));
+    sendCommandMock.mockReturnValue(Promise.resolve());
+
+    const apiHandler = {
+      getItem: getItemMock,
+      sendCommand: sendCommandMock
+    };
+
+    const commands = [{
+      "devices": [{
+        "id": "MyTV",
+        "customData": {
+          "deviceType": "TV"
+        }
+      }],
+      "execution": [{
+        "command": "action.devices.commands.mute",
+        "params": {
+          "mute": true
+        }
+      }]
+    }];
+
+    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
+
+    expect(getItemMock).toHaveBeenCalledTimes(1);
+    expect(sendCommandMock).toBeCalledWith('MyVolume', '0');
+    expect(payload).toStrictEqual({
+      "commands": [{
+        "ids": [
+          "MyTV"
+        ],
+        "states": {
+          'isMuted': true,
+          'online': true
+        },
+        "status": "SUCCESS"
+      }]
+    });
+  });
 
   test('SelectChannel with Number for TV', async () => {
     const item =
@@ -2046,7 +2246,7 @@ describe('Test EXECUTE with Metadata', () => {
         name: 'MyChannel',
         metadata: {
           ga: {
-            value: 'channel'
+            value: 'tvChannel'
           }
         },
         state: '10'
@@ -2065,15 +2265,15 @@ describe('Test EXECUTE with Metadata', () => {
 
     const commands = [{
       "devices": [{
-        "id": "MyTV"
+        "id": "MyTV",
+        "customData": {
+          "deviceType": "TV"
+        }
       }],
       "execution": [{
         "command": "action.devices.commands.selectChannel",
         "params": {
           "channelNumber": "20"
-        },
-        "customData": {
-          "deviceType": "TV"
         }
       }]
     }];
@@ -2116,7 +2316,7 @@ describe('Test EXECUTE with Metadata', () => {
         name: 'MyChannel',
         metadata: {
           ga: {
-            value: 'channel'
+            value: 'tvChannel'
           }
         },
         state: '10'
@@ -2135,15 +2335,15 @@ describe('Test EXECUTE with Metadata', () => {
 
     const commands = [{
       "devices": [{
-        "id": "MyTV"
+        "id": "MyTV",
+        "customData": {
+          "deviceType": "TV"
+        }
       }],
       "execution": [{
         "command": "action.devices.commands.selectChannel",
         "params": {
           "channelName": "Channel 1"
-        },
-        "customData": {
-          "deviceType": "TV"
         }
       }]
     }];
@@ -2186,7 +2386,7 @@ describe('Test EXECUTE with Metadata', () => {
         name: 'MyInput',
         metadata: {
           ga: {
-            value: 'input'
+            value: 'tvInput'
           }
         },
         state: 'tv'
@@ -2205,15 +2405,15 @@ describe('Test EXECUTE with Metadata', () => {
 
     const commands = [{
       "devices": [{
-        "id": "MyTV"
+        "id": "MyTV",
+        "customData": {
+          "deviceType": "TV"
+        }
       }],
       "execution": [{
         "command": "action.devices.commands.SetInput",
         "params": {
           "newInput": "hdmi1"
-        },
-        "customData": {
-          "deviceType": "TV"
         }
       }]
     }];
@@ -2253,7 +2453,7 @@ describe('Test EXECUTE with Metadata', () => {
         name: 'MyVolume',
         metadata: {
           ga: {
-            value: 'volume'
+            value: 'tvVolume'
           }
         },
         state: '40'
@@ -2295,9 +2495,8 @@ describe('Test EXECUTE with Metadata', () => {
           "MyTV"
         ],
         "states": {
-          'currentVolume': 10,
-          'isMuted': false,
-          'online': true
+          "currentVolume": 10,
+          "online": true
         },
         "status": "SUCCESS"
       }]
@@ -2321,7 +2520,7 @@ describe('Test EXECUTE with Metadata', () => {
         name: 'MyVolume',
         metadata: {
           ga: {
-            value: 'volume'
+            value: 'tvVolume'
           }
         },
         state: '40'
@@ -2388,7 +2587,7 @@ describe('Test EXECUTE with Metadata', () => {
         name: 'MyTransport',
         metadata: {
           ga: {
-            value: 'transport'
+            value: 'tvTransport'
           }
         },
         state: 'PLAY'

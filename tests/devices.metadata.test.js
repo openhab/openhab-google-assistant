@@ -1011,10 +1011,26 @@ describe('Test Thermostat Device with Metadata', () => {
           }
         },
         members: [{
+          type: 'Switch',
+          metadata: {
+            ga: {
+              value: 'tvPower'
+            }
+          },
+          state: 'ON'
+        }, {
+          type: 'Switch',
+          metadata: {
+            ga: {
+              value: 'tvMute'
+            }
+          },
+          state: 'OFF'
+        }, {
           type: 'String',
           metadata: {
             ga: {
-              value: 'input'
+              value: 'tvInput'
             }
           },
           state: 'tv'
@@ -1022,7 +1038,7 @@ describe('Test Thermostat Device with Metadata', () => {
           type: 'Number',
           metadata: {
             ga: {
-              value: 'channel'
+              value: 'tvChannel'
             }
           },
           state: '20'
@@ -1030,7 +1046,7 @@ describe('Test Thermostat Device with Metadata', () => {
           type: 'Number',
           metadata: {
             ga: {
-              value: 'volume'
+              value: 'tvVolume'
             }
           },
           state: '50'
@@ -1038,7 +1054,7 @@ describe('Test Thermostat Device with Metadata', () => {
           type: 'String',
           metadata: {
             ga: {
-              value: 'transport'
+              value: 'tvTransport'
             }
           },
           state: 'PLAY'
@@ -1048,7 +1064,8 @@ describe('Test Thermostat Device with Metadata', () => {
         'channelNumber': '20',
         'currentInput': 'tv',
         'currentVolume': 50,
-        'isMuted': false
+        'isMuted': false,
+        'on': true
       });
     });
   });

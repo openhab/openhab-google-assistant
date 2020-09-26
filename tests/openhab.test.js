@@ -44,6 +44,50 @@ describe('Test EXECUTE', () => {
     });
   });
 
+  test('mute Dimmer', async () => {
+    const getItemMock = jest.fn();
+    getItemMock.mockReturnValue(Promise.resolve());
+    const sendCommandMock = jest.fn();
+    sendCommandMock.mockReturnValue(Promise.resolve());
+
+    const apiHandler = {
+      getItem: getItemMock,
+      sendCommand: sendCommandMock
+    };
+
+    const commands = [{
+      "devices": [{
+        "customData": {
+          "itemType": "Dimmer"
+        },
+        "id": "MySpeaker"
+      }],
+      "execution": [{
+        "command": "action.devices.commands.mute",
+        "params": {
+          "mute": true
+        }
+      }]
+    }];
+
+    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
+
+    expect(getItemMock).toHaveBeenCalledTimes(0);
+    expect(sendCommandMock).toBeCalledWith('MySpeaker', '0');
+    expect(payload).toStrictEqual({
+      "commands": [{
+        "ids": [
+          "MySpeaker"
+        ],
+        "states": {
+          "isMuted": true,
+          "online": true
+        },
+        "status": "SUCCESS"
+      }]
+    });
+  });
+
   test('setVolume Dimmer', async () => {
     const getItemMock = jest.fn();
     getItemMock.mockReturnValue(Promise.resolve());

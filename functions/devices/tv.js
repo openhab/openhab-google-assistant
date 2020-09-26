@@ -63,12 +63,14 @@ class TV extends DefaultDevice {
         case 'tvPower':
           state.on = members[member].state === 'ON';
           break;
+        case 'tvMute':
+          state.isMuted = members[member].state === 'ON';
+          break;
         case 'tvInput':
           state.currentInput = members[member].state;
           break;
         case 'tvVolume':
           state.currentVolume = Number(members[member].state) || 0;
-          state.isMuted = state.currentInput === 0;
           break;
         case 'tvChannel':
           state.channelNumber = members[member].state;
@@ -87,7 +89,8 @@ class TV extends DefaultDevice {
       'tvVolume',
       'tvInput',
       'tvTransport',
-      'tvPower'
+      'tvPower',
+      'tvMute'
     ];
     const members = Object();
     if (item.members && item.members.length) {
