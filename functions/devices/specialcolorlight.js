@@ -1,6 +1,18 @@
-const ColorLight = require('./colorlight.js');
+const DefaultDevice = require('./default.js');
 
-class SpecialColorLight extends ColorLight {
+class SpecialColorLight extends DefaultDevice {
+  static get type() {
+    return 'action.devices.types.LIGHT';
+  }
+
+  static get traits() {
+    return [
+      'action.devices.traits.OnOff',
+      'action.devices.traits.Brightness',
+      'action.devices.traits.ColorSetting'
+    ];
+  }
+
   static matchesItemType(item) {
     return item.type === 'Group' && Object.keys(this.getMembers(item)).length > 1 && this.getAttributes(item).colorTemperatureRange;
   }
