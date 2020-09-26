@@ -963,6 +963,7 @@ describe('Test Thermostat Device with Metadata', () => {
           "PAUSE",
           "RESUME",
         ],
+        "volumeCanMuteAndUnmute": false
       });
     });
 

@@ -17,8 +17,10 @@ class TV extends DefaultDevice {
 
   static getAttributes(item) {
     const config = this.getConfig(item);
+    const members = this.getMembers(item);
     const attributes = {
-      transportControlSupportedCommands: ['NEXT', 'PREVIOUS', 'PAUSE', 'RESUME']
+      transportControlSupportedCommands: ['NEXT', 'PREVIOUS', 'PAUSE', 'RESUME'],
+      volumeCanMuteAndUnmute: 'tvMute' in members
     };
     if ('transportControlSupportedCommands' in config) {
       attributes.transportControlSupportedCommands = config.transportControlSupportedCommands.split(',').map(s => s.toUpperCase());
