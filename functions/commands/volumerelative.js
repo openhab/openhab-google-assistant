@@ -14,23 +14,23 @@ class VolumeRelative extends DefaultCommand {
     return true;
   }
 
-  static getItemName(item) {
-    if (item.metadata && item.metadata.ga && item.metadata.ga.value.toLowerCase() === 'tv') {
+  static getItemName(item, device) {
+    if (device.customData && device.customData.deviceType === 'TV') {
       const members = TV.getMembers(item);
-      if ('volume' in members) {
-        return members.volume.name;
+      if ('tvVolume' in members) {
+        return members.tvVolume.name;
       }
       throw { statusCode: 400 };
     }
     return item.name;
   }
 
-  static convertParamsToValue(params, item) {
+  static convertParamsToValue(params, item, device) {
     let state = item.state;
-    if (item.metadata && item.metadata.ga && item.metadata.ga.value.toLowerCase() === 'tv') {
+    if (device.customData && device.customData.deviceType === 'TV') {
       const members = TV.getMembers(item);
-      if ('volume' in members) {
-        state = members.volume.state;
+      if ('tvVolume' in members) {
+        state = members.tvVolume.state;
       } else {
         throw { statusCode: 400 };
       }

@@ -17,8 +17,8 @@ class SetVolume extends DefaultCommand {
   static getItemName(item, device) {
     if (device.customData && device.customData.deviceType === 'TV') {
       const members = TV.getMembers(item);
-      if ('volume' in members) {
-        return members.volume.name;
+      if ('tvVolume' in members) {
+        return members.tvVolume.name;
       }
       throw { statusCode: 400 };
     }

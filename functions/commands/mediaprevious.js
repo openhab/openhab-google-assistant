@@ -12,8 +12,8 @@ class MediaPrevious extends DefaultCommand {
 
   static getItemName(item) {
     const members = TV.getMembers(item);
-    if ('transport' in members) {
-      return members.transport.name;
+    if ('tvTransport' in members) {
+      return members.tvTransport.name;
     }
     throw { statusCode: 400 };
   }

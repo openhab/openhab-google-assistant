@@ -1,5 +1,6 @@
 const DefaultCommand = require('./default.js');
 const SpecialColorLight = require('../devices/specialcolorlight.js');
+const TV = require('../devices/tv.js');
 
 class OnOff extends DefaultCommand {
   static get type() {
@@ -11,7 +12,9 @@ class OnOff extends DefaultCommand {
   }
 
   static requiresItem(device) {
-    return device.customData && device.customData.deviceType === 'SpecialColorLight';
+    return device.customData && (
+      device.customData.deviceType === 'SpecialColorLight' && device.customData.deviceType === 'TV'
+    );
   }
 
   static getItemName(item, device) {
@@ -19,6 +22,13 @@ class OnOff extends DefaultCommand {
       const members = SpecialColorLight.getMembers(item);
       if ('lightBrightness' in members) {
         return members.lightBrightness.name;
+      }
+      throw { statusCode: 400 };
+    }
+    if (device.customData && device.customData.deviceType === 'TV') {
+      const members = TV.getMembers(item);
+      if ('tvPower' in members) {
+        return members.tvPower.name;
       }
       throw { statusCode: 400 };
     }

@@ -60,14 +60,17 @@ class TV extends DefaultDevice {
     const members = this.getMembers(item);
     for (const member in members) {
       switch (member) {
-        case 'input':
+        case 'tvPower':
+          state.on = members[member].state === 'ON';
+          break;
+        case 'tvInput':
           state.currentInput = members[member].state;
           break;
-        case 'volume':
+        case 'tvVolume':
           state.currentVolume = Number(members[member].state) || 0;
           state.isMuted = state.currentInput === 0;
           break;
-        case 'channel':
+        case 'tvChannel':
           state.channelNumber = members[member].state;
           try {
             state.channelName = this.getChannelMap(item)[members[member].state][0];
@@ -80,10 +83,11 @@ class TV extends DefaultDevice {
 
   static getMembers(item) {
     const supportedMembers = [
-      'channel',
-      'volume',
-      'input',
-      'transport'
+      'tvChannel',
+      'tvVolume',
+      'tvInput',
+      'tvTransport',
+      'tvPower'
     ];
     const members = Object();
     if (item.members && item.members.length) {
