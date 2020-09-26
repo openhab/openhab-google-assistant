@@ -2348,7 +2348,7 @@ describe('Test EXECUTE with Metadata', () => {
       "execution": [{
         "command": "action.devices.commands.volumeRelative",
         "params": {
-          "volumeRelativeLevel": 1
+          "relativeSteps": 1
         }
       }]
     }];
@@ -2364,7 +2364,6 @@ describe('Test EXECUTE with Metadata', () => {
         ],
         "states": {
           'currentVolume': 41,
-          'isMuted': false,
           'online': true
         },
         "status": "SUCCESS"

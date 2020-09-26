@@ -7,7 +7,7 @@ class VolumeRelative extends DefaultCommand {
   }
 
   static validateParams(params) {
-    return ('volumeRelativeLevel' in params) && typeof params.volumeRelativeLevel === 'number';
+    return ('relativeSteps' in params) && typeof params.relativeSteps === 'number';
   }
 
   static requiresItem() {
@@ -35,15 +35,14 @@ class VolumeRelative extends DefaultCommand {
         throw { statusCode: 400 };
       }
     }
-    let level = parseInt(state) + params.volumeRelativeLevel;
+    let level = parseInt(state) + params.relativeSteps;
     return (level < 0 ? 0 : level > 100 ? 100 : level).toString();
   }
 
-  static getResponseStates(params, item) {
-    const state = parseInt(this.convertParamsToValue(params, item));
+  static getResponseStates(params, item, device) {
+    const state = parseInt(this.convertParamsToValue(params, item, device));
     return {
-      currentVolume: state,
-      isMuted: state === 0
+      currentVolume: state
     };
   }
 }

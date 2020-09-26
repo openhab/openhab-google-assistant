@@ -81,7 +81,6 @@ describe('Test EXECUTE', () => {
         ],
         "states": {
           "currentVolume": 40,
-          "isMuted": false,
           "online": true
         },
         "status": "SUCCESS"
@@ -123,7 +122,7 @@ describe('Test EXECUTE', () => {
       "execution": [{
         "command": "action.devices.commands.volumeRelative",
         "params": {
-          "volumeRelativeLevel": 20
+          "relativeSteps": 20
         }
       }]
     }];
@@ -139,7 +138,6 @@ describe('Test EXECUTE', () => {
         ],
         "states": {
           "currentVolume": 60,
-          "isMuted": false,
           "online": true
         },
         "status": "SUCCESS"
@@ -182,7 +180,7 @@ describe('Test EXECUTE', () => {
       "execution": [{
         "command": "action.devices.commands.volumeRelative",
         "params": {
-          "volumeRelativeLevel": 20
+          "relativeSteps": 20
         }
       }]
     }];
@@ -198,7 +196,6 @@ describe('Test EXECUTE', () => {
         ],
         "states": {
           "currentVolume": 100,
-          "isMuted": false,
           "online": true
         },
         "status": "SUCCESS"
@@ -240,7 +237,7 @@ describe('Test EXECUTE', () => {
       "execution": [{
         "command": "action.devices.commands.volumeRelative",
         "params": {
-          "volumeRelativeLevel": -20
+          "relativeSteps": -20
         }
       }]
     }];
@@ -256,7 +253,6 @@ describe('Test EXECUTE', () => {
         ],
         "states": {
           "currentVolume": 0,
-          "isMuted": true,
           "online": true
         },
         "status": "SUCCESS"

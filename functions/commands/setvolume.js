@@ -31,8 +31,7 @@ class SetVolume extends DefaultCommand {
 
   static getResponseStates(params) {
     return {
-      currentVolume: params.volumeLevel,
-      isMuted: params.volumeLevel === 0
+      currentVolume: params.volumeLevel
     };
   }
 }

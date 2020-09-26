@@ -24,7 +24,7 @@ class DefaultCommand {
     return null;
   }
 
-  static getResponseStates(params = {}, item = {}) {
+  static getResponseStates(params = {}, item = {}, device = {}) {
     return {};
   }
 
@@ -84,7 +84,7 @@ class DefaultCommand {
       }
 
       return getItemPromise.then((item) => {
-        const responseStates = this.getResponseStates(params, item);
+        const responseStates = this.getResponseStates(params, item, device);
         if (Object.keys(responseStates).length) {
           responseStates.online = true;
         }
