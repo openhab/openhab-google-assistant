@@ -18,8 +18,17 @@ class SpecialColorLight extends DefaultDevice {
   }
 
   static getAttributes(item) {
-    const attributes = super.getAttributes(item);
-    delete attributes.colorModel;
+    const attributes = {};
+    const config = this.getConfig(item);
+    if ('colorTemperatureRange' in config) {
+      const [min, max] = config.colorTemperatureRange.split(',').map(s => Number(s.trim()));
+      if (!isNaN(min) && !isNaN(max)) {
+        attributes.colorTemperatureRange = {
+          temperatureMinK: min,
+          temperatureMaxK: max
+        };
+      }
+    }
     return attributes;
   }
 
