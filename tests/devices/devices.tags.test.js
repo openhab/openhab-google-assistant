@@ -1,5 +1,5 @@
-const Devices = require('../functions/devices.js');
-const Thermostat = require('../functions/devices/thermostat.js');
+const OpenHAB = require('../../functions/openhab.js');
+const Thermostat = require('../../functions/devices/thermostat.js');
 
 describe('Test Switch Devices with Tags', () => {
   test('Switch Type', () => {
@@ -10,7 +10,7 @@ describe('Test Switch Devices with Tags', () => {
         'Switchable'
       ]
     };
-    const device = Devices.getDeviceForItem(item);
+    const device = OpenHAB.getDeviceForItem(item);
     expect(device.name).toBe('Switch');
     expect(device.getState(item)).toStrictEqual({
       on: true
@@ -25,7 +25,7 @@ describe('Test Switch Devices with Tags', () => {
         'Valve'
       ]
     };
-    const device = Devices.getDeviceForItem(item);
+    const device = OpenHAB.getDeviceForItem(item);
     expect(device.name).toBe('Valve');
     expect(device.getState(item)).toStrictEqual({
       openPercent: 100
@@ -40,7 +40,7 @@ describe('Test Switch Devices with Tags', () => {
         'Sprinkler'
       ]
     };
-    const device = Devices.getDeviceForItem(item);
+    const device = OpenHAB.getDeviceForItem(item);
     expect(device.name).toBe('Sprinkler');
     expect(device.getState(item)).toStrictEqual({
       isRunning: true,
@@ -56,7 +56,7 @@ describe('Test Switch Devices with Tags', () => {
         'Lock'
       ]
     };
-    const device = Devices.getDeviceForItem(item);
+    const device = OpenHAB.getDeviceForItem(item);
     expect(device.name).toBe('Lock');
     expect(device.getState(item)).toStrictEqual({
       isLocked: true
@@ -71,7 +71,7 @@ describe('Test Switch Devices with Tags', () => {
         'SecuritySystem'
       ]
     };
-    const device = Devices.getDeviceForItem(item);
+    const device = OpenHAB.getDeviceForItem(item);
     expect(device.name).toBe('SecuritySystem');
     expect(device.getState(item)).toStrictEqual({
       isArmed: true
@@ -81,7 +81,7 @@ describe('Test Switch Devices with Tags', () => {
 
 describe('Test Light Devices with Tags', () => {
   test('Switch Light Type', () => {
-    expect(Devices.getDeviceForItem({
+    expect(OpenHAB.getDeviceForItem({
       type: 'Switch',
       tags: [
         'Lighting'
@@ -90,7 +90,7 @@ describe('Test Light Devices with Tags', () => {
   });
 
   test('Switch Group Light Type', () => {
-    expect(Devices.getDeviceForItem({
+    expect(OpenHAB.getDeviceForItem({
       type: 'Group',
       groupType: 'Switch',
       tags: [
@@ -100,7 +100,7 @@ describe('Test Light Devices with Tags', () => {
   });
 
   test('Dimmer Light Type', () => {
-    expect(Devices.getDeviceForItem({
+    expect(OpenHAB.getDeviceForItem({
       type: 'Dimmer',
       tags: [
         'Lighting'
@@ -109,7 +109,7 @@ describe('Test Light Devices with Tags', () => {
   });
 
   test('Dimmer Group Light Type', () => {
-    expect(Devices.getDeviceForItem({
+    expect(OpenHAB.getDeviceForItem({
       type: 'Group',
       groupType: 'Dimmer',
       tags: [
@@ -119,7 +119,7 @@ describe('Test Light Devices with Tags', () => {
   });
 
   test('Color Light Type', () => {
-    expect(Devices.getDeviceForItem({
+    expect(OpenHAB.getDeviceForItem({
       type: 'Color',
       tags: [
         'Lighting'
@@ -128,7 +128,7 @@ describe('Test Light Devices with Tags', () => {
   });
 
   test('Color Group Light Type', () => {
-    expect(Devices.getDeviceForItem({
+    expect(OpenHAB.getDeviceForItem({
       type: 'Group',
       groupType: 'Color',
       tags: [
@@ -140,7 +140,7 @@ describe('Test Light Devices with Tags', () => {
 
 describe('Test Rollershutter Devices with Tags', () => {
   test('Invalid Blinds Type', () => {
-    expect(Devices.getDeviceForItem({
+    expect(OpenHAB.getDeviceForItem({
       type: 'Dimmer',
       tags: [
         'Blinds'
@@ -156,7 +156,7 @@ describe('Test Rollershutter Devices with Tags', () => {
         'Blinds'
       ]
     };
-    const device = Devices.getDeviceForItem(item);
+    const device = OpenHAB.getDeviceForItem(item);
     expect(device.name).toBe('Blinds');
     expect(device.getState(item)).toStrictEqual({
       openPercent: 100
@@ -166,21 +166,21 @@ describe('Test Rollershutter Devices with Tags', () => {
 
 describe('Test Thermostat Device with Tags', () => {
   test('getDeviceForItem', () => {
-    expect(Devices.getDeviceForItem({
+    expect(OpenHAB.getDeviceForItem({
       type: 'Group',
       tags: [
         'Thermostat'
       ]
     }).name).toBe('Thermostat');
 
-    expect(Devices.getDeviceForItem({
+    expect(OpenHAB.getDeviceForItem({
       type: 'Switch',
       tags: [
         'Thermostat'
       ]
     })).toBe(undefined);
 
-    expect(Devices.getDeviceForItem({
+    expect(OpenHAB.getDeviceForItem({
       type: 'Group',
       tags: [
         'Something'

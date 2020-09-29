@@ -1,45 +1,8 @@
-const Devices = require('../functions/devices.js');
-const Thermostat = require('../functions/devices/thermostat.js');
-const TV = require('../functions/devices/tv.js');
+const OpenHAB = require('../../functions/openhab.js');
+const Thermostat = require('../../functions/devices/thermostat.js');
+const TV = require('../../functions/devices/tv.js');
 
 describe('Test Switch Devices with Metadata', () => {
-  test('Switch Type', () => {
-    const item = {
-      type: 'Switch',
-      state: 'ON',
-      metadata: {
-        ga: {
-          value: 'Switch'
-        }
-      }
-    };
-    const device = Devices.getDeviceForItem(item);
-    expect(device.name).toBe('Switch');
-    expect(device.getState(item)).toStrictEqual({
-      on: true
-    });
-  });
-
-  test('Inverted Switch Type', () => {
-    const item = {
-      type: 'Switch',
-      state: 'ON',
-      metadata: {
-        ga: {
-          value: 'Switch',
-          config: {
-            inverted: true
-          }
-        }
-      }
-    };
-    const device = Devices.getDeviceForItem(item);
-    expect(device.name).toBe('Switch');
-    expect(device.getState(item)).toStrictEqual({
-      on: false
-    });
-  });
-
   test('Valve Switch Type', () => {
     const item = {
       type: 'Switch',
@@ -50,7 +13,7 @@ describe('Test Switch Devices with Metadata', () => {
         }
       }
     };
-    const device = Devices.getDeviceForItem(item);
+    const device = OpenHAB.getDeviceForItem(item);
     expect(device.name).toBe('Valve');
     expect(device.getState(item)).toStrictEqual({
       openPercent: 100
@@ -67,7 +30,7 @@ describe('Test Switch Devices with Metadata', () => {
         }
       }
     };
-    const device = Devices.getDeviceForItem(item);
+    const device = OpenHAB.getDeviceForItem(item);
     expect(device.name).toBe('Sprinkler');
     expect(device.getState(item)).toStrictEqual({
       isRunning: true,
@@ -88,7 +51,7 @@ describe('Test Switch Devices with Metadata', () => {
         }
       }
     };
-    const device = Devices.getDeviceForItem(item);
+    const device = OpenHAB.getDeviceForItem(item);
     expect(device.name).toBe('Lock');
     expect(device.getMetadata(item).customData.ackNeeded).toBe(true);
     expect(device.getMetadata(item).customData.pinNeeded).toBeUndefined();
@@ -110,7 +73,7 @@ describe('Test Switch Devices with Metadata', () => {
         }
       }
     };
-    const device = Devices.getDeviceForItem(item);
+    const device = OpenHAB.getDeviceForItem(item);
     expect(device.name).toBe('SecuritySystem');
     expect(device.getMetadata(item).customData.ackNeeded).toBeUndefined();
     expect(device.getMetadata(item).customData.pinNeeded).toBe('1234');
@@ -121,125 +84,6 @@ describe('Test Switch Devices with Metadata', () => {
 });
 
 describe('Test Light Devices with Metadata', () => {
-  test('Switch Light Type', () => {
-    const item = {
-      type: 'Switch',
-      state: 'ON',
-      metadata: {
-        ga: {
-          value: 'LIGHT'
-        }
-      }
-    };
-    const device = Devices.getDeviceForItem(item);
-    expect(device.name).toBe('SimpleLight');
-    expect(device.getAttributes(item)).toStrictEqual({});
-    expect(device.getState(item)).toStrictEqual({
-      on: true
-    });
-  });
-
-  test('Dimmer Light Type', () => {
-    const item = {
-      type: 'Dimmer',
-      state: '40',
-      metadata: {
-        ga: {
-          value: 'LIGHT'
-        }
-      }
-    };
-    const device = Devices.getDeviceForItem(item);
-    expect(device.name).toBe('DimmableLight');
-    expect(device.getAttributes(item)).toStrictEqual({});
-    expect(device.getState(item)).toStrictEqual({
-      brightness: 40,
-      on: true
-    });
-  });
-
-  test('Color Light Type', () => {
-    const item = {
-      type: 'Color',
-      state: '100,50,20',
-      metadata: {
-        ga: {
-          value: 'LIGHT'
-        }
-      }
-    };
-    const device = Devices.getDeviceForItem(item);
-    expect(device.name).toBe('ColorLight');
-    expect(device.getAttributes(item)).toStrictEqual({
-      colorModel: 'hsv'
-    });
-    expect(device.getState(item)).toStrictEqual({
-      brightness: 20,
-      color: {
-        spectrumHSV: {
-          hue: 100,
-          saturation: 0.5,
-          value: 0.2,
-        },
-      },
-      on: true
-    });
-  });
-
-  test('Color Light Type colorTemperatureRange', () => {
-    const item = {
-      type: 'Color',
-      metadata: {
-        ga: {
-          value: 'LIGHT',
-          config: {
-            colorTemperatureRange: '1000,4000'
-          }
-        }
-      },
-      state: '100,50,20'
-    };
-    const device = Devices.getDeviceForItem(item);
-    expect(device.name).toBe('ColorLight');
-    expect(device.getAttributes(item)).toStrictEqual({
-      colorModel: 'hsv',
-      colorTemperatureRange: {
-        temperatureMinK: 1000,
-        temperatureMaxK: 4000
-      }
-    });
-    expect(device.getState(item)).toStrictEqual({
-      brightness: 20,
-      color: {
-        spectrumHSV: {
-          hue: 100,
-          saturation: 0.5,
-          value: 0.2,
-        }
-      },
-      on: true
-    });
-  });
-
-  test('Color Light Type colorTemperatureRange with invalid value', () => {
-    const item = {
-      type: 'Color',
-      metadata: {
-        ga: {
-          value: 'LIGHT',
-          config: {
-            colorTemperatureRange: 'a,b'
-          }
-        }
-      }
-    };
-    const device = Devices.getDeviceForItem(item);
-    expect(device.name).toBe('ColorLight');
-    expect(device.getAttributes(item)).toStrictEqual({
-      colorModel: 'hsv'
-    });
-  });
-
   test('Special Color Light Type', () => {
     const item = {
       type: 'Group',
@@ -271,7 +115,7 @@ describe('Test Light Devices with Metadata', () => {
         state: '50'
       }]
     };
-    const device = Devices.getDeviceForItem(item);
+    const device = OpenHAB.getDeviceForItem(item);
     expect(device.name).toBe('SpecialColorLight');
     expect(device.getAttributes(item)).toStrictEqual({
       colorTemperatureRange: {
@@ -291,7 +135,7 @@ describe('Test Light Devices with Metadata', () => {
 
 describe('Test OpenClose Devices', () => {
   test('Invalid Blinds Type', () => {
-    expect(Devices.getDeviceForItem({
+    expect(OpenHAB.getDeviceForItem({
       type: 'Dimmer',
       metadata: {
         ga: {
@@ -299,52 +143,6 @@ describe('Test OpenClose Devices', () => {
         }
       }
     })).toBe(undefined);
-  });
-
-  test('Blinds Rollershutter Type', () => {
-    const item = {
-      type: 'Rollershutter',
-      state: '0',
-      metadata: {
-        ga: {
-          value: 'BLINDS'
-        }
-      }
-    };
-    const device = Devices.getDeviceForItem(item);
-    expect(device.name).toBe('Blinds');
-    expect(device.getAttributes(item)).toStrictEqual({
-      discreteOnlyOpenClose: false,
-      queryOnlyOpenClose: false
-    });
-    expect(device.getState(item)).toStrictEqual({
-      openPercent: 100
-    });
-  });
-
-  test('Blinds Rollershutter Type Inverted', () => {
-    const item = {
-      type: 'Rollershutter',
-      state: '0',
-      metadata: {
-        ga: {
-          value: 'BLINDS',
-          config: {
-            inverted: true,
-            discreteOnlyOpenClose: true
-          }
-        }
-      }
-    };
-    const device = Devices.getDeviceForItem(item);
-    expect(device.name).toBe('Blinds');
-    expect(device.getAttributes(item)).toStrictEqual({
-      discreteOnlyOpenClose: true,
-      queryOnlyOpenClose: false
-    });
-    expect(device.getState(item)).toStrictEqual({
-      openPercent: 0
-    });
   });
 
   test('Window as Contact', () => {
@@ -357,7 +155,7 @@ describe('Test OpenClose Devices', () => {
         }
       }
     };
-    const device = Devices.getDeviceForItem(item);
+    const device = OpenHAB.getDeviceForItem(item);
     expect(device.name).toBe('Window');
     expect(device.getAttributes(item)).toStrictEqual({
       discreteOnlyOpenClose: true,
@@ -384,7 +182,7 @@ describe('Test Sensor Device with Metadata', () => {
     },
     state: '100'
   };
-  const device = Devices.getDeviceForItem(item);
+  const device = OpenHAB.getDeviceForItem(item);
 
   test('getAttributes', () => {
     expect(device.getAttributes({
@@ -459,7 +257,7 @@ describe('Test Sensor Device with Metadata', () => {
 
 describe('Test Thermostat Device with Metadata', () => {
   test('getDeviceForItem', () => {
-    expect(Devices.getDeviceForItem({
+    expect(OpenHAB.getDeviceForItem({
       type: 'Group',
       metadata: {
         ga: {
@@ -468,7 +266,7 @@ describe('Test Thermostat Device with Metadata', () => {
       }
     }).name).toBe('Thermostat');
 
-    expect(Devices.getDeviceForItem({
+    expect(OpenHAB.getDeviceForItem({
       type: 'Switch',
       metadata: {
         ga: {
@@ -477,7 +275,7 @@ describe('Test Thermostat Device with Metadata', () => {
       }
     })).toBe(undefined);
 
-    expect(Devices.getDeviceForItem({
+    expect(OpenHAB.getDeviceForItem({
       type: 'Group',
       metadata: {
         ga: {

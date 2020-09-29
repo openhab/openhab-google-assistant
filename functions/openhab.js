@@ -18,15 +18,39 @@
  * @author Michael Krug - Rework
  *
  */
-const getCommandType = require('./commands.js').getCommandType;
-const getDeviceForItem = require('./devices.js').getDeviceForItem;
+const glob = require('glob');
+
+const Commands = [];
+const Devices = [];
+
+glob.sync('./commands/*.js', { cwd: __dirname }).forEach(file => {
+	const command = require(file);
+	if (command.type) {
+		Commands.push(command);
+	}
+});
+
+glob.sync('./devices/*.js', { cwd: __dirname }).forEach(file => {
+	const device = require(file);
+	if (device.type) {
+		Devices.push(device);
+	}
+});
 
 class OpenHAB {
 	/**
 	 * @param {object} apiHandler
 	 */
-	constructor(apiHandler) {
+	constructor(apiHandler = {}) {
 		this._apiHandler = apiHandler;
+	}
+
+	static getCommandType(command = '', params = {}) {
+		return Commands.find((commandType) => command === commandType.type && commandType.validateParams(params));
+	}
+
+	static getDeviceForItem(item = {}) {
+		return Devices.find((device) => device.matchesItemType(item) && device.isCompatible(item));
 	}
 
 	handleSync() {
@@ -35,7 +59,7 @@ class OpenHAB {
 			let discoveredDevicesList = [];
 			items.forEach((item) => {
 				item.members = items.filter((member) => member.groupNames && member.groupNames.includes(item.name));
-				const DeviceType = getDeviceForItem(item);
+				const DeviceType = OpenHAB.getDeviceForItem(item);
 				if (DeviceType) {
 					console.log(`openhabGoogleAssistant - handleSync - SYNC is adding: ${item.type}:${item.name} with type: ${DeviceType.type}`);
 					discoveredDevicesList.push(DeviceType.getMetadata(item));
@@ -55,7 +79,7 @@ class OpenHAB {
 		};
 		const promises = devices.map((device) => {
 			return this._apiHandler.getItem(device.id).then((item) => {
-				const DeviceType = getDeviceForItem(item);
+				const DeviceType = OpenHAB.getDeviceForItem(item);
 				if (!DeviceType) {
 					throw { statusCode: 404 };
 				}
@@ -87,8 +111,8 @@ class OpenHAB {
 			command.execution.forEach((execution) => {
 				// Special handling of ThermostatTemperatureSetRange that requires updating two values
 				if (execution.command === 'action.devices.commands.ThermostatTemperatureSetRange') {
-					const SetHigh = getCommandType('action.devices.commands.ThermostatTemperatureSetpointHigh', execution.params);
-					const SetLow = getCommandType('action.devices.commands.ThermostatTemperatureSetpointLow', execution.params);
+					const SetHigh = OpenHAB.getCommandType('action.devices.commands.ThermostatTemperatureSetpointHigh', execution.params);
+					const SetLow = OpenHAB.getCommandType('action.devices.commands.ThermostatTemperatureSetpointLow', execution.params);
 					if (SetHigh && SetLow) {
 						promises.push(SetHigh.execute(this._apiHandler, command.devices, execution.params, execution.challenge).then(() => {
 							return SetLow.execute(this._apiHandler, command.devices, execution.params, execution.challenge);
@@ -96,7 +120,7 @@ class OpenHAB {
 						return;
 					}
 				}
-				const CommandType = getCommandType(execution.command, execution.params);
+				const CommandType = OpenHAB.getCommandType(execution.command, execution.params);
 				if (!CommandType) {
 					promises.push(Promise.resolve({
 						ids: command.devices.map((device) => device.id),
