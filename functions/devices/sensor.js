@@ -10,24 +10,28 @@ class Sensor extends DefaultDevice {
       'action.devices.traits.SensorState'
     ];
   }
+  static matchesItemType(item) {
+    const config = this.getConfig(item);
+    return 'sensorName' in config && ('valueUnit' in config || 'states' in config);
+  }
 
   static getAttributes(item) {
     const config = this.getConfig(item);
-    if (!config || !config.sensorName) {
-      return {};
-    }
-    const attributes = {
-      sensorStatesSupported: {
+    const attributes = { sensorStatesSupported: {} };
+    if ('sensorName' in config) {
+      attributes.sensorStatesSupported = {
         name: config.sensorName
-      }
-    };
-    if (config.valueUnit) {
-      attributes.sensorStatesSupported.numericCapabilities = {}
-      attributes.sensorStatesSupported.numericCapabilities.rawValueUnit = config.valueUnit
+      };
     }
-    if (config.states) {
-      attributes.sensorStatesSupported.descriptiveCapabilities = {}
-      attributes.sensorStatesSupported.descriptiveCapabilities.availableStates = config.states.split(',').map(s => s.trim().split('=')[0].trim());
+    if ('valueUnit' in config) {
+      attributes.sensorStatesSupported.numericCapabilities = {
+        rawValueUnit: config.valueUnit
+      };
+    }
+    if ('states' in config) {
+      attributes.sensorStatesSupported.descriptiveCapabilities = {
+        availableStates: config.states.split(',').map(s => s.trim().split('=')[0].trim())
+      };
     }
     return attributes;
   }
