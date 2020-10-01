@@ -13,7 +13,7 @@
   ],
   "scripts": {
     "start": "node testServer.js",
-    "test": "jest"
+    "test": "jest --silent --coverage"
   },
   "license": "EPL-2.0",
   "bugs": {
@@ -25,7 +25,12 @@
     "express": "^4.17.1"
   },
   "devDependencies": {
-    "@types/jest": "^24.9.1",
-    "jest": "^24.9.0"
+    "@types/jest": "^26.0.14",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "jest": "^26.4.2"
   }
 }
