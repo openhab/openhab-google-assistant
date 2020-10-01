@@ -37,10 +37,6 @@ class TemperatureSensor extends DefaultDevice {
       temperatureAmbientCelsius: state
     };
   }
-
-  static convertToCelsius(value = 0) {
-    return Number(((value - 32) * 5 / 9).toFixed(1));
-  }
 }
 
 module.exports = TemperatureSensor;
