@@ -17,12 +17,13 @@ class OpenClose extends DefaultCommand {
     if (device.customData && device.customData.inverted === true) {
       openPercent = 100 - openPercent;
     }
-    let value = openPercent === 0 ? 'DOWN' : openPercent === 100 ? 'UP' : (100 - openPercent).toString();
-    // item can not handle OpenClose --> we will send "ON" / "OFF"
-    if (device.customData && device.customData.itemType !== 'Rollershutter') {
-      value = openPercent === 0 ? 'OFF' : 'ON';
+    if (device.customData && device.customData.itemType === 'Rollershutter') {
+      return openPercent === 0 ? 'DOWN' : openPercent === 100 ? 'UP' : (100 - openPercent).toString();
     }
-    return value;
+    if (device.customData && device.customData.itemType === 'Switch') {
+      return openPercent === 0 ? 'OFF' : 'ON';
+    }
+    return openPercent.toString();
   }
 
   static getResponseStates(params) {

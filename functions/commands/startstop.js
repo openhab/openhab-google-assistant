@@ -13,12 +13,10 @@ class StartStop extends DefaultCommand {
     if (device.customData && device.customData.itemType === 'Contact') {
       throw { statusCode: 400 };
     }
-    let value = params.start ? 'MOVE' : 'STOP';
-    // item can not handle StartStop --> we will send "ON" / "OFF"
-    if (device.customData && device.customData.itemType !== 'Rollershutter') {
-      value = params.start ? 'ON' : 'OFF';
+    if (device.customData && device.customData.itemType === 'Rollershutter') {
+      return params.start ? 'MOVE' : 'STOP';
     }
-    return value;
+    return params.start ? 'ON' : 'OFF';
   }
 
   static getResponseStates(params) {
