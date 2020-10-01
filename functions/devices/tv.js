@@ -26,6 +26,15 @@ class TV extends DefaultDevice {
     const attributes = {
       volumeCanMuteAndUnmute: 'tvMute' in members
     };
+    if ('tvVolume' in members) {
+      attributes.volumeMaxLevel = 100;
+      if ('volumeDefaultPercentage' in config) {
+        attributes.volumeDefaultPercentage = Number(config.volumeDefaultPercentage);
+      }
+      if ('levelStepSize' in config) {
+        attributes.levelStepSize = Number(config.levelStepSize);
+      }
+    }
     if ('tvTransport' in members) {
       attributes.transportControlSupportedCommands = ['NEXT', 'PREVIOUS', 'PAUSE', 'RESUME'];
       if ('transportControlSupportedCommands' in config) {
