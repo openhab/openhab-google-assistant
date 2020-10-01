@@ -12,6 +12,10 @@ class Thermostat extends DefaultDevice {
     ];
   }
 
+  static matchesItemType(item) {
+    return item.type === 'Group' && Object.keys(this.getMembers(item)).length > 0;
+  }
+
   static getAttributes(item) {
     const config = this.getConfig(item);
     const attributes = {
@@ -35,10 +39,6 @@ class Thermostat extends DefaultDevice {
       attributes.availableThermostatModes = Object.keys(this.getModeMap(item)).join(',');
     }
     return attributes;
-  }
-
-  static matchesItemType(item) {
-    return item.type === 'Group';
   }
 
   static getState(item) {
