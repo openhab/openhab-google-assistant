@@ -11,6 +11,10 @@ class StartStopSwitch extends DefaultDevice {
     return ['Switch'];
   }
 
+  static getAttributes() {
+    return { pausable: false };
+  }
+
   static getState(item) {
     let state = item.state === 'ON';
     if (this.getConfig(item).inverted === true) {

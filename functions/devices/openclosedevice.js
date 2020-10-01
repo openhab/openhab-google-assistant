@@ -9,9 +9,11 @@ class OpenCloseDevice extends DefaultDevice {
   }
 
   static getAttributes(item) {
-    const attributes = {};
-    attributes.discreteOnlyOpenClose = this.getConfig(item).discreteOnlyOpenClose === true;
-    attributes.queryOnlyOpenClose = this.getConfig(item).queryOnlyOpenClose === true;
+    const attributes = {
+      pausable: false,
+      discreteOnlyOpenClose: this.getConfig(item).discreteOnlyOpenClose === true,
+      queryOnlyOpenClose: this.getConfig(item).queryOnlyOpenClose === true
+    };
     const itemType = item.type === 'Group' && item.groupType ? item.groupType : item.type;
     if (itemType === 'Switch') {
       attributes.discreteOnlyOpenClose = true;
