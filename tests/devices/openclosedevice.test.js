@@ -3,27 +3,33 @@ const Device = require('../../functions/devices/openclosedevice.js');
 describe('OpenCloseDevice Device', () => {
   test('getAttributes', () => {
     expect(Device.getAttributes({ "type": "Rollershutter" })).toStrictEqual({
+      "pausable": false,
       "discreteOnlyOpenClose": false,
       "queryOnlyOpenClose": false
     });
     expect(Device.getAttributes({ "type": "Switch", })).toStrictEqual({
+      "pausable": false,
       "discreteOnlyOpenClose": true,
       "queryOnlyOpenClose": false
     });
     expect(Device.getAttributes({ "type": "Contact" })).toStrictEqual({
+      "pausable": false,
       "discreteOnlyOpenClose": true,
       "queryOnlyOpenClose": true
     });
 
     expect(Device.getAttributes({ "type": "Group" })).toStrictEqual({
+      "pausable": false,
       "discreteOnlyOpenClose": false,
       "queryOnlyOpenClose": false
     });
     expect(Device.getAttributes({ "type": "Group", "groupType": "Switch" })).toStrictEqual({
+      "pausable": false,
       "discreteOnlyOpenClose": true,
       "queryOnlyOpenClose": false
     });
     expect(Device.getAttributes({ "type": "Group", "groupType": "Contact" })).toStrictEqual({
+      "pausable": false,
       "discreteOnlyOpenClose": true,
       "queryOnlyOpenClose": true
     });

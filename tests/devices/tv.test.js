@@ -117,10 +117,61 @@ describe('TV Device', () => {
           "ga": {
             "config": {}
           }
-        }
+        },
+        "members": [
+          {
+            "metadata": {
+              "ga": {
+                "value": "tvVolume"
+              }
+            }
+          },
+          {
+            "metadata": {
+              "ga": {
+                "value": "tvTransport"
+              }
+            }
+          }
+        ]
       };
       expect(Device.getAttributes(item)).toStrictEqual({
-        "volumeCanMuteAndUnmute": false
+        "transportControlSupportedCommands": [
+          "NEXT",
+          "PREVIOUS",
+          "PAUSE",
+          "RESUME",
+        ],
+        "volumeCanMuteAndUnmute": false,
+        "volumeMaxLevel": 100,
+      });
+    });
+
+    test('getAttributes volume', () => {
+      const item = {
+        "metadata": {
+          "ga": {
+            "config": {
+              "volumeDefaultPercentage": "20",
+              "levelStepSize": "10"
+            }
+          }
+        },
+        "members": [
+          {
+            "metadata": {
+              "ga": {
+                "value": "tvVolume"
+              }
+            }
+          }
+        ]
+      };
+      expect(Device.getAttributes(item)).toStrictEqual({
+        "levelStepSize": 10,
+        "volumeCanMuteAndUnmute": false,
+        "volumeDefaultPercentage": 20,
+        "volumeMaxLevel": 100
       });
     });
 
@@ -239,6 +290,8 @@ describe('TV Device', () => {
   });
 
   test('getMembers', () => {
+    expect(Device.getMembers({ "members": [{}] })).toStrictEqual({});
+    expect(Device.getMembers({ "members": [{ "metadata": { "ga": { "value": "invalid" } } }] })).toStrictEqual({});
     const item = {
       "members": [
         {

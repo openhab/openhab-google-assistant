@@ -8,6 +8,10 @@ describe('StartStopSwitch Device', () => {
     expect(Device.matchesItemType({ "type": "Group", "groupType": "Dimmer" })).toBe(false);
   });
 
+  test('getAttributes', () => {
+    expect(Device.getAttributes()).toStrictEqual({ "pausable": false });
+  });
+
   describe('getState', () => {
     test('getState', () => {
       expect(Device.getState({ "state": "ON" })).toStrictEqual({
