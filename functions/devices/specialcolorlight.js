@@ -14,7 +14,7 @@ class SpecialColorLight extends DefaultDevice {
   }
 
   static matchesItemType(item) {
-    return item.type === 'Group' && Object.keys(this.getMembers(item)).length > 1 && this.getAttributes(item).colorTemperatureRange;
+    return item.type === 'Group' && Object.keys(this.getMembers(item)).length > 1 && !!this.getAttributes(item).colorTemperatureRange;
   }
 
   static getAttributes(item) {
