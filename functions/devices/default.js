@@ -4,8 +4,8 @@ class DefaultDevice {
   }
 
   /**
-	 * @param {object} item
-	 */
+   * @param {object} item
+   */
   static getTraits(item) {
     return [];
   }
@@ -15,8 +15,8 @@ class DefaultDevice {
   }
 
   /**
-	 * @param {object} item
-	 */
+   * @param {object} item
+   */
   static isCompatible(item) {
     return item.metadata && item.metadata.ga &&
       this.type.toLowerCase() === `action.devices.types.${item.metadata.ga.value}`.toLowerCase() ||
@@ -24,8 +24,8 @@ class DefaultDevice {
   }
 
   /**
-	 * @param {object} item
-	 */
+   * @param {object} item
+   */
   static matchesItemType(item) {
     return (
       !this.requiredItemTypes.length ||
@@ -35,22 +35,22 @@ class DefaultDevice {
   }
 
   /**
-	 * @param {object} item
-	 */
+   * @param {object} item
+   */
   static getAttributes(item) {
     return {};
   }
 
   /**
-	 * @param {object} item
-	 */
+   * @param {object} item
+   */
   static getConfig(item) {
     return item && item.metadata && item.metadata.ga && item.metadata.ga.config || {};
   }
 
   /**
-	 * @param {object} item
-	 */
+   * @param {object} item
+   */
   static getMetadata(item) {
     const config = this.getConfig(item);
     const itemType = item.type === 'Group' && item.groupType ? item.groupType : item.type;
@@ -91,16 +91,16 @@ class DefaultDevice {
   }
 
   /**
-	 * @param {object} item
-	 */
+   * @param {object} item
+   */
   static getState(item) {
     return {};
   }
 
   /**
-	 * @param {object} item
-	 * @param {string} tag
-	 */
+   * @param {object} item
+   * @param {string} tag
+   */
   static hasTag(item, tag) {
     return item.tags && item.tags.map(t => t.toLowerCase()).includes(tag.toLowerCase()) || false;
   }

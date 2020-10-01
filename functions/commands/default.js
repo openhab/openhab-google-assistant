@@ -16,27 +16,51 @@ class DefaultCommand {
     return '';
   }
 
-  static validateParams(params = {}) {
+  /**
+   * @param {object} params
+   */
+  static validateParams(params) {
     return true;
   }
 
-  static convertParamsToValue(params = {}, item = {}, device = {}) {
+  /**
+   * @param {object} params
+   * @param {object} item
+   * @param {object} device
+   */
+  static convertParamsToValue(params, item, device) {
     return null;
   }
 
-  static getResponseStates(params = {}, item = {}, device = {}) {
+  /**
+   * @param {object} params
+   * @param {object} item
+   * @param {object} device
+   */
+  static getResponseStates(params, item, device) {
     return {};
   }
 
-  static getItemName(item = {}, device = {}) {
+  /**
+   * @param {object} item
+   * @param {object} device
+   */
+  static getItemName(item, device) {
     return item.name;
   }
 
-  static requiresItem(device = {}) {
+  /**
+   * @param {object} device
+   */
+  static requiresItem(device) {
     return false;
   }
 
-  static handleAuthPin(device = {}, challenge = {}) {
+  /**
+   * @param {object} device
+   * @param {object} challenge
+   */
+  static handleAuthPin(device, challenge) {
     if (!device.customData || !device.customData.pinNeeded || challenge.pin === device.customData.pinNeeded) {
       return;
     }
@@ -50,7 +74,12 @@ class DefaultCommand {
     };
   }
 
-  static handleAuthAck(device = {}, challenge = {}, responseStates = {}) {
+  /**
+   * @param {object} device
+   * @param {object} challenge
+   * @param {object} responseStates
+   */
+  static handleAuthAck(device, challenge, responseStates) {
     if (!device.customData || !device.customData.ackNeeded || challenge.ack === true) {
       return;
     }
@@ -65,7 +94,13 @@ class DefaultCommand {
     };
   }
 
-  static execute(apiHandler = {}, devices = [], params = {}, challenge = {}) {
+  /**
+   * @param {object} apiHandler
+   * @param {array} devices
+   * @param {object} params
+   * @param {object} challenge
+   */
+  static execute(apiHandler, devices, params, challenge) {
     console.log(`openhabGoogleAssistant - ${this.type}: ${JSON.stringify({ devices: devices, params: params })}`);
     const commandsResponse = [];
     const promises = devices.map((device) => {
