@@ -94,7 +94,8 @@ class Thermostat extends DefaultDevice {
   }
 
   static usesFahrenheit(item) {
-    return this.getConfig(item).useFahrenheit === true || this.hasTag(item, 'Fahrenheit');
+    const config = this.getConfig(item);
+    return config.thermostatTemperatureUnit === 'F' || config.useFahrenheit === true || this.hasTag(item, 'Fahrenheit');
   }
 
   static getModeMap(item) {
