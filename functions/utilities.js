@@ -47,9 +47,9 @@ module.exports = {
     let v = Math.max(r, g, b), n = v - Math.min(r, g, b);
     let h = n && ((v == r) ? (g - b) / n : ((v == g) ? 2 + (b - r) / n : 4 + (r - g) / n));
     return {
-      hue: 60 * (h < 0 ? h + 6 : h),
-      saturation: v && n / v,
-      value: v
+      hue: Math.round(60 * (h < 0 ? h + 6 : h) * 100) / 100,
+      saturation: Math.round(v && n / v * 100) / 100,
+      value: Math.round(v * 100) / 100
     };
   }
 
