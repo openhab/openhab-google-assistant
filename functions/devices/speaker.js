@@ -11,15 +11,28 @@ class Speaker extends DefaultDevice {
     ];
   }
 
+  static getAttributes(item) {
+    const config = this.getConfig(item);
+    const attributes = {
+      volumeMaxLevel: 100,
+      volumeCanMuteAndUnmute: false
+    };
+    if ('volumeDefaultPercentage' in config) {
+      attributes.volumeDefaultPercentage = Number(config.volumeDefaultPercentage);
+    }
+    if ('levelStepSize' in config) {
+      attributes.levelStepSize = Number(config.levelStepSize);
+    }
+    return attributes;
+  }
+
   static get requiredItemTypes() {
     return ['Dimmer'];
   }
 
   static getState(item) {
-    const volume = Number(item.state) || 0;
     return {
-      currentVolume: volume,
-      isMuted: volume === 0
+      currentVolume: Number(item.state) || 0
     };
   }
 }
