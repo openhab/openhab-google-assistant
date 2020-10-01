@@ -1,10 +1,16 @@
 const Command = require('../../functions/commands/colorabsolutetemperature.js');
 
 describe('ColorAbsoluteTemperature Command', () => {
+  const params = {
+    "color": {
+      "temperature": 2000
+    }
+  };
+
   test('validateParams', () => {
     expect(Command.validateParams({})).toBe(false);
     expect(Command.validateParams({ "color": {} })).toBe(false);
-    expect(Command.validateParams({ "color": { "temperature": 1000 } })).toBe(true);
+    expect(Command.validateParams(params)).toBe(true);
   });
 
   test('requiresItem', () => {
@@ -33,15 +39,7 @@ describe('ColorAbsoluteTemperature Command', () => {
 
   describe('convertParamsToValue', () => {
     test('convertParamsToValue', () => {
-      expect(Command.convertParamsToValue(
-        {
-          "color": {
-            "temperature": 2000
-          }
-        },
-        { "state": "100,100,50" },
-        {}
-      )).toBe("30.62,95,50");
+      expect(Command.convertParamsToValue(params, { "state": "100,100,50" }, {})).toBe("30.62,95,50");
     });
 
     test('convertParamsToValue SpecialColorLight', () => {
@@ -54,37 +52,17 @@ describe('ColorAbsoluteTemperature Command', () => {
           }
         }
       };
-      expect(Command.convertParamsToValue(
-        {
-          "color": {
-            "temperature": 2000
-          }
-        },
-        item,
-        { "customData": { "deviceType": "SpecialColorLight" } }
-      )).toBe("75");
-
-      expect(Command.convertParamsToValue(
-        {
-          "color": {
-            "temperature": 2000
-          }
-        },
-        { "state": "100,100,50" },
-        { "customData": { "deviceType": "SpecialColorLight" } }
-      )).toBe("0");
+      const device = { "customData": { "deviceType": "SpecialColorLight" } };
+      expect(Command.convertParamsToValue(params, item, device)).toBe("75");
+      expect(Command.convertParamsToValue(params, { "state": "100,100,50" }, device)).toBe("0");
     });
+  });
 
-    test('getResponseStates', () => {
-      expect(Command.getResponseStates({
-        "color": {
-          "temperature": 2000
-        }
-      })).toStrictEqual({
-        "color": {
-          "temperatureK": 2000
-        }
-      });
+  test('getResponseStates', () => {
+    expect(Command.getResponseStates(params)).toStrictEqual({
+      "color": {
+        "temperatureK": 2000
+      }
     });
   });
 });
