@@ -38,10 +38,14 @@ class Mute extends DefaultCommand {
         itemType = 'Dimmer';
       }
     }
+    let mute = params.mute;
     if (itemType !== 'Switch') {
-      return params.mute ? '0' : undefined;
+      return mute ? '0' : undefined;
     }
-    return params.mute ? 'ON' : 'OFF';
+    if (device.customData && device.customData.inverted === true) {
+      mute = !mute;
+    }
+    return mute ? 'ON' : 'OFF';
   }
 
   static getResponseStates(params) {
