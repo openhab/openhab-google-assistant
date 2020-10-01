@@ -1,6 +1,6 @@
 const OpenHAB = require('../functions/openhab.js');
 
-describe('Test SYNC with Tags', () => {
+xdescribe('SYNC with Tags', () => {
   test('Light Devices', async () => {
     const items = [
       {
@@ -79,7 +79,7 @@ describe('Test SYNC with Tags', () => {
   });
 });
 
-describe('Test QUERY with Tags', () => {
+xdescribe('QUERY with Tags', () => {
   test('Single Light Device ', async () => {
     const item =
     {
@@ -165,7 +165,7 @@ describe('Test QUERY with Tags', () => {
   });
 });
 
-describe('Test EXECUTE with Tags', () => {
+xdescribe('EXECUTE with Tags', () => {
   test('ThermostatTemperatureSetpoint', async () => {
     const item =
     {
