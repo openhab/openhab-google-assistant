@@ -5,7 +5,7 @@ class Lock extends DefaultDevice {
     return 'action.devices.types.LOCK';
   }
 
-  static get traits() {
+  static getTraits() {
     return [
       'action.devices.traits.LockUnlock'
     ];

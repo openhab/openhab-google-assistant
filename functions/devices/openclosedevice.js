@@ -1,7 +1,7 @@
 const DefaultDevice = require('./default.js');
 
 class OpenCloseDevice extends DefaultDevice {
-  static get traits() {
+  static getTraits() {
     return [
       'action.devices.traits.OpenClose',
       'action.devices.traits.StartStop'

@@ -6,7 +6,7 @@ class Thermostat extends DefaultDevice {
     return 'action.devices.types.THERMOSTAT';
   }
 
-  static get traits() {
+  static getTraits() {
     return [
       'action.devices.traits.TemperatureSetting'
     ];

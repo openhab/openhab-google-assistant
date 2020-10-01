@@ -5,7 +5,7 @@ class Switch extends DefaultDevice {
     return 'action.devices.types.SWITCH';
   }
 
-  static get traits() {
+  static getTraits() {
     return [
       'action.devices.traits.OnOff'
     ];

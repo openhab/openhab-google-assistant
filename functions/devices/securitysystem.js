@@ -5,7 +5,7 @@ class SecuritySystem extends DefaultDevice {
     return 'action.devices.types.SECURITYSYSTEM';
   }
 
-  static get traits() {
+  static getTraits() {
     return [
       'action.devices.traits.ArmDisarm'
     ];

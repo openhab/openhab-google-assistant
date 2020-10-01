@@ -5,7 +5,7 @@ class Sensor extends DefaultDevice {
     return 'action.devices.types.SENSOR';
   }
 
-  static get traits() {
+  static getTraits() {
     return [
       'action.devices.traits.SensorState'
     ];

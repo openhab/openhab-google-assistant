@@ -5,7 +5,7 @@ class Fan extends DefaultDevice {
     return 'action.devices.types.FAN';
   }
 
-  static get traits() {
+  static getTraits() {
     return [
       'action.devices.traits.OnOff',
       'action.devices.traits.FanSpeed'

@@ -5,7 +5,7 @@ class Camera extends DefaultDevice {
     return 'action.devices.types.CAMERA';
   }
 
-  static get traits() {
+  static getTraits() {
     return [
       'action.devices.traits.CameraStream'
     ];

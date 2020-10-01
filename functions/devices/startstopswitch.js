@@ -1,7 +1,7 @@
 const DefaultDevice = require('./default.js');
 
 class StartStopSwitch extends DefaultDevice {
-  static get traits() {
+  static getTraits() {
     return [
       'action.devices.traits.StartStop'
     ];

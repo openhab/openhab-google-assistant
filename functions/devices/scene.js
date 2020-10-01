@@ -5,7 +5,7 @@ class Scene extends DefaultDevice {
     return 'action.devices.types.SCENE';
   }
 
-  static get traits() {
+  static getTraits() {
     return [
       'action.devices.traits.Scene'
     ];

@@ -3,25 +3,59 @@ class DefaultDevice {
     return '';
   }
 
-  static get traits() {
+  /**
+	 * @param {object} item
+	 */
+  static getTraits(item) {
     return [];
   }
 
-  static getAttributes(item = {}) {
+  static get requiredItemTypes() {
+    return [];
+  }
+
+  /**
+	 * @param {object} item
+	 */  static isCompatible(item) {
+    return item.metadata && item.metadata.ga &&
+      this.type.toLowerCase() === `action.devices.types.${item.metadata.ga.value}`.toLowerCase() ||
+      this.hasTag(item, this.type.substr(21).replace('SWITCH', 'SWITCHABLE').replace('LIGHT', 'LIGHTING'))
+  }
+
+  /**
+	 * @param {object} item
+	 */
+  static matchesItemType(item) {
+    return (
+      !this.requiredItemTypes.length ||
+      this.requiredItemTypes.includes(item.type) ||
+      (item.type === 'Group' && item.groupType && this.requiredItemTypes.includes(item.groupType))
+    );
+  }
+
+  /**
+	 * @param {object} item
+	 */  static getAttributes(item) {
     return {};
   }
 
-  static getConfig(item = {}) {
+  /**
+	 * @param {object} item
+	 */
+  static getConfig(item) {
     return item && item.metadata && item.metadata.ga && item.metadata.ga.config || {};
   }
 
-  static getMetadata(item = {}) {
+  /**
+	 * @param {object} item
+	 */
+  static getMetadata(item) {
     const config = this.getConfig(item);
     const itemType = item.type === 'Group' && item.groupType ? item.groupType : item.type;
     const metadata = {
       id: item.name,
       type: this.type,
-      traits: this.traits,
+      traits: this.getTraits(item),
       name: {
         name: config.name || item.label,
         defaultNames: [config.name || item.label],
@@ -54,29 +88,18 @@ class DefaultDevice {
     return metadata;
   }
 
-  static get requiredItemTypes() {
-    return [];
-  }
-
-  static isCompatible(item = {}) {
-    return item.metadata && item.metadata.ga &&
-      this.type.toLowerCase() === `action.devices.types.${item.metadata.ga.value}`.toLowerCase() ||
-      this.hasTag(item, this.type.substr(21).replace('SWITCH', 'SWITCHABLE').replace('LIGHT', 'LIGHTING'))
-  }
-
-  static matchesItemType(item = {}) {
-    return (
-      !this.requiredItemTypes.length ||
-      this.requiredItemTypes.includes(item.type) ||
-      (item.type === 'Group' && item.groupType && this.requiredItemTypes.includes(item.groupType))
-    );
-  }
-
-  static getState(item = {}) {
+  /**
+	 * @param {object} item
+	 */
+  static getState(item) {
     return {};
   }
 
-  static hasTag(item = {}, tag = '') {
+  /**
+	 * @param {object} item
+	 * @param {string} tag
+	 */
+  static hasTag(item, tag) {
     return item.tags && item.tags.map(t => t.toLowerCase()).includes(tag.toLowerCase()) || false;
   }
 }

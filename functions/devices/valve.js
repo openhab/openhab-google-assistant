@@ -5,7 +5,7 @@ class Valve extends DefaultDevice {
     return 'action.devices.types.VALVE';
   }
 
-  static get traits() {
+  static getTraits() {
     return [
       'action.devices.traits.OpenClose'
     ];
