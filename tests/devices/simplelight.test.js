@@ -1,7 +1,7 @@
 const Device = require('../../functions/devices/simplelight.js');
 
-describe('Test SimpleLight Device', () => {
-  test('Test isCompatible', async () => {
+describe('SimpleLight Device', () => {
+  test('isCompatible', () => {
     expect(Device.isCompatible({
       "metadata": {
         "ga": {
@@ -9,12 +9,5 @@ describe('Test SimpleLight Device', () => {
         }
       }
     })).toBe(true);
-    expect(Device.isCompatible({
-      "metadata": {
-        "ga": {
-          "value": "SOMETHING"
-        }
-      }
-    })).toBe(false);
   });
 });

@@ -1,7 +1,7 @@
 const Device = require('../../functions/devices/openclosedevice.js');
 
-describe('Test OpenCloseDevice Device', () => {
-  test('Test getAttributes', async () => {
+describe('OpenCloseDevice Device', () => {
+  test('getAttributes', () => {
     expect(Device.getAttributes({ "type": "Rollershutter" })).toStrictEqual({
       "discreteOnlyOpenClose": false,
       "queryOnlyOpenClose": false
@@ -14,53 +14,120 @@ describe('Test OpenCloseDevice Device', () => {
       "discreteOnlyOpenClose": true,
       "queryOnlyOpenClose": true
     });
-  });
 
-  test('Test getState', async () => {
-    const item1 = {
-      "type": "Switch",
-      "state": "ON"
-    };
-    expect(Device.getState(item1)).toStrictEqual({
-      "openPercent": 100
+    expect(Device.getAttributes({ "type": "Group" })).toStrictEqual({
+      "discreteOnlyOpenClose": false,
+      "queryOnlyOpenClose": false
     });
-    const item2 = {
-      "type": "Rollershutter",
-      "state": "25"
-    };
-    expect(Device.getState(item2)).toStrictEqual({
-      "openPercent": 75
+    expect(Device.getAttributes({ "type": "Group", "groupType": "Switch" })).toStrictEqual({
+      "discreteOnlyOpenClose": true,
+      "queryOnlyOpenClose": false
+    });
+    expect(Device.getAttributes({ "type": "Group", "groupType": "Contact" })).toStrictEqual({
+      "discreteOnlyOpenClose": true,
+      "queryOnlyOpenClose": true
     });
   });
 
-  test('Test getState inverted', async () => {
-    const item = {
-      "type": "Switch",
-      "state": "ON",
-      "metadata": {
-        "ga": {
-          "config": {
-            "inverted": true
-          }
-        }
-      }
-    };
-    expect(Device.getState(item)).toStrictEqual({
-      "openPercent": 0
+  describe('getState', () => {
+    test('getState Contact', () => {
+      const item = {
+        "type": "Contact",
+        "state": "OPEN"
+      };
+      expect(Device.getState(item)).toStrictEqual({
+        "openPercent": 100
+      });
+      item.state = "CLOSED";
+      expect(Device.getState(item)).toStrictEqual({
+        "openPercent": 0
+      });
     });
-    const item2 = {
-      "type": "Rollershutter",
-      "state": "25",
-      "metadata": {
-        "ga": {
-          "config": {
-            "inverted": true
+
+    test('getState Switch', () => {
+      const item = {
+        "type": "Switch",
+        "state": "ON"
+      };
+      expect(Device.getState(item)).toStrictEqual({
+        "openPercent": 100
+      });
+      item.state = "OFF";
+      expect(Device.getState(item)).toStrictEqual({
+        "openPercent": 0
+      });
+    });
+
+    test('getState Rollershutter', () => {
+      const item = {
+        "type": "Rollershutter",
+        "state": "25"
+      };
+      expect(Device.getState(item)).toStrictEqual({
+        "openPercent": 75
+      });
+    });
+
+    test('getState Group Rollershutter', () => {
+      const item = {
+        "type": "Group",
+        "groupType": "Rollershutter",
+        "state": "25"
+      };
+      expect(Device.getState(item)).toStrictEqual({
+        "openPercent": 75
+      });
+    });
+
+    test('getState inverted Contact', () => {
+      const item = {
+        "type": "Contact",
+        "state": "CLOSED",
+        "metadata": {
+          "ga": {
+            "config": {
+              "inverted": true
+            }
           }
         }
-      }
-    };
-    expect(Device.getState(item2)).toStrictEqual({
-      "openPercent": 25
+      };
+      expect(Device.getState(item)).toStrictEqual({
+        "openPercent": 100
+      });
+    });
+
+    test('getState inverted Switch', () => {
+      const item = {
+        "type": "Switch",
+        "state": "ON",
+        "metadata": {
+          "ga": {
+            "config": {
+              "inverted": true
+            }
+          }
+        }
+      };
+      expect(Device.getState(item)).toStrictEqual({
+        "openPercent": 0
+      });
+    });
+
+    test('getState inverted Rollershutter', () => {
+      const item = {
+        "type": "Rollershutter",
+        "state": "25",
+        "metadata": {
+          "ga": {
+            "config": {
+              "inverted": true
+            }
+          }
+        }
+      };
+      expect(Device.getState(item)).toStrictEqual({
+        "openPercent": 25
+      });
     });
   });
 });

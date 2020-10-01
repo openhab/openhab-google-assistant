@@ -1,6 +1,6 @@
 const Device = require('../../functions/devices/default.js');
 
-describe('Test Fan Device', () => {
+describe('Fan Device', () => {
   const item = {
     "type": "Number",
     "state": "50",
@@ -14,11 +14,14 @@ describe('Test Fan Device', () => {
           "ackNeeded": true,
           "pinNeeded": "1234"
         }
+      },
+      "synonyms":  {
+        "value": "Standard Device"
       }
     }
   };
 
-  test('Test getConfig', async () => {
+  test('getConfig', () => {
     expect(Device.getConfig(item)).toStrictEqual({
       "ackNeeded": true,
       "inverted": true,
@@ -26,11 +29,11 @@ describe('Test Fan Device', () => {
     });
   });
 
-  test('Test getState', async () => {
+  test('getState', () => {
     expect(Device.getState(item)).toStrictEqual({});
   });
 
-  test('Test getMetadata', async () => {
+  test('getMetadata', () => {
     expect(Device.getMetadata(item)).toStrictEqual({
       "attributes": {},
       "customData": {
@@ -54,6 +57,7 @@ describe('Test Fan Device', () => {
         "name": "Default Device",
         "nicknames": [
           "Default Device",
+          "Standard Device"
         ],
       },
       "roomHint": undefined,
@@ -64,7 +68,7 @@ describe('Test Fan Device', () => {
     });
   });
 
-  test('Test hasTag', async () => {
+  test('hasTag', () => {
     expect(Device.hasTag({}, "testtag")).toBe(false);
     expect(Device.hasTag({ "tags": ["test"] }, "testtag")).toBe(false);
     expect(Device.hasTag({ "tags": ["testtag"] }, "testtag")).toBe(true);

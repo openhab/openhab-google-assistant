@@ -1,7 +1,7 @@
 const Device = require('../../functions/devices/switch.js');
 
-describe('Test Switch Device', () => {
-  test('Test isCompatible', async () => {
+describe('Switch Device', () => {
+  test('isCompatible', () => {
     expect(Device.isCompatible({
       "metadata": {
         "ga": {
@@ -9,23 +9,16 @@ describe('Test Switch Device', () => {
         }
       }
     })).toBe(true);
-    expect(Device.isCompatible({
-      "metadata": {
-        "ga": {
-          "value": "SOMETHING"
-        }
-      }
-    })).toBe(false);
   });
 
-  test('Test matchesItemType', async () => {
+  test('matchesItemType', () => {
     expect(Device.matchesItemType({ "type": "Switch" })).toBe(true);
     expect(Device.matchesItemType({ "type": "String" })).toBe(false);
     expect(Device.matchesItemType({ "type": "Group", "groupType": "Switch" })).toBe(true);
     expect(Device.matchesItemType({ "type": "Group", "groupType": "String" })).toBe(false);
   });
 
-  test('Test getState', async () => {
+  test('getState', () => {
     expect(Device.getState({ "state": "ON" })).toStrictEqual({
       "on": true
     });
@@ -34,7 +27,7 @@ describe('Test Switch Device', () => {
     });
   });
 
-  test('Test getState inverted', async () => {
+  test('getState inverted', () => {
     const item = {
       "state": "ON",
       "metadata": {
@@ -47,6 +40,10 @@ describe('Test Switch Device', () => {
     };
     expect(Device.getState(item)).toStrictEqual({
       "on": false
+    });
+    item.state = "OFF";
+    expect(Device.getState(item)).toStrictEqual({
+      "on": true
     });
   });
 });

@@ -1,7 +1,7 @@
 const Device = require('../../functions/devices/dimmablelight.js');
 
-describe('Test DimmableLight Device', () => {
-  test('Test isCompatible', async () => {
+describe('DimmableLight Device', () => {
+  test('isCompatible', () => {
     expect(Device.isCompatible({
       "metadata": {
         "ga": {
@@ -9,23 +9,16 @@ describe('Test DimmableLight Device', () => {
         }
       }
     })).toBe(true);
-    expect(Device.isCompatible({
-      "metadata": {
-        "ga": {
-          "value": "SOMETHING"
-        }
-      }
-    })).toBe(false);
   });
 
-  test('Test matchesItemType', async () => {
+  test('matchesItemType', () => {
     expect(Device.matchesItemType({ "type": "Dimmer" })).toBe(true);
     expect(Device.matchesItemType({ "type": "String" })).toBe(false);
     expect(Device.matchesItemType({ "type": "Group", "groupType": "Dimmer" })).toBe(true);
     expect(Device.matchesItemType({ "type": "Group", "groupType": "String" })).toBe(false);
   });
 
-  test('Test getState', async () => {
+  test('getState', () => {
     expect(Device.getState({ "state": "50" })).toStrictEqual({
       "on": true,
       "brightness": 50

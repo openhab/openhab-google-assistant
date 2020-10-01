@@ -1,7 +1,7 @@
 const Device = require('../../functions/devices/colorlight.js');
 
-describe('Test ColorLight Device', () => {
-  test('Test isCompatible', async () => {
+describe('ColorLight Device', () => {
+  test('isCompatible', () => {
     expect(Device.isCompatible({
       "metadata": {
         "ga": {
@@ -9,55 +9,52 @@ describe('Test ColorLight Device', () => {
         }
       }
     })).toBe(true);
-    expect(Device.isCompatible({
-      "metadata": {
-        "ga": {
-          "value": "SOMETHING"
-        }
-      }
-    })).toBe(false);
   });
 
-  test('Test matchesItemType', async () => {
+  test('matchesItemType', () => {
     expect(Device.matchesItemType({ "type": "Color" })).toBe(true);
     expect(Device.matchesItemType({ "type": "Dimmer" })).toBe(false);
     expect(Device.matchesItemType({ "type": "Group", "groupType": "Color" })).toBe(true);
     expect(Device.matchesItemType({ "type": "Group", "groupType": "Dimmer" })).toBe(false);
   });
 
-  test('Test getAttributes', async () => {
-    const item1 = {
-      "metadata": {
-        "ga": {
-          "config": {
-            "colorTemperatureRange": "a,b"
+  describe('getAttributes', () => {
+    test('getAttributes colorTemperatureRange', () => {
+      const item = {
+        "metadata": {
+          "ga": {
+            "config": {
+              "colorTemperatureRange": "1000,2000"
+            }
           }
         }
-      }
-    };
-    expect(Device.getAttributes(item1)).toStrictEqual({
-      "colorModel": "hsv"
+      };
+      expect(Device.getAttributes(item)).toStrictEqual({
+        "colorModel": "hsv",
+        "colorTemperatureRange": {
+          "temperatureMinK": 1000,
+          "temperatureMaxK": 2000
+        }
+      });
     });
 
-    const item2 = {
-      "metadata": {
-        "ga": {
-          "config": {
-            "colorTemperatureRange": "1000,2000"
+    test('getAttributes invalid colorTemperatureRange', () => {
+      const item = {
+        "metadata": {
+          "ga": {
+            "config": {
+              "colorTemperatureRange": "a,b"
+            }
           }
         }
-      }
-    };
-    expect(Device.getAttributes(item2)).toStrictEqual({
-      "colorModel": "hsv",
-      "colorTemperatureRange": {
-        "temperatureMinK": 1000,
-        "temperatureMaxK": 2000
-      }
+      };
+      expect(Device.getAttributes(item)).toStrictEqual({
+        "colorModel": "hsv"
+      });
     });
   });
 
-  test('Test getState', async () => {
+  test('getState', () => {
     expect(Device.getState({ "state": "100,50,10" })).toStrictEqual({
       "on": true,
       "brightness": 10,
