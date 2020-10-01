@@ -12,7 +12,7 @@ class OnOff extends DefaultCommand {
   }
 
   static requiresItem(device) {
-    return device.customData && (
+    return !!device.customData && (
       device.customData.deviceType === 'SpecialColorLight' || device.customData.deviceType === 'TV'
     );
   }

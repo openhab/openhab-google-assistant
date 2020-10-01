@@ -11,7 +11,7 @@ class Mute extends DefaultCommand {
   }
 
   static requiresItem(device) {
-    return device.customData && device.customData.deviceType === 'TV';
+    return !!device.customData && device.customData.deviceType === 'TV';
   }
 
   static getItemName(item, device) {

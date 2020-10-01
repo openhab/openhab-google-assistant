@@ -16,7 +16,8 @@ class DefaultDevice {
 
   /**
 	 * @param {object} item
-	 */  static isCompatible(item) {
+	 */
+  static isCompatible(item) {
     return item.metadata && item.metadata.ga &&
       this.type.toLowerCase() === `action.devices.types.${item.metadata.ga.value}`.toLowerCase() ||
       this.hasTag(item, this.type.substr(21).replace('SWITCH', 'SWITCHABLE').replace('LIGHT', 'LIGHTING'))
@@ -35,7 +36,8 @@ class DefaultDevice {
 
   /**
 	 * @param {object} item
-	 */  static getAttributes(item) {
+	 */
+  static getAttributes(item) {
     return {};
   }
 

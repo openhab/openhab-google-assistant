@@ -19,15 +19,21 @@
  */
 
 module.exports = {
-
-  convertToCelsius: (value = 0) => {
+  /**
+	 * @param {number} value
+	 */
+  convertToCelsius: (value) => {
     return Number(((value - 32) * 5 / 9).toFixed(1));
   },
-
-  convertToFahrenheit: (value = 0) => {
+  /**
+   * @param {number} value
+	 */
+  convertToFahrenheit: (value) => {
     return Math.round(value * 9 / 5 + 32);
   },
-
+  /**
+   * @param {number} kelvin
+	 */
   kelvin2rgb: (kelvin) => {
     const temp = kelvin / 100;
     const r = temp <= 66 ? 255 : 329.698727446 * Math.pow(temp - 60, -0.1332047592);
@@ -39,7 +45,9 @@ module.exports = {
       b: b < 0 ? 0 : b > 255 ? 255 : Math.round(b),
     };
   },
-
+  /**
+   * @param {object} rgb
+	 */
   rgb2hsv: ({ r, g, b }) => {
     r = r / 255;
     g = g / 255;
@@ -52,5 +60,4 @@ module.exports = {
       value: Math.round(v * 100) / 100
     };
   }
-
 }
