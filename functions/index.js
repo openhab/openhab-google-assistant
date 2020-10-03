@@ -24,51 +24,51 @@ const config = require('./config.js');
 const app = require('actions-on-google').smarthome();
 
 app.onDisconnect(() => {
-	return {};
+  return {};
 });
 
 app.onExecute(async (body, headers) => {
-	const authToken = headers.authorization ? headers.authorization.split(' ')[1] : null;
-	const apiHandler = new ApiHandler(config, authToken);
-	const payload = await new OpenHAB(apiHandler).handleExecute(body.inputs[0].payload.commands).catch(() => ({
-		errorCode: 'actionNotAvailable',
-		status: 'ERROR',
-		commands: []
-	}));
+  const authToken = headers.authorization ? headers.authorization.split(' ')[1] : null;
+  const apiHandler = new ApiHandler(config, authToken);
+  const payload = await new OpenHAB(apiHandler).handleExecute(body.inputs[0].payload.commands).catch(() => ({
+    errorCode: 'actionNotAvailable',
+    status: 'ERROR',
+    commands: []
+  }));
 
-	return {
-		requestId: body.requestId,
-		payload: payload
-	};
+  return {
+    requestId: body.requestId,
+    payload: payload
+  };
 });
 
 app.onQuery(async (body, headers) => {
-	const authToken = headers.authorization ? headers.authorization.split(' ')[1] : null;
-	const apiHandler = new ApiHandler(config, authToken);
-	const payload = await new OpenHAB(apiHandler).handleQuery(body.inputs[0].payload.devices).catch(() => ({
-		errorCode: 'actionNotAvailable',
-		status: 'ERROR',
-		devices: {}
-	}));
+  const authToken = headers.authorization ? headers.authorization.split(' ')[1] : null;
+  const apiHandler = new ApiHandler(config, authToken);
+  const payload = await new OpenHAB(apiHandler).handleQuery(body.inputs[0].payload.devices).catch(() => ({
+    errorCode: 'actionNotAvailable',
+    status: 'ERROR',
+    devices: {}
+  }));
 
-	return {
-		requestId: body.requestId,
-		payload: payload
-	};
+  return {
+    requestId: body.requestId,
+    payload: payload
+  };
 });
 
 app.onSync(async (body, headers) => {
-	const authToken = headers.authorization ? headers.authorization.split(' ')[1] : null;
-	const apiHandler = new ApiHandler(config, authToken);
-	const payload = await new OpenHAB(apiHandler).handleSync().catch(() => ({
-		errorCode: 'actionNotAvailable',
-		status : 'ERROR'
-	}));
+  const authToken = headers.authorization ? headers.authorization.split(' ')[1] : null;
+  const apiHandler = new ApiHandler(config, authToken);
+  const payload = await new OpenHAB(apiHandler).handleSync().catch(() => ({
+    errorCode: 'actionNotAvailable',
+    status : 'ERROR'
+  }));
 
-	return {
-		requestId: body.requestId,
-		payload: payload
-	};
+  return {
+    requestId: body.requestId,
+    payload: payload
+  };
 });
 
 exports.openhabGoogleAssistant = app;
