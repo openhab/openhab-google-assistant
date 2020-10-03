@@ -21,7 +21,14 @@
 const https = require('https');
 
 class ApiHandler {
-  constructor(config = {}, authToken = '') {
+  /**
+   * @param {object} config
+   * @param {string} authToken
+   */
+  constructor(config = { host: '', path: '/rest/items/', port: 80 }, authToken = '') {
+    if (!config.path.startsWith('/')) {
+      config.path = '/' + config.path;
+    }
     if (!config.path.endsWith('/')) {
       config.path += '/';
     }
@@ -29,7 +36,12 @@ class ApiHandler {
     this._authToken = authToken;
   }
 
-  getOptions(method = 'GET', itemName = '', length = 0) {
+  /**
+   * @param {string} method
+   * @param {string} itemName
+   * @param {number} length
+   */
+   getOptions(method = 'GET', itemName = '', length = 0) {
     const queryString = '?metadata=ga,synonyms' + (itemName ? '' : '&fields=groupNames,groupType,name,label,metadata,tags,type');
     const options = {
       hostname: this._config.host,
@@ -55,7 +67,9 @@ class ApiHandler {
     return options;
   }
 
-
+  /**
+   * @param {string} itemName
+   */
   getItem(itemName = '') {
     const options = this.getOptions('GET', itemName);
     return new Promise((resolve, reject) => {
@@ -86,7 +100,11 @@ class ApiHandler {
     return this.getItem();
   }
 
-  sendCommand(itemName = '', payload = '') {
+  /**
+   * @param {string} itemName
+   * @param {string} payload
+   */
+  sendCommand(itemName, payload) {
     const options = this.getOptions('POST', itemName, payload.length);
     return new Promise((resolve, reject) => {
       const req = https.request(options, (response) => {
