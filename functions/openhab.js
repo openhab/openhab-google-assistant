@@ -41,15 +41,22 @@ class OpenHAB {
 	/**
 	 * @param {object} apiHandler
 	 */
-	constructor(apiHandler = {}) {
+	constructor(apiHandler) {
 		this._apiHandler = apiHandler;
 	}
 
-	static getCommandType(command = '', params = {}) {
+	/**
+	 * @param {string} command
+	 * @param {object} params
+	 */
+	static getCommandType(command, params) {
 		return Commands.find((commandType) => command === commandType.type && commandType.validateParams(params));
 	}
 
-	static getDeviceForItem(item = {}) {
+	/**
+	 * @param {object} item
+	 */
+	static getDeviceForItem(item) {
 		return Devices.find((device) => device.matchesItemType(item) && device.isCompatible(item));
 	}
 
@@ -86,7 +93,7 @@ class OpenHAB {
 				if (item.state === 'NULL' && !('getMembers' in DeviceType)) {
 					throw { statusCode: 406 };
 				}
-				payload.devices[device.id] = Object.assign({ online: true }, DeviceType.getState(item));
+				payload.devices[device.id] = Object.assign({ status: 'SUCCESS', online: true }, DeviceType.getState(item));
 			}).catch((error) => {
 				payload.devices[device.id] = {
 					status: 'ERROR',
