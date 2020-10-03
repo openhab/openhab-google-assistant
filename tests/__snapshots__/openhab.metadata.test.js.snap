@@ -352,6 +352,7 @@ Object {
       },
       "customData": Object {
         "deviceType": "action.devices.types.THERMOSTAT",
+        "inverted": false,
         "itemType": undefined,
         "tfaAck": undefined,
         "tfaPin": undefined,
