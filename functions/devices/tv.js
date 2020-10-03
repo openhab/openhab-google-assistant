@@ -9,7 +9,7 @@ class TV extends DefaultDevice {
     const traits = [];
     const members = this.getMembers(item);
     if ('tvPower' in members) traits.push('action.devices.traits.OnOff');
-    if ('tvVolume' in members) traits.push('action.devices.traits.Volume');
+    if ('tvMute' in members || 'tvVolume' in members) traits.push('action.devices.traits.Volume');
     if ('tvChannel' in members) traits.push('action.devices.traits.Channel');
     if ('tvInput' in members) traits.push('action.devices.traits.InputSelector');
     if ('tvTransport' in members) traits.push('action.devices.traits.TransportControl');
