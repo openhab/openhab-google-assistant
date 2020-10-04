@@ -23,9 +23,8 @@ const https = require('https');
 class ApiHandler {
   /**
    * @param {object} config
-   * @param {string} authToken
    */
-  constructor(config = { host: '', path: '/rest/items/', port: 80 }, authToken = '') {
+  constructor(config = { host: '', path: '/rest/items/', port: 80 }) {
     if (!config.path.startsWith('/')) {
       config.path = '/' + config.path;
     }
@@ -33,6 +32,13 @@ class ApiHandler {
       config.path += '/';
     }
     this._config = config;
+    this._authToken = '';
+  }
+
+  /**
+   * @param {string} authToken
+   */
+  set authToken(authToken) {
     this._authToken = authToken;
   }
 
@@ -55,7 +61,7 @@ class ApiHandler {
 
     if (this._config.userpass) {
       options.auth = this._config.userpass;
-    } else {
+    } else if (this._authToken) {
       options.headers['Authorization'] = 'Bearer ' + this._authToken;
     }
 

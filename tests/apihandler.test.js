@@ -8,7 +8,11 @@ describe('ApiHandler', () => {
     "port": 443
   }
 
-  const apiHander = new ApiHandler(config, "token");
+  const apiHander = new ApiHandler(config);
+
+  beforeEach(() => {
+    apiHander.authToken = "token";
+  });
 
   test('constructor', () => {
     expect(apiHander._config).toStrictEqual({
@@ -17,6 +21,11 @@ describe('ApiHandler', () => {
       "port": 443
     });
     expect(apiHander._authToken).toBe("token");
+  });
+
+  test('authToken', () => {
+    apiHander.authToken = "1234";
+    expect(apiHander._authToken).toBe("1234");
   });
 
   describe('getOptions', () => {

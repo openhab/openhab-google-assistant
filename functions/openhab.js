@@ -60,8 +60,88 @@ class OpenHAB {
     return Devices.find((device) => device.matchesItemType(item) && device.isCompatible(item));
   }
 
-  handleSync() {
+  /**
+   * @param {object} headers
+   */
+  setTokenFromHeader(headers) {
+    this._apiHandler.authToken = headers.authorization ? headers.authorization.split(' ')[1] : null;
+  }
+
+  onDisconnect() {
+    return {};
+  }
+
+  /**
+   * @param {object} body
+   * @param {object} headers
+   */
+  async onSync(body, headers) {
     console.log('openhabGoogleAssistant - handleSync');
+
+    this.setTokenFromHeader(headers);
+
+    const payload = await this.handleSync()
+      .catch(() => ({
+        errorCode: 'actionNotAvailable',
+        status: 'ERROR',
+        devices: []
+      }));
+
+    return {
+      requestId: body.requestId,
+      payload: payload
+    };
+  }
+
+  /**
+   * @param {object} body
+   * @param {object} headers
+   */
+  async onQuery(body, headers) {
+    const devices = body && body.inputs && body.inputs[0] && body.inputs[0].payload && body.inputs[0].payload.devices || [];
+
+    console.log(`openhabGoogleAssistant - handleQuery - devices: ${JSON.stringify(devices)}`);
+
+    this.setTokenFromHeader(headers);
+
+    const payload = await this.handleQuery(devices)
+      .catch(() => ({
+        errorCode: 'actionNotAvailable',
+        status: 'ERROR',
+        devices: {}
+      }));
+
+    return {
+      requestId: body.requestId,
+      payload: payload
+    };
+  }
+
+  /**
+   * @param {object} body
+   * @param {object} headers
+   */
+  async onExecute(body, headers) {
+    const commands = body && body.inputs && body.inputs[0] && body.inputs[0].payload && body.inputs[0].payload.commands || [];
+
+    console.log(`openhabGoogleAssistant - handleExecute - commands: ${JSON.stringify(commands)}`);
+
+    this.setTokenFromHeader(headers);
+
+    const payload = await this.handleExecute(commands)
+      .catch(() => ({
+        errorCode: 'actionNotAvailable',
+        status: 'ERROR',
+        commands: []
+      }));
+
+    return {
+      requestId: body.requestId,
+      payload: payload
+    };
+  }
+
+  handleSync() {
     return this._apiHandler.getItems().then((items) => {
       let discoveredDevicesList = [];
       items.forEach((item) => {
@@ -80,12 +160,9 @@ class OpenHAB {
    * @param {array} devices
    */
   handleQuery(devices) {
-    console.log(`openhabGoogleAssistant - handleQuery - devices: ${JSON.stringify(devices)}`);
-    const payload = {
-      devices: {}
-    };
-    const promises = devices.map((device) => {
-      return this._apiHandler.getItem(device.id).then((item) => {
+    const payload = { devices: {} };
+    const promises = devices.map((device) => (
+      this._apiHandler.getItem(device.id).then((item) => {
         const DeviceType = OpenHAB.getDeviceForItem(item);
         if (!DeviceType) {
           throw { statusCode: 404 };
@@ -94,25 +171,21 @@ class OpenHAB {
           throw { statusCode: 406 };
         }
         payload.devices[device.id] = Object.assign({ status: 'SUCCESS', online: true }, DeviceType.getState(item));
-      }).catch((error) => {
+      }).catch((error) => (
         payload.devices[device.id] = {
           status: 'ERROR',
           errorCode: error.statusCode == 404 ? 'deviceNotFound' : error.statusCode == 400 ? 'notSupported' : error.statusCode == 406 ? 'deviceNotReady' : 'deviceOffline'
-        };
-      });
-    });
+        }
+      ))
+    ));
+
     return Promise.all(promises).then(() => payload);
   }
-
 
   /**
    * @param {array} commands
    */
   handleExecute(commands) {
-    console.log(`openhabGoogleAssistant - handleExecute - commands: ${JSON.stringify(commands)}`);
-    const payload = {
-      commands: []
-    };
     const promises = [];
     commands.forEach((command) => {
       command.execution.forEach((execution) => {
@@ -139,9 +212,11 @@ class OpenHAB {
         promises.push(CommandType.execute(this._apiHandler, command.devices, execution.params, execution.challenge));
       });
     });
-    return Promise.all(promises).then((result) => {
-      result.forEach((entry) => (payload.commands = payload.commands.concat(entry)));
-      return payload;
+
+    return Promise.all(promises).then((responseDetails) => {
+      let responses = [];
+      responseDetails.forEach((response) => (responses = responses.concat(response)));
+      return { commands: responses };
     });
   }
 }
