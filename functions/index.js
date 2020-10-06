@@ -26,9 +26,9 @@ const app = require('actions-on-google').smarthome();
 const apiHandler = new ApiHandler(config);
 const openHAB = new OpenHAB(apiHandler);
 
-app.onDisconnect(openHAB.onDisconnect);
-app.onExecute(openHAB.onExecute);
-app.onQuery(openHAB.onQuery);
-app.onSync(openHAB.onSync);
+app.onDisconnect(() => openHAB.onDisconnect());
+app.onExecute((body, headers) => openHAB.onExecute(body, headers));
+app.onQuery((body, headers) => openHAB.onQuery(body, headers));
+app.onSync((body, headers) => openHAB.onSync(body, headers));
 
 exports.openhabGoogleAssistant = app;
