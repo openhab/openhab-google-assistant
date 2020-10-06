@@ -1,6 +1,10 @@
-name: "Test"
+name: Tests
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - master
+  pull_request:
 
 jobs:
   build:
@@ -17,7 +21,13 @@ jobs:
       - run: npm ci
       - run: npm run build --if-present
       - run: npm test
-      - uses: actions/upload-artifact@v2
+      - name: Upload Test Coverage
+        uses: actions/upload-artifact@v2
         with:
           name: coverage
           path: coverage/
+      - name: Comment Test Coverage
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: romeovs/lcov-reporter-action@v0.2.11
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
