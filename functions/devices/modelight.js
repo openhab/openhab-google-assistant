@@ -14,22 +14,28 @@ class ModeLight extends DefaultDevice {
   static getAttributes(item) {
     const attributes = {};
     const config = this.getConfig(item);
-    if (config.modes && config.modes.name) {
+    if (config.mode && config.settings) {
+      const modeNames = config.mode.split(',').map(s => s.trim());
       attributes.availableModes = [{
-        name: config.modes.name,
+        name: modeNames[0],
         name_values: [{
-          name_synonym: [config.modes.name].concat(config.modes.synonyms ? config.modes.synonyms.split(',').map(s => s.trim()) : []),
+          name_synonym: modeNames,
           lang: config.lang || 'en'
         }],
-        settings: Object.keys(config.modes.settings || {}).map(setting_name => ({
-          setting_name: setting_name,
-          setting_values: [{
-            setting_synonym: [setting_name].concat(config.modes.settings[setting_name].split(',').map(s => s.trim())),
-            lang: config.lang || 'en'
-          }]
-        })),
+        settings: [],
         ordered: true
       }];
+      const settings = config.settings.split(',').map(s => s.trim());
+      attributes.availableModes[0].settings = settings.map(setting => {
+        const [settingName, settingValues] = setting.split('=').map(s => s.trim());
+        return {
+          setting_name: settingName,
+          setting_values: [{
+            setting_synonym: [settingName].concat(settingValues.split(':').map(s => s.trim())),
+            lang: config.lang || 'en'
+          }]
+        };
+      });
     }
     return attributes;
   }
@@ -41,9 +47,10 @@ class ModeLight extends DefaultDevice {
   static getState(item) {
     const config = this.getConfig(item);
     const state = {};
-    if (config.modes && config.modes.name) {
+    if (config.mode && config.settings) {
+      const modeNames = config.mode.split(',').map(s => s.trim());
       state.currentModeSettings = {
-        [config.modes.name]: item.state
+        [modeNames[0]]: item.state
       };
     }
     return state;

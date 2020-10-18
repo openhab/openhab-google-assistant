@@ -35,12 +35,8 @@ describe('ModeLight Device', () => {
         "metadata": {
           "ga": {
             "config": {
-              "modes": {
-                "name": "mode_name",
-                "settings": {
-                  "setting1": "mode_value"
-                }
-              }
+              "mode": "mode_name,alternate_mode_name",
+              "settings": "setting1=mode_value:alternate_mode_value,setting2=mode_value2"
             }
           }
         }
@@ -52,7 +48,7 @@ describe('ModeLight Device', () => {
             "name_values": [
               {
                 "lang": "en",
-                "name_synonym": ["mode_name"]
+                "name_synonym": ["mode_name", "alternate_mode_name"]
               }
             ],
             "ordered": true,
@@ -64,7 +60,20 @@ describe('ModeLight Device', () => {
                     "lang": "en",
                     "setting_synonym": [
                       "setting1",
-                      "mode_value"
+                      "mode_value",
+                      "alternate_mode_value"
+                    ]
+                  }
+                ]
+              },
+              {
+                "setting_name": "setting2",
+                "setting_values": [
+                  {
+                    "lang": "en",
+                    "setting_synonym": [
+                      "setting2",
+                      "mode_value2"
                     ]
                   }
                 ]
@@ -83,12 +92,8 @@ describe('ModeLight Device', () => {
       "metadata": {
         "ga": {
           "config": {
-            "modes": {
-              "name": "mode_name",
-              "settings": {
-                "setting1": "mode_value"
-              }
-            }
+            "mode": "mode_name,alternate_mode_name",
+            "settings": "setting1=mode_value:alternate_mode_value,setting2=mode_value2"
           }
         }
       }
