@@ -36,7 +36,8 @@ describe('ModeLight Device', () => {
           "ga": {
             "config": {
               "mode": "mode_name,alternate_mode_name",
-              "settings": "setting1=mode_value:alternate_mode_value,setting2=mode_value2"
+              "settings": "setting1=mode_value:alternate_mode_value,setting2=mode_value2",
+              "ordered": true
             }
           }
         }
