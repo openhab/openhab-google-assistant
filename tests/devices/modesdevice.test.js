@@ -1,21 +1,8 @@
-const Device = require('../../functions/devices/modelight.js');
+const Device = require('../../functions/devices/modesdevice.js');
 
-describe('ModeLight Device', () => {
-  test('isCompatible', () => {
-    expect(Device.isCompatible({
-      "metadata": {
-        "ga": {
-          "value": "LIGHT"
-        }
-      }
-    })).toBe(true);
-  });
-
+describe('ModesDevice Device', () => {
   test('matchesItemType', () => {
-    expect(Device.matchesItemType({ "type": "String" })).toBe(true);
-    expect(Device.matchesItemType({ "type": "Dimmer" })).toBe(false);
-    expect(Device.matchesItemType({ "type": "Group", "groupType": "String" })).toBe(true);
-    expect(Device.matchesItemType({ "type": "Group", "groupType": "Dimmer" })).toBe(false);
+    expect(Device.matchesItemType({ "type": "Group", "groupType": "None" })).toBe(false);
   });
 
   describe('getAttributes', () => {
