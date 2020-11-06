@@ -71,7 +71,7 @@ describe('Thermostat Device', () => {
         }
       };
       expect(Device.getAttributes(item)).toStrictEqual({
-        "availableThermostatModes": "off,heat,cool,on,heatcool,auto,eco",
+        "availableThermostatModes": ["off", "heat", "cool", "on", "heatcool", "auto", "eco"],
         "thermostatTemperatureUnit": "C"
       });
     });
@@ -88,7 +88,7 @@ describe('Thermostat Device', () => {
         }
       };
       expect(Device.getAttributes(item)).toStrictEqual({
-        "availableThermostatModes": "on,off",
+        "availableThermostatModes": ["on", "off"],
         "thermostatTemperatureUnit": "F"
       });
     });
@@ -104,7 +104,7 @@ describe('Thermostat Device', () => {
         }
       };
       expect(Device.getAttributes(item)).toStrictEqual({
-        "availableThermostatModes": "off,heat,cool,on,heatcool,auto,eco",
+        "availableThermostatModes": ["off", "heat", "cool", "on", "heatcool", "auto", "eco"],
         "thermostatTemperatureUnit": "C",
         "thermostatTemperatureRange": {
           "maxThresholdCelsius": 30,
@@ -124,7 +124,7 @@ describe('Thermostat Device', () => {
         }
       };
       expect(Device.getAttributes(item)).toStrictEqual({
-        "availableThermostatModes": "off,heat,cool,on,heatcool,auto,eco",
+        "availableThermostatModes": ["off", "heat", "cool", "on", "heatcool", "auto", "eco"],
         "thermostatTemperatureUnit": "C"
       });
     });

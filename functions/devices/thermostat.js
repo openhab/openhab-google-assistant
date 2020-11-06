@@ -36,7 +36,7 @@ class Thermostat extends DefaultDevice {
       !('thermostatTemperatureSetpoint' in members)) {
       attributes.queryOnlyTemperatureSetting = true;
     } else {
-      attributes.availableThermostatModes = Object.keys(this.getModeMap(item)).join(',');
+      attributes.availableThermostatModes = Object.keys(this.getModeMap(item));
     }
     return attributes;
   }
