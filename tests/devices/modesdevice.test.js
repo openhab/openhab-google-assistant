@@ -3,6 +3,27 @@ const Device = require('../../functions/devices/modesdevice.js');
 describe('ModesDevice Device', () => {
   test('matchesItemType', () => {
     expect(Device.matchesItemType({ "type": "Group", "groupType": "None" })).toBe(false);
+    expect(Device.matchesItemType({
+      "type": "Switch",
+      "metadata": {
+        "ga": {
+          "value": "light",
+          "config": {}
+        }
+      }
+    })).toBe(false);
+    expect(Device.matchesItemType({
+      "type": "Switch",
+      "metadata": {
+        "ga": {
+          "value": "light",
+          "config": {
+            "mode": "testMode",
+            "settings": "1=test"
+          }
+        }
+      }
+    })).toBe(true);
   });
 
   describe('getAttributes', () => {

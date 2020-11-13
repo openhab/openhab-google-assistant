@@ -7,6 +7,10 @@ class ModesDevice extends DefaultDevice {
     ];
   }
 
+  static matchesItemType(item) {
+    return super.matchesItemType(item) && !!this.getAttributes(item).availableModes;
+  }
+
   static getAttributes(item) {
     const config = this.getConfig(item);
     if (!config.mode || !config.settings) {
