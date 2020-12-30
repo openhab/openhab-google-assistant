@@ -58,9 +58,9 @@ describe('Default Command', () => {
   });
 
   test('handleAuthPin', () => {
-    expect(Command.handleAuthPin({ "id": "Item", "customData": {} }, {})).toBeUndefined();
+    expect(Command.handleAuthPin({ "id": "Item", "customData": {} }, undefined)).toBeUndefined();
     expect(Command.handleAuthPin({ "id": "Item", "customData": { "pinNeeded": "1234" } }, { "pin": "1234" })).toBeUndefined();
-    expect(Command.handleAuthPin({ "id": "Item", "customData": { "pinNeeded": "1234" } }, {})).toStrictEqual({
+    expect(Command.handleAuthPin({ "id": "Item", "customData": { "pinNeeded": "1234" } }, undefined)).toStrictEqual({
       ids: ["Item"],
       status: 'ERROR',
       errorCode: 'challengeNeeded',
@@ -79,8 +79,8 @@ describe('Default Command', () => {
   });
 
   test('handleAuthAck', () => {
-    expect(Command.handleAuthAck({ "id": "Item", "customData": {} }, {}, {})).toBeUndefined();
-    expect(Command.handleAuthAck({ "id": "Item", "customData": { "ackNeeded": true } }, { "ack": true }, {})).toBeUndefined();
+    expect(Command.handleAuthAck({ "id": "Item", "customData": {} }, {}, undefined)).toBeUndefined();
+    expect(Command.handleAuthAck({ "id": "Item", "customData": { "ackNeeded": true } }, { "ack": true }, undefined)).toBeUndefined();
     expect(Command.handleAuthAck({ "id": "Item", "customData": { "ackNeeded": true } }, {}, { "key": "value" })).toStrictEqual({
       ids: ["Item"],
       status: 'ERROR',
