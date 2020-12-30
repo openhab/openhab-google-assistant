@@ -61,7 +61,7 @@ class DefaultCommand {
    * @param {object} challenge
    */
   static handleAuthPin(device, challenge) {
-    if (!device.customData || !device.customData.pinNeeded || challenge.pin === device.customData.pinNeeded) {
+    if (!device.customData || !device.customData.pinNeeded || challenge && challenge.pin === device.customData.pinNeeded) {
       return;
     }
     return {
@@ -69,7 +69,7 @@ class DefaultCommand {
       status: 'ERROR',
       errorCode: 'challengeNeeded',
       challengeNeeded: {
-        type: !challenge.pin ? 'pinNeeded' : 'challengeFailedPinNeeded'
+        type: !challenge || !challenge.pin ? 'pinNeeded' : 'challengeFailedPinNeeded'
       }
     };
   }
@@ -80,7 +80,7 @@ class DefaultCommand {
    * @param {object} responseStates
    */
   static handleAuthAck(device, challenge, responseStates) {
-    if (!device.customData || !device.customData.ackNeeded || challenge.ack === true) {
+    if (!device.customData || !device.customData.ackNeeded || challenge && challenge.ack === true) {
       return;
     }
     return {
