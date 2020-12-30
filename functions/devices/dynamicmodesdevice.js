@@ -14,7 +14,7 @@ class DynamicModesDevice extends DefaultDevice {
   static getAttributes(item) {
     const config = this.getConfig(item);
     const members = this.getMembers(item);
-    if (!config.mode || !('modesSettings' in members)) {
+    if (!config.mode || !('modesSettings' in members) || !members.modesSettings.state.includes('=')) {
       return {};
     }
     const modeNames = config.mode.split(',').map(s => s.trim());
@@ -29,8 +29,8 @@ class DynamicModesDevice extends DefaultDevice {
         ordered: config.ordered === true
       }]
     };
-    members.modesSettings.state.split(',').forEach(setting => {
-      try {
+    try {
+      members.modesSettings.state.split(',').forEach(setting => {
         const [settingName, settingSynonyms] = setting.trim().split('=').map(s => s.trim());
         attributes.availableModes[0].settings.push({
           setting_name: settingName,
@@ -39,8 +39,8 @@ class DynamicModesDevice extends DefaultDevice {
             lang: config.lang || 'en'
           }]
         });
-      } catch { }
-    });
+      });
+    } catch { }
     return attributes;
   }
 
