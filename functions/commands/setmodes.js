@@ -10,11 +10,11 @@ class SetModes extends DefaultCommand {
     return ('updateModeSettings' in params) && typeof params.updateModeSettings === 'object';
   }
   static requiresItem(device) {
-    return !!device.customData && !!device.customData.deviceType && device.customData.deviceType.startsWith('DynamicModes');
+    return this.getDeviceType(device).startsWith('DynamicModes');
   }
 
   static getItemName(item, device) {
-    if (device.customData && !!device.customData.deviceType && device.customData.deviceType.startsWith('DynamicModes')) {
+    if (this.getDeviceType(device).startsWith('DynamicModes')) {
       const members = DynamicModesDevice.getMembers(item);
       if ('modesCurrentMode' in members) {
         return members.modesCurrentMode.name;

@@ -17,6 +17,9 @@ class OnOff extends DefaultCommand {
 
   static getItemName(item, device) {
     const deviceType = this.getDeviceType(device);
+    if (deviceType.startsWith('DynamicModes')) {
+      throw { statusCode: 400 };
+    }
     if (deviceType === 'SpecialColorLight') {
       const members = SpecialColorLight.getMembers(item);
       if ('lightBrightness' in members) {
