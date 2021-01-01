@@ -26,7 +26,16 @@ In openHAB 2 items are exposed via [metadata](https://www.openhab.org/docs/confi
 
 Currently the following metadata values are supported (also depending on Googles API capabilities):
 
-* `Switch / Dimmer / Color { ga="Light" }`
+* `Switch / Dimmer / Color { ga="Light" }` (Depending on the item type controlling power, brightness and color is supported)
+
+---
+
+* `Group { ga="Light" [ useKelvin=true ] }` (Light with separate brightness and color items)
+* `Dimmer / Number { ga="lightBrightness" }` as part of Light group
+* `Dimmer / Number { ga="lightColorTemperature" }` as part of Light group
+
+---
+
 * `Switch { ga="Switch" [ inverted=true ] }` (all Switch items can use the inverted option)
 * `Switch { ga="Outlet" }`
 * `Switch { ga="Coffee_Maker" }`
@@ -36,12 +45,32 @@ Currently the following metadata values are supported (also depending on Googles
 * `Switch { ga="Sprinkler" }`
 * `Switch { ga="Vacuum" }`
 * `Switch { ga="Scene" }`
+
+---
+
 * `Switch / Contact { ga="Lock" [ ackNeeded=true ] }`
 * `Switch { ga="SecuritySystem" [ pinNeeded="1234" ] }`
-* `Dimmer { ga="Speaker" }`
+* `String { ga="Camera" [ protocols="hls,dash" ] }`
+* `Dimmer { ga="Speaker" }` (Volume control)
+
+---
+
+* `Group { ga="TV" [ volumeDefaultPercentage="20", levelStepSize="10", volumeMaxLevel="100", transportControlSupportedCommands="NEXT,PREVIOUS,PAUSE,RESUME", availableInputs="hdmi1=xbox,hdmi2=settopbox", availableChannels="1=Channel1=NBC,2=Channel2=CBS" ] }`
+* `Switch { ga="tvPower" }` as part of TV group (optional)
+* `Switch { ga="tvMute" }` as part of TV group (optional)
+* `Dimmer { ga="tvVolume" }` as part of TV group (optional)
+* `String { ga="tvChannel" }` as part of TV group (optional)
+* `String { ga="tvInput" }` as part of TV group (optional)
+* `Player { ga="tvTransport" }` as part of TV group (optional)
+
+---
+
 * `Switch / Dimmer { ga="Fan" [ speeds="0=away:zero,50=default:standard:one,100=high:two", lang="en", ordered=true ] }` (for Dimmer the options have to be set)
 * `Switch / Dimmer { ga="Hood" }`
 * `Switch / Dimmer { ga="AirPurifier" }`
+
+---
+
 * `Rollershutter { ga="Awning" [ inverted=true ] }` (all Rollershutter items can use the inverted option)
 * `Rollershutter { ga="Blinds" }`
 * `Rollershutter { ga="Curtain" }`
@@ -51,15 +80,21 @@ Currently the following metadata values are supported (also depending on Googles
 * `Rollershutter { ga="Pergola" }`
 * `Rollershutter { ga="Shutter" }`
 * `Rollershutter { ga="Window" }`
-* `Group { ga="Thermostat" [ modes="...", useFahrenheit=true ] }`
+
+_\* All Rollershutter devices can also be used with a Switch or Contact item with the limitation of only supporting open and close states._
+
+---
+
+* `Group { ga="Thermostat" [ modes="...", thermostatTemperatureRange="10,30", useFahrenheit=true ] }`
 * `Number { ga="thermostatTemperatureAmbient" }` as part of Thermostat group
 * `Number { ga="thermostatHumidityAmbient" }` as part of Thermostat group
 * `Number { ga="thermostatTemperatureSetpoint" }` as part of Thermostat group
 * `Number / String { ga="thermostatMode" }` as part of Thermostat group
-* `Number { ga="TemperatureSensor" } [ useFahrenheit=true ] `
-* `String { ga="Camera" [ protocols="hls,dash" ] }`
 
-_\* All Rollershutter devices can also be used with a Switch or Contact item with the limitation of only supporting open and close states._
+---
+
+* `Number { ga="TemperatureSensor" } [ useFahrenheit=true ] `
+
 
 Example item configuration:
   ```
@@ -140,7 +175,7 @@ To set the temperature range your thermostat supports, add the config option `[ 
 
 There must be at least three items as members of the group:
 
-* (Mandatory) Mode: Number (Zwave THERMOSTAT_MODE Format) or String (off, heat, cool, on, ...). `{ ga="thermostatMode" }`
+* (Mandatory) Mode: Number or String (off, heat, cool, on, ...). `{ ga="thermostatMode" }`
 * (Mandatory) Temperature Ambient: Number. `{ ga="thermostatTemperatureAmbient" }`
 * (Mandatory) Temperature Setpoint: Number. `{ ga="thermostatTemperatureSetpoint" }`
 * (Optional) Temperature Setpoint High: Number. `{ ga="thermostatTemperatureSetpointHigh" }`
