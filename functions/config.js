@@ -33,8 +33,8 @@
  *
  **/
 module.exports = {
-		//userpass: 'user@foo.com:Password1',
-		host: '<YOUR-CLOUD-HOST>',
-		port: 443,
-		path: '/YOUR/REST/ENDPOINT',
+    //userpass: 'user@foo.com:Password1',
+    host: '<YOUR-CLOUD-HOST>',
+    port: 443,
+    path: '/YOUR/REST/ENDPOINT',
 };

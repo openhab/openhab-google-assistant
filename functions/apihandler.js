@@ -21,19 +21,38 @@
 const https = require('https');
 
 class ApiHandler {
-  constructor(config = {}, authToken = '') {
+  /**
+   * @param {object} config
+   */
+  constructor(config = { host: '', path: '/rest/items/', port: 80 }) {
+    if (!config.path.startsWith('/')) {
+      config.path = '/' + config.path;
+    }
     if (!config.path.endsWith('/')) {
       config.path += '/';
     }
     this._config = config;
+    this._authToken = '';
+  }
+
+  /**
+   * @param {string} authToken
+   */
+  set authToken(authToken) {
     this._authToken = authToken;
   }
 
-  getOptions(method = 'GET', itemName = '', length = 0) {
+  /**
+   * @param {string} method
+   * @param {string} itemName
+   * @param {number} length
+   */
+   getOptions(method = 'GET', itemName = '', length = 0) {
+    const queryString = '?metadata=ga,synonyms' + (itemName ? '' : '&fields=groupNames,groupType,name,label,metadata,tags,type,state');
     const options = {
       hostname: this._config.host,
       port: this._config.port,
-      path: this._config.path + (itemName ? itemName + '?metadata=ga' : '?metadata=ga&recursive=true'),
+      path: this._config.path + (itemName ? itemName : '') + queryString,
       method: method,
       headers: {
         'Accept': 'application/json'
@@ -42,7 +61,7 @@ class ApiHandler {
 
     if (this._config.userpass) {
       options.auth = this._config.userpass;
-    } else {
+    } else if (this._authToken) {
       options.headers['Authorization'] = 'Bearer ' + this._authToken;
     }
 
@@ -54,7 +73,9 @@ class ApiHandler {
     return options;
   }
 
-
+  /**
+   * @param {string} itemName
+   */
   getItem(itemName = '') {
     const options = this.getOptions('GET', itemName);
     return new Promise((resolve, reject) => {
@@ -85,7 +106,11 @@ class ApiHandler {
     return this.getItem();
   }
 
-  sendCommand(itemName = '', payload = '') {
+  /**
+   * @param {string} itemName
+   * @param {string} payload
+   */
+  sendCommand(itemName, payload) {
     const options = this.getOptions('POST', itemName, payload.length);
     return new Promise((resolve, reject) => {
       const req = https.request(options, (response) => {
@@ -103,4 +128,4 @@ class ApiHandler {
   }
 }
 
-module.exports = { ApiHandler };
+module.exports = ApiHandler;

@@ -1,506 +1,626 @@
+const OpenHAB = require('../functions/openhab.js');
 
-const OpenHAB = require('../functions/openhab.js').OpenHAB;
+describe('OpenHAB', () => {
+  test('getCommandType', () => {
+    const command = OpenHAB.getCommandType('action.devices.commands.OnOff', { "on": true });
+    expect(command).not.toBeUndefined();
+    expect(command.name).toBe('OnOff');
+  });
 
-describe('Test EXECUTE', () => {
-  test('OnOff Switch', async () => {
-    const getItemMock = jest.fn();
-    const sendCommandMock = jest.fn();
-    sendCommandMock.mockReturnValue(Promise.resolve());
+  describe('getDeviceForItem', () => {
+    test('getDeviceForItem switch tag', () => {
+      const device = OpenHAB.getDeviceForItem({ "type": "Switch", "metadata": { "ga": { "value": "Switch" } } });
+      expect(device).not.toBeUndefined();
+      expect(device.name).toBe('Switch');
+    });
 
-    const apiHandler = {
-      getItem: getItemMock,
-      sendCommand: sendCommandMock
-    };
-
-    const commands = [{
-      "devices": [{
-        "customData": {
-          "itemType": "Switch"
-        },
-        "id": "MySwitch"
-      }],
-      "execution": [{
-        "command": "action.devices.commands.OnOff",
-        "params": {
-          "on": false
-        }
-      }]
-    }];
-
-    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
-
-    expect(getItemMock).not.toHaveBeenCalled();
-    expect(sendCommandMock).toBeCalledWith('MySwitch', 'OFF');
-    expect(payload).toStrictEqual({
-      "commands": [{
-        "ids": [
-          "MySwitch"
-        ],
-        "states": {
-          "online": true,
-          "on": false
-        },
-        "status": "SUCCESS"
-      }]
+    test('getDeviceForItem switch tag', () => {
+      const device = OpenHAB.getDeviceForItem({ "type": "Switch", "tags": ["Switchable"] });
+      expect(device).not.toBeUndefined();
+      expect(device.name).toBe('Switch');
     });
   });
 
-  test('setVolume Dimmer', async () => {
-    const getItemMock = jest.fn();
-    const sendCommandMock = jest.fn();
-    sendCommandMock.mockReturnValue(Promise.resolve());
+  test('setTokenFromHeader', () => {
+    const openHAB = new OpenHAB({ authToken: "" });
+    openHAB.setTokenFromHeader({});
+    expect(openHAB._apiHandler.authToken).toBe(null);
+    openHAB.setTokenFromHeader({ "authorization": "Bearer token" });
+    expect(openHAB._apiHandler.authToken).toBe("token");
+  });
 
-    const apiHandler = {
-      getItem: getItemMock,
-      sendCommand: sendCommandMock
-    };
+  test('onDisconnect', () => {
+    const openHAB = new OpenHAB({});
+    expect(openHAB.onDisconnect()).toStrictEqual({});
+  });
 
-    const commands = [{
-      "devices": [{
-        "customData": {
-          "itemType": "Dimmer"
-        },
-        "id": "MySpeaker"
-      }],
-      "execution": [{
-        "command": "action.devices.commands.setVolume",
-        "params": {
-          "volumeLevel": 40
+  describe('onSync', () => {
+    const openHAB = new OpenHAB({});
+
+    beforeEach(() => {
+      jest.spyOn(openHAB, 'handleSync').mockReset();
+    });
+
+    test('onSync failure', async () => {
+      const handleSyncMock = jest.spyOn(openHAB, 'handleSync');
+      handleSyncMock.mockReturnValue(Promise.reject());
+      const result = await openHAB.onSync({ "requestId": "1234" }, {});
+      expect(handleSyncMock).toBeCalledTimes(1);
+      expect(result).toStrictEqual({
+        "requestId": "1234",
+        "payload": {
+          "devices": [],
+          "errorCode": "actionNotAvailable",
+          "status": "ERROR"
         }
-      }]
-    }];
+      });
+    });
 
-    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
-
-    expect(getItemMock).not.toHaveBeenCalled();
-    expect(sendCommandMock).toBeCalledWith('MySpeaker', '40');
-    expect(payload).toStrictEqual({
-      "commands": [{
-        "ids": [
-          "MySpeaker"
-        ],
-        "states": {
-          "currentVolume": 40,
-          "isMuted": false,
-          "online": true
-        },
-        "status": "SUCCESS"
-      }]
+    test('onSync empty', async () => {
+      const handleSyncMock = jest.spyOn(openHAB, 'handleSync');
+      const payload = { "devices": [] }
+      handleSyncMock.mockReturnValue(Promise.resolve(payload));
+      const result = await openHAB.onSync({ "requestId": "1234" }, {});
+      expect(handleSyncMock).toBeCalledTimes(1);
+      expect(result).toStrictEqual({
+        "requestId": "1234",
+        "payload": payload
+      });
     });
   });
 
-  test('volumeRelative Dimmer', async () => {
-    const item =
-    {
-      "state": "40",
-      "type": "Dimmer",
-      "name": "MySpeaker",
-      "metadata": {
-        "ga": {
-          "value": "Speaker"
-        }
+  describe('handleSync', () => {
+    const getItemsMock = jest.fn();
+
+    const apiHandler = {
+      getItems: getItemsMock
+    };
+
+    const openHAB = new OpenHAB(apiHandler);
+
+    beforeEach(() => {
+      getItemsMock.mockClear();
+    });
+
+    test('handleSync no matching items', async () => {
+      getItemsMock.mockReturnValue(Promise.resolve([{ "name": "TestItem" }]));
+      const result = await openHAB.handleSync();
+      expect(getItemsMock).toHaveBeenCalledTimes(1);
+      expect(result).toStrictEqual({ "devices": [] });
+    });
+
+    test('handleSync single switch', async () => {
+      getItemsMock.mockReturnValue(Promise.resolve([{
+        "type": "Switch",
+        "name": "SwitchItem",
+        "label": "Switch Item",
+        "metadata": { "ga": { "value": "Switch" } }
+      }]));
+      const result = await openHAB.handleSync();
+      expect(getItemsMock).toHaveBeenCalledTimes(1);
+      expect(result).toStrictEqual({
+        "devices": [{
+          "attributes": {},
+          "customData": {
+            "deviceType": "Switch",
+            "itemType": "Switch",
+          },
+          "deviceInfo": {
+            "hwVersion": "2.5.0",
+            "manufacturer": "openHAB",
+            "model": "Switch:SwitchItem",
+            "swVersion": "2.5.0",
+          },
+          "id": "SwitchItem",
+          "name": {
+            "defaultNames": ["Switch Item"],
+            "name": "Switch Item",
+            "nicknames": ["Switch Item"]
+          },
+          "roomHint": undefined,
+          "structureHint": undefined,
+          "traits": ["action.devices.traits.OnOff"],
+          "type": "action.devices.types.SWITCH",
+          "willReportState": false
+        }]
+      });
+    });
+
+    test('handleSync switch and light group', async () => {
+      getItemsMock.mockReturnValue(Promise.resolve([{
+        "type": "Switch",
+        "name": "SwitchItem",
+        "label": "Switch Item",
+        "metadata": { "ga": { "value": "Switch" } }
+      },
+      {
+        "type": "Group",
+        "name": "TVItem",
+        "label": "TV Item",
+        "metadata": { "ga": { "value": "TV" } }
+      },
+      {
+        "type": "Switch",
+        "name": "TVMute",
+        "label": "TV Mute",
+        "groupNames": ["TVItem"],
+        "metadata": { "ga": { "value": "tvMute" } }
+      },
+      {
+        "type": "Switch",
+        "name": "TVPower",
+        "label": "TV Power",
+        "groupNames": ["TVItem"],
+        "metadata": { "ga": { "value": "tvPower" } }
       }
-    };
-
-    const getItemMock = jest.fn();
-    getItemMock.mockReturnValue(Promise.resolve(item));
-
-    const sendCommandMock = jest.fn();
-    sendCommandMock.mockReturnValue(Promise.resolve());
-
-    const apiHandler = {
-      getItem: getItemMock,
-      sendCommand: sendCommandMock
-    };
-
-    const commands = [{
-      "devices": [{
-        "customData": {
-          "itemType": "Dimmer"
-        },
-        "id": "MySpeaker"
-      }],
-      "execution": [{
-        "command": "action.devices.commands.volumeRelative",
-        "params": {
-          "volumeRelativeLevel": 20
-        }
-      }]
-    }];
-
-    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
-
-    expect(getItemMock).toHaveBeenCalledTimes(1);
-    expect(sendCommandMock).toBeCalledWith('MySpeaker', '60');
-    expect(payload).toStrictEqual({
-      "commands": [{
-        "ids": [
-          "MySpeaker"
-        ],
-        "states": {
-          "currentVolume": 60,
-          "isMuted": false,
-          "online": true
-        },
-        "status": "SUCCESS"
-      }]
+      ]));
+      const result = await openHAB.handleSync();
+      expect(getItemsMock).toHaveBeenCalledTimes(1);
+      expect(result).toStrictEqual({
+        "devices": [
+          {
+            "attributes": {},
+            "customData": {
+              "deviceType": "Switch",
+              "itemType": "Switch"
+            },
+            "deviceInfo": {
+              "hwVersion": "2.5.0",
+              "manufacturer": "openHAB",
+              "model": "Switch:SwitchItem",
+              "swVersion": "2.5.0"
+            },
+            "id": "SwitchItem",
+            "name": {
+              "defaultNames": ["Switch Item"],
+              "name": "Switch Item",
+              "nicknames": ["Switch Item"],
+            },
+            "roomHint": undefined,
+            "structureHint": undefined,
+            "traits": ["action.devices.traits.OnOff"],
+            "type": "action.devices.types.SWITCH",
+            "willReportState": false
+          },
+          {
+            "attributes": {
+              "volumeCanMuteAndUnmute": true
+            },
+            "customData": {
+              "deviceType": "TV",
+              "itemType": "Group"
+            },
+            "deviceInfo": {
+              "hwVersion": "2.5.0",
+              "manufacturer": "openHAB",
+              "model": "Group:TVItem",
+              "swVersion": "2.5.0"
+            },
+            "id": "TVItem",
+            "name": {
+              "defaultNames": ["TV Item"],
+              "name": "TV Item",
+              "nicknames": ["TV Item"],
+            },
+            "roomHint": undefined,
+            "structureHint": undefined,
+            "traits": [
+              "action.devices.traits.OnOff",
+              "action.devices.traits.Volume"
+            ],
+            "type": "action.devices.types.TV",
+            "willReportState": false
+          }
+        ]
+      });
     });
   });
 
+  describe('onQuery', () => {
+    const openHAB = new OpenHAB({});
 
-  test('volumeRelative Dimmer max overflow', async () => {
-    const item =
-    {
-      "state": "100",
-      "type": "Dimmer",
-      "name": "MySpeaker",
-      "metadata": {
-        "ga": {
-          "value": "Speaker"
-        }
-      }
-    };
-
-    const getItemMock = jest.fn();
-    getItemMock.mockReturnValue(Promise.resolve(item));
-
-    const sendCommandMock = jest.fn();
-    sendCommandMock.mockReturnValue(Promise.resolve());
-
-    const apiHandler = {
-      getItem: getItemMock,
-      sendCommand: sendCommandMock
-    };
-
-    const commands = [{
-      "devices": [{
-        "customData": {
-          "itemType": "Dimmer"
-        },
-        "id": "MySpeaker"
-      }],
-      "execution": [{
-        "command": "action.devices.commands.volumeRelative",
-        "params": {
-          "volumeRelativeLevel": 20
-        }
-      }]
-    }];
-
-    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
-
-    expect(getItemMock).toHaveBeenCalledTimes(1);
-    expect(sendCommandMock).toBeCalledWith('MySpeaker', '100');
-    expect(payload).toStrictEqual({
-      "commands": [{
-        "ids": [
-          "MySpeaker"
-        ],
-        "states": {
-          "currentVolume": 100,
-          "isMuted": false,
-          "online": true
-        },
-        "status": "SUCCESS"
-      }]
+    beforeEach(() => {
+      jest.spyOn(openHAB, 'handleQuery').mockReset();
     });
-  });
 
-  test('volumeRelative Dimmer min overflow', async () => {
-    const item =
-    {
-      "state": "10",
-      "type": "Dimmer",
-      "name": "MySpeaker",
-      "metadata": {
-        "ga": {
-          "value": "Speaker"
+    test('onQuery failure', async () => {
+      const handleQueryMock = jest.spyOn(openHAB, 'handleQuery');
+      handleQueryMock.mockReturnValue(Promise.reject());
+      const result = await openHAB.onQuery({ "requestId": "1234" }, {});
+      expect(handleQueryMock).toBeCalledTimes(1);
+      expect(handleQueryMock).toBeCalledWith([]);
+      expect(result).toStrictEqual({
+        "requestId": "1234",
+        "payload": {
+          "devices": {},
+          "errorCode": "actionNotAvailable",
+          "status": "ERROR"
         }
-      }
-    };
-
-    const getItemMock = jest.fn();
-    getItemMock.mockReturnValue(Promise.resolve(item));
-
-    const sendCommandMock = jest.fn();
-    sendCommandMock.mockReturnValue(Promise.resolve());
-
-    const apiHandler = {
-      getItem: getItemMock,
-      sendCommand: sendCommandMock
-    };
-
-    const commands = [{
-      "devices": [{
-        "customData": {
-          "itemType": "Dimmer"
-        },
-        "id": "MySpeaker"
-      }],
-      "execution": [{
-        "command": "action.devices.commands.volumeRelative",
-        "params": {
-          "volumeRelativeLevel": -20
-        }
-      }]
-    }];
-
-    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
-
-    expect(getItemMock).toHaveBeenCalledTimes(1);
-    expect(sendCommandMock).toBeCalledWith('MySpeaker', '0');
-    expect(payload).toStrictEqual({
-      "commands": [{
-        "ids": [
-          "MySpeaker"
-        ],
-        "states": {
-          "currentVolume": 0,
-          "isMuted": true,
-          "online": true
-        },
-        "status": "SUCCESS"
-      }]
+      });
     });
-  });
 
-  test('OpenClose Rollershutter', async () => {
-    const getItemMock = jest.fn();
-    const sendCommandMock = jest.fn();
-    sendCommandMock.mockReturnValue(Promise.resolve());
-
-    const apiHandler = {
-      getItem: getItemMock,
-      sendCommand: sendCommandMock
-    };
-
-    const commands = [{
-      "devices": [{
-        "customData": {
-          "itemType": "Rollershutter"
-        },
-        "id": "MyRollershutter"
-      }],
-      "execution": [{
-        "command": "action.devices.commands.OpenClose",
-        "params": {
-          "openPercent": 0
-        }
-      }]
-    }];
-
-    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
-
-    expect(getItemMock).not.toHaveBeenCalled();
-    expect(sendCommandMock).toBeCalledWith('MyRollershutter', 'DOWN');
-    expect(payload).toStrictEqual({
-      "commands": [{
-        "ids": [
-          "MyRollershutter"
-        ],
-        "states": {
-          "online": true,
-          "openPercent": 0
-        },
-        "status": "SUCCESS"
-      }]
+    test('onQuery empty', async () => {
+      const handleQueryMock = jest.spyOn(openHAB, 'handleQuery');
+      const payload = { "devices": {} };
+      handleQueryMock.mockReturnValue(Promise.resolve(payload));
+      const result = await openHAB.onQuery({ "requestId": "1234" }, {});
+      expect(handleQueryMock).toBeCalledTimes(1);
+      expect(handleQueryMock).toBeCalledWith([]);
+      expect(result).toStrictEqual({
+        "requestId": "1234",
+        "payload": payload
+      });
     });
-  });
 
-  test('OpenClose Rollershutter inverted', async () => {
-    const getItemMock = jest.fn();
-    const sendCommandMock = jest.fn();
-    sendCommandMock.mockReturnValue(Promise.resolve());
-
-    const apiHandler = {
-      getItem: getItemMock,
-      sendCommand: sendCommandMock
-    };
-
-    const commands = [{
-      "devices": [{
-        "customData": {
-          "itemType": "Rollershutter",
-          "inverted": true
-        },
-        "id": "MyRollershutter"
-      }],
-      "execution": [{
-        "command": "action.devices.commands.OpenClose",
-        "params": {
-          "openPercent": 0
-        }
-      }]
-    }];
-
-    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
-
-    expect(getItemMock).not.toHaveBeenCalled();
-    expect(sendCommandMock).toBeCalledWith('MyRollershutter', 'UP');
-    expect(payload).toStrictEqual({
-      "commands": [{
-        "ids": [
-          "MyRollershutter"
-        ],
-        "states": {
-          "online": true,
-          "openPercent": 0
-        },
-        "status": "SUCCESS"
-      }]
-    });
-  });
-
-  test('OpenClose Switch', async () => {
-    const getItemMock = jest.fn();
-    const sendCommandMock = jest.fn();
-    sendCommandMock.mockReturnValue(Promise.resolve());
-
-    const apiHandler = {
-      getItem: getItemMock,
-      sendCommand: sendCommandMock
-    };
-
-    const commands = [{
-      "devices": [{
-        "customData": {
-          "itemType": "Switch"
-        },
-        "id": "MyRollershutter"
-      }],
-      "execution": [{
-        "command": "action.devices.commands.OpenClose",
-        "params": {
-          "openPercent": 0
-        }
-      }]
-    }];
-
-    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
-
-    expect(getItemMock).not.toHaveBeenCalled();
-    expect(sendCommandMock).toBeCalledWith('MyRollershutter', 'OFF');
-    expect(payload).toStrictEqual({
-      "commands": [{
-        "ids": [
-          "MyRollershutter"
-        ],
-        "states": {
-          "online": true,
-          "openPercent": 0
-        },
-        "status": "SUCCESS"
-      }]
-    });
-  });
-
-  test('ColorAbsolute HSV', async () => {
-    const getItemMock = jest.fn();
-    const sendCommandMock = jest.fn();
-    sendCommandMock.mockReturnValue(Promise.resolve());
-
-    const apiHandler = {
-      getItem: getItemMock,
-      sendCommand: sendCommandMock
-    };
-
-    const commands = [{
-      "devices": [{
-        "id": "MyColor"
-      }],
-      "execution": [{
-        "command": "action.devices.commands.ColorAbsolute",
-        "params": {
-          "color": {
-            "spectrumHSV": {
-              "hue": 240.0,
-              "saturation": 1.0,
-              "value": 1.0
+    test('onQuery', async () => {
+      const handleQueryMock = jest.spyOn(openHAB, 'handleQuery');
+      const payload = { "devices": {} };
+      handleQueryMock.mockReturnValue(Promise.resolve(payload));
+      const devices = [{ "id": "TestItem1" }, { "id": "TestItem2" }];
+      const body = {
+        "requestId": "1234",
+        "inputs": [
+          {
+            "intent": "action.devices.QUERY",
+            "payload": {
+              "devices": devices
             }
           }
+        ]
+      };
+      const result = await openHAB.onQuery(body, {});
+      expect(handleQueryMock).toBeCalledTimes(1);
+      expect(handleQueryMock).toBeCalledWith(devices);
+      expect(result).toStrictEqual({
+        "requestId": "1234",
+        "payload": payload
+      });
+    });
+  });
+
+  describe('handleQuery', () => {
+    const getItemMock = jest.fn();
+
+    const apiHandler = {
+      getItem: getItemMock
+    };
+
+    const openHAB = new OpenHAB(apiHandler);
+
+    beforeEach(() => {
+      getItemMock.mockReset();
+    });
+
+    test('handleQuery device offline', async () => {
+      getItemMock.mockReturnValue(Promise.reject({ "statusCode": 500 }));
+      const result = await openHAB.handleQuery([{ "id": "TestItem" }]);
+      expect(getItemMock).toHaveBeenCalledTimes(1);
+      expect(result).toStrictEqual({
+        "devices": {
+          "TestItem": {
+            "errorCode": "deviceOffline",
+            "status": "ERROR"
+          }
         }
-      }]
-    }];
+      });
+    });
 
-    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
+    test('handleQuery device not found', async () => {
+      getItemMock.mockReturnValue(Promise.resolve({ "name": "TestItem" }));
+      const result = await openHAB.handleQuery([{ "id": "TestItem" }]);
+      expect(getItemMock).toHaveBeenCalledTimes(1);
+      expect(result).toStrictEqual({
+        "devices": {
+          "TestItem": {
+            "errorCode": "deviceNotFound",
+            "status": "ERROR"
+          }
+        }
+      });
+    });
 
-    expect(getItemMock).not.toHaveBeenCalled();
-    expect(sendCommandMock).toBeCalledWith('MyColor', '240,100,100');
-    expect(payload).toStrictEqual({
-      "commands": [{
-        "ids": [
-          "MyColor"
-        ],
-        "states": {
-          "online": true,
-          "color": {
-            "spectrumHsv": {
-              "hue": 240.0,
-              "saturation": 1.0,
-              "value": 1.0
+    test('handleQuery device not ready', async () => {
+      getItemMock.mockReturnValue(Promise.resolve({
+        "name": "TestItem",
+        "type": "Group",
+        "groupType": "Switch",
+        "state": "NULL",
+        "metadata": { "ga": { "value": "Switch" } }
+      }));
+      const result = await openHAB.handleQuery([{ "id": "TestItem" }]);
+      expect(getItemMock).toHaveBeenCalledTimes(1);
+      expect(result).toStrictEqual({
+        "devices": {
+          "TestItem": {
+            "errorCode": "deviceNotReady",
+            "status": "ERROR"
+          }
+        }
+      });
+    });
+
+    // there is currently no case
+    xtest('handleQuery notSupported', async () => {
+      getItemMock.mockReturnValue(Promise.resolve({
+        "name": "TestItem",
+        "type": "Group",
+        "state": "NULL",
+        "metadata": {
+          "ga": {
+            "value": "Thermostat",
+            "config": {
+              "modes": "on=1,off=2"
             }
           }
         },
-        "status": "SUCCESS"
-      }]
+        "members": [
+          {
+            "state": "3",
+            "metadata": { "ga": { "value": "thermostatMode" } }
+          }
+        ]
+      }));
+      const result = await openHAB.handleQuery([{ "id": "TestItem" }]);
+      expect(getItemMock).toHaveBeenCalledTimes(1);
+      expect(result).toStrictEqual({
+        "devices": {
+          "TestItem": {
+            "errorCode": "notSupported",
+            "status": "ERROR"
+          }
+        }
+      });
+    });
+
+    test('handleQuery Switch', async () => {
+      getItemMock.mockReturnValue(Promise.resolve({
+        "name": "TestItem",
+        "type": "Switch",
+        "state": "ON",
+        "metadata": { "ga": { "value": "Switch" } }
+      }));
+      const result = await openHAB.handleQuery([{ "id": "TestItem" }]);
+      expect(getItemMock).toHaveBeenCalledTimes(1);
+      expect(result).toStrictEqual({
+        "devices": {
+          "TestItem": {
+            "status": "SUCCESS",
+            "on": true,
+            "online": true
+          }
+        }
+      });
+    });
+
+    test('handleQuery mutliple devices', async () => {
+      getItemMock.mockReturnValueOnce(Promise.resolve({
+        "name": "TestItem",
+        "type": "Switch",
+        "state": "ON",
+        "metadata": { "ga": { "value": "Switch" } }
+      }));
+      getItemMock.mockReturnValueOnce(Promise.resolve({
+        "name": "TestItem2",
+        "type": "Dimmer",
+        "state": "50",
+        "metadata": { "ga": { "value": "Light" } }
+      }));
+      const result = await openHAB.handleQuery([{ "id": "TestItem" }, { "id": "TestItem2" }]);
+      expect(getItemMock).toHaveBeenCalledTimes(2);
+      expect(result).toStrictEqual({
+        "devices": {
+          "TestItem": {
+            "status": "SUCCESS",
+            "on": true,
+            "online": true
+          },
+          "TestItem2": {
+            "status": "SUCCESS",
+            "brightness": 50,
+            "on": true,
+            "online": true
+          }
+        }
+      });
     });
   });
 
-  test('ColorAbsolute Temperature', async () => {
-    const item =
-    {
-      "state": "50,50,50",
-      "type": "Switch",
-      "name": "MyColor",
-      "label": "ColorLight",
-      "metadata": {
-        "ga": {
-          "value": "LIGHT"
-        }
-      }
-    };
+  describe('onExecute', () => {
+    const openHAB = new OpenHAB({});
 
+    beforeEach(() => {
+      jest.spyOn(openHAB, 'handleExecute').mockReset();
+    });
+
+    test('onExecute failure', async () => {
+      const handleExecuteMock = jest.spyOn(openHAB, 'handleExecute');
+      handleExecuteMock.mockReturnValue(Promise.reject());
+      const result = await openHAB.onExecute({ "requestId": "1234" }, {});
+      expect(handleExecuteMock).toBeCalledTimes(1);
+      expect(handleExecuteMock).toBeCalledWith([]);
+      expect(result).toStrictEqual({
+        "requestId": "1234",
+        "payload": {
+          "commands": [],
+          "errorCode": "actionNotAvailable",
+          "status": "ERROR"
+        }
+      });
+    });
+
+    test('onExecute empty', async () => {
+      const handleExecuteMock = jest.spyOn(openHAB, 'handleExecute');
+      const payload = { "commands": [] };
+      handleExecuteMock.mockReturnValue(Promise.resolve(payload));
+      const result = await openHAB.onExecute({ "requestId": "1234" }, {});
+      expect(handleExecuteMock).toBeCalledTimes(1);
+      expect(handleExecuteMock).toBeCalledWith([]);
+      expect(result).toStrictEqual({
+        "requestId": "1234",
+        "payload": payload
+      });
+    });
+
+    test('onExecute', async () => {
+      const handleExecuteMock = jest.spyOn(openHAB, 'handleExecute');
+      const payload = { "commands": [] };
+      handleExecuteMock.mockReturnValue(Promise.resolve(payload));
+      const commands = [{
+        "devices": [{ "id": "123" }, { "id": "456" }],
+        "execution": [{
+          "command": "action.devices.commands.OnOff",
+          "params": { "on": true }
+        }]
+      }];
+      const body = {
+        "requestId": "1234",
+        "inputs": [{
+          "intent": "action.devices.EXECUTE",
+          "payload": {
+            "commands": commands
+          }
+        }]
+      };
+      const result = await openHAB.onExecute(body, {});
+      expect(handleExecuteMock).toBeCalledTimes(1);
+      expect(handleExecuteMock).toBeCalledWith(commands);
+      expect(result).toStrictEqual({
+        "requestId": "1234",
+        "payload": payload
+      });
+    });
+  });
+
+  describe('handleExecute', () => {
     const getItemMock = jest.fn();
     const sendCommandMock = jest.fn();
-    getItemMock.mockReturnValue(Promise.resolve(item));
-    sendCommandMock.mockReturnValue(Promise.resolve());
 
     const apiHandler = {
       getItem: getItemMock,
       sendCommand: sendCommandMock
     };
 
-    const commands = [{
-      "devices": [{
-        "id": "MyColor"
-      }],
-      "execution": [{
-        "command": "action.devices.commands.ColorAbsolute",
-        "params": {
-          "color": {
-            "temperature": 4000
+    const openHAB = new OpenHAB(apiHandler);
+
+    beforeEach(() => {
+      getItemMock.mockReset();
+      sendCommandMock.mockReset();
+    });
+
+    test('handleExecute OnOff', async () => {
+      sendCommandMock.mockReturnValue(Promise.resolve());
+      const commands = [{
+        "devices": [{
+          "id": "TestItem",
+          "customData": {}
+        }],
+        "execution": [{
+          "command": "action.devices.commands.OnOff",
+          "params": { "on": true }
+        }]
+      }];
+      const result = await openHAB.handleExecute(commands);
+      expect(getItemMock).toHaveBeenCalledTimes(0);
+      expect(sendCommandMock).toHaveBeenCalledTimes(1);
+      expect(result).toStrictEqual({
+        "commands": [
+          {
+            "ids": ["TestItem"],
+            "states": {
+              "on": true,
+              "online": true
+            },
+            "status": "SUCCESS"
           }
-        }
-      }]
-    }];
+        ]
+      });
+    });
 
-    const payload = await new OpenHAB(apiHandler).handleExecute(commands);
+    test('handleExecute function not supported', async () => {
+      const commands = [{
+        "devices": [{
+          "id": "TestItem",
+          "customData": {}
+        }],
+        "execution": [{
+          "command": "action.devices.commands.Invalid",
+          "params": {}
+        }]
+      }];
+      const result = await openHAB.handleExecute(commands);
+      expect(getItemMock).toHaveBeenCalledTimes(0);
+      expect(sendCommandMock).toHaveBeenCalledTimes(0);
+      expect(result).toStrictEqual({
+        "commands": [
+          {
+            "ids": ["TestItem"],
+            "errorCode": "functionNotSupported",
+            "status": "ERROR"
+          }
+        ]
+      });
+    });
 
-    expect(getItemMock).toHaveBeenCalled();
-    expect(sendCommandMock).toBeCalledWith('MyColor', '26.97,34.9,50');
-    expect(payload).toStrictEqual({
-      "commands": [{
-        "ids": [
-          "MyColor"
-        ],
-        "states": {
-          "online": true,
-          "color": {
-            "temperatureK": 4000
+    test('handleExecute ThermostatTemperatureSetRange', async () => {
+      getItemMock.mockReturnValue(Promise.resolve({
+        "name": "TestItem",
+        "type": "Group",
+        "metadata": {
+          "ga": {
+            "value": "Thermostat",
           }
         },
-        "status": "SUCCESS"
-      }]
+        "members": [
+          {
+            "name": "High",
+            "state": "25",
+            "metadata": {
+              "ga": {
+                "value": "thermostatTemperatureSetpointHigh"
+              }
+            }
+          },
+          {
+            "name": "Low",
+            "state": "5",
+            "metadata": {
+              "ga": {
+                "value": "thermostatTemperatureSetpointLow"
+              }
+            }
+          }
+        ]
+      }));
+      sendCommandMock.mockReturnValue(Promise.resolve());
+      const commands = [{
+        "devices": [{
+          "id": "TestItem",
+          "customData": {}
+        }],
+        "execution": [{
+          "command": "action.devices.commands.ThermostatTemperatureSetRange",
+          "params": {
+            "thermostatTemperatureSetpointLow": 10,
+            "thermostatTemperatureSetpointHigh": 20
+          }
+        }]
+      }];
+      const result = await openHAB.handleExecute(commands);
+      expect(getItemMock).toHaveBeenCalledTimes(2);
+      expect(sendCommandMock).toHaveBeenCalledTimes(2);
+      expect(result).toStrictEqual({
+        "commands": [
+          {
+            "ids": ["TestItem"],
+            "states": {
+              "thermostatTemperatureSetpointHigh": 25,
+              "thermostatTemperatureSetpointLow": 10,
+              "online": true
+            },
+            "status": "SUCCESS"
+          }
+        ]
+      });
     });
   });
 });
