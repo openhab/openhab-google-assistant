@@ -2,31 +2,41 @@ name: Tests
 
 on:
   push:
-    branches:
-      - master
+    branches: [ master ]
   pull_request:
-    branches:
-      - master
+    branches: [ master ]
 
 jobs:
   unit-tests:
+    name: Unit-Tests
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js 12.x
-        uses: actions/setup-node@v1
-        with:
-          node-version: 12.x
-      - run: npm ci
-      - run: npm run lint
-      - run: npm run test-ci
-      - name: Upload Test Coverage
-        uses: actions/upload-artifact@v2
-        with:
-          name: coverage
-          path: coverage/
-      - name: Comment Test Coverage
-        if: ${{ github.event_name == 'pull_request' }}
-        uses: romeovs/lcov-reporter-action@v0.2.11
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Use Node.js 12.x
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12.x
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run linting
+      run: npm run lint
+
+    - name: Run tests
+      run: npm run test-ci
+
+    - name: Upload Test Coverage
+      uses: actions/upload-artifact@v2
+      with:
+        name: coverage
+        path: coverage/
+
+    - name: Comment Test Coverage
+      if: ${{ github.event_name == 'pull_request' }}
+      uses: romeovs/lcov-reporter-action@v0.2.11
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
