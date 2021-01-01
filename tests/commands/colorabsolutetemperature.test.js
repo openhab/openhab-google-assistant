@@ -56,6 +56,21 @@ describe('ColorAbsoluteTemperature Command', () => {
       expect(Command.convertParamsToValue(params, item, device)).toBe("75");
       expect(Command.convertParamsToValue(params, { "state": "100,100,50" }, device)).toBe("0");
     });
+
+    test('convertParamsToValue SpecialColorLight Kelvin', () => {
+      const item = {
+        "metadata": {
+          "ga": {
+            "config": {
+              "colorTemperatureRange": "1000,5000",
+              "useKelvin": true
+            }
+          }
+        }
+      };
+      const device = { "customData": { "deviceType": "SpecialColorLight" } };
+      expect(Command.convertParamsToValue(params, item, device)).toBe("2000");
+    });
   });
 
   test('getResponseStates', () => {

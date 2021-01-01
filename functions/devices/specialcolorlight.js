@@ -45,7 +45,7 @@ class SpecialColorLight extends DefaultDevice {
           try {
             const { temperatureMinK, temperatureMaxK } = this.getAttributes(item).colorTemperatureRange;
             state.color = {};
-            state.color.temperatureK = temperatureMinK + ((temperatureMaxK - temperatureMinK) / 100 * (100 - Number(members[member].state)) || 0);
+            state.color.temperatureK = this.useKelvin(item) ? Number(members[member].state) : temperatureMinK + ((temperatureMaxK - temperatureMinK) / 100 * (100 - Number(members[member].state)) || 0);
           } catch { }
           break;
       }
@@ -70,6 +70,11 @@ class SpecialColorLight extends DefaultDevice {
       });
     }
     return members;
+  }
+
+  static useKelvin(item) {
+    const config = this.getConfig(item);
+    return config.useKelvin === true;
   }
 }
 

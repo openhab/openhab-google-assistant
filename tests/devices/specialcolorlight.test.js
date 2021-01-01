@@ -78,42 +78,83 @@ describe('SpecialColorLight Device', () => {
     });
   });
 
-  test('getState', () => {
-    const item = {
-      "type": "Group",
-      "metadata": {
-        "ga": {
-          "value": "LIGHT",
-          "config": {
-            "colorTemperatureRange": "1000,4000"
-          }
-        }
-      },
-      "members": [
-        {
-          "state": "50",
-          "metadata": {
-            "ga": {
-              "value": "lightBrightness"
+  describe('getState', () => {
+    test('getState', () => {
+      const item = {
+        "type": "Group",
+        "metadata": {
+          "ga": {
+            "value": "LIGHT",
+            "config": {
+              "colorTemperatureRange": "1000,4000"
             }
           }
         },
-        {
-          "state": "20",
-          "metadata": {
-            "ga": {
-              "value": "lightColorTemperature"
+        "members": [
+          {
+            "state": "50",
+            "metadata": {
+              "ga": {
+                "value": "lightBrightness"
+              }
+            }
+          },
+          {
+            "state": "20",
+            "metadata": {
+              "ga": {
+                "value": "lightColorTemperature"
+              }
             }
           }
+        ]
+      };
+      expect(Device.getState(item)).toStrictEqual({
+        "on": true,
+        "brightness": 50,
+        "color": {
+          "temperatureK": 3400
         }
-      ]
-    };
-    expect(Device.getState(item)).toStrictEqual({
-      "on": true,
-      "brightness": 50,
-      "color": {
-        "temperatureK": 3400
-      }
+      });
+    });
+    test('getState use kelvin', () => {
+      const item = {
+        "type": "Group",
+        "metadata": {
+          "ga": {
+            "value": "LIGHT",
+            "config": {
+              "colorTemperatureRange": "1000,4000",
+              "useKelvin": true
+            }
+          }
+        },
+        "members": [
+          {
+            "state": "50",
+            "metadata": {
+              "ga": {
+                "value": "lightBrightness"
+              }
+            }
+          },
+          {
+            "state": "2000",
+            "metadata": {
+              "ga": {
+                "value": "lightColorTemperature"
+              }
+            }
+          }
+        ]
+      };
+      expect(Device.getState(item)).toStrictEqual({
+        "on": true,
+        "brightness": 50,
+        "color": {
+          "temperatureK": 2000
+        }
+      });
     });
   });
 });
