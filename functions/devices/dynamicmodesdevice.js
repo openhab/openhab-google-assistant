@@ -29,8 +29,8 @@ class DynamicModesDevice extends DefaultDevice {
         ordered: config.ordered === true
       }]
     };
-    try {
-      members.modesSettings.state.split(',').forEach(setting => {
+    members.modesSettings.state.split(',').forEach(setting => {
+      try {
         const [settingName, settingSynonyms] = setting.trim().split('=').map(s => s.trim());
         attributes.availableModes[0].settings.push({
           setting_name: settingName,
@@ -39,8 +39,8 @@ class DynamicModesDevice extends DefaultDevice {
             lang: config.lang || 'en'
           }]
         });
-      });
-    } catch { }
+      } catch { }
+    });
     return attributes;
   }
 
@@ -68,7 +68,7 @@ class DynamicModesDevice extends DefaultDevice {
         if (member.metadata && member.metadata.ga) {
           const memberType = supportedMembers.find(m => member.metadata.ga.value.toLowerCase() === m.toLowerCase());
           if (memberType) {
-            members[memberType] = { name: member.name, state: member.state };
+            members[memberType] = { name: member.name, state: member.state || 'NULL' };
           }
         }
       });
