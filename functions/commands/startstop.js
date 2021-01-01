@@ -9,11 +9,12 @@ class StartStop extends DefaultCommand {
     return ('start' in params) && typeof params.start === 'boolean';
   }
 
-  static convertParamsToValue(params, item, device) {
-    if (device.customData && device.customData.itemType === 'Contact') {
+  static convertParamsToValue(params, _, device) {
+    const itemType = this.getItemType(device);
+    if (itemType === 'Contact') {
       throw { statusCode: 400 };
     }
-    if (device.customData && device.customData.itemType === 'Rollershutter') {
+    if (itemType === 'Rollershutter') {
       return params.start ? 'MOVE' : 'STOP';
     }
     return params.start ? 'ON' : 'OFF';

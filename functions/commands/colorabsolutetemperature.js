@@ -18,7 +18,7 @@ class ColorAbsoluteTemperature extends DefaultCommand {
   }
 
   static getItemName(item, device) {
-    if (device.customData && device.customData.deviceType === 'SpecialColorLight') {
+    if (this.getDeviceType(device) === 'SpecialColorLight') {
       const members = SpecialColorLight.getMembers(item);
       if ('lightColorTemperature' in members) {
         return members.lightColorTemperature.name;
@@ -29,7 +29,7 @@ class ColorAbsoluteTemperature extends DefaultCommand {
   }
 
   static convertParamsToValue(params, item, device) {
-    if (device.customData && device.customData.deviceType === 'SpecialColorLight') {
+    if (this.getDeviceType(device) === 'SpecialColorLight') {
       try {
         if (SpecialColorLight.useKelvin(item)) {
           return params.color.temperature.toString();

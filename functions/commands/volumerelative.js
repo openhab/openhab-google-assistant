@@ -15,7 +15,7 @@ class VolumeRelative extends DefaultCommand {
   }
 
   static getItemName(item, device) {
-    if (device.customData && device.customData.deviceType === 'TV') {
+    if (this.getDeviceType(device) === 'TV') {
       const members = TV.getMembers(item);
       if ('tvVolume' in members) {
         return members.tvVolume.name;
@@ -27,7 +27,7 @@ class VolumeRelative extends DefaultCommand {
 
   static convertParamsToValue(params, item, device) {
     let state = item.state;
-    if (device.customData && device.customData.deviceType === 'TV') {
+    if (this.getDeviceType(device) === 'TV') {
       const members = TV.getMembers(item);
       if ('tvVolume' in members) {
         state = members.tvVolume.state;
@@ -40,9 +40,8 @@ class VolumeRelative extends DefaultCommand {
   }
 
   static getResponseStates(params, item, device) {
-    const state = parseInt(this.convertParamsToValue(params, item, device));
     return {
-      currentVolume: state
+      currentVolume: parseInt(this.convertParamsToValue(params, item, device))
     };
   }
 }

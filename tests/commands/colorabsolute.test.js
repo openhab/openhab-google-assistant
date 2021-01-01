@@ -14,7 +14,7 @@ describe('ColorAbsolute Command', () => {
   });
 
   test('convertParamsToValue', () => {
-    expect(Command.convertParamsToValue(params, {}, {})).toBe("10,20,30");
+    expect(Command.convertParamsToValue(params, {}, { "customData": { "deviceType": "ColorLight" } })).toBe("10,20,30");
     expect(() => (Command.convertParamsToValue(params, {}, { "customData": { "deviceType": "Light" } }))).toThrow();
   });
 

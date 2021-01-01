@@ -9,9 +9,9 @@ class ArmDisarm extends DefaultCommand {
     return ('arm' in params) && typeof params.arm === 'boolean';
   }
 
-  static convertParamsToValue(params, item, device) {
+  static convertParamsToValue(params, _, device) {
     let arm = params.arm;
-    if (device.customData && device.customData.inverted === true) {
+    if (this.isInverted(device)) {
       arm = !arm;
     }
     return arm ? 'ON' : 'OFF';

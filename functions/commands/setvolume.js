@@ -11,11 +11,11 @@ class SetVolume extends DefaultCommand {
   }
 
   static requiresItem(device) {
-    return !!device.customData && device.customData.deviceType === 'TV';
+    return this.getDeviceType(device) === 'TV';
   }
 
   static getItemName(item, device) {
-    if (device.customData && device.customData.deviceType === 'TV') {
+    if (this.getDeviceType(device) === 'TV') {
       const members = TV.getMembers(item);
       if ('tvVolume' in members) {
         return members.tvVolume.name;

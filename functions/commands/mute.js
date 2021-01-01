@@ -11,11 +11,11 @@ class Mute extends DefaultCommand {
   }
 
   static requiresItem(device) {
-    return !!device.customData && device.customData.deviceType === 'TV';
+    return this.getDeviceType(device) === 'TV';
   }
 
   static getItemName(item, device) {
-    if (device.customData && device.customData.deviceType === 'TV') {
+    if (this.getDeviceType(device) === 'TV') {
       const members = TV.getMembers(item);
       if ('tvMute' in members) {
         return members.tvMute.name;
@@ -29,8 +29,8 @@ class Mute extends DefaultCommand {
   }
 
   static convertParamsToValue(params, item, device) {
-    let itemType = device.customData && device.customData.itemType;
-    if (device.customData && device.customData.deviceType === 'TV') {
+    let itemType = this.getItemType(device);
+    if (this.getDeviceType(device) === 'TV') {
       const members = TV.getMembers(item);
       if ('tvMute' in members) {
         itemType = 'Switch';
@@ -42,7 +42,7 @@ class Mute extends DefaultCommand {
     if (itemType !== 'Switch') {
       return mute ? '0' : undefined;
     }
-    if (device.customData && device.customData.inverted === true) {
+    if (this.isInverted(device) === true) {
       mute = !mute;
     }
     return mute ? 'ON' : 'OFF';

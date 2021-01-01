@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 const ackSupported = [
   'action.devices.commands.ArmDisarm',
   'action.devices.commands.Fill',
@@ -47,6 +48,27 @@ class DefaultCommand {
    */
   static getItemName(item, device) {
     return item.name;
+  }
+
+  /**
+   * @param {object} device
+   */
+  static getDeviceType(device) {
+    return device.customData && device.customData.deviceType || '';
+  }
+
+  /**
+   * @param {object} device
+   */
+  static getItemType(device) {
+    return device.customData && device.customData.itemType || '';
+  }
+
+  /**
+   * @param {object} device
+   */
+  static isInverted(device) {
+    return device.customData && device.customData.inverted === true;
   }
 
   /**

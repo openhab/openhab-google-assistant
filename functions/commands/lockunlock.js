@@ -9,12 +9,12 @@ class LockUnlock extends DefaultCommand {
     return ('lock' in params) && typeof params.lock === 'boolean';
   }
 
-  static convertParamsToValue(params, item, device) {
-    if (device.customData && device.customData.itemType === 'Contact') {
+  static convertParamsToValue(params, _, device) {
+    if (this.getItemType(device) === 'Contact') {
       throw { statusCode: 400 };
     }
     let lock = params.lock;
-    if (device.customData && device.customData.inverted === true) {
+    if (this.isInverted(device)) {
       lock = !lock;
     }
     return lock ? 'ON' : 'OFF';

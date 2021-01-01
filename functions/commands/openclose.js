@@ -9,18 +9,19 @@ class OpenClose extends DefaultCommand {
     return ('openPercent' in params) && typeof params.openPercent === 'number';
   }
 
-  static convertParamsToValue(params, item, device) {
-    if (device.customData && device.customData.itemType === 'Contact') {
+  static convertParamsToValue(params, _, device) {
+    const itemType = this.getItemType(device);
+    if (itemType === 'Contact') {
       throw { statusCode: 400 };
     }
     let openPercent = params.openPercent;
-    if (device.customData && device.customData.inverted === true) {
+    if (this.isInverted(device) === true) {
       openPercent = 100 - openPercent;
     }
-    if (device.customData && device.customData.itemType === 'Rollershutter') {
+    if (itemType === 'Rollershutter') {
       return openPercent === 0 ? 'DOWN' : openPercent === 100 ? 'UP' : (100 - openPercent).toString();
     }
-    if (device.customData && device.customData.itemType === 'Switch') {
+    if (itemType === 'Switch') {
       return openPercent === 0 ? 'OFF' : 'ON';
     }
     return openPercent.toString();

@@ -18,7 +18,7 @@ class GetCameraStream extends DefaultCommand {
     return null;
   }
 
-  static getResponseStates(params, item) {
+  static getResponseStates(_, item) {
     return {
       cameraStreamAccessUrl: item.state
     };

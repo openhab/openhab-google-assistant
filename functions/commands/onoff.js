@@ -12,20 +12,19 @@ class OnOff extends DefaultCommand {
   }
 
   static requiresItem(device) {
-    return !!device.customData && (
-      device.customData.deviceType === 'SpecialColorLight' || device.customData.deviceType === 'TV'
-    );
+    return ['SpecialColorLight', 'TV'].includes(this.getDeviceType(device));
   }
 
   static getItemName(item, device) {
-    if (device.customData && device.customData.deviceType === 'SpecialColorLight') {
+    const deviceType = this.getDeviceType(device);
+    if (deviceType === 'SpecialColorLight') {
       const members = SpecialColorLight.getMembers(item);
       if ('lightBrightness' in members) {
         return members.lightBrightness.name;
       }
       throw { statusCode: 400 };
     }
-    if (device.customData && device.customData.deviceType === 'TV') {
+    if (deviceType === 'TV') {
       const members = TV.getMembers(item);
       if ('tvPower' in members) {
         return members.tvPower.name;
@@ -35,9 +34,9 @@ class OnOff extends DefaultCommand {
     return item.name;
   }
 
-  static convertParamsToValue(params, item, device) {
+  static convertParamsToValue(params, _, device) {
     let on = params.on;
-    if (device.customData && device.customData.inverted === true) {
+    if (this.isInverted(device) === true) {
       on = !on;
     }
     return on ? 'ON' : 'OFF';

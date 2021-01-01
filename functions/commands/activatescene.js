@@ -9,9 +9,9 @@ class ActivateScene extends DefaultCommand {
     return (('deactivate' in params) && typeof params.deactivate === 'boolean') || !('deactivate' in params);
   }
 
-  static convertParamsToValue(params, item, device) {
+  static convertParamsToValue(params, _, device) {
     let deactivate = params.deactivate;
-    if (device.customData && device.customData.inverted === true) {
+    if (this.isInverted(device)) {
       deactivate = !deactivate;
     }
     return !deactivate ? 'ON' : 'OFF';

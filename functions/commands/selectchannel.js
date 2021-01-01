@@ -28,7 +28,7 @@ class SelectChannel extends DefaultCommand {
     if (params.channelNumber) {
       return params.channelNumber;
     }
-    const search = params.channelName || params.channelCode;
+    const search = params.channelName || params.channelCode;
     const channelMap = TV.getChannelMap(item);
     for (const number in channelMap) {
       if (channelMap[number].includes(search)) {
@@ -38,9 +38,8 @@ class SelectChannel extends DefaultCommand {
   }
 
   static getResponseStates(params, item) {
-    const state = this.convertParamsToValue(params, item);
     return {
-      channelNumber: state
+      channelNumber: this.convertParamsToValue(params, item)
     };
   }
 }
