@@ -18,8 +18,8 @@ jobs:
         with:
           node-version: 12.x
       - run: npm ci
-      - run: npm run build --if-present
-      - run: npm test
+      - run: npm lint
+      - run: npm test-ci
       - name: Upload Test Coverage
         uses: actions/upload-artifact@v2
         with:

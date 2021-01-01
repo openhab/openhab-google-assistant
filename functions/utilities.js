@@ -20,19 +20,22 @@
 
 module.exports = {
   /**
-   * @param {number} value
+   * @param {number} value temperature in Fahrenheit
+   * @returns {number} temperature value converted to Celcius
    */
   convertToCelsius: (value) => {
     return Number(((value - 32) * 5 / 9).toFixed(1));
   },
   /**
-   * @param {number} value
+   * @param {number} value temperature in Celcius
+   * @returns {number} temperature value converted to Fahrenheit
    */
   convertToFahrenheit: (value) => {
     return Math.round(value * 9 / 5 + 32);
   },
   /**
-   * @param {number} kelvin
+   * @param {number} kelvin color temperature as Kelvin
+   * @returns {object} color temperature value converted to RGB
    */
   kelvin2rgb: (kelvin) => {
     const temp = kelvin / 100;
@@ -46,7 +49,8 @@ module.exports = {
     };
   },
   /**
-   * @param {object} rgb
+   * @param {object} rgb color as RGB
+   * @returns {object} color value converted to HSV
    */
   rgb2hsv: ({ r, g, b }) => {
     r = r / 255;
