@@ -9,7 +9,7 @@ on:
       - master
 
 jobs:
-  build:
+  unit-tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -18,8 +18,8 @@ jobs:
         with:
           node-version: 12.x
       - run: npm ci
-      - run: npm lint
-      - run: npm test-ci
+      - run: npm run lint
+      - run: npm run test-ci
       - name: Upload Test Coverage
         uses: actions/upload-artifact@v2
         with:
