@@ -19,7 +19,7 @@ class Thermostat extends DefaultDevice {
   static getAttributes(item) {
     const config = this.getConfig(item);
     const attributes = {
-      thermostatTemperatureUnit: this.usesFahrenheit(item) ? 'F' : 'C'
+      thermostatTemperatureUnit: this.useFahrenheit(item) ? 'F' : 'C'
     };
     if ('thermostatTemperatureRange' in config) {
       const [min, max] = config.thermostatTemperatureRange.split(',').map(s => parseFloat(s.trim()));
@@ -49,7 +49,7 @@ class Thermostat extends DefaultDevice {
         state[member] = this.translateModeToGoogle(item, members[member].state);
       } else {
         state[member] = Number(parseFloat(members[member].state).toFixed(1));
-        if (member.indexOf('Temperature') > 0 && this.usesFahrenheit(item)) {
+        if (member.indexOf('Temperature') > 0 && this.useFahrenheit(item)) {
           state[member] = convertToCelsius(state[member]);
         }
       }
@@ -93,7 +93,7 @@ class Thermostat extends DefaultDevice {
     return members;
   }
 
-  static usesFahrenheit(item) {
+  static useFahrenheit(item) {
     const config = this.getConfig(item);
     return config.thermostatTemperatureUnit === 'F' || config.useFahrenheit === true || this.hasTag(item, 'Fahrenheit');
   }

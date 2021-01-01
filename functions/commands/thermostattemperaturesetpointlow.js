@@ -25,7 +25,7 @@ class ThermostatTemperatureSetpointLow extends DefaultCommand {
 
   static convertParamsToValue(params, item) {
     let value = params.thermostatTemperatureSetpointLow;
-    if (Thermostat.usesFahrenheit(item)) {
+    if (Thermostat.useFahrenheit(item)) {
       value = convertToFahrenheit(value);
     }
     return value.toString();

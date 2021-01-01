@@ -28,8 +28,8 @@ describe('Thermostat Device', () => {
     expect(Device.matchesItemType({ "type": "Group" })).toBe(false);
   });
 
-  describe('usesFahrenheit', () => {
-    test('usesFahrenheit unit', () => {
+  describe('useFahrenheit', () => {
+    test('useFahrenheit thermostatTemperatureUnit', () => {
       const item = {
         "metadata": {
           "ga": {
@@ -39,9 +39,9 @@ describe('Thermostat Device', () => {
           }
         }
       };
-      expect(Device.usesFahrenheit(item)).toBe(true);
+      expect(Device.useFahrenheit(item)).toBe(true);
     });
-    test('usesFahrenheit unit', () => {
+    test('useFahrenheit useFahrenheit', () => {
       const item = {
         "metadata": {
           "ga": {
@@ -51,13 +51,13 @@ describe('Thermostat Device', () => {
           }
         }
       };
-      expect(Device.usesFahrenheit(item)).toBe(true);
+      expect(Device.useFahrenheit(item)).toBe(true);
     });
-    test('usesFahrenheit unit', () => {
+    test('useFahrenheit tag', () => {
       const item = {
         "tags": ["Fahrenheit"]
       };
-      expect(Device.usesFahrenheit(item)).toBe(true);
+      expect(Device.useFahrenheit(item)).toBe(true);
     });
   });
 
