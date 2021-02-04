@@ -39,7 +39,60 @@ describe('SpecialColorLight Device', () => {
         }
       ]
     };
+    const item2 = {
+      "type": "Group",
+      "metadata": {
+        "ga": {
+          "value": "LIGHT"
+        }
+      },
+      "members": [
+        {
+          "metadata": {
+            "ga": {
+              "value": "lightBrightness"
+            }
+          }
+        },
+        {
+          "metadata": {
+            "ga": {
+              "value": "lightColorTemperature"
+            }
+          }
+        }
+      ]
+    };
+    const item3 = {
+      "type": "Group",
+      "metadata": {
+        "ga": {
+          "value": "LIGHT",
+          "config": {
+            "useKelvin": true
+          }
+        }
+      },
+      "members": [
+        {
+          "metadata": {
+            "ga": {
+              "value": "lightBrightness"
+            }
+          }
+        },
+        {
+          "metadata": {
+            "ga": {
+              "value": "lightColorTemperature"
+            }
+          }
+        }
+      ]
+    };
     expect(Device.matchesItemType(item)).toBe(true);
+    expect(Device.matchesItemType(item2)).toBe(false);
+    expect(Device.matchesItemType(item3)).toBe(true);
     expect(Device.matchesItemType({ "type": "Color" })).toBe(false);
     expect(Device.matchesItemType({ "type": "Group", "groupType": "Color" })).toBe(false);
     expect(Device.matchesItemType({ "type": "Group", "groupType": "Dimmer" })).toBe(false);
