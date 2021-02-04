@@ -14,7 +14,7 @@
   "scripts": {
     "start": "node testServer.js",
     "test": "jest --silent --coverage",
-    "test-ci": "npm test --ci",
+    "test-ci": "jest --silent --coverage --ci",
     "lint": "eslint --ext .js --cache ."
   },
   "license": "EPL-2.0",
