@@ -13,15 +13,16 @@ This guide describes step by step how to use the [openHAB Google Assistant Smart
 
 With the Action you can voice control your openHAB items and it supports lights, plugs, switches, thermostats and many more. The openHAB Action comes with multiple language support like English, German or French language.
 
-# General Configuration Instructions
+## General Configuration Instructions
 
-## Requirements
+### Requirements
 
 * [openHAB Cloud Connector](http://docs.openhab.org/addons/ios/openhabcloud/readme.html) configured using myopenHAB.org. (Items DO NOT need to be exposed to and will not show up on myopenHAB.org, this is only needed for the IFTTT service!)
 * Google account.
 * Google Home, Google Home mini, Google Nest or the Google Assistant on your phone.
 
-## Item configuration
+### Item configuration
+
 In openHAB 2 items are exposed via [metadata](https://www.openhab.org/docs/configuration/items.html#item-definition-and-syntax).
 
 Currently the following metadata values are supported (also depending on Googles API capabilities):
@@ -30,7 +31,7 @@ Currently the following metadata values are supported (also depending on Googles
 
 ---
 
-* `Group { ga="Light" [ useKelvin=true ] }` (Light with separate brightness and color items)
+* `Group { ga="Light" [ colorTemperatureRange="2000,9000", useKelvin=true ] }` (Light with separate brightness and color items)
 * `Dimmer / Number { ga="lightBrightness" }` as part of Light group
 * `Dimmer / Number { ga="lightColorTemperature" }` as part of Light group
 
@@ -93,11 +94,11 @@ _\* All Rollershutter devices can also be used with a Switch or Contact item wit
 
 ---
 
-* `Number { ga="TemperatureSensor" } [ useFahrenheit=true ] `
-
+* `Number { ga="TemperatureSensor" } [ useFahrenheit=true ]`
 
 Example item configuration:
-  ```
+
+  ```js
   Switch KitchenLights "Kitchen Lights" <light> (gKitchen) { ga="Switch" }
   Dimmer BedroomLights "Bedroom Lights" <light> (gBedroom) { ga="Light" }
   Color LivingroomLights "Livingroom Lights" <light> (gLivingroom) { ga="Light" }
@@ -124,25 +125,29 @@ Furthermore, you can state synonyms for the device name: `Switch KitchenLight "K
 To ease setting up new devices you can add a room hint: `[ roomHint="Living Room" ]`.
 
 For devices supporting the OpenClose trait, the attributes `[ discreteOnlyOpenClose=false, queryOnlyOpenClose=false ]` can be configured.
-- discreteOnlyOpenClose defaults to false. When set to true, this indicates that the device must either be fully open or fully closed (that is, it does not support values between 0% and 100%). An example of such a device may be a valve.
-- queryOnlyOpenClose defaults to false. Is set to true for `Contact` items. Indicates if the device can only be queried for state information and cannot be controlled. Sensors that can only report open state should set this field to true.
+
+* discreteOnlyOpenClose defaults to false. When set to true, this indicates that the device must either be fully open or fully closed (that is, it does not support values between 0% and 100%). An example of such a device may be a valve.
+* queryOnlyOpenClose defaults to false. Is set to true for `Contact` items. Indicates if the device can only be queried for state information and cannot be controlled. Sensors that can only report open state should set this field to true.
 
 ---
 
-NOTE: metadata is not (yet?) available via paperUI. Either you create your items via ".items" files, or you can:
-- add metadata via console:
- ```
- smarthome:metadata add BedroomLights ga Light
- ```
+NOTE: metadata is not available via paperUI in openHAB v2. Either you create your items via ".items" files, or you can:
 
-- add metadata using the REST API:
- ```
- PUT /rest/items/BedroomLights/metadata/ga
+* add metadata via console:
 
- {
-   "value": "Light"
- }
- ```
+  ```console
+  smarthome:metadata add BedroomLights ga Light
+  ```
+
+* add metadata using the REST API:
+
+  ```js
+  PUT /rest/items/BedroomLights/metadata/ga
+
+  {
+    "value": "Light"
+  }
+  ```
 
 NOTE: Please be aware that for backward compatibilty also the former usage of tags (ref. [Google Assistant Action Documentation v2.5](https://www.openhab.org/v2.5/docs/ecosystem/google-assistant/)) to specify items to be exposed to Google Assistent is supported and may cause unexpected behavior.
 Items that contain tags that refer to a valid Google Assistent device will be exposed regardless of having metadata set. E.g.: `Switch MyBulb ["Lighting"]`.
@@ -161,7 +166,7 @@ _pinNeeded_: "A two-factor authentication that requires a personal identificatio
 
 Example:
 
-```
+```js
 Switch DoorLock "Front Door" { ga="Lock" [ ackNeeded=true ] }
 Switch HouseAlarm "House Alarm" { ga="SecuritySystem" [ pinNeeded="1234" ] }
 ```
@@ -212,7 +217,6 @@ If the values are still inverted in your case, you can state the `[ inverted=tru
 Since Google only tells the open percentage (and not the verb "close" or "down"), it can not be differentiated between saying "set blind to 100%" or "open blind".
 Therefore, it is not possible to "not invert" the verbs, if the user chooses to invert the numbers.
 
-
 ## Setup & Usage on Google Assistant App
 
 * Make sure Google Play Services is up to date.
@@ -255,28 +259,27 @@ Therefore, it is not possible to "not invert" the verbs, if the user chooses to 
 ![openHAB Google App](images/Screenshot_10.png)
 ![openHAB Google App](images/Screenshot_11.png)
 
-
 ## Example Voice Commands
 
 Here are some example voice commands:
 
- * Turn on Office Lights.
- * Dim/Brighten Office Lights (increments 15%).
- * Set Office Lights to 35%.
- * Open/Close the blinds
- * Turn off Pool Waterfall.
- * Turn on House Fan.
- * Turn on Home Theater Scene.
- * Set Basement Thermostat to 15 degrees.
- * What is the current Basement Thermostat Temperature?
+* Turn on Office Lights.
+* Dim/Brighten Office Lights (increments 15%).
+* Set Office Lights to 35%.
+* Open/Close the blinds
+* Turn off Pool Waterfall.
+* Turn on House Fan.
+* Turn on Home Theater Scene.
+* Set Basement Thermostat to 15 degrees.
+* What is the current Basement Thermostat Temperature?
 
- ## Frequently Asked Question
+## Frequently Asked Question
 
- My New items did not appear in the Google Home app.
+My New items did not appear in the Google Home app.
 
- * Say: Hey Google, sync my devices.
+* Say: Hey Google, sync my devices.
 
- I'm not able to connect openHAB to Google Home.
+I'm not able to connect openHAB to Google Home.
 
 * Check, recheck and after that check again your items!
 * The items that you want to expose to Google Assistant should have the right metadata assigned.
@@ -286,17 +289,20 @@ Here are some example voice commands:
   * A number or string item with the metadata value { ga="thermostatMode" } as part of the thermostat group
   * A number item with the metadata value { ga="thermostatTemperatureAmbient" } as part of the thermostat group
   * A number item with the metadata value { ga="thermostatTemperatureSetpoint" } as part of the thermostat group
-  ```
+
+  ```js
   Group g_HK_Basement_TSTAT "Basement Thermostat" { ga="Thermostat" [ useFahrenheit=true ] }
   Number HK_Basement_Mode "Basement Heating/Cooling Mode" (g_HK_Basement_TSTAT) { ga="thermostatMode" }
   Number HK_Basement_Setpoint "Basement Setpoint" (g_HK_Basement_TSTAT) { ga="thermostatTemperatureSetpoint" }
   Number HK_Basement_Temp "Basement Temperature" (g_HK_Basement_TSTAT) { ga="thermostatTemperatureAmbient" }
   ```
+
 * If none of the above solutions works for you:
   * Remove all the metadata.
   * Make a new .item file with 1 item to expose.
-  ```
+
+  ```js
   Switch TestLight "Test Light" { ga="Switch" }
   ```
-  * Relink your account.
 
+  * Relink your account.
