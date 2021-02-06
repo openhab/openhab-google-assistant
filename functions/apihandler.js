@@ -48,7 +48,7 @@ class ApiHandler {
    * @param {number} length
    */
    getOptions(method = 'GET', itemName = '', length = 0) {
-    const queryString = '?metadata=ga,synonyms' + (itemName ? '' : '&fields=groupNames,groupType,name,label,metadata,tags,type,state');
+    const queryString = '?metadata=ga,synonyms' + (itemName ? '' : '&fields=groupNames,groupType,name,label,metadata,type,state');
     const options = {
       hostname: this._config.host,
       port: this._config.port,

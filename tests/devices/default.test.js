@@ -67,11 +67,4 @@ describe('Fan Device', () => {
       "willReportState": false
     });
   });
-
-  test('hasTag', () => {
-    expect(Device.hasTag({}, "testtag")).toBe(false);
-    expect(Device.hasTag({ "tags": ["test"] }, "testtag")).toBe(false);
-    expect(Device.hasTag({ "tags": ["testtag"] }, "testtag")).toBe(true);
-    expect(Device.hasTag({ "tags": ["TestTag"] }, "testtag")).toBe(true);
-  });
 });
