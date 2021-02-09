@@ -249,9 +249,9 @@ class Scene extends GenericDevice {
     return ['Switch'];
   }
 
-  static getAttributes() {
+  static getAttributes(item) {
     return {
-      sceneReversible: true
+      sceneReversible: getConfig(item).sceneReversible !== false
     };
   }
 }
