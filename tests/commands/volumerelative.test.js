@@ -56,11 +56,7 @@ describe('volumeRelative Command', () => {
           }
         ]
       };
-      expect(
-        Command.convertParamsToValue(params, item, {
-          customData: { deviceType: 'TV' }
-        })
-      ).toBe('30');
+      expect(Command.convertParamsToValue(params, item, { customData: { deviceType: 'TV' } })).toBe('30');
       expect(() => {
         Command.convertParamsToValue(params, {}, { customData: { deviceType: 'TV' } });
       }).toThrow();
@@ -68,8 +64,6 @@ describe('volumeRelative Command', () => {
   });
 
   test('getResponseStates', () => {
-    expect(Command.getResponseStates(params, { state: 20 }, {})).toStrictEqual({
-      currentVolume: 30
-    });
+    expect(Command.getResponseStates(params, { state: 20 }, {})).toStrictEqual({ currentVolume: 30 });
   });
 });

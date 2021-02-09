@@ -57,8 +57,6 @@ describe('ThermostatTemperatureSetpoint Command', () => {
         }
       ]
     };
-    expect(Command.getResponseStates(params, item)).toStrictEqual({
-      thermostatTemperatureSetpoint: 20
-    });
+    expect(Command.getResponseStates(params, item)).toStrictEqual({ thermostatTemperatureSetpoint: 20 });
   });
 });

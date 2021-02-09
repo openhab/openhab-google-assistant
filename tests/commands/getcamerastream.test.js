@@ -4,12 +4,7 @@ describe('GetCameraStream Command', () => {
   test('validateParams', () => {
     expect(Command.validateParams({})).toBe(false);
     expect(Command.validateParams({ StreamToChromecast: true })).toBe(false);
-    expect(
-      Command.validateParams({
-        StreamToChromecast: true,
-        SupportedStreamProtocols: {}
-      })
-    ).toBe(true);
+    expect(Command.validateParams({ StreamToChromecast: true, SupportedStreamProtocols: {} })).toBe(true);
   });
 
   test('requiresItem', () => {

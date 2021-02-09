@@ -13,8 +13,6 @@ describe('SetFanSpeed Command', () => {
   });
 
   test('getResponseStates', () => {
-    expect(Command.getResponseStates(params)).toStrictEqual({
-      currentFanSpeedSetting: '50'
-    });
+    expect(Command.getResponseStates(params)).toStrictEqual({ currentFanSpeedSetting: '50' });
   });
 });

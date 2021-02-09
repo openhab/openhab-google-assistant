@@ -148,8 +148,8 @@ class OpenHAB {
         const DeviceType = OpenHAB.getDeviceForItem(item);
         if (DeviceType) {
           console.log(
-            `openhabGoogleAssistant - handleSync - SYNC is adding: ${item.type}:${item.name} ` +
-              `with type: ${DeviceType.type}`
+            `openhabGoogleAssistant - handleSync - SYNC is adding: ${item.type}:${item.name}` +
+              ` with type: ${DeviceType.type}`
           );
           discoveredDevicesList.push(DeviceType.getMetadata(item));
         }

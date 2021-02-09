@@ -23,11 +23,7 @@ describe('LockUnlock Command', () => {
   });
 
   test('getResponseStates', () => {
-    expect(Command.getResponseStates({ lock: true })).toStrictEqual({
-      isLocked: true
-    });
-    expect(Command.getResponseStates({ lock: false })).toStrictEqual({
-      isLocked: false
-    });
+    expect(Command.getResponseStates({ lock: true })).toStrictEqual({ isLocked: true });
+    expect(Command.getResponseStates({ lock: false })).toStrictEqual({ isLocked: false });
   });
 });

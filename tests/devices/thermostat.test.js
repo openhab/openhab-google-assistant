@@ -151,11 +151,7 @@ describe('Thermostat Device', () => {
 
   describe('getMembers', () => {
     expect(Device.getMembers({ members: [{}] })).toStrictEqual({});
-    expect(
-      Device.getMembers({
-        members: [{ metadata: { ga: { value: 'invalid' } } }]
-      })
-    ).toStrictEqual({});
+    expect(Device.getMembers({ members: [{ metadata: { ga: { value: 'invalid' } } }] })).toStrictEqual({});
     test('getMembers', () => {
       const item = {
         members: [

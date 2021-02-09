@@ -20,11 +20,7 @@ describe('ArmDisarm Command', () => {
   });
 
   test('getResponseStates', () => {
-    expect(Command.getResponseStates({ arm: true })).toStrictEqual({
-      isArmed: true
-    });
-    expect(Command.getResponseStates({ arm: false })).toStrictEqual({
-      isArmed: false
-    });
+    expect(Command.getResponseStates({ arm: true })).toStrictEqual({ isArmed: true });
+    expect(Command.getResponseStates({ arm: false })).toStrictEqual({ isArmed: false });
   });
 });

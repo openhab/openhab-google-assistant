@@ -44,8 +44,6 @@ describe('setVolume Command', () => {
   });
 
   test('getResponseStates', () => {
-    expect(Command.getResponseStates(params)).toStrictEqual({
-      currentVolume: 20
-    });
+    expect(Command.getResponseStates(params)).toStrictEqual({ currentVolume: 20 });
   });
 });

@@ -91,11 +91,7 @@ describe('Mute Command', () => {
           }
         ]
       };
-      expect(
-        Command.convertParamsToValue({ mute: true }, item, {
-          customData: { deviceType: 'TV' }
-        })
-      ).toBe('ON');
+      expect(Command.convertParamsToValue({ mute: true }, item, { customData: { deviceType: 'TV' } })).toBe('ON');
     });
 
     test('convertParamsToValue TV volume', () => {
@@ -110,20 +106,12 @@ describe('Mute Command', () => {
           }
         ]
       };
-      expect(
-        Command.convertParamsToValue({ mute: true }, item, {
-          customData: { deviceType: 'TV' }
-        })
-      ).toBe('0');
+      expect(Command.convertParamsToValue({ mute: true }, item, { customData: { deviceType: 'TV' } })).toBe('0');
     });
   });
 
   test('getResponseStates', () => {
-    expect(Command.getResponseStates({ mute: true })).toStrictEqual({
-      isMuted: true
-    });
-    expect(Command.getResponseStates({ mute: false })).toStrictEqual({
-      isMuted: false
-    });
+    expect(Command.getResponseStates({ mute: true })).toStrictEqual({ isMuted: true });
+    expect(Command.getResponseStates({ mute: false })).toStrictEqual({ isMuted: false });
   });
 });

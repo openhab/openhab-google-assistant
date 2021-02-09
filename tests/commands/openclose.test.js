@@ -48,8 +48,6 @@ describe('OpenClose Command', () => {
   });
 
   test('getResponseStates', () => {
-    expect(Command.getResponseStates({ openPercent: 10 })).toStrictEqual({
-      openPercent: 10
-    });
+    expect(Command.getResponseStates({ openPercent: 10 })).toStrictEqual({ openPercent: 10 });
   });
 });

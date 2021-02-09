@@ -76,6 +76,16 @@ describe('Default Command', () => {
         type: 'challengeFailedPinNeeded'
       }
     });
+    // legacy tfa
+    expect(Command.handleAuthPin({ id: 'Item', customData: { tfaPin: '1234' } }, { pin: '1234' })).toBeUndefined();
+    expect(Command.handleAuthPin({ id: 'Item', customData: { tfaPin: '1234' } }, undefined)).toStrictEqual({
+      ids: ['Item'],
+      status: 'ERROR',
+      errorCode: 'challengeNeeded',
+      challengeNeeded: {
+        type: 'pinNeeded'
+      }
+    });
   });
 
   test('handleAuthAck', () => {
@@ -84,6 +94,19 @@ describe('Default Command', () => {
       Command.handleAuthAck({ id: 'Item', customData: { ackNeeded: true } }, { ack: true }, undefined)
     ).toBeUndefined();
     expect(Command.handleAuthAck({ id: 'Item', customData: { ackNeeded: true } }, {}, { key: 'value' })).toStrictEqual({
+      ids: ['Item'],
+      status: 'ERROR',
+      states: { key: 'value' },
+      errorCode: 'challengeNeeded',
+      challengeNeeded: {
+        type: 'ackNeeded'
+      }
+    });
+    // legacy tfa
+    expect(
+      Command.handleAuthAck({ id: 'Item', customData: { tfaAck: true } }, { ack: true }, undefined)
+    ).toBeUndefined();
+    expect(Command.handleAuthAck({ id: 'Item', customData: { tfaAck: true } }, {}, { key: 'value' })).toStrictEqual({
       ids: ['Item'],
       status: 'ERROR',
       states: { key: 'value' },

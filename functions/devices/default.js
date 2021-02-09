@@ -89,11 +89,11 @@ class DefaultDevice {
     if (config.inverted === true) {
       metadata.customData.inverted = true;
     }
-    if (config.ackNeeded === true) {
+    if (config.ackNeeded === true || config.tfaAck === true) {
       metadata.customData.ackNeeded = true;
     }
-    if (typeof config.pinNeeded === 'string') {
-      metadata.customData.pinNeeded = config.pinNeeded;
+    if (typeof config.pinNeeded === 'string' || typeof config.tfaPin === 'string') {
+      metadata.customData.pinNeeded = config.pinNeeded || config.tfaPin;
     }
     return metadata;
   }

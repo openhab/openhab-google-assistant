@@ -34,11 +34,7 @@ describe('OnOff Command', () => {
           }
         ]
       };
-      expect(
-        Command.getItemName(item, {
-          customData: { deviceType: 'SpecialColorLight' }
-        })
-      ).toBe('BrightnessItem');
+      expect(Command.getItemName(item, { customData: { deviceType: 'SpecialColorLight' } })).toBe('BrightnessItem');
     });
 
     test('getItemName TV', () => {
@@ -73,8 +69,6 @@ describe('OnOff Command', () => {
 
   test('getResponseStates', () => {
     expect(Command.getResponseStates({ on: true })).toStrictEqual({ on: true });
-    expect(Command.getResponseStates({ on: false })).toStrictEqual({
-      on: false
-    });
+    expect(Command.getResponseStates({ on: false })).toStrictEqual({ on: false });
   });
 });

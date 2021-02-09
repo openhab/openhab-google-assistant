@@ -36,11 +36,7 @@ describe('ColorAbsoluteTemperature Command', () => {
         }
       ]
     };
-    expect(
-      Command.getItemName(item, {
-        customData: { deviceType: 'SpecialColorLight' }
-      })
-    ).toBe('ColorItem');
+    expect(Command.getItemName(item, { customData: { deviceType: 'SpecialColorLight' } })).toBe('ColorItem');
   });
 
   describe('convertParamsToValue', () => {

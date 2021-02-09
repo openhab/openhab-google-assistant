@@ -286,11 +286,7 @@ describe('TV Device', () => {
 
   test('getMembers', () => {
     expect(Device.getMembers({ members: [{}] })).toStrictEqual({});
-    expect(
-      Device.getMembers({
-        members: [{ metadata: { ga: { value: 'invalid' } } }]
-      })
-    ).toStrictEqual({});
+    expect(Device.getMembers({ members: [{ metadata: { ga: { value: 'invalid' } } }] })).toStrictEqual({});
     const item = {
       members: [
         {

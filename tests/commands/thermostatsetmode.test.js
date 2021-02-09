@@ -56,8 +56,6 @@ describe('ThermostatSetMode Command', () => {
         }
       ]
     };
-    expect(Command.getResponseStates(params, item)).toStrictEqual({
-      thermostatMode: 'eco'
-    });
+    expect(Command.getResponseStates(params, item)).toStrictEqual({ thermostatMode: 'eco' });
   });
 });

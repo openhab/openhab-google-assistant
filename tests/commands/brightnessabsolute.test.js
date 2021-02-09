@@ -32,11 +32,7 @@ describe('BrightnessAbsolute Command', () => {
         }
       ]
     };
-    expect(
-      Command.getItemName(item, {
-        customData: { deviceType: 'SpecialColorLight' }
-      })
-    ).toBe('BrightnessItem');
+    expect(Command.getItemName(item, { customData: { deviceType: 'SpecialColorLight' } })).toBe('BrightnessItem');
   });
 
   test('convertParamsToValue', () => {
@@ -45,11 +41,7 @@ describe('BrightnessAbsolute Command', () => {
   });
 
   test('getResponseStates', () => {
-    expect(Command.getResponseStates({ brightness: 0 })).toStrictEqual({
-      brightness: 0
-    });
-    expect(Command.getResponseStates({ brightness: 100 })).toStrictEqual({
-      brightness: 100
-    });
+    expect(Command.getResponseStates({ brightness: 0 })).toStrictEqual({ brightness: 0 });
+    expect(Command.getResponseStates({ brightness: 100 })).toStrictEqual({ brightness: 100 });
   });
 });

@@ -28,13 +28,7 @@ describe('StartStop Command', () => {
   });
 
   test('getResponseStates', () => {
-    expect(Command.getResponseStates({ start: true })).toStrictEqual({
-      isRunning: true,
-      isPaused: false
-    });
-    expect(Command.getResponseStates({ start: false })).toStrictEqual({
-      isRunning: false,
-      isPaused: true
-    });
+    expect(Command.getResponseStates({ start: true })).toStrictEqual({ isRunning: true, isPaused: false });
+    expect(Command.getResponseStates({ start: false })).toStrictEqual({ isRunning: false, isPaused: true });
   });
 });

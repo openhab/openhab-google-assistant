@@ -85,8 +85,8 @@ class DefaultCommand {
   static handleAuthPin(device, challenge) {
     if (
       !device.customData ||
-      !device.customData.pinNeeded ||
-      (challenge && challenge.pin === device.customData.pinNeeded)
+      !(device.customData.pinNeeded || device.customData.tfaPin) ||
+      (challenge && challenge.pin === (device.customData.pinNeeded || device.customData.tfaPin))
     ) {
       return;
     }
@@ -106,7 +106,11 @@ class DefaultCommand {
    * @param {object} responseStates
    */
   static handleAuthAck(device, challenge, responseStates) {
-    if (!device.customData || !device.customData.ackNeeded || (challenge && challenge.ack === true)) {
+    if (
+      !device.customData ||
+      !(device.customData.ackNeeded || device.customData.tfaAck) ||
+      (challenge && challenge.ack === true)
+    ) {
       return;
     }
     return {
@@ -137,7 +141,10 @@ class DefaultCommand {
       }
 
       const ackWithState =
-        ackSupported.includes(this.type) && device.customData && device.customData.ackNeeded && !challenge.ack;
+        ackSupported.includes(this.type) &&
+        device.customData &&
+        (device.customData.ackNeeded || device.customData.tfaAck) &&
+        !challenge.ack;
 
       let getItemPromise = Promise.resolve({ name: device.id });
       if (this.requiresItem(device) || ackWithState) {

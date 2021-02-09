@@ -36,8 +36,6 @@ describe('SetInput Command', () => {
   });
 
   test('getResponseStates', () => {
-    expect(Command.getResponseStates(params)).toStrictEqual({
-      currentInput: 'hdmi1'
-    });
+    expect(Command.getResponseStates(params)).toStrictEqual({ currentInput: 'hdmi1' });
   });
 });

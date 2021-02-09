@@ -57,8 +57,6 @@ describe('ThermostatTemperatureSetpointHigh Command', () => {
         }
       ]
     };
-    expect(Command.getResponseStates(params, item)).toStrictEqual({
-      thermostatTemperatureSetpointHigh: 20
-    });
+    expect(Command.getResponseStates(params, item)).toStrictEqual({ thermostatTemperatureSetpointHigh: 20 });
   });
 });
