@@ -4,7 +4,10 @@
         "jest": true,
         "node": true
     },
-    "extends": "eslint:recommended",
+    "extends": [
+        "eslint:recommended",
+        "prettier"
+    ],
     "globals": {
         "Atomics": "readonly",
         "SharedArrayBuffer": "readonly"
@@ -13,11 +16,31 @@
         "ecmaVersion": 2019,
         "sourceType": "module"
     },
+    "plugins": [
+        "prettier"
+    ],
     "rules": {
+        "prettier/prettier": [
+            "error",
+            {
+                "singleQuote": true,
+                "trailingComma": "none",
+                "tabWidth": 2,
+                "printWidth": 120
+            }
+        ],
         "no-empty": [
             "error",
             {
                 "allowEmptyCatch": true
+            }
+        ],
+        "max-len": [
+            "error",
+            {
+                "code": 120,
+                "tabWidth": 2,
+                "ignoreUrls": true
             }
         ]
     }

@@ -15,7 +15,8 @@
     "start": "node testServer.js",
     "test": "jest --silent --coverage",
     "test-ci": "jest --silent --coverage --ci",
-    "lint": "eslint --ext .js --cache ."
+    "lint": "eslint --ext .js --cache .",
+    "fix": "eslint --fix --ext .js --cache ."
   },
   "license": "EPL-2.0",
   "bugs": {
@@ -27,14 +28,12 @@
     "express": "^4.17.1"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.19",
-    "eslint": "^7.16.0",
-    "eslint-config-standard": "^16.0.2",
-    "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.1.0",
+    "@types/jest": "^26.0.20",
+    "eslint": "^7.19.0",
+    "eslint-config-prettier": "^7.2.0",
+    "eslint-plugin-prettier": "^3.3.1",
     "jest": "^26.6.3",
-    "nock": "^13.0.5"
+    "nock": "^13.0.7",
+    "prettier": "2.2.1"
   }
 }
