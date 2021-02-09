@@ -1,6 +1,6 @@
 const Device = require('../../functions/devices/default.js');
 
-describe('Fan Device', () => {
+describe('Default Device', () => {
   const item = {
     type: 'Number',
     state: '50',
@@ -61,6 +61,21 @@ describe('Fan Device', () => {
       type: '',
       willReportState: false
     });
+  });
+
+  test('getMetadata legacy', () => {
+    const metadata = Device.getMetadata({
+      metadata: {
+        ga: {
+          config: {
+            tfaAck: true,
+            tfaPin: '1234'
+          }
+        }
+      }
+    });
+    expect(metadata.customData.ackNeeded).toBe(true);
+    expect(metadata.customData.pinNeeded).toBe('1234');
   });
 
   test('hasTag', () => {
