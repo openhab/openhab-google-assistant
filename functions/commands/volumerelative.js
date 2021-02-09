@@ -7,7 +7,7 @@ class VolumeRelative extends DefaultCommand {
   }
 
   static validateParams(params) {
-    return ('relativeSteps' in params) && typeof params.relativeSteps === 'number';
+    return 'relativeSteps' in params && typeof params.relativeSteps === 'number';
   }
 
   static requiresItem() {

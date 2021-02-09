@@ -6,7 +6,7 @@ class LockUnlock extends DefaultCommand {
   }
 
   static validateParams(params) {
-    return ('lock' in params) && typeof params.lock === 'boolean';
+    return 'lock' in params && typeof params.lock === 'boolean';
   }
 
   static convertParamsToValue(params, _, device) {

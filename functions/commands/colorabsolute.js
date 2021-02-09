@@ -6,8 +6,12 @@ class ColorAbsolute extends DefaultCommand {
   }
 
   static validateParams(params) {
-    return ('color' in params) && typeof params.color === 'object' &&
-      ('spectrumHSV' in params.color) && typeof params.color.spectrumHSV === 'object';
+    return (
+      'color' in params &&
+      typeof params.color === 'object' &&
+      'spectrumHSV' in params.color &&
+      typeof params.color.spectrumHSV === 'object'
+    );
   }
 
   static convertParamsToValue(params, _, device) {

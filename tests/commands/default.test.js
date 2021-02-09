@@ -50,7 +50,7 @@ describe('Default Command', () => {
   });
 
   test('getItemName', () => {
-    expect(Command.getItemName({ "name": "Item" }, {})).toBe("Item");
+    expect(Command.getItemName({ name: 'Item' }, {})).toBe('Item');
   });
 
   test('requiresItem', () => {
@@ -58,18 +58,18 @@ describe('Default Command', () => {
   });
 
   test('handleAuthPin', () => {
-    expect(Command.handleAuthPin({ "id": "Item", "customData": {} }, undefined)).toBeUndefined();
-    expect(Command.handleAuthPin({ "id": "Item", "customData": { "pinNeeded": "1234" } }, { "pin": "1234" })).toBeUndefined();
-    expect(Command.handleAuthPin({ "id": "Item", "customData": { "pinNeeded": "1234" } }, undefined)).toStrictEqual({
-      ids: ["Item"],
+    expect(Command.handleAuthPin({ id: 'Item', customData: {} }, undefined)).toBeUndefined();
+    expect(Command.handleAuthPin({ id: 'Item', customData: { pinNeeded: '1234' } }, { pin: '1234' })).toBeUndefined();
+    expect(Command.handleAuthPin({ id: 'Item', customData: { pinNeeded: '1234' } }, undefined)).toStrictEqual({
+      ids: ['Item'],
       status: 'ERROR',
       errorCode: 'challengeNeeded',
       challengeNeeded: {
         type: 'pinNeeded'
       }
     });
-    expect(Command.handleAuthPin({ "id": "Item", "customData": { "pinNeeded": "1234" } }, { "pin": "5678" })).toStrictEqual({
-      ids: ["Item"],
+    expect(Command.handleAuthPin({ id: 'Item', customData: { pinNeeded: '1234' } }, { pin: '5678' })).toStrictEqual({
+      ids: ['Item'],
       status: 'ERROR',
       errorCode: 'challengeNeeded',
       challengeNeeded: {
@@ -79,12 +79,14 @@ describe('Default Command', () => {
   });
 
   test('handleAuthAck', () => {
-    expect(Command.handleAuthAck({ "id": "Item", "customData": {} }, {}, undefined)).toBeUndefined();
-    expect(Command.handleAuthAck({ "id": "Item", "customData": { "ackNeeded": true } }, { "ack": true }, undefined)).toBeUndefined();
-    expect(Command.handleAuthAck({ "id": "Item", "customData": { "ackNeeded": true } }, {}, { "key": "value" })).toStrictEqual({
-      ids: ["Item"],
+    expect(Command.handleAuthAck({ id: 'Item', customData: {} }, {}, undefined)).toBeUndefined();
+    expect(
+      Command.handleAuthAck({ id: 'Item', customData: { ackNeeded: true } }, { ack: true }, undefined)
+    ).toBeUndefined();
+    expect(Command.handleAuthAck({ id: 'Item', customData: { ackNeeded: true } }, {}, { key: 'value' })).toStrictEqual({
+      ids: ['Item'],
       status: 'ERROR',
-      states: { "key": "value" },
+      states: { key: 'value' },
       errorCode: 'challengeNeeded',
       challengeNeeded: {
         type: 'ackNeeded'
@@ -96,7 +98,7 @@ describe('Default Command', () => {
     const getItemMock = jest.fn();
     const sendCommandMock = jest.fn();
     sendCommandMock.mockReturnValue(Promise.resolve());
-    getItemMock.mockReturnValue(Promise.resolve({ "name": "TestItem" }));
+    getItemMock.mockReturnValue(Promise.resolve({ name: 'TestItem' }));
 
     const apiHandler = {
       getItem: getItemMock,
@@ -104,12 +106,12 @@ describe('Default Command', () => {
     };
 
     const successResponse = {
-      "ids": ["Item1"],
-      "states": {
-        "on": true,
-        "online": true,
+      ids: ['Item1'],
+      states: {
+        on: true,
+        online: true
       },
-      "status": "SUCCESS"
+      status: 'SUCCESS'
     };
 
     beforeEach(() => {
@@ -118,38 +120,38 @@ describe('Default Command', () => {
     });
 
     test('execute without responseStates', async () => {
-      const devices = [{ "id": "Item1" }];
+      const devices = [{ id: 'Item1' }];
       const result = await TestCommand1.execute(apiHandler, devices, {}, {});
       expect(getItemMock).toHaveBeenCalledTimes(0);
       expect(sendCommandMock).toHaveBeenCalledTimes(1);
       expect(result).toStrictEqual([
         {
-          "ids": ["Item1"],
-          "states": {},
-          "status": "SUCCESS"
+          ids: ['Item1'],
+          states: {},
+          status: 'SUCCESS'
         }
       ]);
     });
 
     test('execute without sent command', async () => {
-      const devices = [{ "id": "Item1" }];
-      const result = await TestCommand3.execute(apiHandler, devices, { "on": true }, {});
+      const devices = [{ id: 'Item1' }];
+      const result = await TestCommand3.execute(apiHandler, devices, { on: true }, {});
       expect(getItemMock).toHaveBeenCalledTimes(0);
       expect(sendCommandMock).toHaveBeenCalledTimes(0);
       expect(result).toStrictEqual([successResponse]);
     });
 
     test('execute without getItem', async () => {
-      const devices = [{ "id": "Item1" }];
-      const result = await TestCommand1.execute(apiHandler, devices, { "on": true }, {});
+      const devices = [{ id: 'Item1' }];
+      const result = await TestCommand1.execute(apiHandler, devices, { on: true }, {});
       expect(getItemMock).toHaveBeenCalledTimes(0);
       expect(sendCommandMock).toHaveBeenCalledTimes(1);
       expect(result).toStrictEqual([successResponse]);
     });
 
     test('execute with getItem', async () => {
-      const devices = [{ "id": "Item1" }];
-      const result = await TestCommand2.execute(apiHandler, devices, { "on": true }, {});
+      const devices = [{ id: 'Item1' }];
+      const result = await TestCommand2.execute(apiHandler, devices, { on: true }, {});
       expect(getItemMock).toHaveBeenCalledTimes(1);
       expect(sendCommandMock).toHaveBeenCalledTimes(1);
       expect(result).toStrictEqual([successResponse]);
@@ -157,131 +159,131 @@ describe('Default Command', () => {
 
     test('execute with multiple getItem', async () => {
       const successResponse2 = Object.assign({}, successResponse);
-      successResponse2.ids = ["Item2"];
-      const devices = [{ "id": "Item1" }, { "id": "Item2" }];
-      const result = await TestCommand2.execute(apiHandler, devices, { "on": true }, {});
+      successResponse2.ids = ['Item2'];
+      const devices = [{ id: 'Item1' }, { id: 'Item2' }];
+      const result = await TestCommand2.execute(apiHandler, devices, { on: true }, {});
       expect(getItemMock).toHaveBeenCalledTimes(2);
       expect(sendCommandMock).toHaveBeenCalledTimes(2);
       expect(result).toStrictEqual([successResponse, successResponse2]);
     });
 
     test('execute with pinNeeded', async () => {
-      const devices = [{ "id": "Item1", "customData": { "pinNeeded": "1234" } }];
-      const result = await TestCommand1.execute(apiHandler, devices, { "on": true }, {});
+      const devices = [{ id: 'Item1', customData: { pinNeeded: '1234' } }];
+      const result = await TestCommand1.execute(apiHandler, devices, { on: true }, {});
       expect(getItemMock).toHaveBeenCalledTimes(0);
       expect(sendCommandMock).toHaveBeenCalledTimes(0);
       expect(result).toStrictEqual([
         {
-          "ids": ["Item1"],
-          "challengeNeeded": {
-            "type": "pinNeeded",
+          ids: ['Item1'],
+          challengeNeeded: {
+            type: 'pinNeeded'
           },
-          "errorCode": "challengeNeeded",
-          "status": "ERROR"
+          errorCode: 'challengeNeeded',
+          status: 'ERROR'
         }
       ]);
     });
 
     test('execute with corrrect pin', async () => {
-      const devices = [{ "id": "Item1", "customData": { "pinNeeded": "1234" } }];
-      const result = await TestCommand1.execute(apiHandler, devices, { "on": true }, { "pin": "1234" });
+      const devices = [{ id: 'Item1', customData: { pinNeeded: '1234' } }];
+      const result = await TestCommand1.execute(apiHandler, devices, { on: true }, { pin: '1234' });
       expect(getItemMock).toHaveBeenCalledTimes(0);
       expect(sendCommandMock).toHaveBeenCalledTimes(1);
       expect(result).toStrictEqual([successResponse]);
     });
 
     test('execute with ackNeeded', async () => {
-      const devices = [{ "id": "Item1", "customData": { "ackNeeded": true } }];
-      const result = await TestCommand1.execute(apiHandler, devices, { "on": true }, {});
+      const devices = [{ id: 'Item1', customData: { ackNeeded: true } }];
+      const result = await TestCommand1.execute(apiHandler, devices, { on: true }, {});
       expect(getItemMock).toHaveBeenCalledTimes(0);
       expect(sendCommandMock).toHaveBeenCalledTimes(0);
       expect(result).toStrictEqual([
         {
-          "ids": ["Item1"],
-          "challengeNeeded": {
-            "type": "ackNeeded",
+          ids: ['Item1'],
+          challengeNeeded: {
+            type: 'ackNeeded'
           },
-          "errorCode": "challengeNeeded",
-          "states": {
-            "on": true,
-            "online": true,
+          errorCode: 'challengeNeeded',
+          states: {
+            on: true,
+            online: true
           },
-          "status": "ERROR"
+          status: 'ERROR'
         }
       ]);
     });
 
     test('execute with ackNeeded and state', async () => {
-      const devices = [{ "id": "Item1", "customData": { "ackNeeded": true } }];
-      const result = await TestCommand2.execute(apiHandler, devices, { "on": true }, {});
+      const devices = [{ id: 'Item1', customData: { ackNeeded: true } }];
+      const result = await TestCommand2.execute(apiHandler, devices, { on: true }, {});
       expect(getItemMock).toHaveBeenCalledTimes(1);
       expect(sendCommandMock).toHaveBeenCalledTimes(0);
       expect(result).toStrictEqual([
         {
-          "ids": ["Item1"],
-          "challengeNeeded": {
-            "type": "ackNeeded",
+          ids: ['Item1'],
+          challengeNeeded: {
+            type: 'ackNeeded'
           },
-          "errorCode": "challengeNeeded",
-          "states": {
-            "on": true,
-            "online": true,
+          errorCode: 'challengeNeeded',
+          states: {
+            on: true,
+            online: true
           },
-          "status": "ERROR"
+          status: 'ERROR'
         }
       ]);
     });
 
     test('execute with ack', async () => {
-      const devices = [{ "id": "Item1", "customData": { "ackNeeded": true } }];
-      const result = await TestCommand1.execute(apiHandler, devices, { "on": true }, { "ack": true });
+      const devices = [{ id: 'Item1', customData: { ackNeeded: true } }];
+      const result = await TestCommand1.execute(apiHandler, devices, { on: true }, { ack: true });
       expect(getItemMock).toHaveBeenCalledTimes(0);
       expect(sendCommandMock).toHaveBeenCalledTimes(1);
       expect(result).toStrictEqual([successResponse]);
     });
 
     test('execute with device not found', async () => {
-      getItemMock.mockReturnValue(Promise.reject({ "statusCode": "404" }));
-      const devices = [{ "id": "Item1" }];
-      const result = await TestCommand2.execute(apiHandler, devices, { "on": true }, {});
+      getItemMock.mockReturnValue(Promise.reject({ statusCode: '404' }));
+      const devices = [{ id: 'Item1' }];
+      const result = await TestCommand2.execute(apiHandler, devices, { on: true }, {});
       expect(getItemMock).toHaveBeenCalledTimes(1);
       expect(sendCommandMock).toHaveBeenCalledTimes(0);
-      expect(result).toStrictEqual([{
-        "errorCode": "deviceNotFound",
-        "ids": [
-          "Item1",
-        ],
-        "status": "ERROR"
-      }]);
+      expect(result).toStrictEqual([
+        {
+          errorCode: 'deviceNotFound',
+          ids: ['Item1'],
+          status: 'ERROR'
+        }
+      ]);
     });
 
     test('execute with not supported', async () => {
-      const devices = [{ "id": "Item1" }];
-      const result = await TestCommand4.execute(apiHandler, devices, { "on": true }, {});
+      const devices = [{ id: 'Item1' }];
+      const result = await TestCommand4.execute(apiHandler, devices, { on: true }, {});
       expect(getItemMock).toHaveBeenCalledTimes(0);
       expect(sendCommandMock).toHaveBeenCalledTimes(0);
-      expect(result).toStrictEqual([{
-        "errorCode": "notSupported",
-        "ids": [
-          "Item1",
-        ],
-        "status": "ERROR"
-      }]);
+      expect(result).toStrictEqual([
+        {
+          errorCode: 'notSupported',
+          ids: ['Item1'],
+          status: 'ERROR'
+        }
+      ]);
     });
 
     test('execute with device offline', async () => {
-      sendCommandMock.mockReturnValue(Promise.reject({ "statusCode": 500 }));
-      const devices = [{ "id": "Item1" }];
-      const result = await TestCommand1.execute(apiHandler, devices, { "on": true }, {});
+      sendCommandMock.mockReturnValue(Promise.reject({ statusCode: 500 }));
+      const devices = [{ id: 'Item1' }];
+      const result = await TestCommand1.execute(apiHandler, devices, { on: true }, {});
       expect(getItemMock).toHaveBeenCalledTimes(0);
       expect(sendCommandMock).toHaveBeenCalledTimes(1);
-      expect(result).toStrictEqual([{
-        "errorCode": "deviceOffline",
-        "ids": [
-          "Item1",
-        ],
-        "status": "ERROR"
-      }]);
+      expect(result).toStrictEqual([
+        {
+          errorCode: 'deviceOffline',
+          ids: ['Item1'],
+          status: 'ERROR'
+        }
+      ]);
     });
   });
 });

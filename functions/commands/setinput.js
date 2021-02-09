@@ -7,7 +7,7 @@ class SetInput extends DefaultCommand {
   }
 
   static validateParams(params) {
-    return ('newInput' in params) && typeof params.newInput === 'string';
+    return 'newInput' in params && typeof params.newInput === 'string';
   }
 
   static requiresItem() {

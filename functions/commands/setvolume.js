@@ -7,7 +7,7 @@ class SetVolume extends DefaultCommand {
   }
 
   static validateParams(params) {
-    return ('volumeLevel' in params) && typeof params.volumeLevel === 'number';
+    return 'volumeLevel' in params && typeof params.volumeLevel === 'number';
   }
 
   static requiresItem(device) {

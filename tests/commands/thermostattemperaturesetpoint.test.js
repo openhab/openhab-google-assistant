@@ -1,7 +1,7 @@
 const Command = require('../../functions/commands/thermostattemperaturesetpoint.js');
 
 describe('ThermostatTemperatureSetpoint Command', () => {
-  const params = { "thermostatTemperatureSetpoint": 20 };
+  const params = { thermostatTemperatureSetpoint: 20 };
 
   test('validateParams', () => {
     expect(Command.validateParams({})).toBe(false);
@@ -13,48 +13,50 @@ describe('ThermostatTemperatureSetpoint Command', () => {
   });
 
   test('getItemName', () => {
-    expect(() => { Command.getItemName({ "name": "Item" }) }).toThrow();
+    expect(() => {
+      Command.getItemName({ name: 'Item' });
+    }).toThrow();
     const item = {
-      "members": [
+      members: [
         {
-          "name": "SetpointItem",
-          "metadata": {
-            "ga": {
-              "value": "thermostatTemperatureSetpoint"
+          name: 'SetpointItem',
+          metadata: {
+            ga: {
+              value: 'thermostatTemperatureSetpoint'
             }
           }
         }
       ]
     };
-    expect(Command.getItemName(item)).toBe("SetpointItem");
+    expect(Command.getItemName(item)).toBe('SetpointItem');
   });
 
   test('convertParamsToValue', () => {
     const item = {
-      "metadata": {
-        "ga": {
-          "config": {
-            "useFahrenheit": true
+      metadata: {
+        ga: {
+          config: {
+            useFahrenheit: true
           }
         }
       }
     };
-    expect(Command.convertParamsToValue(params, item)).toBe("68");
-    expect(Command.convertParamsToValue(params, {})).toBe("20");
+    expect(Command.convertParamsToValue(params, item)).toBe('68');
+    expect(Command.convertParamsToValue(params, {})).toBe('20');
   });
 
   test('getResponseStates', () => {
     const item = {
-      "members": [
+      members: [
         {
-          "metadata": {
-            "ga": {
-              "value": "thermostatTemperatureSetpoint"
+          metadata: {
+            ga: {
+              value: 'thermostatTemperatureSetpoint'
             }
           }
         }
       ]
     };
-    expect(Command.getResponseStates(params, item)).toStrictEqual({ "thermostatTemperatureSetpoint": 20 });
+    expect(Command.getResponseStates(params, item)).toStrictEqual({ thermostatTemperatureSetpoint: 20 });
   });
 });

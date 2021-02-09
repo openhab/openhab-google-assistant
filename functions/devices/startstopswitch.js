@@ -2,9 +2,7 @@ const DefaultDevice = require('./default.js');
 
 class StartStopSwitch extends DefaultDevice {
   static getTraits() {
-    return [
-      'action.devices.traits.StartStop'
-    ];
+    return ['action.devices.traits.StartStop'];
   }
 
   static get requiredItemTypes() {

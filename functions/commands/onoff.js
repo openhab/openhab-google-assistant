@@ -8,7 +8,7 @@ class OnOff extends DefaultCommand {
   }
 
   static validateParams(params) {
-    return ('on' in params) && typeof params.on === 'boolean';
+    return 'on' in params && typeof params.on === 'boolean';
   }
 
   static requiresItem(device) {

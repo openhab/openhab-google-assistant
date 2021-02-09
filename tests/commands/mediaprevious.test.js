@@ -12,29 +12,31 @@ describe('mediaPrevious Command', () => {
   describe('getItemName', () => {
     test('getItemName', () => {
       const item = {
-        "members": [
+        members: [
           {
-            "name": "TransportItem",
-            "metadata": {
-              "ga": {
-                "value": "tvTransport"
+            name: 'TransportItem',
+            metadata: {
+              ga: {
+                value: 'tvTransport'
               }
             }
           }
         ]
       };
-      expect(Command.getItemName(item)).toBe("TransportItem");
+      expect(Command.getItemName(item)).toBe('TransportItem');
     });
 
     test('getItemName no transport', () => {
       const item = {
-        "members": []
+        members: []
       };
-      expect(() => { Command.getItemName(item) }).toThrow();
+      expect(() => {
+        Command.getItemName(item);
+      }).toThrow();
     });
   });
 
   test('convertParamsToValue', () => {
-    expect(Command.convertParamsToValue()).toBe("PREVIOUS");
+    expect(Command.convertParamsToValue()).toBe('PREVIOUS');
   });
 });

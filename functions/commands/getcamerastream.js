@@ -6,8 +6,12 @@ class GetCameraStream extends DefaultCommand {
   }
 
   static validateParams(params) {
-    return ('StreamToChromecast' in params) && typeof params.StreamToChromecast === 'boolean' &&
-      ('SupportedStreamProtocols' in params) && typeof params.SupportedStreamProtocols === 'object';
+    return (
+      'StreamToChromecast' in params &&
+      typeof params.StreamToChromecast === 'boolean' &&
+      'SupportedStreamProtocols' in params &&
+      typeof params.SupportedStreamProtocols === 'object'
+    );
   }
 
   static requiresItem() {

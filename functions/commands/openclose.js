@@ -6,7 +6,7 @@ class OpenClose extends DefaultCommand {
   }
 
   static validateParams(params) {
-    return ('openPercent' in params) && typeof params.openPercent === 'number';
+    return 'openPercent' in params && typeof params.openPercent === 'number';
   }
 
   static convertParamsToValue(params, _, device) {

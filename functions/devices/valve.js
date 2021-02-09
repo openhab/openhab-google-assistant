@@ -6,9 +6,7 @@ class Valve extends DefaultDevice {
   }
 
   static getTraits() {
-    return [
-      'action.devices.traits.OpenClose'
-    ];
+    return ['action.devices.traits.OpenClose'];
   }
 
   static get requiredItemTypes() {

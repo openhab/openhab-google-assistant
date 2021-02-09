@@ -6,7 +6,7 @@ class SetFanSpeed extends DefaultCommand {
   }
 
   static validateParams(params) {
-    return ('fanSpeed' in params) && typeof params.fanSpeed === 'string';
+    return 'fanSpeed' in params && typeof params.fanSpeed === 'string';
   }
 
   static convertParamsToValue(params) {

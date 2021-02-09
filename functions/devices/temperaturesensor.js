@@ -7,9 +7,7 @@ class TemperatureSensor extends DefaultDevice {
   }
 
   static getTraits() {
-    return [
-      'action.devices.traits.TemperatureControl'
-    ];
+    return ['action.devices.traits.TemperatureControl'];
   }
 
   static getAttributes(item) {
@@ -24,7 +22,7 @@ class TemperatureSensor extends DefaultDevice {
   }
 
   static isCompatible(item = {}) {
-    return item.metadata && item.metadata.ga && item.metadata.ga.value.toLowerCase() == 'temperaturesensor'
+    return item.metadata && item.metadata.ga && item.metadata.ga.value.toLowerCase() == 'temperaturesensor';
   }
 
   static getState(item) {

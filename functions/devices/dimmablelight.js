@@ -6,10 +6,7 @@ class DimmableLight extends DefaultDevice {
   }
 
   static getTraits() {
-    return [
-      'action.devices.traits.OnOff',
-      'action.devices.traits.Brightness'
-    ];
+    return ['action.devices.traits.OnOff', 'action.devices.traits.Brightness'];
   }
 
   static get requiredItemTypes() {

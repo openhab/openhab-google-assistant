@@ -7,7 +7,7 @@ class Mute extends DefaultCommand {
   }
 
   static validateParams(params) {
-    return ('mute' in params) && typeof params.mute === 'boolean';
+    return 'mute' in params && typeof params.mute === 'boolean';
   }
 
   static requiresItem(device) {
