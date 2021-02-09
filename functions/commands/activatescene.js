@@ -6,7 +6,7 @@ class ActivateScene extends DefaultCommand {
   }
 
   static validateParams(params) {
-    return (('deactivate' in params) && typeof params.deactivate === 'boolean') || !('deactivate' in params);
+    return ('deactivate' in params && typeof params.deactivate === 'boolean') || !('deactivate' in params);
   }
 
   static convertParamsToValue(params, _, device) {

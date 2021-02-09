@@ -2,31 +2,31 @@ const Device = require('../../functions/devices/dynamicmodesdevice.js');
 
 describe('DynamicModesDevice Device', () => {
   const item = {
-    "type": "Group",
-    "metadata": {
-      "ga": {
-        "config": {
-          "mode": "mode_name,alternate_mode_name",
-          "ordered": true
+    type: 'Group',
+    metadata: {
+      ga: {
+        config: {
+          mode: 'mode_name,alternate_mode_name',
+          ordered: true
         }
       }
     },
-    "members": [
+    members: [
       {
-        "name": "CurrentMode",
-        "state": "mode_value",
-        "metadata": {
-          "ga": {
-            "value": "modesCurrentMode"
+        name: 'CurrentMode',
+        state: 'mode_value',
+        metadata: {
+          ga: {
+            value: 'modesCurrentMode'
           }
         }
       },
       {
-        "name": "Settings",
-        "state": "setting1=mode_value:alternate_mode_value,setting2=mode_value2",
-        "metadata": {
-          "ga": {
-            "value": "modesSettings"
+        name: 'Settings',
+        state: 'setting1=mode_value:alternate_mode_value,setting2=mode_value2',
+        metadata: {
+          ga: {
+            value: 'modesSettings'
           }
         }
       }
@@ -35,17 +35,17 @@ describe('DynamicModesDevice Device', () => {
 
   test('matchesItemType', () => {
     expect(Device.matchesItemType(item)).toBe(true);
-    expect(Device.matchesItemType({ "type": "Color" })).toBe(false);
-    expect(Device.matchesItemType({ "type": "Group", "groupType": "Color" })).toBe(false);
-    expect(Device.matchesItemType({ "type": "Group", "groupType": "Dimmer" })).toBe(false);
+    expect(Device.matchesItemType({ type: 'Color' })).toBe(false);
+    expect(Device.matchesItemType({ type: 'Group', groupType: 'Color' })).toBe(false);
+    expect(Device.matchesItemType({ type: 'Group', groupType: 'Dimmer' })).toBe(false);
   });
 
   describe('getAttributes', () => {
     test('getAttributes no config', () => {
       const invalid_item = {
-        "metadata": {
-          "ga": {
-            "config": {}
+        metadata: {
+          ga: {
+            config: {}
           }
         }
       };
@@ -54,39 +54,32 @@ describe('DynamicModesDevice Device', () => {
 
     test('getAttributes mode', () => {
       expect(Device.getAttributes(item)).toStrictEqual({
-        "availableModes": [
+        availableModes: [
           {
-            "name": "mode_name",
-            "name_values": [
+            name: 'mode_name',
+            name_values: [
               {
-                "lang": "en",
-                "name_synonym": ["mode_name", "alternate_mode_name"]
+                lang: 'en',
+                name_synonym: ['mode_name', 'alternate_mode_name']
               }
             ],
-            "ordered": true,
-            "settings": [
+            ordered: true,
+            settings: [
               {
-                "setting_name": "setting1",
-                "setting_values": [
+                setting_name: 'setting1',
+                setting_values: [
                   {
-                    "lang": "en",
-                    "setting_synonym": [
-                      "setting1",
-                      "mode_value",
-                      "alternate_mode_value"
-                    ]
+                    lang: 'en',
+                    setting_synonym: ['setting1', 'mode_value', 'alternate_mode_value']
                   }
                 ]
               },
               {
-                "setting_name": "setting2",
-                "setting_values": [
+                setting_name: 'setting2',
+                setting_values: [
                   {
-                    "lang": "en",
-                    "setting_synonym": [
-                      "setting2",
-                      "mode_value2"
-                    ]
+                    lang: 'en',
+                    setting_synonym: ['setting2', 'mode_value2']
                   }
                 ]
               }
@@ -99,8 +92,8 @@ describe('DynamicModesDevice Device', () => {
 
   test('getState', () => {
     expect(Device.getState(item)).toStrictEqual({
-      "currentModeSettings": {
-        "mode_name": "mode_value"
+      currentModeSettings: {
+        mode_name: 'mode_value'
       }
     });
   });

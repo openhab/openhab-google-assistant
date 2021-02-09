@@ -7,9 +7,7 @@ class Thermostat extends DefaultDevice {
   }
 
   static getTraits() {
-    return [
-      'action.devices.traits.TemperatureSetting'
-    ];
+    return ['action.devices.traits.TemperatureSetting'];
   }
 
   static matchesItemType(item) {
@@ -22,18 +20,20 @@ class Thermostat extends DefaultDevice {
       thermostatTemperatureUnit: this.useFahrenheit(item) ? 'F' : 'C'
     };
     if ('thermostatTemperatureRange' in config) {
-      const [min, max] = config.thermostatTemperatureRange.split(',').map(s => parseFloat(s.trim()));
+      const [min, max] = config.thermostatTemperatureRange.split(',').map((s) => parseFloat(s.trim()));
       if (!isNaN(min) && !isNaN(max)) {
         attributes.thermostatTemperatureRange = {
           minThresholdCelsius: min,
           maxThresholdCelsius: max
-        }
+        };
       }
     }
     const members = this.getMembers(item);
-    if (('thermostatTemperatureAmbient' in members) &&
+    if (
+      'thermostatTemperatureAmbient' in members &&
       !('thermostatMode' in members) &&
-      !('thermostatTemperatureSetpoint' in members)) {
+      !('thermostatTemperatureSetpoint' in members)
+    ) {
       attributes.queryOnlyTemperatureSetting = true;
     } else {
       attributes.availableThermostatModes = Object.keys(this.getModeMap(item));
@@ -68,9 +68,9 @@ class Thermostat extends DefaultDevice {
     ];
     const members = Object();
     if (item.members && item.members.length) {
-      item.members.forEach(member => {
+      item.members.forEach((member) => {
         if (member.metadata && member.metadata.ga) {
-          const memberType = supportedMembers.find(m => member.metadata.ga.value.toLowerCase() === m.toLowerCase());
+          const memberType = supportedMembers.find((m) => member.metadata.ga.value.toLowerCase() === m.toLowerCase());
           if (memberType) {
             members[memberType] = { name: member.name, state: member.state };
           }
@@ -89,12 +89,12 @@ class Thermostat extends DefaultDevice {
     const config = this.getConfig(item);
     let modes = ['off', 'heat', 'cool', 'on', 'heatcool', 'auto', 'eco'];
     if ('modes' in config) {
-      modes = config.modes.split(',').map(s => s.trim());
+      modes = config.modes.split(',').map((s) => s.trim());
     }
     const modeMap = {};
-    modes.forEach(pair => {
-      const [key, value] = pair.split('=').map(s => s.trim());
-      modeMap[key] = value ? value.split(':').map(s => s.trim()) : [key];
+    modes.forEach((pair) => {
+      const [key, value] = pair.split('=').map((s) => s.trim());
+      modeMap[key] = value ? value.split(':').map((s) => s.trim()) : [key];
     });
     return modeMap;
   }

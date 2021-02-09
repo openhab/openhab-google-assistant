@@ -6,11 +6,7 @@ class ColorLight extends DefaultDevice {
   }
 
   static getTraits() {
-    return [
-      'action.devices.traits.OnOff',
-      'action.devices.traits.Brightness',
-      'action.devices.traits.ColorSetting'
-    ];
+    return ['action.devices.traits.OnOff', 'action.devices.traits.Brightness', 'action.devices.traits.ColorSetting'];
   }
 
   static getAttributes(item) {
@@ -19,7 +15,7 @@ class ColorLight extends DefaultDevice {
     };
     const config = this.getConfig(item);
     if ('colorTemperatureRange' in config) {
-      const [min, max] = config.colorTemperatureRange.split(',').map(s => Number(s.trim()));
+      const [min, max] = config.colorTemperatureRange.split(',').map((s) => Number(s.trim()));
       if (!isNaN(min) && !isNaN(max)) {
         attributes.colorTemperatureRange = {
           temperatureMinK: min,
@@ -35,7 +31,7 @@ class ColorLight extends DefaultDevice {
   }
 
   static getState(item) {
-    const [hue, sat, val] = item.state.split(',').map(s => Number(s.trim()));
+    const [hue, sat, val] = item.state.split(',').map((s) => Number(s.trim()));
     return {
       on: val > 0,
       brightness: val,

@@ -47,15 +47,16 @@ class ApiHandler {
    * @param {string} itemName
    * @param {number} length
    */
-   getOptions(method = 'GET', itemName = '', length = 0) {
-    const queryString = '?metadata=ga,synonyms' + (itemName ? '' : '&fields=groupNames,groupType,name,label,metadata,type,state');
+  getOptions(method = 'GET', itemName = '', length = 0) {
+    const queryString =
+      '?metadata=ga,synonyms' + (itemName ? '' : '&fields=groupNames,groupType,name,label,metadata,type,state');
     const options = {
       hostname: this._config.host,
       port: this._config.port,
       path: this._config.path + (itemName ? itemName : '') + queryString,
       method: method,
       headers: {
-        'Accept': 'application/json'
+        Accept: 'application/json'
       }
     };
 

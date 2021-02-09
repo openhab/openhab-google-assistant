@@ -7,7 +7,7 @@ class BrightnessAbsolute extends DefaultCommand {
   }
 
   static validateParams(params) {
-    return ('brightness' in params) && typeof params.brightness === 'number';
+    return 'brightness' in params && typeof params.brightness === 'number';
   }
 
   static requiresItem(device) {

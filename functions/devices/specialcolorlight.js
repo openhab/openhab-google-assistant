@@ -6,22 +6,22 @@ class SpecialColorLight extends DefaultDevice {
   }
 
   static getTraits() {
-    return [
-      'action.devices.traits.OnOff',
-      'action.devices.traits.Brightness',
-      'action.devices.traits.ColorSetting'
-    ];
+    return ['action.devices.traits.OnOff', 'action.devices.traits.Brightness', 'action.devices.traits.ColorSetting'];
   }
 
   static matchesItemType(item) {
-    return item.type === 'Group' && Object.keys(this.getMembers(item)).length > 1 && (this.useKelvin(item) || !!this.getAttributes(item).colorTemperatureRange);
+    return (
+      item.type === 'Group' &&
+      Object.keys(this.getMembers(item)).length > 1 &&
+      (this.useKelvin(item) || !!this.getAttributes(item).colorTemperatureRange)
+    );
   }
 
   static getAttributes(item) {
     const attributes = {};
     const config = this.getConfig(item);
     if ('colorTemperatureRange' in config) {
-      const [min, max] = config.colorTemperatureRange.split(',').map(s => Number(s.trim()));
+      const [min, max] = config.colorTemperatureRange.split(',').map((s) => Number(s.trim()));
       if (!isNaN(min) && !isNaN(max)) {
         attributes.colorTemperatureRange = {
           temperatureMinK: min,
@@ -45,8 +45,11 @@ class SpecialColorLight extends DefaultDevice {
           try {
             const { temperatureMinK, temperatureMaxK } = this.getAttributes(item).colorTemperatureRange;
             state.color = {};
-            state.color.temperatureK = this.useKelvin(item) ? Number(members[member].state) : temperatureMinK + ((temperatureMaxK - temperatureMinK) / 100 * (100 - Number(members[member].state)) || 0);
-          } catch { }
+            state.color.temperatureK = this.useKelvin(item)
+              ? Number(members[member].state)
+              : temperatureMinK +
+                (((temperatureMaxK - temperatureMinK) / 100) * (100 - Number(members[member].state)) || 0);
+          } catch {}
           break;
       }
     }
@@ -54,15 +57,12 @@ class SpecialColorLight extends DefaultDevice {
   }
 
   static getMembers(item) {
-    const supportedMembers = [
-      'lightBrightness',
-      'lightColorTemperature'
-    ];
+    const supportedMembers = ['lightBrightness', 'lightColorTemperature'];
     const members = Object();
     if (item.members && item.members.length) {
-      item.members.forEach(member => {
+      item.members.forEach((member) => {
         if (member.metadata && member.metadata.ga) {
-          const memberType = supportedMembers.find(m => member.metadata.ga.value.toLowerCase() === m.toLowerCase());
+          const memberType = supportedMembers.find((m) => member.metadata.ga.value.toLowerCase() === m.toLowerCase());
           if (memberType) {
             members[memberType] = { name: member.name, state: member.state };
           }

@@ -6,7 +6,7 @@ class StartStop extends DefaultCommand {
   }
 
   static validateParams(params) {
-    return ('start' in params) && typeof params.start === 'boolean';
+    return 'start' in params && typeof params.start === 'boolean';
   }
 
   static convertParamsToValue(params, _, device) {

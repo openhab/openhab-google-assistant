@@ -9,8 +9,12 @@ class ColorAbsoluteTemperature extends DefaultCommand {
   }
 
   static validateParams(params) {
-    return ('color' in params) && typeof params.color === 'object' &&
-      ('temperature' in params.color) && typeof params.color.temperature === 'number';
+    return (
+      'color' in params &&
+      typeof params.color === 'object' &&
+      'temperature' in params.color &&
+      typeof params.color.temperature === 'number'
+    );
   }
 
   static requiresItem() {
@@ -35,13 +39,16 @@ class ColorAbsoluteTemperature extends DefaultCommand {
           return params.color.temperature.toString();
         }
         const { temperatureMinK, temperatureMaxK } = SpecialColorLight.getAttributes(item).colorTemperatureRange;
-        return (100 - ((params.color.temperature - temperatureMinK) / (temperatureMaxK - temperatureMinK) * 100)).toString();
+        return (
+          100 -
+          ((params.color.temperature - temperatureMinK) / (temperatureMaxK - temperatureMinK)) * 100
+        ).toString();
       } catch {
         return '0';
       }
     }
     const hsv = rgb2hsv(kelvin2rgb(params.color.temperature));
-    const hsvArray = item.state.split(",").map((val) => Number(val));
+    const hsvArray = item.state.split(',').map((val) => Number(val));
     return [Math.round(hsv.hue * 100) / 100, Math.round(hsv.saturation * 1000) / 10, hsvArray[2]].join(',');
   }
 

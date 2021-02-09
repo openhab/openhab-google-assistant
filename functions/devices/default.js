@@ -19,7 +19,11 @@ class DefaultDevice {
    * @param {object} item
    */
   static isCompatible(item) {
-    return item.metadata && item.metadata.ga && this.type.toLowerCase() === `action.devices.types.${item.metadata.ga.value}`.toLowerCase()
+    return (
+      item.metadata &&
+      item.metadata.ga &&
+      this.type.toLowerCase() === `action.devices.types.${item.metadata.ga.value}`.toLowerCase()
+    );
   }
 
   /**
@@ -44,7 +48,7 @@ class DefaultDevice {
    * @param {object} item
    */
   static getConfig(item) {
-    return item && item.metadata && item.metadata.ga && item.metadata.ga.config || {};
+    return (item && item.metadata && item.metadata.ga && item.metadata.ga.config) || {};
   }
 
   /**
@@ -60,7 +64,12 @@ class DefaultDevice {
       name: {
         name: config.name || item.label,
         defaultNames: [config.name || item.label],
-        nicknames: [config.name || item.label, ...(item.metadata && item.metadata.synonyms ? item.metadata.synonyms.value.split(',').map(s => s.trim()) : [])]
+        nicknames: [
+          config.name || item.label,
+          ...(item.metadata && item.metadata.synonyms
+            ? item.metadata.synonyms.value.split(',').map((s) => s.trim())
+            : [])
+        ]
       },
       willReportState: false,
       roomHint: config.roomHint,
@@ -83,7 +92,7 @@ class DefaultDevice {
     if (config.ackNeeded === true) {
       metadata.customData.ackNeeded = true;
     }
-    if (typeof (config.pinNeeded) === 'string') {
+    if (typeof config.pinNeeded === 'string') {
       metadata.customData.pinNeeded = config.pinNeeded;
     }
     return metadata;

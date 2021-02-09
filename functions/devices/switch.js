@@ -6,9 +6,7 @@ class Switch extends DefaultDevice {
   }
 
   static getTraits() {
-    return [
-      'action.devices.traits.OnOff'
-    ];
+    return ['action.devices.traits.OnOff'];
   }
 
   static get requiredItemTypes() {

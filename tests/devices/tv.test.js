@@ -2,110 +2,110 @@ const Device = require('../../functions/devices/tv.js');
 
 describe('TV Device', () => {
   test('isCompatible', () => {
-    expect(Device.isCompatible({
-      "metadata": {
-        "ga": {
-          "value": "TV"
+    expect(
+      Device.isCompatible({
+        metadata: {
+          ga: {
+            value: 'TV'
+          }
         }
-      }
-    })).toBe(true);
+      })
+    ).toBe(true);
   });
 
   test('matchesItemType', () => {
     const item = {
-      "type": "Group",
-      "members": [
+      type: 'Group',
+      members: [
         {
-          "metadata": {
-            "ga": {
-              "value": "tvPower"
+          metadata: {
+            ga: {
+              value: 'tvPower'
             }
           }
         }
       ]
     };
     expect(Device.matchesItemType(item)).toBe(true);
-    expect(Device.matchesItemType({ "type": "Group" })).toBe(false);
+    expect(Device.matchesItemType({ type: 'Group' })).toBe(false);
   });
 
   describe('getTraits', () => {
     test('getTraits only power', () => {
       const item = {
-        "members": [
+        members: [
           {
-            "state": "ON",
-            "metadata": {
-              "ga": {
-                "value": "tvPower"
+            state: 'ON',
+            metadata: {
+              ga: {
+                value: 'tvPower'
               }
             }
           }
         ]
       };
-      expect(Device.getTraits(item)).toStrictEqual([
-        "action.devices.traits.OnOff"
-      ]);
+      expect(Device.getTraits(item)).toStrictEqual(['action.devices.traits.OnOff']);
     });
 
     test('getTraits all members', () => {
       const item = {
-        "members": [
+        members: [
           {
-            "state": "1",
-            "metadata": {
-              "ga": {
-                "value": "tvChannel"
+            state: '1',
+            metadata: {
+              ga: {
+                value: 'tvChannel'
               }
             }
           },
           {
-            "state": "50",
-            "metadata": {
-              "ga": {
-                "value": "tvVolume"
+            state: '50',
+            metadata: {
+              ga: {
+                value: 'tvVolume'
               }
             }
           },
           {
-            "state": "input1",
-            "metadata": {
-              "ga": {
-                "value": "tvInput"
+            state: 'input1',
+            metadata: {
+              ga: {
+                value: 'tvInput'
               }
             }
           },
           {
-            "state": "PLAY",
-            "metadata": {
-              "ga": {
-                "value": "tvTransport"
+            state: 'PLAY',
+            metadata: {
+              ga: {
+                value: 'tvTransport'
               }
             }
           },
           {
-            "state": "ON",
-            "metadata": {
-              "ga": {
-                "value": "tvPower"
+            state: 'ON',
+            metadata: {
+              ga: {
+                value: 'tvPower'
               }
             }
           },
           {
-            "state": "OFF",
-            "metadata": {
-              "ga": {
-                "value": "tvMute"
+            state: 'OFF',
+            metadata: {
+              ga: {
+                value: 'tvMute'
               }
             }
           }
         ]
       };
       expect(Device.getTraits(item)).toStrictEqual([
-        "action.devices.traits.OnOff",
-        "action.devices.traits.Volume",
-        "action.devices.traits.Channel",
-        "action.devices.traits.InputSelector",
-        "action.devices.traits.TransportControl"
+        'action.devices.traits.OnOff',
+        'action.devices.traits.Volume',
+        'action.devices.traits.Channel',
+        'action.devices.traits.InputSelector',
+        'action.devices.traits.TransportControl'
       ]);
     });
   });
@@ -113,420 +113,411 @@ describe('TV Device', () => {
   describe('getAttributes', () => {
     test('getAttributes no config', () => {
       const item = {
-        "metadata": {
-          "ga": {
-            "config": {}
+        metadata: {
+          ga: {
+            config: {}
           }
         },
-        "members": [
+        members: [
           {
-            "metadata": {
-              "ga": {
-                "value": "tvVolume"
+            metadata: {
+              ga: {
+                value: 'tvVolume'
               }
             }
           },
           {
-            "metadata": {
-              "ga": {
-                "value": "tvTransport"
+            metadata: {
+              ga: {
+                value: 'tvTransport'
               }
             }
           }
         ]
       };
       expect(Device.getAttributes(item)).toStrictEqual({
-        "transportControlSupportedCommands": [
-          "NEXT",
-          "PREVIOUS",
-          "PAUSE",
-          "RESUME",
-        ],
-        "volumeCanMuteAndUnmute": false,
-        "volumeMaxLevel": 100,
+        transportControlSupportedCommands: ['NEXT', 'PREVIOUS', 'PAUSE', 'RESUME'],
+        volumeCanMuteAndUnmute: false,
+        volumeMaxLevel: 100
       });
     });
 
     test('getAttributes volume', () => {
       const item = {
-        "metadata": {
-          "ga": {
-            "config": {
-              "volumeDefaultPercentage": "20",
-              "levelStepSize": "10"
+        metadata: {
+          ga: {
+            config: {
+              volumeDefaultPercentage: '20',
+              levelStepSize: '10'
             }
           }
         },
-        "members": [
+        members: [
           {
-            "metadata": {
-              "ga": {
-                "value": "tvVolume"
+            metadata: {
+              ga: {
+                value: 'tvVolume'
               }
             }
           }
         ]
       };
       expect(Device.getAttributes(item)).toStrictEqual({
-        "levelStepSize": 10,
-        "volumeCanMuteAndUnmute": false,
-        "volumeDefaultPercentage": 20,
-        "volumeMaxLevel": 100
+        levelStepSize: 10,
+        volumeCanMuteAndUnmute: false,
+        volumeDefaultPercentage: 20,
+        volumeMaxLevel: 100
       });
     });
 
     test('getAttributes transport, mute', () => {
       const item = {
-        "metadata": {
-          "ga": {
-            "config": {
-              "transportControlSupportedCommands": "PAUSE,RESUME"
+        metadata: {
+          ga: {
+            config: {
+              transportControlSupportedCommands: 'PAUSE,RESUME'
             }
           }
         },
-        "members": [
+        members: [
           {
-            "metadata": {
-              "ga": {
-                "value": "tvTransport"
+            metadata: {
+              ga: {
+                value: 'tvTransport'
               }
             }
           },
           {
-            "metadata": {
-              "ga": {
-                "value": "tvMute"
+            metadata: {
+              ga: {
+                value: 'tvMute'
               }
             }
           }
         ]
       };
       expect(Device.getAttributes(item)).toStrictEqual({
-        "transportControlSupportedCommands": ["PAUSE", "RESUME"],
-        "volumeCanMuteAndUnmute": true
+        transportControlSupportedCommands: ['PAUSE', 'RESUME'],
+        volumeCanMuteAndUnmute: true
       });
     });
 
     test('getAttributes inputs', () => {
       const item = {
-        "metadata": {
-          "ga": {
-            "config": {
-              "availableInputs": "input1=hdmi1,input2=hdmi2"
+        metadata: {
+          ga: {
+            config: {
+              availableInputs: 'input1=hdmi1,input2=hdmi2'
             }
           }
         },
-        "members": [
+        members: [
           {
-            "metadata": {
-              "ga": {
-                "value": "tvInput"
+            metadata: {
+              ga: {
+                value: 'tvInput'
               }
             }
           }
         ]
       };
       expect(Device.getAttributes(item)).toStrictEqual({
-        "availableInputs": [
+        availableInputs: [
           {
-            "key": "input1",
-            "names": [
+            key: 'input1',
+            names: [
               {
-                "lang": "en",
-                "name_synonym": ["hdmi1"],
-              },
-            ],
+                lang: 'en',
+                name_synonym: ['hdmi1']
+              }
+            ]
           },
           {
-            "key": "input2",
-            "names": [
+            key: 'input2',
+            names: [
               {
-                "lang": "en",
-                "name_synonym": ["hdmi2"]
+                lang: 'en',
+                name_synonym: ['hdmi2']
               }
             ]
           }
         ],
-        "orderedInputs": false,
-        "volumeCanMuteAndUnmute": false
+        orderedInputs: false,
+        volumeCanMuteAndUnmute: false
       });
     });
 
     test('getAttributes channels', () => {
       const item = {
-        "metadata": {
-          "ga": {
-            "config": {
-              "availableChannels": "1=channel1=ARD,2=channel2=ZDF"
+        metadata: {
+          ga: {
+            config: {
+              availableChannels: '1=channel1=ARD,2=channel2=ZDF'
             }
           }
         },
-        "members": [
+        members: [
           {
-            "metadata": {
-              "ga": {
-                "value": "tvChannel"
+            metadata: {
+              ga: {
+                value: 'tvChannel'
               }
             }
           }
         ]
       };
       expect(Device.getAttributes(item)).toStrictEqual({
-        "availableChannels": [
+        availableChannels: [
           {
-            "key": "channel1",
-            "names": ["ARD"],
-            "number": "1"
+            key: 'channel1',
+            names: ['ARD'],
+            number: '1'
           },
           {
-            "key": "channel2",
-            "names": ["ZDF"],
-            "number": "2"
+            key: 'channel2',
+            names: ['ZDF'],
+            number: '2'
           }
         ],
-        "volumeCanMuteAndUnmute": false
+        volumeCanMuteAndUnmute: false
       });
     });
   });
 
   test('getMembers', () => {
-    expect(Device.getMembers({ "members": [{}] })).toStrictEqual({});
-    expect(Device.getMembers({ "members": [{ "metadata": { "ga": { "value": "invalid" } } }] })).toStrictEqual({});
+    expect(Device.getMembers({ members: [{}] })).toStrictEqual({});
+    expect(
+      Device.getMembers({
+        members: [{ metadata: { ga: { value: 'invalid' } } }]
+      })
+    ).toStrictEqual({});
     const item = {
-      "members": [
+      members: [
         {
-          "name": "Channel",
-          "state": "1",
-          "metadata": {
-            "ga": {
-              "value": "tvChannel"
+          name: 'Channel',
+          state: '1',
+          metadata: {
+            ga: {
+              value: 'tvChannel'
             }
           }
         },
         {
-          "name": "Volume",
-          "state": "50",
-          "metadata": {
-            "ga": {
-              "value": "tvVolume"
+          name: 'Volume',
+          state: '50',
+          metadata: {
+            ga: {
+              value: 'tvVolume'
             }
           }
         },
         {
-          "name": "Input",
-          "state": "input1",
-          "metadata": {
-            "ga": {
-              "value": "tvInput"
+          name: 'Input',
+          state: 'input1',
+          metadata: {
+            ga: {
+              value: 'tvInput'
             }
           }
         },
         {
-          "name": "Transport",
-          "state": "PLAY",
-          "metadata": {
-            "ga": {
-              "value": "tvTransport"
+          name: 'Transport',
+          state: 'PLAY',
+          metadata: {
+            ga: {
+              value: 'tvTransport'
             }
           }
         },
         {
-          "name": "Power",
-          "state": "ON",
-          "metadata": {
-            "ga": {
-              "value": "tvPower"
+          name: 'Power',
+          state: 'ON',
+          metadata: {
+            ga: {
+              value: 'tvPower'
             }
           }
         },
         {
-          "name": "Mute",
-          "state": "OFF",
-          "metadata": {
-            "ga": {
-              "value": "tvMute"
+          name: 'Mute',
+          state: 'OFF',
+          metadata: {
+            ga: {
+              value: 'tvMute'
             }
           }
         }
       ]
     };
     expect(Device.getMembers(item)).toStrictEqual({
-      "tvChannel": {
-        "name": "Channel",
-        "state": "1"
+      tvChannel: {
+        name: 'Channel',
+        state: '1'
       },
-      "tvInput": {
-        "name": "Input",
-        "state": "input1"
+      tvInput: {
+        name: 'Input',
+        state: 'input1'
       },
-      "tvMute": {
-        "name": "Mute",
-        "state": "OFF"
+      tvMute: {
+        name: 'Mute',
+        state: 'OFF'
       },
-      "tvPower": {
-        "name": "Power",
-        "state": "ON"
+      tvPower: {
+        name: 'Power',
+        state: 'ON'
       },
-      "tvTransport": {
-        "name": "Transport",
-        "state": "PLAY"
+      tvTransport: {
+        name: 'Transport',
+        state: 'PLAY'
       },
-      "tvVolume": {
-        "name": "Volume",
-        "state": "50"
+      tvVolume: {
+        name: 'Volume',
+        state: '50'
       }
     });
   });
 
   test('getChannelMap', () => {
     const item = {
-      "metadata": {
-        "ga": {
-          "value": "TV",
-          "config": {
-            "availableChannels": "20=channel1=Channel 1:Kanal 1,10=channel2=Channel 2:Kanal 2"
+      metadata: {
+        ga: {
+          value: 'TV',
+          config: {
+            availableChannels: '20=channel1=Channel 1:Kanal 1,10=channel2=Channel 2:Kanal 2'
           }
         }
       }
     };
     expect(Device.getChannelMap(item)).toStrictEqual({
-      "10": [
-        "Channel 2",
-        "Kanal 2",
-        "channel2"
-      ],
-      "20": [
-        "Channel 1",
-        "Kanal 1",
-        "channel1"
-      ],
+      10: ['Channel 2', 'Kanal 2', 'channel2'],
+      20: ['Channel 1', 'Kanal 1', 'channel1']
     });
   });
 
   describe('getState', () => {
     test('getState', () => {
       const item = {
-        "type": "Group",
-        "metadata": {
-          "ga": {
-            "value": "TV",
-            "config": {
-              "transportControlSupportedCommands": "PAUSE,RESUME",
-              "availableInputs": "input1=hdmi1,input2=hdmi2",
-              "availableChannels": "1=channel1=ARD,2=channel2=ZDF"
+        type: 'Group',
+        metadata: {
+          ga: {
+            value: 'TV',
+            config: {
+              transportControlSupportedCommands: 'PAUSE,RESUME',
+              availableInputs: 'input1=hdmi1,input2=hdmi2',
+              availableChannels: '1=channel1=ARD,2=channel2=ZDF'
             }
           }
         },
-        "members": [
+        members: [
           {
-            "state": "1",
-            "metadata": {
-              "ga": {
-                "value": "tvChannel"
+            state: '1',
+            metadata: {
+              ga: {
+                value: 'tvChannel'
               }
             }
           },
           {
-            "state": "50",
-            "metadata": {
-              "ga": {
-                "value": "tvVolume"
+            state: '50',
+            metadata: {
+              ga: {
+                value: 'tvVolume'
               }
             }
           },
           {
-            "state": "input1",
-            "metadata": {
-              "ga": {
-                "value": "tvInput"
+            state: 'input1',
+            metadata: {
+              ga: {
+                value: 'tvInput'
               }
             }
           },
           {
-            "state": "PLAY",
-            "metadata": {
-              "ga": {
-                "value": "tvTransport"
+            state: 'PLAY',
+            metadata: {
+              ga: {
+                value: 'tvTransport'
               }
             }
           },
           {
-            "state": "ON",
-            "metadata": {
-              "ga": {
-                "value": "tvPower"
+            state: 'ON',
+            metadata: {
+              ga: {
+                value: 'tvPower'
               }
             }
           },
           {
-            "state": "OFF",
-            "metadata": {
-              "ga": {
-                "value": "tvMute"
+            state: 'OFF',
+            metadata: {
+              ga: {
+                value: 'tvMute'
               }
             }
           }
         ]
       };
       expect(Device.getState(item)).toStrictEqual({
-        "channelName": "ARD",
-        "channelNumber": "1",
-        "currentInput": "input1",
-        "currentVolume": 50,
-        "isMuted": false,
-        "on": true,
+        channelName: 'ARD',
+        channelNumber: '1',
+        currentInput: 'input1',
+        currentVolume: 50,
+        isMuted: false,
+        on: true
       });
     });
 
     test('getState only channel without map', () => {
       const item = {
-        "type": "Group",
-        "members": [
+        type: 'Group',
+        members: [
           {
-            "state": "1",
-            "metadata": {
-              "ga": {
-                "value": "tvChannel"
+            state: '1',
+            metadata: {
+              ga: {
+                value: 'tvChannel'
               }
             }
           }
         ]
       };
       expect(Device.getState(item)).toStrictEqual({
-        "channelNumber": "1"
+        channelNumber: '1'
       });
     });
 
     test('getState only power, mute', () => {
       const item = {
-        "type": "Group",
-        "metadata": {
-          "ga": {
-            "value": "TV"
+        type: 'Group',
+        metadata: {
+          ga: {
+            value: 'TV'
           }
         },
-        "members": [
+        members: [
           {
-            "state": "50",
-            "metadata": {
-              "ga": {
-                "value": "tvVolume"
+            state: '50',
+            metadata: {
+              ga: {
+                value: 'tvVolume'
               }
             }
           },
           {
-            "state": "ON",
-            "metadata": {
-              "ga": {
-                "value": "tvPower"
+            state: 'ON',
+            metadata: {
+              ga: {
+                value: 'tvPower'
               }
             }
           }
         ]
       };
       expect(Device.getState(item)).toStrictEqual({
-        "currentVolume": 50,
-        "on": true,
+        currentVolume: 50,
+        on: true
       });
     });
   });

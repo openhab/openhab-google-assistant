@@ -6,15 +6,13 @@ class Camera extends DefaultDevice {
   }
 
   static getTraits() {
-    return [
-      'action.devices.traits.CameraStream'
-    ];
+    return ['action.devices.traits.CameraStream'];
   }
 
   static getAttributes(item) {
     const config = this.getConfig(item);
     return {
-      cameraStreamSupportedProtocols: (config.protocols || 'hls,dash').split(',').map(s => s.trim()),
+      cameraStreamSupportedProtocols: (config.protocols || 'hls,dash').split(',').map((s) => s.trim()),
       cameraStreamNeedAuthToken: config.token ? true : false,
       cameraStreamNeedDrmEncryption: false
     };

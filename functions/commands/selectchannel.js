@@ -7,9 +7,11 @@ class SelectChannel extends DefaultCommand {
   }
 
   static validateParams(params) {
-    return (('channelCode' in params) && typeof params.channelCode === 'string') ||
-      (('channelName' in params) && typeof params.channelName === 'string') ||
-      (('channelNumber' in params) && typeof params.channelNumber === 'string');
+    return (
+      ('channelCode' in params && typeof params.channelCode === 'string') ||
+      ('channelName' in params && typeof params.channelName === 'string') ||
+      ('channelNumber' in params && typeof params.channelNumber === 'string')
+    );
   }
 
   static requiresItem() {

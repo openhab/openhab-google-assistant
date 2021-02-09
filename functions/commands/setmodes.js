@@ -7,7 +7,7 @@ class SetModes extends DefaultCommand {
   }
 
   static validateParams(params) {
-    return ('updateModeSettings' in params) && typeof params.updateModeSettings === 'object';
+    return 'updateModeSettings' in params && typeof params.updateModeSettings === 'object';
   }
   static requiresItem(device) {
     return this.getDeviceType(device).startsWith('DynamicModes');

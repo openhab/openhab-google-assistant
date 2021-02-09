@@ -6,10 +6,7 @@ class Fan extends DefaultDevice {
   }
 
   static getTraits() {
-    return [
-      'action.devices.traits.OnOff',
-      'action.devices.traits.FanSpeed'
-    ];
+    return ['action.devices.traits.OnOff', 'action.devices.traits.FanSpeed'];
   }
 
   static getAttributes(item) {
@@ -26,15 +23,20 @@ class Fan extends DefaultDevice {
     };
     config.speeds.split(',').forEach((speedEntry) => {
       try {
-        const [speedName, speedSynonyms] = speedEntry.trim().split('=').map(s => s.trim());
+        const [speedName, speedSynonyms] = speedEntry
+          .trim()
+          .split('=')
+          .map((s) => s.trim());
         attributes.availableFanSpeeds.speeds.push({
           speed_name: speedName,
-          speed_values: [{
-            speed_synonym: speedSynonyms.split(':').map(s => s.trim()),
-            lang: config.lang || 'en'
-          }]
+          speed_values: [
+            {
+              speed_synonym: speedSynonyms.split(':').map((s) => s.trim()),
+              lang: config.lang || 'en'
+            }
+          ]
         });
-      } catch { }
+      } catch {}
     });
     return attributes;
   }

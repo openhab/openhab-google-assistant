@@ -2,9 +2,7 @@ const DefaultDevice = require('./default.js');
 
 class ModesDevice extends DefaultDevice {
   static getTraits() {
-    return [
-      'action.devices.traits.Modes'
-    ];
+    return ['action.devices.traits.Modes'];
   }
 
   static matchesItemType(item) {
@@ -16,29 +14,38 @@ class ModesDevice extends DefaultDevice {
     if (!config.mode || !config.settings) {
       return {};
     }
-    const modeNames = config.mode.split(',').map(s => s.trim());
+    const modeNames = config.mode.split(',').map((s) => s.trim());
     const attributes = {
-      availableModes: [{
-        name: modeNames[0],
-        name_values: [{
-          name_synonym: modeNames,
-          lang: config.lang || 'en'
-        }],
-        settings: [],
-        ordered: config.ordered === true
-      }]
+      availableModes: [
+        {
+          name: modeNames[0],
+          name_values: [
+            {
+              name_synonym: modeNames,
+              lang: config.lang || 'en'
+            }
+          ],
+          settings: [],
+          ordered: config.ordered === true
+        }
+      ]
     };
-    config.settings.split(',').forEach(setting => {
+    config.settings.split(',').forEach((setting) => {
       try {
-        const [settingName, settingSynonyms] = setting.trim().split('=').map(s => s.trim());
+        const [settingName, settingSynonyms] = setting
+          .trim()
+          .split('=')
+          .map((s) => s.trim());
         attributes.availableModes[0].settings.push({
           setting_name: settingName,
-          setting_values: [{
-            setting_synonym: [settingName].concat(settingSynonyms.split(':').map(s => s.trim())),
-            lang: config.lang || 'en'
-          }]
+          setting_values: [
+            {
+              setting_synonym: [settingName].concat(settingSynonyms.split(':').map((s) => s.trim())),
+              lang: config.lang || 'en'
+            }
+          ]
         });
-      } catch { }
+      } catch {}
     });
     return attributes;
   }
@@ -51,7 +58,7 @@ class ModesDevice extends DefaultDevice {
     const config = this.getConfig(item);
     const state = {};
     if (config.mode && config.settings) {
-      const modeNames = config.mode.split(',').map(s => s.trim());
+      const modeNames = config.mode.split(',').map((s) => s.trim());
       state.currentModeSettings = {
         [modeNames[0]]: item.state
       };

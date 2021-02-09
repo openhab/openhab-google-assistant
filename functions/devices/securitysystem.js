@@ -6,9 +6,7 @@ class SecuritySystem extends DefaultDevice {
   }
 
   static getTraits() {
-    return [
-      'action.devices.traits.ArmDisarm'
-    ];
+    return ['action.devices.traits.ArmDisarm'];
   }
 
   static get requiredItemTypes() {

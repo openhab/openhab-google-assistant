@@ -6,7 +6,7 @@ class ArmDisarm extends DefaultCommand {
   }
 
   static validateParams(params) {
-    return ('arm' in params) && typeof params.arm === 'boolean';
+    return 'arm' in params && typeof params.arm === 'boolean';
   }
 
   static convertParamsToValue(params, _, device) {

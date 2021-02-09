@@ -8,7 +8,7 @@ class ThermostatTemperatureSetpoint extends DefaultCommand {
   }
 
   static validateParams(params) {
-    return ('thermostatTemperatureSetpoint' in params) && typeof params.thermostatTemperatureSetpoint === 'number';
+    return 'thermostatTemperatureSetpoint' in params && typeof params.thermostatTemperatureSetpoint === 'number';
   }
 
   static requiresItem() {

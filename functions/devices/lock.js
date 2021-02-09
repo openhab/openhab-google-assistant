@@ -6,9 +6,7 @@ class Lock extends DefaultDevice {
   }
 
   static getTraits() {
-    return [
-      'action.devices.traits.LockUnlock'
-    ];
+    return ['action.devices.traits.LockUnlock'];
   }
 
   static get requiredItemTypes() {

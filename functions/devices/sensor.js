@@ -6,9 +6,7 @@ class Sensor extends DefaultDevice {
   }
 
   static getTraits() {
-    return [
-      'action.devices.traits.SensorState'
-    ];
+    return ['action.devices.traits.SensorState'];
   }
   static matchesItemType(item) {
     const config = this.getConfig(item);
@@ -30,7 +28,7 @@ class Sensor extends DefaultDevice {
     }
     if ('states' in config) {
       attributes.sensorStatesSupported.descriptiveCapabilities = {
-        availableStates: config.states.split(',').map(s => s.trim().split('=')[0].trim())
+        availableStates: config.states.split(',').map((s) => s.trim().split('=')[0].trim())
       };
     }
     return attributes;
@@ -50,9 +48,9 @@ class Sensor extends DefaultDevice {
   static translateStateToGoogle(item) {
     const config = this.getConfig(item);
     if ('states' in config) {
-      const states = config.states.split(',').map(s => s.trim())
+      const states = config.states.split(',').map((s) => s.trim());
       for (const state of states) {
-        const [key, value] = state.split('=').map(s => s.trim());
+        const [key, value] = state.split('=').map((s) => s.trim());
         if (value == item.state) {
           return key;
         }

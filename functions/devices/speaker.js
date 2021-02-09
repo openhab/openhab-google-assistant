@@ -6,9 +6,7 @@ class Speaker extends DefaultDevice {
   }
 
   static getTraits() {
-    return [
-      'action.devices.traits.Volume'
-    ];
+    return ['action.devices.traits.Volume'];
   }
 
   static getAttributes(item) {

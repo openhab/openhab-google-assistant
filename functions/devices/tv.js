@@ -38,26 +38,30 @@ class TV extends DefaultDevice {
     if ('tvTransport' in members) {
       attributes.transportControlSupportedCommands = ['NEXT', 'PREVIOUS', 'PAUSE', 'RESUME'];
       if ('transportControlSupportedCommands' in config) {
-        attributes.transportControlSupportedCommands = config.transportControlSupportedCommands.split(',').map(s => s.toUpperCase());
+        attributes.transportControlSupportedCommands = config.transportControlSupportedCommands
+          .split(',')
+          .map((s) => s.toUpperCase());
       }
     }
     if ('tvInput' in members && 'availableInputs' in config) {
       attributes.availableInputs = [];
-      config.availableInputs.split(',').forEach(input => {
+      config.availableInputs.split(',').forEach((input) => {
         const [key, synonyms] = input.split('=');
         attributes.availableInputs.push({
           key: key,
-          names: [{
-            name_synonym: synonyms.split(':'),
-            lang: config.lang || 'en'
-          }]
+          names: [
+            {
+              name_synonym: synonyms.split(':'),
+              lang: config.lang || 'en'
+            }
+          ]
         });
       });
       attributes.orderedInputs = config.orderedInputs === true;
     }
     if ('tvChannel' in members && 'availableChannels' in config) {
       attributes.availableChannels = [];
-      config.availableChannels.split(',').forEach(channel => {
+      config.availableChannels.split(',').forEach((channel) => {
         const [number, key, names] = channel.split('=');
         attributes.availableChannels.push({
           key: key,
@@ -90,7 +94,7 @@ class TV extends DefaultDevice {
           state.channelNumber = members[member].state;
           try {
             state.channelName = this.getChannelMap(item)[members[member].state][0];
-          } catch { }
+          } catch {}
           break;
       }
     }
@@ -98,19 +102,12 @@ class TV extends DefaultDevice {
   }
 
   static getMembers(item) {
-    const supportedMembers = [
-      'tvChannel',
-      'tvVolume',
-      'tvInput',
-      'tvTransport',
-      'tvPower',
-      'tvMute'
-    ];
+    const supportedMembers = ['tvChannel', 'tvVolume', 'tvInput', 'tvTransport', 'tvPower', 'tvMute'];
     const members = Object();
     if (item.members && item.members.length) {
-      item.members.forEach(member => {
+      item.members.forEach((member) => {
         if (member.metadata && member.metadata.ga) {
-          const memberType = supportedMembers.find(m => member.metadata.ga.value.toLowerCase() === m.toLowerCase());
+          const memberType = supportedMembers.find((m) => member.metadata.ga.value.toLowerCase() === m.toLowerCase());
           if (memberType) {
             members[memberType] = { name: member.name, state: member.state };
           }
@@ -124,7 +121,7 @@ class TV extends DefaultDevice {
     const config = this.getConfig(item);
     const channelMap = {};
     if ('availableChannels' in config) {
-      config.availableChannels.split(',').forEach(channel => {
+      config.availableChannels.split(',').forEach((channel) => {
         const [number, key, names] = channel.split('=');
         channelMap[number] = [...names.split(':'), key];
       });

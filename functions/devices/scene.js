@@ -6,9 +6,7 @@ class Scene extends DefaultDevice {
   }
 
   static getTraits() {
-    return [
-      'action.devices.traits.Scene'
-    ];
+    return ['action.devices.traits.Scene'];
   }
 
   static get requiredItemTypes() {
