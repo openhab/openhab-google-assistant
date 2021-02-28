@@ -75,7 +75,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: ./functions
-        run: npm i
+        run: npm ci
 
       - name: Deploy to Google Cloud Functions
         uses: google-github-actions/deploy-cloud-functions@main
