@@ -81,7 +81,7 @@ jobs:
         working-directory: ./functions
         run: npm i
 
-      - id: Deploy to Google Cloud Functions
+      - name: Deploy to Google Cloud Functions
         uses: google-github-actions/deploy-cloud-functions@main
         with:
           credentials: ${{ secrets.GCP_SA_KEY }}
