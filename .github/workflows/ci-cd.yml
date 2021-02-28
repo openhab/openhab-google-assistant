@@ -3,11 +3,12 @@ name: CI/CD
 on:
   push:
     branches: [ main ]
+    tags: [ v* ]
   pull_request:
     branches: [ main ]
 
 jobs:
-  unit-tests:
+  unit-testing:
     name: Unit Testing
     runs-on: ubuntu-latest
 
@@ -58,10 +59,10 @@ jobs:
       uses: github/codeql-action/analyze@v1
 
   deployment:
-    if: startsWith(github.ref, 'refs/tags/')
+    if: startsWith(github.ref, 'refs/tags/v')
     name: Install and Deploy
     runs-on: ubuntu-latest
-    needs: [unit-tests, code-analysis]
+    needs: [unit-testing, code-analysis]
 
     steps:
       - name: Checkout repository
