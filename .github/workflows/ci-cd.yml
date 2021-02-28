@@ -84,4 +84,6 @@ jobs:
           name: openhab-google-assistant
           runtime: nodejs12
           source_dir: ./functions
-          entry_point: index.js
+          entry_point: openhabGoogleAssistant
+          region: europe-west3
+
