@@ -6,8 +6,6 @@ on:
     tags: [ v* ]
   pull_request:
     branches: [ main ]
-  pull_request_target:
-    branches: [ main ]
   release:
     types: [published]
 
@@ -40,11 +38,12 @@ jobs:
         name: coverage
         path: coverage/
 
-    - name: Comment Test Coverage
-      if: ${{ github.event_name == 'pull_request' }}
-      uses: romeovs/lcov-reporter-action@v0.2.11
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
+    # GitHub actions only provides a read-only token for PRs from forks which prevents comments
+    #- name: Comment Test Coverage
+    #  if: github.event_name == 'pull_request'
+    #  uses: romeovs/lcov-reporter-action@v0.2.11
+    #  with:
+    #    github-token: ${{ secrets.GITHUB_TOKEN }}
 
   code-analysis:
     name: Code Analysis
