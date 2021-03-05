@@ -7,21 +7,23 @@ openHAB Google Assistant is based on [Google Cloud Function](https://cloud.googl
 Google Home Graph:
 The Google related parts of any Smart Home action rely on Google Home Graph, a database that stores and provides contextual data about the home and its devices. For example, Home Graph can store the concept of a living room that contains multiple types of devices (a light, television, and speaker) from different manufacturers. This information is passed to the Google Assistant in order to execute user requests based on the appropriate context.
 
-# General Instructions
+## General Instructions
 
-## Requirements
+### Requirements
 
 * Google account with "Actions on Google" and "Google Cloud Functions" access
 * openHAB server that a Google Cloud service endpoint can access
 
-## Google Cloud Functions
+### Google Cloud Functions
 
 * Enable the Cloud Functions API and install the Google Cloud SDK by following this [quickstart](https://cloud.google.com/functions/docs/quickstart)
 * gactions CLI (https://developers.google.com/actions/tools/gactions-cli)
-```
+
+```console
 curl -O https://dl.google.com/gactions/updates/bin/linux/amd64/gactions/gactions
 chmod +x gactions
 ```
+
 * Modify `functions/config.js`
   1. Change `host` to point to your openHAB Cloud instance, for example: `openhab.myserver.com`. Do not include `https`, if you do you'll get DNS errors.
   1. Change `path` to the rest API. Defaults to `/rest/items/`.
@@ -35,7 +37,7 @@ Deploy the `openhabGoogleAssistant` (openHAB home automation) function:
 
 Keep the address somewhere, you'll need it (something like `https://us-central1-<PROJECT ID>.cloudfunctions.net/openhabGoogleAssistant`).
 
-## Create OAuth Credentials
+### Create OAuth Credentials
 
 You'll need to create OAuth credentials to enable API access.
 
@@ -47,19 +49,19 @@ See [The Client ID and Secret - OAuth](https://www.oauth.com/oauth2-servers/clie
   1. Create a client secret (sufficiently random private secret, e.g. minimum 32 char random string)
 * You'll need these in the next steps.
 
-## Setup your Database
+### Setup your Database
 
 * SSH into to your openHAB Cloud instance
 * Open the MongoDB client `mongo` and enter these commands
 
-```
+```console
 use openhab
 db.oauth2clients.insert({ clientId: "<CLIENT-ID>", clientSecret: "<CLIENT SECRET>"})
 db.oauth2scopes.insert({ name: "any"})
 db.oauth2scopes.insert( { name : "google-assistant", description: "Access to openHAB Cloud specific API for Actions on Google Assistant", } )
 ```
 
-## Actions on Google
+### Actions on Google
 
 Actions on Google is Google's platform for developers to extend Google Assistant.
 Here you need to develop your actions to engage users on Google Home, Pixel, and other surfaces where the Google Assistant is available.
@@ -69,21 +71,21 @@ Here you need to develop your actions to engage users on Google Home, Pixel, and
   1. Select "Smart Home Actions". The fulfilment URL is the one saves from the `glcoud beta functions` you saved earlier.
   1. Fill out all the App information. Feel free to use fake data and images, you're not actually going to submit this.
   1. Move on to Account linking.
-    * Select Authorization Code
-    * Enter the client ID and client secret from the OAuth Credentials you created earlier
-    * Authorization URL should be something like: `https://openhab.myserver.com/oauth2/authorize`
-    * Token URL should be something like `https://openhab.myserver.com/oauth2/token`
-    * Set the scope to `google-assistant`. This links to the records that you have inserted into the MongoDB table `oauth2scopes` in [Setup your Database](#setup-your-database).
-    * Testing instructions: "None"
+     * Select Authorization Code
+     * Enter the client ID and client secret from the OAuth Credentials you created earlier
+     * Authorization URL should be something like: `https://openhab.myserver.com/oauth2/authorize`
+     * Token URL should be something like `https://openhab.myserver.com/oauth2/token`
+     * Set the scope to `google-assistant`. This links to the records that you have inserted into the MongoDB table `oauth2scopes` in [Setup your Database](#setup-your-database).
+     * Testing instructions: "None"
   1. Hit save. You're not actually going to submit this for testing, we just need to set it up so we can deploy it later.
 
-## Deploy your action
+### Deploy your action
 
 When you ask your assistant to “Turn on the light”, it will use the auth bearer Token and call the specified endpoint. To specify which endpoint the Google Assistant should call, you need to create an action.json similar to the one below, with your endpoint URL.
 
 * Update the `openhab-google-assistant/action.json` file and specify the Google Cloud Functions endpoint. This is not your server, this is the endpoint given to you from the call to `gcloud beta functions`
 
-```
+```json
 {
   "actions": [{
     "name": "actions.devices",
@@ -102,8 +104,10 @@ When you ask your assistant to “Turn on the light”, it will use the auth bea
   }
 }
 ```
+
 If you want to deploy your action in a foreign language, add locale parameter to the top of the action.js like :
-```
+
+```json
 {
   "locale": "fr",
   "actions": [{
@@ -114,7 +118,7 @@ If you want to deploy your action in a foreign language, add locale parameter to
 
 * Afterwards deploy this action file using the following command:
 
-```
+```console
 gactions update --action_package action.json --project <PROJECT ID>
 ```
 
@@ -123,13 +127,14 @@ This web service will receive parameters (intents) from Google and will query/mo
 
 * You need to Add "App information”, including name and account linking details to the Actions Console
 * Afterwards please run the following command in the gaction CLI:
-```
+
+```shell
 gactions test --action_package action.json --project <PROJECT ID>
 ```
 
 Note: Anytime you make changes to the settings to your Action on the _Actions By Google_ interface, you'll need to repeat this step.
 
-## Testing & Usage on Google App
+### Testing & Usage on Google App
 
 * Make sure Google Play Services is up to date
 * Visit "Google" app entry in Google Play Store on Android
@@ -146,22 +151,25 @@ If it didn't work, try the workaround below.
 
 To resync changes in the metadata or other openHAB configuration, tell Google Home to `sync my devices`. In a few seconds any changes will appear.
 
-## Workarounds
+### Workarounds
 
-### Scope issues
+#### Scope issues
 
 If you're getting error messages about an unknown scope, first check you've updated the MongoDB correctly in the [Setup your Database](#setup-your-database) step. If you still have issues, you can try this:
 
 * SSH into to your openHAB Cloud instance
 * Edit the file routes/oauth2.js:
   1. Comment out line 121: `scope = req.oauth2.req.scope;` and insert the following line above it: `scope = 'any';`
-  ```
-  //scope = req.oauth2.req.scope;
-  scope = 'any'
-  ```
- * Restart your server and attempt to authorize again.
 
-### Using a different Google account
+  ```js
+  //scope = req.oauth2.req.scope;
+  scope = 'any';
+  ```
+
+* Restart your server and attempt to authorize again.
+
+#### Using a different Google account
+
 In some cases, you may wish to have your `Google Cloud Function` and `Actions On Google` configured on a different Google account than the one running on your Google Home (eg. you have a work account for GCP services and payments, a home account for assistant). This configuration is still possible, but you need to make some permissions changes.
 
 Follow the same process above to setup the function and action, using your _work@gmail.com_ account. By default, when you go to add OpenHAB to the Google Home app using your _home@gmail.com_ account, your `[test] open hab` service will NOT be available to select.
@@ -176,11 +184,11 @@ To fix:
 
 Return back to the Google Home app and try to add the OpenHAB service again. You should now be able to see `[test] open hab` and add it successfully.
 
-## Item configuration
+### Item configuration
 
 In openHAB items are exposed using metadata in the namespace `ga`:
 
-```
+```js
 Switch KitchenLights "Kitchen Lights" <light> (gKitchen) { ga="Switch" }
 Dimmer BedroomLights "Bedroom Lights" <light> (gBedroom) { ga="Light" }
 Color LivingroomLights "Livingroom Lights" <light> (gLivingroom) { ga="Light" }
@@ -198,7 +206,16 @@ Number HK_Basement_Humid "Basement Humidity" (g_HK_Basement_TSTAT) { ga="thermos
 
 Currently the following metadata values are supported (also depending on Googles API capabilities):
 
-* `Switch / Dimmer / Color { ga="Light" }`
+* `Switch / Dimmer / Color { ga="Light" }` (Depending on the item type controlling power, brightness and color is supported)
+
+---
+
+* `Group { ga="Light" [ colorTemperatureRange="2000,9000", useKelvin=true ] }` (Light with separate brightness and color items)
+* `Dimmer / Number { ga="lightBrightness" }` as part of Light group
+* `Dimmer / Number { ga="lightColorTemperature" }` as part of Light group
+
+---
+
 * `Switch { ga="Switch" [ inverted=true ] }` (all Switch items can use the inverted option)
 * `Switch { ga="Outlet" }`
 * `Switch { ga="Coffee_Maker" }`
@@ -208,12 +225,32 @@ Currently the following metadata values are supported (also depending on Googles
 * `Switch { ga="Sprinkler" }`
 * `Switch { ga="Vacuum" }`
 * `Switch { ga="Scene" }`
-* `Switch { ga="Lock" [ tfaAck=true ] }`
-* `Switch { ga="SecuritySystem" [ tfaPin="1234" ] }`
-* `Dimmer { ga="Speaker" }`
+
+---
+
+* `Switch / Contact { ga="Lock" [ ackNeeded=true ] }`
+* `Switch { ga="SecuritySystem" [ pinNeeded="1234" ] }`
+* `String { ga="Camera" [ protocols="hls,dash" ] }`
+* `Dimmer { ga="Speaker" }` (Volume control)
+
+---
+
+* `Group { ga="TV" [ volumeDefaultPercentage="20", levelStepSize="10", volumeMaxLevel="100", transportControlSupportedCommands="NEXT,PREVIOUS,PAUSE,RESUME", availableInputs="hdmi1=xbox,hdmi2=settopbox", availableChannels="1=Channel1=NBC,2=Channel2=CBS" ] }`
+* `Switch { ga="tvPower" }` as part of TV group (optional)
+* `Switch { ga="tvMute" }` as part of TV group (optional)
+* `Dimmer { ga="tvVolume" }` as part of TV group (optional)
+* `String { ga="tvChannel" }` as part of TV group (optional)
+* `String { ga="tvInput" }` as part of TV group (optional)
+* `Player { ga="tvTransport" }` as part of TV group (optional)
+
+---
+
 * `Switch / Dimmer { ga="Fan" [ speeds="0=away:zero,50=default:standard:one,100=high:two", lang="en", ordered=true ] }` (for Dimmer the options have to be set)
 * `Switch / Dimmer { ga="Hood" }`
 * `Switch / Dimmer { ga="AirPurifier" }`
+
+---
+
 * `Rollershutter { ga="Awning" [ inverted=true ] }` (all Rollershutter items can use the inverted option)
 * `Rollershutter { ga="Blinds" }`
 * `Rollershutter { ga="Curtain" }`
@@ -223,14 +260,20 @@ Currently the following metadata values are supported (also depending on Googles
 * `Rollershutter { ga="Pergola" }`
 * `Rollershutter { ga="Shutter" }`
 * `Rollershutter { ga="Window" }`
-* `Group { ga="Thermostat" [ modes="..." ] }`
+
+_\* All Rollershutter devices can also be used with a Switch or Contact item with the limitation of only supporting open and close states._
+
+---
+
+* `Group { ga="Thermostat" [ modes="...", thermostatTemperatureRange="10,30", useFahrenheit=true ] }`
 * `Number { ga="thermostatTemperatureAmbient" }` as part of Thermostat group
 * `Number { ga="thermostatHumidityAmbient" }` as part of Thermostat group
 * `Number { ga="thermostatTemperatureSetpoint" }` as part of Thermostat group
 * `Number / String { ga="thermostatMode" }` as part of Thermostat group
-* `String { ga="Camera" [ protocols="hls,dash" ] }`
 
-_\* All Rollershutter devices can also be used with a Switch item with the limitation of only supporting open and close states._
+---
+
+* `Number { ga="TemperatureSensor" } [ useFahrenheit=true ]`
 
 Item labels are not mandatory in openHAB, but for the Google Assistant Action they are absolutely necessary!
 
@@ -242,21 +285,33 @@ Furthermore, you can state synonyms for the device name: `Switch KitchenLight "K
 
 To ease setting up new devices you can add a room hint: `[ roomHint="Living Room" ]`.
 
+For devices supporting the OpenClose trait, the attributes `[ discreteOnlyOpenClose=false, queryOnlyOpenClose=false ]` can be configured.
+
+* discreteOnlyOpenClose defaults to false. When set to true, this indicates that the device must either be fully open or fully closed (that is, it does not support values between 0% and 100%). An example of such a device may be a valve.
+* queryOnlyOpenClose defaults to false. Is set to true for `Contact` items. Indicates if the device can only be queried for state information and cannot be controlled. Sensors that can only report open state should set this field to true.
+
+---
 
 NOTE: metadata is not (yet?) available via paperUI. Either you create your items via ".items" files, or you can:
-- add metadata via console:
- ```
- smarthome:metadata add BedroomLights ga Light
- ```
 
-- add metadata using the REST API:
- ```
- PUT /rest/items/BedroomLights/metadata/ga
+* add metadata via console:
 
- {
-   "value": "Light"
- }
- ```
+  ```console
+  smarthome:metadata add BedroomLights ga Light
+  ```
+
+* add metadata using the REST API:
+
+  ```js
+  PUT /rest/items/BedroomLights/metadata/ga
+
+  {
+    "value": "Light"
+  }
+  ```
+
+NOTE: Please be aware that for backward compatibilty also the former usage of tags (ref. [Google Assistant Action Documentation v2.5](https://www.openhab.org/v2.5/docs/ecosystem/google-assistant/)) to specify items to be exposed to Google Assistent is supported and may cause unexpected behavior.
+Items that contain tags that refer to a valid Google Assistent device will be exposed regardless of having metadata set. E.g.: `Switch MyBulb ["Lighting"]`.
 
 ### Special item configurations
 
@@ -272,9 +327,9 @@ _pinNeeded_: "A two-factor authentication that requires a personal identificatio
 
 Example:
 
-```
-Switch DoorLock "Front Door" { ga="Lock" [ tfaAck=true ] }
-Switch HouseAlarm "House Alarm" { ga="SecuritySystem" [ tfaPin="1234" ] }
+```js
+Switch DoorLock "Front Door" { ga="Lock" [ ackNeeded=true ] }
+Switch HouseAlarm "House Alarm" { ga="SecuritySystem" [ pinNeeded="1234" ] }
 ```
 
 #### Thermostats
@@ -300,6 +355,7 @@ E.g. `[ modes="off=OFF:WINDOW_OPEN,heat=COMFORT:BOOST,eco=ECO,on=ON,auto" ]` wil
 By default the integration will provide `"off,heat,cool,on,heatcool,auto,eco"`.
 
 You can also set up a Thermostat for using it as a temperature sensor. To do so, create a Thermostat group and only add one item member as "thermostatTemperatureAmbient".
+However, it is recommended to prefer the `TemperatureSensor` type for simple temperature reports (but currently no UI support in Google Assistant).
 
 #### Fans
 
@@ -319,27 +375,32 @@ Blinds should always use the `Rollershutter` item type.
 Since Google and openHAB use the oposite percentage value for "opened" or "closed", the action will tranlate this automatically.
 If the values are still inverted in your case, you can state the `[ inverted=true ]` option for all `Rollershutter` items.
 
+Since Google only tells the open percentage (and not the verb "close" or "down"), it can not be differentiated between saying "set blind to 100%" or "open blind".
+Therefore, it is not possible to "not invert" the verbs, if the user chooses to invert the numbers.
+
+---
+
 More details about the setup and the service linkage (https://myopenhab.org) procedure within the Google App can be found in the [USAGE documentation](docs/USAGE.md).
 
 ## Example Voice Commands
 
 Here are some example voice commands:
 
- * Turn on Office Lights
- * Dim/Brighten Office Lights (increments 15%)
- * Set Office Lights to 35%
- * Open/Close the blinds
- * Turn off Pool Waterfall
- * Turn on House Fan
- * Turn on Home Theater Scene
- * Set Basement Thermostat to 15 degrees
- * What is the current Basement Thermostat Temperature?
+* Turn on Office Lights
+* Dim/Brighten Office Lights (increments 15%)
+* Set Office Lights to 35%
+* Open/Close the blinds
+* Turn off Pool Waterfall
+* Turn on House Fan
+* Turn on Home Theater Scene
+* Set Basement Thermostat to 15 degrees
+* What is the current Basement Thermostat Temperature?
 
 ## Logging & Debugging
 
 To check your deployed openHAB Google Cloud function app logs and debugging use the following command:
 
-```
+```console
 gcloud beta functions logs read openhabGoogleAssistant
 ```
 
@@ -347,7 +408,6 @@ gcloud beta functions logs read openhabGoogleAssistant
 
 * Sometimes the Account Linkage needs to be done twice and repeated
 * Google Assistant does not respond to querying the current brightness of an item
-* More Unit Test & Integration Test will be added soon
 
 ## References
 
