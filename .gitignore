@@ -4,3 +4,5 @@
 /creds.data
 /gactions
 /functions/node_modules/
+/coverage
+/.eslintcache

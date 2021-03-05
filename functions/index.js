@@ -18,57 +18,17 @@
  * @author Michael Krug - Rework
  *
  */
-const OpenHAB = require('./openhab.js').OpenHAB;
-const ApiHandler = require('./apihandler.js').ApiHandler;
+const OpenHAB = require('./openhab.js');
+const ApiHandler = require('./apihandler.js');
 const config = require('./config.js');
 const app = require('actions-on-google').smarthome();
 
-app.onDisconnect(() => {
-	return {};
-});
+const apiHandler = new ApiHandler(config);
+const openHAB = new OpenHAB(apiHandler);
 
-app.onExecute(async (body, headers) => {
-	const authToken = headers.authorization ? headers.authorization.split(' ')[1] : null;
-	const apiHandler = new ApiHandler(config, authToken);
-	const payload = await new OpenHAB(apiHandler).handleExecute(body.inputs[0].payload.commands).catch(() => ({
-		errorCode: 'actionNotAvailable',
-		status: 'ERROR',
-		commands: []
-	}));
-
-	return {
-		requestId: body.requestId,
-		payload: payload
-	};
-});
-
-app.onQuery(async (body, headers) => {
-	const authToken = headers.authorization ? headers.authorization.split(' ')[1] : null;
-	const apiHandler = new ApiHandler(config, authToken);
-	const payload = await new OpenHAB(apiHandler).handleQuery(body.inputs[0].payload.devices).catch(() => ({
-		errorCode: 'actionNotAvailable',
-		status: 'ERROR',
-		devices: {}
-	}));
-
-	return {
-		requestId: body.requestId,
-		payload: payload
-	};
-});
-
-app.onSync(async (body, headers) => {
-	const authToken = headers.authorization ? headers.authorization.split(' ')[1] : null;
-	const apiHandler = new ApiHandler(config, authToken);
-	const payload = await new OpenHAB(apiHandler).handleSync().catch(() => ({
-		errorCode: 'actionNotAvailable',
-		status : 'ERROR'
-	}));
-
-	return {
-		requestId: body.requestId,
-		payload: payload
-	};
-});
+app.onDisconnect(() => openHAB.onDisconnect());
+app.onExecute((body, headers) => openHAB.onExecute(body, headers));
+app.onQuery((body, headers) => openHAB.onQuery(body, headers));
+app.onSync((body, headers) => openHAB.onSync(body, headers));
 
 exports.openhabGoogleAssistant = app;
