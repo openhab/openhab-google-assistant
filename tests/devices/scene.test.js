@@ -26,6 +26,36 @@ describe('Scene Device', () => {
     });
   });
 
+  test('getAttributes with sceneReversible = true', () => {
+    const item = {
+      metadata: {
+        ga: {
+          config: {
+            sceneReversible: true
+          }
+        }
+      }
+    };
+    expect(Device.getAttributes(item)).toStrictEqual({
+      sceneReversible: true
+    });
+  });
+
+  test('getAttributes with sceneReversible = false', () => {
+    const item = {
+      metadata: {
+        ga: {
+          config: {
+            sceneReversible: false
+          }
+        }
+      }
+    };
+    expect(Device.getAttributes(item)).toStrictEqual({
+      sceneReversible: false
+    });
+  });
+
   test('getState', () => {
     expect(Device.getState({})).toStrictEqual({});
   });
