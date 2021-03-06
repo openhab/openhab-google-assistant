@@ -20,39 +20,41 @@ describe('Scene Device', () => {
     expect(Device.matchesItemType({ type: 'Group', groupType: 'String' })).toBe(false);
   });
 
-  test('getAttributes', () => {
-    expect(Device.getAttributes()).toStrictEqual({
-      sceneReversible: true
+  describe('getAttributes', () => {
+    test('getAttributes no config', () => {
+      expect(Device.getAttributes()).toStrictEqual({
+        sceneReversible: true
+      });
     });
-  });
 
-  test('getAttributes with sceneReversible = true', () => {
-    const item = {
-      metadata: {
-        ga: {
-          config: {
-            sceneReversible: true
+    test('getAttributes with sceneReversible = true', () => {
+      const item = {
+        metadata: {
+          ga: {
+            config: {
+              sceneReversible: true
+            }
           }
         }
-      }
-    };
-    expect(Device.getAttributes(item)).toStrictEqual({
-      sceneReversible: true
+      };
+      expect(Device.getAttributes(item)).toStrictEqual({
+        sceneReversible: true
+      });
     });
-  });
 
-  test('getAttributes with sceneReversible = false', () => {
-    const item = {
-      metadata: {
-        ga: {
-          config: {
-            sceneReversible: false
+    test('getAttributes with sceneReversible = false', () => {
+      const item = {
+        metadata: {
+          ga: {
+            config: {
+              sceneReversible: false
+            }
           }
         }
-      }
-    };
-    expect(Device.getAttributes(item)).toStrictEqual({
-      sceneReversible: false
+      };
+      expect(Device.getAttributes(item)).toStrictEqual({
+        sceneReversible: false
+      });
     });
   });
 
