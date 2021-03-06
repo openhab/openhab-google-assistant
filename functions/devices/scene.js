@@ -13,9 +13,10 @@ class Scene extends DefaultDevice {
     return ['Switch'];
   }
 
-  static getAttributes() {
+  static getAttributes(item) {
+    const config = this.getConfig(item);
     return {
-      sceneReversible: true
+      sceneReversible: config.sceneReversible !== false
     };
   }
 }
