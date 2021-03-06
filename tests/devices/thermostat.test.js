@@ -55,12 +55,6 @@ describe('Thermostat Device', () => {
       };
       expect(Device.useFahrenheit(item)).toBe(true);
     });
-    test('useFahrenheit tag', () => {
-      const item = {
-        tags: ['Fahrenheit']
-      };
-      expect(Device.useFahrenheit(item)).toBe(true);
-    });
   });
 
   describe('getAttributes', () => {
@@ -233,51 +227,6 @@ describe('Thermostat Device', () => {
         thermostatTemperatureSetpointLow: {
           name: 'Low',
           state: '5'
-        },
-        thermostatTemperatureAmbient: {
-          name: 'Temperature',
-          state: '20'
-        },
-        thermostatHumidityAmbient: {
-          name: 'Humidity',
-          state: '50'
-        }
-      });
-    });
-
-    test('getMembers with tags', () => {
-      const item = {
-        members: [
-          {
-            name: 'Mode',
-            state: 'on',
-            tags: ['HeatingCoolingMode']
-          },
-          {
-            name: 'Setpoint',
-            state: '20',
-            tags: ['TargetTemperature']
-          },
-          {
-            name: 'Temperature',
-            state: '20',
-            tags: ['CurrentTemperature']
-          },
-          {
-            name: 'Humidity',
-            state: '50',
-            tags: ['CurrentHumidity']
-          }
-        ]
-      };
-      expect(Device.getMembers(item)).toStrictEqual({
-        thermostatMode: {
-          name: 'Mode',
-          state: 'on'
-        },
-        thermostatTemperatureSetpoint: {
-          name: 'Setpoint',
-          state: '20'
         },
         thermostatTemperatureAmbient: {
           name: 'Temperature',

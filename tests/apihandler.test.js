@@ -40,7 +40,7 @@ describe('ApiHandler', () => {
         },
         hostname: 'example.org',
         method: 'GET',
-        path: '/items/?metadata=ga,synonyms&fields=groupNames,groupType,name,label,metadata,tags,type',
+        path: '/items/?metadata=ga,synonyms&fields=groupNames,groupType,name,label,metadata,type',
         port: 443
       });
     });
@@ -125,7 +125,7 @@ describe('ApiHandler', () => {
 
     test('getItems', async () => {
       const scope = nock('https://example.org')
-        .get('/items/?metadata=ga,synonyms&fields=groupNames,groupType,name,label,metadata,tags,type')
+        .get('/items/?metadata=ga,synonyms&fields=groupNames,groupType,name,label,metadata,type')
         .reply(200, [{ name: 'TestItem' }]);
       const result = await apiHandler.getItems();
       expect(result).toStrictEqual([{ name: 'TestItem' }]);
@@ -134,7 +134,7 @@ describe('ApiHandler', () => {
 
     test('getItems failed', async () => {
       const scope = nock('https://example.org')
-        .get('/items/?metadata=ga,synonyms&fields=groupNames,groupType,name,label,metadata,tags,type')
+        .get('/items/?metadata=ga,synonyms&fields=groupNames,groupType,name,label,metadata,type')
         .reply(400, {});
       let error = {};
       try {

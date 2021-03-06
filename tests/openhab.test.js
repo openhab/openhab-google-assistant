@@ -9,14 +9,8 @@ describe('OpenHAB', () => {
   });
 
   describe('getDeviceForItem', () => {
-    test('getDeviceForItem switch tag', () => {
+    test('getDeviceForItem switch', () => {
       const device = OpenHAB.getDeviceForItem({ type: 'Switch', metadata: { ga: { value: 'Switch' } } });
-      expect(device).not.toBeUndefined();
-      expect(device.name).toBe('Switch');
-    });
-
-    test('getDeviceForItem switch tag', () => {
-      const device = OpenHAB.getDeviceForItem({ type: 'Switch', tags: ['Switchable'] });
       expect(device).not.toBeUndefined();
       expect(device.name).toBe('Switch');
     });
