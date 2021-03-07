@@ -12,7 +12,9 @@ class Camera extends DefaultDevice {
   static getAttributes(item) {
     const config = this.getConfig(item);
     return {
-      cameraStreamSupportedProtocols: (config.protocols || 'hls,dash').split(',').map((s) => s.trim()),
+      cameraStreamSupportedProtocols: (config.protocols || 'hls,dash,smooth_stream,progressive_mp4')
+        .split(',')
+        .map((s) => s.trim()),
       cameraStreamNeedAuthToken: config.token ? true : false,
       cameraStreamNeedDrmEncryption: false
     };
