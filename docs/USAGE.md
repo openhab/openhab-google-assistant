@@ -59,7 +59,9 @@ Switch { ga="Switch" [ inverted=false ] }
 | **Configuration** | (optional) `inverted=true/false`<br>(optional) `colorTemperatureRange=minK,maxK` |
 
 ```shell
-Color { ga="Light" [ inverted=false, colorTemperatureRange="2000,9000" ] }
+Switch { ga="Light" [ inverted=true ] }
+Dimmer { ga="Light" }
+Color  { ga="Light" [ colorTemperatureRange="2000,9000" ] }
 ```
 
 #### `Light as Group with separate Color and Brightness`
@@ -72,9 +74,9 @@ Color { ga="Light" [ inverted=false, colorTemperatureRange="2000,9000" ] }
 | **Configuration** | (optional) `useKelvin=true/false`<br>(optional) `colorTemperatureRange=minK,maxK`<br>_Hint: if you do not set `useKelvin=true` then `colorTemperatureRange` is required_ |
 
 ```shell
-Group groupItem { ga="Light" [ useKelvin=true, colorTemperatureRange="2000,9000" ] }
-Dimmer brightnessItem (groupItem) { ga="lightBrightness" }
-Dimmer colorItem (groupItem) { ga="lightColorTemperature" }
+Group  lightGroup { ga="Light" [ useKelvin=true, colorTemperatureRange="2000,9000" ] }
+Dimmer brightnessItem (lightGroup) { ga="lightBrightness" }
+Number colorItem      (lightGroup) { ga="lightColorTemperature" }
 ```
 
 #### `Scene`
@@ -102,8 +104,8 @@ Switch { ga="Scene" [ sceneReversible=false ] }
 ```shell
 Switch { ga="Outlet" [ inverted=true ] }
 Switch { ga="Coffee_Maker" [ inverted=true ] }
-Switch { ga="WaterHeater" [ inverted=true ] }
-Switch { ga="Fireplace" [ inverted=true ] }
+Switch { ga="WaterHeater" [ inverted=false ] }
+Switch { ga="Fireplace" }
 ```
 
 #### `Valve`
@@ -130,7 +132,7 @@ Switch { ga="Valve" [ inverted=true ] }
 
 ```shell
 Switch { ga="Sprinkler" [ inverted=true ] }
-Switch { ga="Vacuum" [ inverted=true ] }
+Switch { ga="Vacuum" [ inverted=false ] }
 ```
 
 #### `Lock`
@@ -195,14 +197,13 @@ Dimmer { ga="Speaker" [ volumeDefaultPercentage="50", levelStepSize="10", volume
 | **Supported Items** | Group as `TV` with the following optional members: Switch as `tvPower`, Switch as `tvMute`, Dimmer as `tvVolume`, String as `tvChannel`, String as `tvInput`, Player as `tvTransport` |
 | **Configuration** | (optional) `volumeDefaultPercentage="20"`<br>(optional) `levelStepSize="5"`<br>(optional) `volumeMaxLevel="100"`<br>(optional) `transportControlSupportedCommands="NEXT,PREVIOUS,PAUSE,RESUME"`<br>(optional) `availableInputs="hdmi1=xbox,hdmi2=settopbox"`<br>(optional) `availableChannels="1=Channel1=NBC,2=Channel2=CBS"` |
 
-
 ```shell
-Group tvGroup { ga="TV" [ volumeDefaultPercentage="20", levelStepSize="10", volumeMaxLevel="100", transportControlSupportedCommands="NEXT,PREVIOUS,PAUSE,RESUME", availableInputs="hdmi1=xbox,hdmi2=settopbox", availableChannels="1=Channel1=NBC,2=Channel2=CBS" ] }
-Switch powerItem (tvGroup) { ga="tvPower" }
-Switch muteItem (tvGroup) { ga="tvMute" }
-Dimmer volumeItem (tvGroup) { ga="tvVolume" }
-String channelItem (tvGroup) { ga="tvChannel" }
-String inputItem (tvGroup) { ga="tvInput" }
+Group  tvGroup { ga="TV" [ volumeDefaultPercentage="20", levelStepSize="10", volumeMaxLevel="100", transportControlSupportedCommands="NEXT,PREVIOUS,PAUSE,RESUME", availableInputs="hdmi1=xbox,hdmi2=settopbox", availableChannels="1=Channel1=NBC,2=Channel2=CBS" ] }
+Switch powerItem     (tvGroup) { ga="tvPower" }
+Switch muteItem      (tvGroup) { ga="tvMute" }
+Dimmer volumeItem    (tvGroup) { ga="tvVolume" }
+String channelItem   (tvGroup) { ga="tvChannel" }
+String inputItem     (tvGroup) { ga="tvInput" }
 Player transportItem (tvGroup) { ga="tvTransport" }
 ```
 
@@ -249,9 +250,9 @@ Therefore, it is not possible to "not invert" the verbs, if the user chooses to 
 Rollershutter { ga="Awning" }
 Rollershutter { ga="Blinds" [ inverted=true ] }
 Rollershutter { ga="Curtain" }
-Switch { ga="Door" }
+Switch        { ga="Door" }
 Rollershutter { ga="Garage" }
-Contact { ga="Gate" }
+Contact       { ga="Gate" }
 Rollershutter { ga="Pergola" }
 Rollershutter { ga="Shutter" }
 Rollershutter { ga="Window" }
@@ -293,11 +294,11 @@ You can also set up a Thermostat for using it as a temperature sensor. To do so,
 However, it is recommended to prefer the `TemperatureSensor` type for simple temperature reports (but currently there is no UI support in Google Home).
 
 ```shell
-Group thermostatGroup { ga="Thermostat" [ modes="off=OFF:WINDOW_OPEN,heat=COMFORT:BOOST,eco=ECO,on=ON,auto", thermostatTemperatureRange="10,30", useFahrenheit=false ] }
-Number ambientItem (thermostatGroup) { ga="thermostatTemperatureAmbient" }
+Group  thermostatGroup { ga="Thermostat" [ modes="off=OFF:WINDOW_OPEN,heat=COMFORT:BOOST,eco=ECO,on=ON,auto", thermostatTemperatureRange="10,30", useFahrenheit=false ] }
+Number ambientItem  (thermostatGroup) { ga="thermostatTemperatureAmbient" }
 Number humidityItem (thermostatGroup) { ga="thermostatHumidityAmbient" }
 Number setpointItem (thermostatGroup) { ga="thermostatTemperatureSetpoint" }
-String modeItem (thermostatGroup) { ga="thermostatMode" }
+String modeItem     (thermostatGroup) { ga="thermostatMode" }
 ```
 
 ### Addtional Information
