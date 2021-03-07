@@ -56,7 +56,7 @@ Switch { ga="Switch" [ inverted=false ] }
 | **Device Type** | [Light](https://developers.google.com/assistant/smarthome/guides/light) |
 | **Supported Traits** | [OnOff](https://developers.google.com/assistant/smarthome/traits/onoff), [ColorSetting](https://developers.google.com/assistant/smarthome/traits/colorsetting), [Brightness](https://developers.google.com/assistant/smarthome/traits/brightness) (depending on used item type) |
 | **Supported Items** | Switch, Dimmer, Color |
-| **Configuration** | (optional) `inverted=true/false`, (optional) `colorTemperatureRange=minK,maxK` |
+| **Configuration** | (optional) `inverted=true/false`<br>(optional) `colorTemperatureRange=minK,maxK` |
 
 ```shell
 Color { ga="Light" [ inverted=false, colorTemperatureRange="2000,9000" ] }
@@ -69,7 +69,7 @@ Color { ga="Light" [ inverted=false, colorTemperatureRange="2000,9000" ] }
 | **Device Type** | [Light](https://developers.google.com/assistant/smarthome/guides/light) |
 | **Supported Traits** | [OnOff](https://developers.google.com/assistant/smarthome/traits/onoff), [ColorSetting](https://developers.google.com/assistant/smarthome/traits/colorsetting), [Brightness](https://developers.google.com/assistant/smarthome/traits/brightness) |
 | **Supported Items** | Group as `light` with two Number or Dimmer members as `lightBrightness` & `lightColorTemperature` |
-| **Configuration** | (optional) `useKelvin=true/false` , (optional) `colorTemperatureRange=minK,maxK`<br>_Hint: if you do not set `useKelvin=true` then `colorTemperatureRange` is required_ |
+| **Configuration** | (optional) `useKelvin=true/false`<br>(optional) `colorTemperatureRange=minK,maxK`<br>_Hint: if you do not set `useKelvin=true` then `colorTemperatureRange` is required_ |
 
 ```shell
 Group groupItem { ga="Light" [ useKelvin=true, colorTemperatureRange="2000,9000" ] }
@@ -140,7 +140,7 @@ Switch { ga="Vacuum" [ inverted=true ] }
 | **Device Type** | [Lock](https://developers.google.com/assistant/smarthome/guides/lock) |
 | **Supported Traits** | [LockUnlock](https://developers.google.com/assistant/smarthome/traits/lockunlock) |
 | **Supported Items** | Contact (no device control), Switch |
-| **Configuration** | (optional) `ackNeeded=true/false`, (optional) `pinNeeded="1234"` |
+| **Configuration** | (optional) `ackNeeded=true/false`<br>(optional) `pinNeeded="1234"` |
 
 ```shell
 Switch { ga="Lock" [ ackNeeded=true ] }
@@ -154,7 +154,7 @@ Switch { ga="Lock" [ pinNeeded="1234" ] }
 | **Device Type** | [SecuritySystem](https://developers.google.com/assistant/smarthome/guides/securitysystem) |
 | **Supported Traits** | [ArmDisarm](https://developers.google.com/assistant/smarthome/traits/armdisarm) |
 | **Supported Items** | Switch |
-| **Configuration** | (optional) `ackNeeded=true/false`, (optional) `pinNeeded="1234"` |
+| **Configuration** | (optional) `ackNeeded=true/false`<br>(optional) `pinNeeded="1234"` |
 
 ```shell
 Switch { ga="SecuritySystem" [ pinNeeded="1234" ] }
@@ -180,7 +180,7 @@ String { ga="Camera" [ protocols="hls,dash" ] }
 | **Device Type** | [Speaker](https://developers.google.com/assistant/smarthome/guides/speaker) |
 | **Supported Traits** | [Volume](https://developers.google.com/assistant/smarthome/traits/volume) |
 | **Supported Items** | Dimmer |
-| **Configuration** | (optional) `volumeDefaultPercentage="20"`, (optional) `levelStepSize="5"`, (optional) `volumeMaxLevel="100"` |
+| **Configuration** | (optional) `volumeDefaultPercentage="20"`<br>(optional) `levelStepSize="5"`<br>(optional) `volumeMaxLevel="100"` |
 
 ```shell
 Dimmer { ga="Speaker" [ volumeDefaultPercentage="50", levelStepSize="10", volumeMaxLevel="90" ] }
@@ -193,7 +193,7 @@ Dimmer { ga="Speaker" [ volumeDefaultPercentage="50", levelStepSize="10", volume
 | **Device Type** | [TV](https://developers.google.com/assistant/smarthome/guides/tv) |
 | **Supported Traits** | [OnOff](https://developers.google.com/assistant/smarthome/traits/onoff), [Volume](https://developers.google.com/assistant/smarthome/traits/volume), [TransportControl](https://developers.google.com/assistant/smarthome/traits/transportcontrol), [InputSelector](https://developers.google.com/assistant/smarthome/traits/inputselector), [Channel](https://developers.google.com/assistant/smarthome/traits/channel) (depending on used members) |
 | **Supported Items** | Group as `TV` with the following optional members: Switch as `tvPower`, Switch as `tvMute`, Dimmer as `tvVolume`, String as `tvChannel`, String as `tvInput`, Player as `tvTransport` |
-| **Configuration** | (optional) `volumeDefaultPercentage="20"`, (optional) `levelStepSize="5"`, (optional) `volumeMaxLevel="100"`, (optional) `transportControlSupportedCommands="NEXT,PREVIOUS,PAUSE,RESUME"`, (optional) `availableInputs="hdmi1=xbox,hdmi2=settopbox"`, (optional) `availableChannels="1=Channel1=NBC,2=Channel2=CBS"` |
+| **Configuration** | (optional) `volumeDefaultPercentage="20"`<br>(optional) `levelStepSize="5"`<br>(optional) `volumeMaxLevel="100"`<br>(optional) `transportControlSupportedCommands="NEXT,PREVIOUS,PAUSE,RESUME"`<br>(optional) `availableInputs="hdmi1=xbox,hdmi2=settopbox"`<br>(optional) `availableChannels="1=Channel1=NBC,2=Channel2=CBS"` |
 
 
 ```shell
@@ -213,7 +213,7 @@ Player transportItem (tvGroup) { ga="tvTransport" }
 | **Device Type** | [Fan](https://developers.google.com/assistant/smarthome/guides/fan), [Hood](https://developers.google.com/assistant/smarthome/guides/hood), [AirPurifier](https://developers.google.com/assistant/smarthome/guides/airpurifier) |
 | **Supported Traits** | [OnOff](https://developers.google.com/assistant/smarthome/traits/OnOff), [FanSpeed](https://developers.google.com/assistant/smarthome/traits/fanspeed) (depending on used item type) |
 | **Supported Items** | Switch (no speed control), Dimmer |
-| **Configuration** | `speeds="0=away:zero,50=default:standard:one,100=high:two"`, (optional) `lang="en"`, (optional) `ordered=true/false` |
+| **Configuration** | (optional) `speeds="0=away:zero,50=default:standard:one,100=high:two"`<br>(optional) `lang="en"`<br>(optional) `ordered=true/false`<br>_Hint: if you are using a Dimmer then `speeds` is required_ |
 
 Fans (and similar device types, like AirPurifier or Hood) support the `FanSpeed` trait.
 With that you will be able to set up and use human speakable modes, e.g. "fast" for 100% or "slow" for 25%.
@@ -277,7 +277,7 @@ Number { ga="TemperatureSensor" [ useFahrenheit=true ] }
 | **Device Type** | [Thermostat](https://developers.google.com/assistant/smarthome/guides/thermostat) |
 | **Supported Traits** | [TemperatureSetting](https://developers.google.com/assistant/smarthome/traits/temperaturesetting) |
 | **Supported Items** | Group as `Thermostat` with the following optional members: Number as `thermostatTemperatureAmbient`, Number as `thermostatTemperatureSetpoint`, Number as `thermostatHumidityAmbient`, String or Number as `thermostatMode` |
-| **Configuration** | (optional) `useFahrenheit=true/false`, (optional) `thermostatTemperatureRange="10,30"`, (optional) `modes="off=OFF:WINDOW_OPEN,heat=COMFORT:BOOST,eco=ECO,on=ON,auto"` |
+| **Configuration** | (optional) `useFahrenheit=true/false`<br>(optional) `thermostatTemperatureRange="10,30"`<br>(optional) `modes="off=OFF:WINDOW_OPEN,heat=COMFORT:BOOST,eco=ECO,on=ON,auto"` |
 
 Thermostat requires a group of items to be properly configured to be used with Google Assistant. The default temperature unit is Celsius.
 To change the temperature unit to Fahrenheit, add the config option `useFahrenheit=true` to the thermostat group.
@@ -339,8 +339,6 @@ NOTE: metadata is not available via paperUI in openHAB v2. Either you create you
 
 NOTE: Please be aware that for backward compatibilty also the former usage of tags (ref. [Google Assistant Action Documentation v2.5](https://www.openhab.org/v2.5/docs/ecosystem/google-assistant/)) to specify items to be exposed to Google Assistent is supported and may cause unexpected behavior.
 Items that contain tags that refer to a valid Google Assistent device will be exposed regardless of having metadata set. E.g.: `Switch MyBulb ["Lighting"]`.
-
-### Special item configurations
 
 #### Two-Factor-Authentication
 
