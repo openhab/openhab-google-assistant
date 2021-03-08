@@ -19,7 +19,7 @@ The Google related parts of any Smart Home action rely on Google Home Graph, a d
 * Enable the Cloud Functions API and install the Google Cloud SDK by following this [quickstart](https://cloud.google.com/functions/docs/quickstart)
 * gactions CLI (https://developers.google.com/actions/tools/gactions-cli)
 
-```console
+```shell
 curl -O https://dl.google.com/gactions/updates/bin/linux/amd64/gactions/gactions
 chmod +x gactions
 ```
@@ -54,7 +54,7 @@ See [The Client ID and Secret - OAuth](https://www.oauth.com/oauth2-servers/clie
 * SSH into to your openHAB Cloud instance
 * Open the MongoDB client `mongo` and enter these commands
 
-```console
+```shell
 use openhab
 db.oauth2clients.insert({ clientId: "<CLIENT-ID>", clientSecret: "<CLIENT SECRET>"})
 db.oauth2scopes.insert({ name: "any"})
@@ -118,7 +118,7 @@ If you want to deploy your action in a foreign language, add locale parameter to
 
 * Afterwards deploy this action file using the following command:
 
-```console
+```shell
 gactions update --action_package action.json --project <PROJECT ID>
 ```
 
@@ -194,7 +194,7 @@ In addition, you can also find information there on how to set up service linkin
 
 To check your deployed openHAB Google Cloud function app logs and debugging use the following command:
 
-```console
+```shell
 gcloud beta functions logs read openhabGoogleAssistant
 ```
 

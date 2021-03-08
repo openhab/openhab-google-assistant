@@ -324,7 +324,7 @@ NOTE: metadata is not available via paperUI in openHAB v2. Either you create you
 
 * add metadata via console:
 
-  ```console
+  ```shell
   smarthome:metadata add BedroomLights ga Light
   ```
 
@@ -354,7 +354,7 @@ _pinNeeded_: "A two-factor authentication that requires a personal identificatio
 Example:
 
 ```shell
-Switch DoorLock "Front Door" { ga="Lock" [ ackNeeded=true ] }
+Switch DoorLock   "Front Door"  { ga="Lock" [ ackNeeded=true ] }
 Switch HouseAlarm "House Alarm" { ga="SecuritySystem" [ pinNeeded="1234" ] }
 ```
 
@@ -426,23 +426,23 @@ I'm not able to connect openHAB to Google Home.
 * The items that you want to expose to Google Assistant should have the right metadata assigned.
 * The items that you want to expose to Google Assistant must have a item label! [Item Definition and Syntax](https://www.openhab.org/docs/configuration/items.html#item-definition-and-syntax)
 * If you expose thermostats make sure than you have:
-  * A group item with the metadata value { ga="Thermostat" }
-  * A number or string item with the metadata value { ga="thermostatMode" } as part of the thermostat group
-  * A number item with the metadata value { ga="thermostatTemperatureAmbient" } as part of the thermostat group
-  * A number item with the metadata value { ga="thermostatTemperatureSetpoint" } as part of the thermostat group
+  * A Group item with the metadata value `{ ga="Thermostat" }`
+  * A Number or String item with the metadata value `{ ga="thermostatMode" }` as part of the thermostat group
+  * A Number item with the metadata value `{ ga="thermostatTemperatureAmbient" }` as part of the thermostat group
+  * A Number item with the metadata value `{ ga="thermostatTemperatureSetpoint" }` as part of the thermostat group
 
-  ```js
-  Group g_HK_Basement_TSTAT "Basement Thermostat" { ga="Thermostat" [ useFahrenheit=true ] }
-  Number HK_Basement_Mode "Basement Heating/Cooling Mode" (g_HK_Basement_TSTAT) { ga="thermostatMode" }
-  Number HK_Basement_Setpoint "Basement Setpoint" (g_HK_Basement_TSTAT) { ga="thermostatTemperatureSetpoint" }
-  Number HK_Basement_Temp "Basement Temperature" (g_HK_Basement_TSTAT) { ga="thermostatTemperatureAmbient" }
+  ```shell
+  Group  g_HK_Basement_TSTAT  "Basement Thermostat"                                 { ga="Thermostat" [ useFahrenheit=true ] }
+  Number HK_Basement_Mode     "Basement Heating/Cooling Mode" (g_HK_Basement_TSTAT) { ga="thermostatMode" }
+  Number HK_Basement_Setpoint "Basement Setpoint"             (g_HK_Basement_TSTAT) { ga="thermostatTemperatureSetpoint" }
+  Number HK_Basement_Temp     "Basement Temperature"          (g_HK_Basement_TSTAT) { ga="thermostatTemperatureAmbient" }
   ```
 
 * If none of the above solutions works for you:
   * Remove all the metadata.
   * Make a new .item file with 1 item to expose.
 
-  ```js
+  ```shell
   Switch TestLight "Test Light" { ga="Switch" }
   ```
 
