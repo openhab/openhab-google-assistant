@@ -1,4 +1,5 @@
 const Device = require('../../functions/devices/default.js');
+const packageVersion = require('../../package.json').version;
 
 describe('Default Device', () => {
   const item = {
@@ -44,10 +45,10 @@ describe('Default Device', () => {
         pinNeeded: '1234'
       },
       deviceInfo: {
-        hwVersion: '2.5.0',
         manufacturer: 'openHAB',
         model: 'Number:DefaultDevice',
-        swVersion: '2.5.0'
+        hwVersion: '3.0.0',
+        swVersion: packageVersion
       },
       id: 'DefaultDevice',
       name: {
