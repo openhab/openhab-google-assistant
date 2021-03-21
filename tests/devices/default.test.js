@@ -78,6 +78,15 @@ describe('Default Device', () => {
     expect(metadata.customData.pinNeeded).toBe('1234');
   });
 
+  test('getMetadata no label fallback', () => {
+    const metadata = Device.getMetadata({
+      type: 'Number',
+      state: '50',
+      name: 'DefaultDevice'
+    });
+    expect(metadata.name.name).toBe('DefaultDevice');
+  });
+
   test('hasTag', () => {
     expect(Device.hasTag({}, 'testtag')).toBe(false);
     expect(Device.hasTag({ tags: ['test'] }, 'testtag')).toBe(false);

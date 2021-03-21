@@ -58,15 +58,16 @@ class DefaultDevice {
   static getMetadata(item) {
     const config = this.getConfig(item);
     const itemType = item.type === 'Group' && item.groupType ? item.groupType : item.type;
+    const deviceName = config.name || item.label || item.name;
     const metadata = {
       id: item.name,
       type: this.type,
       traits: this.getTraits(item),
       name: {
-        name: config.name || item.label,
-        defaultNames: [config.name || item.label],
+        name: deviceName,
+        defaultNames: [deviceName],
         nicknames: [
-          config.name || item.label,
+          deviceName,
           ...(item.metadata && item.metadata.synonyms
             ? item.metadata.synonyms.value.split(',').map((s) => s.trim())
             : [])
