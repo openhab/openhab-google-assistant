@@ -41,7 +41,7 @@ _Hint: The value of `ga` is **not** case-sensitive._
 | **Device Type** | [Switch](https://developers.google.com/assistant/smarthome/guides/switch) |
 | **Supported Traits** | [OnOff](https://developers.google.com/assistant/smarthome/traits/onoff) |
 | **Supported Items** | Switch |
-| **Configuration** | (optional) `inverted (boolean)` |
+| **Configuration** | (optional) `inverted=true/false` |
 
 **Example:**
 
@@ -56,7 +56,7 @@ Switch { ga="Switch" [ inverted=false ] }
 | **Device Type** | [Light](https://developers.google.com/assistant/smarthome/guides/light) |
 | **Supported Traits** | [OnOff](https://developers.google.com/assistant/smarthome/traits/onoff), [ColorSetting](https://developers.google.com/assistant/smarthome/traits/colorsetting), [Brightness](https://developers.google.com/assistant/smarthome/traits/brightness) (depending on used item type) |
 | **Supported Items** | Switch, Dimmer, Color |
-| **Configuration** | (optional) `inverted=true/false`<br>(optional) `colorTemperatureRange=minK,maxK` |
+| **Configuration** | (optional) `inverted=true/false`<br>(optional) `colorTemperatureRange="minK,maxK"` |
 
 ```shell
 Switch { ga="Light" [ inverted=true ] }
@@ -71,7 +71,7 @@ Color  { ga="Light" [ colorTemperatureRange="2000,9000" ] }
 | **Device Type** | [Light](https://developers.google.com/assistant/smarthome/guides/light) |
 | **Supported Traits** | [OnOff](https://developers.google.com/assistant/smarthome/traits/onoff), [ColorSetting](https://developers.google.com/assistant/smarthome/traits/colorsetting), [Brightness](https://developers.google.com/assistant/smarthome/traits/brightness) |
 | **Supported Items** | Group as `light` with two Number or Dimmer members as `lightBrightness` & `lightColorTemperature` |
-| **Configuration** | (optional) `useKelvin=true/false`<br>(optional) `colorTemperatureRange=minK,maxK`<br>_Hint: if you do not set `useKelvin=true` then `colorTemperatureRange` is required_ |
+| **Configuration** | (optional) `useKelvin=true/false`<br>(optional) `colorTemperatureRange="minK,maxK"`<br>_Hint: if you do not set `useKelvin=true` then `colorTemperatureRange` is required_ |
 
 ```shell
 Group  lightGroup { ga="Light" [ useKelvin=true, colorTemperatureRange="2000,9000" ] }
