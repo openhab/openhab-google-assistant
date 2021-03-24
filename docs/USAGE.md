@@ -193,18 +193,19 @@ Dimmer { ga="Speaker" [ volumeDefaultPercentage="50", levelStepSize="10", volume
 | | |
 |---|---|
 | **Device Type** | [TV](https://developers.google.com/assistant/smarthome/guides/tv) |
-| **Supported Traits** | [OnOff](https://developers.google.com/assistant/smarthome/traits/onoff), [Volume](https://developers.google.com/assistant/smarthome/traits/volume), [TransportControl](https://developers.google.com/assistant/smarthome/traits/transportcontrol), [InputSelector](https://developers.google.com/assistant/smarthome/traits/inputselector), [Channel](https://developers.google.com/assistant/smarthome/traits/channel) (depending on used members) |
-| **Supported Items** | Group as `TV` with the following optional members: Switch as `tvPower`, Switch as `tvMute`, Dimmer as `tvVolume`, String as `tvChannel`, String as `tvInput`, Player as `tvTransport` |
-| **Configuration** | (optional) `volumeDefaultPercentage="20"`<br>(optional) `levelStepSize="5"`<br>(optional) `volumeMaxLevel="100"`<br>(optional) `transportControlSupportedCommands="NEXT,PREVIOUS,PAUSE,RESUME"`<br>(optional) `availableInputs="hdmi1=xbox,hdmi2=settopbox"`<br>(optional) `availableChannels="1=Channel1=NBC,2=Channel2=CBS"` |
+| **Supported Traits** | [OnOff](https://developers.google.com/assistant/smarthome/traits/onoff), [Volume](https://developers.google.com/assistant/smarthome/traits/volume), [TransportControl](https://developers.google.com/assistant/smarthome/traits/transportcontrol), [InputSelector](https://developers.google.com/assistant/smarthome/traits/inputselector), [AppSelector](https://developers.google.com/assistant/smarthome/traits/appselector), [Channel](https://developers.google.com/assistant/smarthome/traits/channel) (depending on used members) |
+| **Supported Items** | Group as `TV` with the following optional members: Switch as `tvPower`, Switch as `tvMute`, Dimmer as `tvVolume`, String as `tvChannel`, String as `tvInput`, String as `tvApplication`, Player as `tvTransport` |
+| **Configuration** | (optional) `volumeDefaultPercentage="20"`<br>(optional) `levelStepSize="5"`<br>(optional) `volumeMaxLevel="100"`<br>(optional) `transportControlSupportedCommands="NEXT,PREVIOUS,PAUSE,RESUME"`<br>(optional) `availableChannels="channelNumber=channelId=channelName:channelSynonym:...,..."`<br>(optional) `availableInputs="inputKey=inputName:inputSynonym:...,..."`<br>(optional) `availableApplications="applicationKey=applicationName:applicationSynonym:...,..."`<br>(optional) `lang="en\|de\|..."` |
 
 ```shell
-Group  tvGroup { ga="TV" [ volumeDefaultPercentage="20", levelStepSize="10", volumeMaxLevel="100", transportControlSupportedCommands="NEXT,PREVIOUS,PAUSE,RESUME", availableInputs="hdmi1=xbox,hdmi2=settopbox", availableChannels="1=Channel1=NBC,2=Channel2=CBS" ] }
-Switch powerItem     (tvGroup) { ga="tvPower" }
-Switch muteItem      (tvGroup) { ga="tvMute" }
-Dimmer volumeItem    (tvGroup) { ga="tvVolume" }
-String channelItem   (tvGroup) { ga="tvChannel" }
-String inputItem     (tvGroup) { ga="tvInput" }
-Player transportItem (tvGroup) { ga="tvTransport" }
+Group  tvGroup { ga="TV" [ volumeDefaultPercentage="20", levelStepSize="10", volumeMaxLevel="100", transportControlSupportedCommands="NEXT,PREVIOUS,PAUSE,RESUME", availableChannels="1=Channel1=NBC,2=Channel2=CBS", availableInputs="hdmi1=xbox:gaming,hdmi2=settopbox", availableApplications: "youtube=YouTube:Tube,netflix=Netflix:Chill" ] }
+Switch powerItem       (tvGroup) { ga="tvPower" }
+Switch muteItem        (tvGroup) { ga="tvMute" }
+Dimmer volumeItem      (tvGroup) { ga="tvVolume" }
+String channelItem     (tvGroup) { ga="tvChannel" }
+String inputItem       (tvGroup) { ga="tvInput" }
+String applicationItem (tvGroup) { ga="tvApplication" }
+Player transportItem   (tvGroup) { ga="tvTransport" }
 ```
 
 #### `Fan`, `Hood`, `AirPurifier`
@@ -214,7 +215,7 @@ Player transportItem (tvGroup) { ga="tvTransport" }
 | **Device Type** | [Fan](https://developers.google.com/assistant/smarthome/guides/fan), [Hood](https://developers.google.com/assistant/smarthome/guides/hood), [AirPurifier](https://developers.google.com/assistant/smarthome/guides/airpurifier) |
 | **Supported Traits** | [OnOff](https://developers.google.com/assistant/smarthome/traits/OnOff), [FanSpeed](https://developers.google.com/assistant/smarthome/traits/fanspeed) (depending on used item type) |
 | **Supported Items** | Switch (no speed control), Dimmer |
-| **Configuration** | (optional) `speeds="0=away:zero,50=default:standard:one,100=high:two"`<br>(optional) `lang="en"`<br>(optional) `ordered=true/false`<br>_Hint: if you are using a Dimmer then `speeds` is required_ |
+| **Configuration** | (optional) `speeds="0=away:zero,50=default:standard:one,100=high:two"`<br>(optional) `lang="en"`<br>(optional) `ordered=true/false`<br>(optional) `lang="en\|de\|..."`<br>_Hint: if you are using a Dimmer then `speeds` is required_ |
 
 Fans (and similar device types, like AirPurifier or Hood) support the `FanSpeed` trait.
 With that you will be able to set up and use human speakable modes, e.g. "fast" for 100% or "slow" for 25%.
