@@ -8,29 +8,32 @@ describe('ApiHandler', () => {
     port: 443
   };
 
-  const apiHander = new ApiHandler(config);
+  const apiHandler = new ApiHandler(config);
 
   beforeEach(() => {
-    apiHander.authToken = 'token';
+    apiHandler.authToken = 'token';
   });
 
   test('constructor', () => {
-    expect(apiHander._config).toStrictEqual({
+    const apiHandler2 = new ApiHandler({ path: '/items/' });
+    expect(apiHandler2._config).toStrictEqual({ path: '/items/' });
+
+    expect(apiHandler._config).toStrictEqual({
       host: 'example.org',
       path: '/items/',
       port: 443
     });
-    expect(apiHander._authToken).toBe('token');
+    expect(apiHandler._authToken).toBe('token');
   });
 
   test('authToken', () => {
-    apiHander.authToken = '1234';
-    expect(apiHander._authToken).toBe('1234');
+    apiHandler.authToken = '1234';
+    expect(apiHandler._authToken).toBe('1234');
   });
 
   describe('getOptions', () => {
     test('getOptions GET all items', () => {
-      expect(apiHander.getOptions('GET', '', 0)).toStrictEqual({
+      expect(apiHandler.getOptions('GET', '', 0)).toStrictEqual({
         headers: {
           Accept: 'application/json',
           Authorization: 'Bearer token'
@@ -43,7 +46,7 @@ describe('ApiHandler', () => {
     });
 
     test('getOptions GET single items', () => {
-      expect(apiHander.getOptions('GET', 'TestItem', 0)).toStrictEqual({
+      expect(apiHandler.getOptions('GET', 'TestItem', 0)).toStrictEqual({
         headers: {
           Accept: 'application/json',
           Authorization: 'Bearer token'
@@ -56,7 +59,7 @@ describe('ApiHandler', () => {
     });
 
     test('getOptions POST', () => {
-      expect(apiHander.getOptions('POST', 'TestItem', 10)).toStrictEqual({
+      expect(apiHandler.getOptions('POST', 'TestItem', 10)).toStrictEqual({
         headers: {
           Accept: 'application/json',
           Authorization: 'Bearer token',
@@ -71,8 +74,8 @@ describe('ApiHandler', () => {
     });
 
     test('getOptions GET userpass', () => {
-      apiHander._config.userpass = 'tester:test';
-      expect(apiHander.getOptions('GET', 'TestItem', 0)).toStrictEqual({
+      apiHandler._config.userpass = 'tester:test';
+      expect(apiHandler.getOptions('GET', 'TestItem', 0)).toStrictEqual({
         auth: 'tester:test',
         headers: {
           Accept: 'application/json'
@@ -94,7 +97,7 @@ describe('ApiHandler', () => {
       const scope = nock('https://example.org')
         .get('/items/TestItem?metadata=ga,synonyms')
         .reply(200, [{ name: 'TestItem' }]);
-      const result = await apiHander.getItem('TestItem');
+      const result = await apiHandler.getItem('TestItem');
       expect(result).toStrictEqual([{ name: 'TestItem' }]);
       expect(scope.isDone()).toBe(true);
     });
@@ -103,7 +106,7 @@ describe('ApiHandler', () => {
       const scope = nock('https://example.org').get('/items/TestItem?metadata=ga,synonyms').reply(400, {});
       let error = {};
       try {
-        await apiHander.getItem('TestItem');
+        await apiHandler.getItem('TestItem');
       } catch (e) {
         error = e;
       }
@@ -124,7 +127,7 @@ describe('ApiHandler', () => {
       const scope = nock('https://example.org')
         .get('/items/?metadata=ga,synonyms&fields=groupNames,groupType,name,label,metadata,tags,type')
         .reply(200, [{ name: 'TestItem' }]);
-      const result = await apiHander.getItems();
+      const result = await apiHandler.getItems();
       expect(result).toStrictEqual([{ name: 'TestItem' }]);
       expect(scope.isDone()).toBe(true);
     });
@@ -135,7 +138,7 @@ describe('ApiHandler', () => {
         .reply(400, {});
       let error = {};
       try {
-        await apiHander.getItems();
+        await apiHandler.getItems();
       } catch (e) {
         error = e;
       }
@@ -156,7 +159,7 @@ describe('ApiHandler', () => {
       const scope = nock('https://example.org')
         .post('/items/TestItem?metadata=ga,synonyms')
         .reply(200, [{ name: 'TestItem' }]);
-      const result = await apiHander.sendCommand('TestItem', 'OFF');
+      const result = await apiHandler.sendCommand('TestItem', 'OFF');
       expect(result).toBeUndefined();
       expect(scope.isDone()).toBe(true);
     });
@@ -165,7 +168,7 @@ describe('ApiHandler', () => {
       const scope = nock('https://example.org').post('/items/TestItem?metadata=ga,synonyms').reply(400, {});
       let error = {};
       try {
-        await apiHander.sendCommand('TestItem', 'OFF');
+        await apiHandler.sendCommand('TestItem', 'OFF');
       } catch (e) {
         error = e;
       }
