@@ -308,5 +308,20 @@ describe('Default Command', () => {
         }
       ]);
     });
+
+    test('execute with errorCode', async () => {
+      sendCommandMock.mockReturnValue(Promise.reject({ errorCode: 'noAvailableChannel' }));
+      const devices = [{ id: 'Item1' }];
+      const result = await TestCommand1.execute(apiHandler, devices, { on: true }, {});
+      expect(getItemMock).toHaveBeenCalledTimes(0);
+      expect(sendCommandMock).toHaveBeenCalledTimes(1);
+      expect(result).toStrictEqual([
+        {
+          errorCode: 'noAvailableChannel',
+          ids: ['Item1'],
+          status: 'ERROR'
+        }
+      ]);
+    });
   });
 });

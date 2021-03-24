@@ -27,16 +27,17 @@ class SelectChannel extends DefaultCommand {
   }
 
   static convertParamsToValue(params, item) {
-    if (params.channelNumber) {
+    const channelMap = TV.getChannelMap(item);
+    if (params.channelNumber && params.channelNumber in channelMap) {
       return params.channelNumber;
     }
     const search = params.channelName || params.channelCode;
-    const channelMap = TV.getChannelMap(item);
     for (const number in channelMap) {
       if (channelMap[number].includes(search)) {
         return number;
       }
     }
+    throw { errorCode: 'noAvailableChannel' };
   }
 
   static getResponseStates(params, item) {

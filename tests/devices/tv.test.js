@@ -97,6 +97,14 @@ describe('TV Device', () => {
                 value: 'tvMute'
               }
             }
+          },
+          {
+            state: 'youtube',
+            metadata: {
+              ga: {
+                value: 'tvApplication'
+              }
+            }
           }
         ]
       };
@@ -105,7 +113,8 @@ describe('TV Device', () => {
         'action.devices.traits.Volume',
         'action.devices.traits.Channel',
         'action.devices.traits.InputSelector',
-        'action.devices.traits.TransportControl'
+        'action.devices.traits.TransportControl',
+        'action.devices.traits.AppSelector'
       ]);
     });
   });
@@ -434,7 +443,6 @@ describe('TV Device', () => {
     const item = {
       metadata: {
         ga: {
-          value: 'TV',
           config: {
             availableChannels: '20=channel1=Channel 1:Kanal 1,10=channel2=Channel 2:Kanal 2'
           }
@@ -444,6 +452,22 @@ describe('TV Device', () => {
     expect(Device.getChannelMap(item)).toStrictEqual({
       10: ['Channel 2', 'Kanal 2', 'channel2'],
       20: ['Channel 1', 'Kanal 1', 'channel1']
+    });
+  });
+
+  test('getApplicationMap', () => {
+    const item = {
+      metadata: {
+        ga: {
+          config: {
+            availableApplications: 'youtube=YouTube:Tube,netflix=Net Flix:Flix'
+          }
+        }
+      }
+    };
+    expect(Device.getApplicationMap(item)).toStrictEqual({
+      youtube: ['YouTube', 'Tube', 'youtube'],
+      netflix: ['Net Flix', 'Flix', 'netflix']
     });
   });
 
@@ -457,7 +481,8 @@ describe('TV Device', () => {
             config: {
               transportControlSupportedCommands: 'PAUSE,RESUME',
               availableInputs: 'input1=hdmi1,input2=hdmi2',
-              availableChannels: '1=channel1=ARD,2=channel2=ZDF'
+              availableChannels: '1=channel1=ARD,2=channel2=ZDF',
+              availableApplications: 'youtube=YouTube'
             }
           }
         },
