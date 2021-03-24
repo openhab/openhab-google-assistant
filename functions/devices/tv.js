@@ -146,6 +146,18 @@ class TV extends DefaultDevice {
     }
     return channelMap;
   }
+
+  static getApplicationMap(item) {
+    const config = this.getConfig(item);
+    const applicationMap = {};
+    if ('availableApplications' in config) {
+      config.availableApplications.split(',').forEach((application) => {
+        const [key, synonyms] = application.split('=');
+        applicationMap[key] = [...synonyms.split(':'), key];
+      });
+    }
+    return applicationMap;
+  }
 }
 
 module.exports = TV;
