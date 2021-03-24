@@ -284,6 +284,50 @@ describe('TV Device', () => {
     });
   });
 
+  test('getAttributes applications', () => {
+    const item = {
+      metadata: {
+        ga: {
+          config: {
+            availableApplications: 'youtube=YouTube,netflix=Netflix'
+          }
+        }
+      },
+      members: [
+        {
+          metadata: {
+            ga: {
+              value: 'tvApplication'
+            }
+          }
+        }
+      ]
+    };
+    expect(Device.getAttributes(item)).toStrictEqual({
+      availableApplications: [
+        {
+          key: 'youtube',
+          names: [
+            {
+              lang: 'en',
+              name_synonym: ['YouTube']
+            }
+          ]
+        },
+        {
+          key: 'netflix',
+          names: [
+            {
+              lang: 'en',
+              name_synonym: ['Netflix']
+            }
+          ]
+        }
+      ],
+      volumeCanMuteAndUnmute: false
+    });
+  });
+
   test('getMembers', () => {
     expect(Device.getMembers({ members: [{}] })).toStrictEqual({});
     expect(Device.getMembers({ members: [{ metadata: { ga: { value: 'invalid' } } }] })).toStrictEqual({});
@@ -342,6 +386,15 @@ describe('TV Device', () => {
               value: 'tvMute'
             }
           }
+        },
+        {
+          name: 'Application',
+          state: 'youtube',
+          metadata: {
+            ga: {
+              value: 'tvApplication'
+            }
+          }
         }
       ]
     };
@@ -369,6 +422,10 @@ describe('TV Device', () => {
       tvVolume: {
         name: 'Volume',
         state: '50'
+      },
+      tvApplication: {
+        name: 'Application',
+        state: 'youtube'
       }
     });
   });
@@ -452,6 +509,14 @@ describe('TV Device', () => {
                 value: 'tvMute'
               }
             }
+          },
+          {
+            state: 'youtube',
+            metadata: {
+              ga: {
+                value: 'tvApplication'
+              }
+            }
           }
         ]
       };
@@ -459,6 +524,7 @@ describe('TV Device', () => {
         channelName: 'ARD',
         channelNumber: '1',
         currentInput: 'input1',
+        currentApplication: 'youtube',
         currentVolume: 50,
         isMuted: false,
         on: true
