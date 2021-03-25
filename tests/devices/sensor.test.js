@@ -53,9 +53,7 @@ describe('Sensor Device', () => {
           }
         }
       };
-      expect(Device.getAttributes(item)).toStrictEqual({
-        sensorStatesSupported: {}
-      });
+      expect(Device.getAttributes(item)).toStrictEqual({ sensorStatesSupported: {} });
     });
 
     test('getAttributes states', () => {
