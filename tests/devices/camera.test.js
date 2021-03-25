@@ -30,7 +30,7 @@ describe('Camera Device', () => {
         }
       };
       expect(Device.getAttributes(item)).toStrictEqual({
-        cameraStreamSupportedProtocols: ['hls', 'dash'],
+        cameraStreamSupportedProtocols: ['hls', 'dash', 'smooth_stream', 'progressive_mp4'],
         cameraStreamNeedAuthToken: false,
         cameraStreamNeedDrmEncryption: false
       });
