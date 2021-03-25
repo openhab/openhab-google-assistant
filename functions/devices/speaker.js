@@ -15,6 +15,9 @@ class Speaker extends DefaultDevice {
       volumeMaxLevel: 100,
       volumeCanMuteAndUnmute: false
     };
+    if ('volumeMaxLevel' in config) {
+      attributes.volumeMaxLevel = Number(config.volumeMaxLevel);
+    }
     if ('volumeDefaultPercentage' in config) {
       attributes.volumeDefaultPercentage = Number(config.volumeDefaultPercentage);
     }
