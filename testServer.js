@@ -1,9 +1,8 @@
 const express = require('express');
 const app = express();
-const bodyParser = require('body-parser');
 const openhabGA = require('./functions/index.js');
 
-app.use(bodyParser.json());
+app.use(express.json());
 
 app.use('/', (req, res) => {
   openhabGA.openhabGoogleAssistant(req, res);
