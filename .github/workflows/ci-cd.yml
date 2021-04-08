@@ -82,3 +82,4 @@ jobs:
           source_dir: ./functions
           entry_point: openhabGoogleAssistant
           region: europe-west3
+          env_vars: OH_HOST=myopenhab.org,OH_PORT=443,OH_PATH=/rest/items/
