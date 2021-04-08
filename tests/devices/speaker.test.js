@@ -35,13 +35,12 @@ describe('Speaker Device', () => {
       });
     });
 
-    test('getAttributes volumeDefaultPercentage, volumeMaxLevel, levelStepSize', () => {
+    test('getAttributes volumeDefaultPercentage, levelStepSize', () => {
       const item = {
         metadata: {
           ga: {
             config: {
               volumeDefaultPercentage: '20',
-              volumeMaxLevel: '90',
               levelStepSize: '10'
             }
           }
@@ -49,7 +48,7 @@ describe('Speaker Device', () => {
       };
       expect(Device.getAttributes(item)).toStrictEqual({
         volumeCanMuteAndUnmute: false,
-        volumeMaxLevel: 90,
+        volumeMaxLevel: 100,
         volumeDefaultPercentage: 20,
         levelStepSize: 10
       });

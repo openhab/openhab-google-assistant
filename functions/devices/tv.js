@@ -28,9 +28,6 @@ class TV extends DefaultDevice {
     };
     if ('tvVolume' in members) {
       attributes.volumeMaxLevel = 100;
-      if ('volumeMaxLevel' in config) {
-        attributes.volumeMaxLevel = Number(config.volumeMaxLevel);
-      }
       if ('volumeDefaultPercentage' in config) {
         attributes.volumeDefaultPercentage = Number(config.volumeDefaultPercentage);
       }
