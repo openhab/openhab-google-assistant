@@ -21,6 +21,11 @@
     "release-minor": "npm version minor -m \":bookmark: Release (minor): %s\"",
     "release-patch": "npm version patch -m \":bookmark: Release (patch): %s\""
   },
+  "jest": {
+    "setupFiles": [
+      "./tests/setenv.js"
+    ]
+  },
   "license": "EPL-2.0",
   "bugs": {
     "url": "https://github.com/openhab/openhab-google-assistant/issues"

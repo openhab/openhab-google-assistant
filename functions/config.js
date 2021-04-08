@@ -33,8 +33,8 @@
  *
  **/
 module.exports = {
-  //userpass: 'user@foo.com:Password1',
-  host: '<YOUR-CLOUD-HOST>',
-  port: 443,
-  path: '/YOUR/REST/ENDPOINT'
+  //userpass: process.env.OH_USERPASS || 'user@foo.com:Password1',
+  host: process.env.OH_HOST || '<YOUR-CLOUD-HOST>',
+  port: process.env.OH_PORT || 443,
+  path: process.env.OH_PATH || '/YOUR/REST/ENDPOINT'
 };
