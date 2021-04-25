@@ -320,7 +320,7 @@ Please see the [SensorState documentation](https://developers.google.com/assista
 For now only exact matches of the numeric value will report the descriptive state value.
 
 ```shell
-Number { ga="Sensor" [ sensorName="AirQuality", valueUnit="AQI", states"good=10,moderate=50,poor=90" ] }
+Number { ga="Sensor" [ sensorName="AirQuality", valueUnit="AQI", states="good=10,moderate=50,poor=90" ] }
 ```
 
 ### Addtional Information
