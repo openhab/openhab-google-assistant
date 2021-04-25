@@ -280,12 +280,13 @@ Number { ga="TemperatureSensor" [ useFahrenheit=true ] }
 |---|---|
 | **Device Type** | [Thermostat](https://developers.google.com/assistant/smarthome/guides/thermostat) |
 | **Supported Traits** | [TemperatureSetting](https://developers.google.com/assistant/smarthome/traits/temperaturesetting) |
-| **Supported Items** | Group as `Thermostat` with the following optional members: Number as `thermostatTemperatureAmbient`, Number as `thermostatTemperatureSetpoint`, Number as `thermostatHumidityAmbient`, String or Number as `thermostatMode` |
+| **Supported Items** | Group as `Thermostat` with the following optional members: Number as `thermostatTemperatureAmbient`, Number as `thermostatTemperatureSetpoint`, Number as `thermostatTemperatureSetpointLow`, Number as `thermostatTemperatureSetpointHigh`, Number as `thermostatHumidityAmbient`, String or Number as `thermostatMode` |
 | **Configuration** | (optional) `useFahrenheit=true/false`<br>(optional) `thermostatTemperatureRange="10,30"`<br>(optional) `modes="off=OFF:WINDOW_OPEN,heat=COMFORT:BOOST,eco=ECO,on=ON,auto"` |
 
 Thermostat requires a group of items to be properly configured to be used with Google Assistant. The default temperature unit is Celsius.
 To change the temperature unit to Fahrenheit, add the config option `useFahrenheit=true` to the thermostat group.
 To set the temperature range your thermostat supports, add the config option `thermostatTemperatureRange="10,30"` to the thermostat group.
+If your thermostat supports a range for the setpoint you can use both `thermostatTemperatureSetpointLow` and `thermostatTemperatureSetpointHigh` instead of the single `thermostatTemperatureSetpoint` item.
 
 If your thermostat does not have a mode, you should create one and manually assign a value (e.g. heat, cool, on, etc.) to have proper functionality.
 
@@ -298,10 +299,12 @@ However, it is recommended to prefer the `TemperatureSensor` type for simple tem
 
 ```shell
 Group  thermostatGroup { ga="Thermostat" [ modes="off=OFF:WINDOW_OPEN,heat=COMFORT:BOOST,eco=ECO,on=ON,auto", thermostatTemperatureRange="10,30", useFahrenheit=false ] }
-Number ambientItem  (thermostatGroup) { ga="thermostatTemperatureAmbient" }
-Number humidityItem (thermostatGroup) { ga="thermostatHumidityAmbient" }
-Number setpointItem (thermostatGroup) { ga="thermostatTemperatureSetpoint" }
-String modeItem     (thermostatGroup) { ga="thermostatMode" }
+Number ambientItem      (thermostatGroup) { ga="thermostatTemperatureAmbient" }
+Number humidityItem     (thermostatGroup) { ga="thermostatHumidityAmbient" }
+Number setpointItem     (thermostatGroup) { ga="thermostatTemperatureSetpoint" }
+Number setpointItemLow  (thermostatGroup) { ga="thermostatTemperatureSetpointLow" }
+Number setpointItemHigh (thermostatGroup) { ga="thermostatTemperatureSetpointHigh" }
+String modeItem         (thermostatGroup) { ga="thermostatMode" }
 ```
 
 ### Addtional Information
