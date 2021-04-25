@@ -307,6 +307,22 @@ Number setpointItemHigh (thermostatGroup) { ga="thermostatTemperatureSetpointHig
 String modeItem         (thermostatGroup) { ga="thermostatMode" }
 ```
 
+#### `Sensor`
+
+| | |
+|---|---|
+| **Device Type** | [Sensor](https://developers.google.com/assistant/smarthome/guides/sensor) |
+| **Supported Traits** | [SensorState](https://developers.google.com/assistant/smarthome/traits/sensorstate) |
+| **Supported Items** | Number, Dimmer |
+| **Configuration** |`sensorName="SmokeLevel"`<br>`valueUnit="PARTS_PER_MILLION"`<br>`states="no smoke=10,smoke detected=50,high=90"` |
+
+Please see the [SensorState documentation](https://developers.google.com/assistant/smarthome/traits/sensorstate) for more details on configuration options.
+For now only exact matches of the numeric value will report the descriptive state value.
+
+```shell
+Number { ga="Sensor" [ sensorName="AirQuality", valueUnit="AQI", states"good=10,moderate=50,poor=90" ] }
+```
+
 ### Addtional Information
 
 Item labels are not mandatory in openHAB, but for the Google Assistant Action they are absolutely necessary!
