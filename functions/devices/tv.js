@@ -13,6 +13,7 @@ class TV extends DefaultDevice {
     if ('tvChannel' in members) traits.push('action.devices.traits.Channel');
     if ('tvInput' in members) traits.push('action.devices.traits.InputSelector');
     if ('tvTransport' in members) traits.push('action.devices.traits.TransportControl');
+    if ('tvApplication' in members) traits.push('action.devices.traits.AppSelector');
     return traits;
   }
 
@@ -28,6 +29,9 @@ class TV extends DefaultDevice {
     };
     if ('tvVolume' in members) {
       attributes.volumeMaxLevel = 100;
+      if ('volumeMaxLevel' in config) {
+        attributes.volumeMaxLevel = Number(config.volumeMaxLevel);
+      }
       if ('volumeDefaultPercentage' in config) {
         attributes.volumeDefaultPercentage = Number(config.volumeDefaultPercentage);
       }
@@ -70,6 +74,21 @@ class TV extends DefaultDevice {
         });
       });
     }
+    if ('tvApplication' in members && 'availableApplications' in config) {
+      attributes.availableApplications = [];
+      config.availableApplications.split(',').forEach((application) => {
+        const [key, synonyms] = application.split('=');
+        attributes.availableApplications.push({
+          key: key,
+          names: [
+            {
+              name_synonym: synonyms.split(':'),
+              lang: config.lang || 'en'
+            }
+          ]
+        });
+      });
+    }
     return attributes;
   }
 
@@ -96,13 +115,15 @@ class TV extends DefaultDevice {
             state.channelName = this.getChannelMap(item)[members[member].state][0];
           } catch {}
           break;
+        case 'tvApplication':
+          state.currentApplication = members[member].state;
       }
     }
     return state;
   }
 
   static getMembers(item) {
-    const supportedMembers = ['tvChannel', 'tvVolume', 'tvInput', 'tvTransport', 'tvPower', 'tvMute'];
+    const supportedMembers = ['tvApplication', 'tvChannel', 'tvVolume', 'tvInput', 'tvTransport', 'tvPower', 'tvMute'];
     const members = Object();
     if (item.members && item.members.length) {
       item.members.forEach((member) => {
@@ -127,6 +148,18 @@ class TV extends DefaultDevice {
       });
     }
     return channelMap;
+  }
+
+  static getApplicationMap(item) {
+    const config = this.getConfig(item);
+    const applicationMap = {};
+    if ('availableApplications' in config) {
+      config.availableApplications.split(',').forEach((application) => {
+        const [key, synonyms] = application.split('=');
+        applicationMap[key] = [...synonyms.split(':'), key];
+      });
+    }
+    return applicationMap;
   }
 }
 

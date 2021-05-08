@@ -184,7 +184,13 @@ class DefaultCommand {
             ids: [device.id],
             status: 'ERROR',
             errorCode:
-              error.statusCode == 404 ? 'deviceNotFound' : error.statusCode == 400 ? 'notSupported' : 'deviceOffline'
+              typeof error.errorCode === 'string'
+                ? error.errorCode
+                : error.statusCode == 404
+                ? 'deviceNotFound'
+                : error.statusCode == 400
+                ? 'notSupported'
+                : 'deviceOffline'
           });
         });
     });

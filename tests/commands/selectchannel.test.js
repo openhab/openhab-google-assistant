@@ -44,6 +44,12 @@ describe('selectChannel Command', () => {
     expect(Command.convertParamsToValue({ channelCode: 'channel1' }, item)).toBe('1');
     expect(Command.convertParamsToValue({ channelName: 'ARD' }, item)).toBe('1');
     expect(Command.convertParamsToValue({ channelNumber: '1' }, item)).toBe('1');
+    expect(() => {
+      Command.convertParamsToValue({ channelNumber: '0' }, item);
+    }).toThrow();
+    expect(() => {
+      Command.convertParamsToValue({ channelName: 'wrong' }, item);
+    }).toThrow();
   });
 
   test('getResponseStates', () => {

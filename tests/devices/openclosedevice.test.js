@@ -7,6 +7,23 @@ describe('OpenCloseDevice Device', () => {
       discreteOnlyOpenClose: false,
       queryOnlyOpenClose: false
     });
+    expect(
+      Device.getAttributes({
+        type: 'Rollershutter',
+        metadata: {
+          ga: {
+            config: {
+              discreteOnly: true,
+              queryOnly: true
+            }
+          }
+        }
+      })
+    ).toStrictEqual({
+      pausable: false,
+      discreteOnlyOpenClose: true,
+      queryOnlyOpenClose: true
+    });
     expect(Device.getAttributes({ type: 'Switch' })).toStrictEqual({
       pausable: false,
       discreteOnlyOpenClose: true,
