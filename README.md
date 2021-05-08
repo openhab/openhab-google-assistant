@@ -17,7 +17,7 @@ The Google related parts of any Smart Home action rely on Google Home Graph, a d
 ### Google Cloud Functions
 
 * Enable the Cloud Functions API and install the Google Cloud SDK by following this [quickstart](https://cloud.google.com/functions/docs/quickstart)
-* gactions CLI (https://developers.google.com/actions/tools/gactions-cli)
+* gactions CLI (<https://developers.google.com/actions/tools/gactions-cli>)
 
 ```shell
 curl -O https://dl.google.com/gactions/updates/bin/linux/amd64/gactions/gactions
@@ -30,7 +30,7 @@ chmod +x gactions
 
 Deploy the `openhabGoogleAssistant` (openHAB home automation) function:
 
-* Create a storage bucket (https://console.cloud.google.com/storage/browser)
+* Create a storage bucket (<https://console.cloud.google.com/storage/browser>)
 * `cd openhab-google-assistant/functions`
 * `gcloud beta functions deploy openhabGoogleAssistant --runtime nodejs10 --stage-bucket <BUCKET_NAME> --trigger-http --project <PROJECT ID>`
 * This commands will deploy the function to Google Cloud and give you the endpoint address.
@@ -142,7 +142,7 @@ Note: Anytime you make changes to the settings to your Action on the _Actions By
 * Start the updated Google Home app on your phone
 * From the app home screen, select the `Add` button and then `Set up device`. Then `Works with Google > Have something already set up?`
 * You should be shown a list of providers and your Test action should be available. eg. `[test] open hab` - select it
-* Login at your Backend (e.g. https://myopenhab.org) with your username and password and authorise the OAuth screen
+* Login at your Backend (e.g. <https://myopenhab.org>) with your username and password and authorise the OAuth screen
 * If there is no errors, return back to the home screen and scroll to the bottom, your new devices should appear unassigned to any home or room. Complete the assignments as you see fit.
 * You can now control those devices from the Google Assistant!
 
@@ -188,7 +188,7 @@ Return back to the Google Home app and try to add the OpenHAB service again. You
 
 For details on how to configure your items and which voice commands you can use, please see the [USAGE documentation](docs/USAGE.md).
 
-In addition, you can also find information there on how to set up service linking with https://myopenhab.org within the Google Home App.
+In addition, you can also find information there on how to set up service linking with <https://myopenhab.org> within the Google Home App.
 
 ## Logging & Debugging
 
@@ -205,7 +205,7 @@ gcloud beta functions logs read openhabGoogleAssistant
 
 ## References
 
-* https://developers.google.com/actions/extending-the-assistant
-* https://developers.google.com/actions/smarthome/
-* https://cloud.google.com/functions/docs/how-to
-* https://www.openhab.org/addons/integrations/homekit/
+* <https://developers.google.com/actions/extending-the-assistant>
+* <https://developers.google.com/actions/smarthome/>
+* <https://cloud.google.com/functions/docs/how-to>
+* <https://www.openhab.org/addons/integrations/homekit/>
