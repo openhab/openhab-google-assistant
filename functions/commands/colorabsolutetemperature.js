@@ -43,7 +43,7 @@ class ColorAbsoluteTemperature extends DefaultCommand {
           100 -
           ((params.color.temperature - temperatureMinK) / (temperatureMaxK - temperatureMinK)) * 100
         ).toString();
-      } catch {
+      } catch (error) {
         return '0';
       }
     }

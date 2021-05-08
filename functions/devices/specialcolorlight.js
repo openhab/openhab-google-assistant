@@ -49,7 +49,9 @@ class SpecialColorLight extends DefaultDevice {
               ? Number(members[member].state)
               : temperatureMinK +
                 (((temperatureMaxK - temperatureMinK) / 100) * (100 - Number(members[member].state)) || 0);
-          } catch {}
+          } catch (error) {
+            //
+          }
           break;
       }
     }

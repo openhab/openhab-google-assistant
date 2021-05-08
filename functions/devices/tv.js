@@ -113,7 +113,9 @@ class TV extends DefaultDevice {
           state.channelNumber = members[member].state;
           try {
             state.channelName = this.getChannelMap(item)[members[member].state][0];
-          } catch {}
+          } catch (error) {
+            //
+          }
           break;
         case 'tvApplication':
           state.currentApplication = members[member].state;

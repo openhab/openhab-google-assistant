@@ -36,7 +36,9 @@ class Fan extends DefaultDevice {
             }
           ]
         });
-      } catch {}
+      } catch (error) {
+        //
+      }
     });
     return attributes;
   }
