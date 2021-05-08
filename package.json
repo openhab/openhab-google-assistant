@@ -16,7 +16,15 @@
     "test": "jest --silent --coverage",
     "test-ci": "jest --silent --coverage --ci",
     "lint": "eslint --ext .js --cache .",
-    "fix": "eslint --fix --ext .js --cache ."
+    "fix": "eslint --fix --ext .js --cache .",
+    "release-major": "npm version major -m \":bookmark: Release (major): %s\"",
+    "release-minor": "npm version minor -m \":bookmark: Release (minor): %s\"",
+    "release-patch": "npm version patch -m \":bookmark: Release (patch): %s\""
+  },
+  "jest": {
+    "setupFiles": [
+      "./tests/setenv.js"
+    ]
   },
   "license": "EPL-2.0",
   "bugs": {
