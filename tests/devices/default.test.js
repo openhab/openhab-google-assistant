@@ -22,6 +22,10 @@ describe('Default Device', () => {
     }
   };
 
+  test('matchesItemType', () => {
+    expect(Device.matchesItemType({ type: 'Number' })).toBe(true);
+  });
+
   test('getConfig', () => {
     expect(Device.getConfig(item)).toStrictEqual({
       ackNeeded: true,

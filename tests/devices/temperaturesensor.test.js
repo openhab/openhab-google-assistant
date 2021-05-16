@@ -15,6 +15,7 @@ describe('TemperatureSensor Device', () => {
 
   test('matchesItemType', () => {
     expect(Device.matchesItemType({ type: 'Number' })).toBe(true);
+    expect(Device.matchesItemType({ type: 'Number:Temperature' })).toBe(true);
     expect(Device.matchesItemType({ type: 'Dimmer' })).toBe(false);
     expect(Device.matchesItemType({ type: 'Group', groupType: 'Dimmer' })).toBe(false);
     expect(Device.matchesItemType({ type: 'Group', groupType: 'Number' })).toBe(true);

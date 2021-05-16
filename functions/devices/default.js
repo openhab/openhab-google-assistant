@@ -33,11 +33,8 @@ class DefaultDevice {
    * @param {object} item
    */
   static matchesItemType(item) {
-    return (
-      !this.requiredItemTypes.length ||
-      this.requiredItemTypes.includes(item.type) ||
-      (item.type === 'Group' && item.groupType && this.requiredItemTypes.includes(item.groupType))
-    );
+    const itemType = (item.type === 'Group' && item.groupType ? item.groupType : item.type || '').split(':')[0];
+    return !this.requiredItemTypes.length || this.requiredItemTypes.includes(itemType);
   }
 
   /**
