@@ -1,4 +1,6 @@
 /* eslint-disable no-unused-vars */
+const packageVersion = require('../../package.json').version;
+
 class DefaultDevice {
   static get type() {
     return '';
@@ -79,8 +81,8 @@ class DefaultDevice {
       deviceInfo: {
         manufacturer: 'openHAB',
         model: `${itemType}:${item.name}`,
-        hwVersion: '2.5.0',
-        swVersion: '2.5.0'
+        hwVersion: '3.0.0',
+        swVersion: packageVersion
       },
       attributes: this.getAttributes(item),
       customData: {
