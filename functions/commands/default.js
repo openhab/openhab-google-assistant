@@ -144,7 +144,7 @@ class DefaultCommand {
         ackSupported.includes(this.type) &&
         device.customData &&
         (device.customData.ackNeeded || device.customData.tfaAck) &&
-        !challenge.ack;
+        !(challenge && challenge.ack);
 
       let getItemPromise = Promise.resolve({ name: device.id });
       if (this.requiresItem(device) || ackWithState) {
