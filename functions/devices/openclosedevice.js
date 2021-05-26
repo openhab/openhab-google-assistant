@@ -11,7 +11,7 @@ class OpenCloseDevice extends DefaultDevice {
       discreteOnlyOpenClose: this.getConfig(item).discreteOnly === true,
       queryOnlyOpenClose: this.getConfig(item).queryOnly === true
     };
-    const itemType = item.type === 'Group' && item.groupType ? item.groupType : item.type;
+    const itemType = item.groupType || item.type;
     if (itemType === 'Switch') {
       attributes.discreteOnlyOpenClose = true;
     }
@@ -28,7 +28,7 @@ class OpenCloseDevice extends DefaultDevice {
 
   static getState(item) {
     let state = 0;
-    const itemType = item.type === 'Group' && item.groupType ? item.groupType : item.type;
+    const itemType = item.groupType || item.type;
     if (itemType === 'Rollershutter') {
       state = Number(item.state);
     } else {
