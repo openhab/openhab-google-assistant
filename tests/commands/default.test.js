@@ -144,7 +144,7 @@ describe('Default Command', () => {
 
     test('execute without responseStates', async () => {
       const devices = [{ id: 'Item1' }];
-      const result = await TestCommand1.execute(apiHandler, devices, {}, {});
+      const result = await TestCommand1.execute(apiHandler, devices, {});
       expect(getItemMock).toHaveBeenCalledTimes(0);
       expect(sendCommandMock).toHaveBeenCalledTimes(1);
       expect(result).toStrictEqual([
@@ -158,7 +158,7 @@ describe('Default Command', () => {
 
     test('execute without sent command', async () => {
       const devices = [{ id: 'Item1' }];
-      const result = await TestCommand3.execute(apiHandler, devices, { on: true }, {});
+      const result = await TestCommand3.execute(apiHandler, devices, { on: true });
       expect(getItemMock).toHaveBeenCalledTimes(0);
       expect(sendCommandMock).toHaveBeenCalledTimes(0);
       expect(result).toStrictEqual([successResponse]);
@@ -166,7 +166,7 @@ describe('Default Command', () => {
 
     test('execute without getItem', async () => {
       const devices = [{ id: 'Item1' }];
-      const result = await TestCommand1.execute(apiHandler, devices, { on: true }, {});
+      const result = await TestCommand1.execute(apiHandler, devices, { on: true });
       expect(getItemMock).toHaveBeenCalledTimes(0);
       expect(sendCommandMock).toHaveBeenCalledTimes(1);
       expect(result).toStrictEqual([successResponse]);
@@ -174,7 +174,7 @@ describe('Default Command', () => {
 
     test('execute with getItem', async () => {
       const devices = [{ id: 'Item1' }];
-      const result = await TestCommand2.execute(apiHandler, devices, { on: true }, {});
+      const result = await TestCommand2.execute(apiHandler, devices, { on: true });
       expect(getItemMock).toHaveBeenCalledTimes(1);
       expect(sendCommandMock).toHaveBeenCalledTimes(1);
       expect(result).toStrictEqual([successResponse]);
@@ -184,7 +184,7 @@ describe('Default Command', () => {
       const successResponse2 = Object.assign({}, successResponse);
       successResponse2.ids = ['Item2'];
       const devices = [{ id: 'Item1' }, { id: 'Item2' }];
-      const result = await TestCommand2.execute(apiHandler, devices, { on: true }, {});
+      const result = await TestCommand2.execute(apiHandler, devices, { on: true });
       expect(getItemMock).toHaveBeenCalledTimes(2);
       expect(sendCommandMock).toHaveBeenCalledTimes(2);
       expect(result).toStrictEqual([successResponse, successResponse2]);
@@ -192,7 +192,7 @@ describe('Default Command', () => {
 
     test('execute with pinNeeded', async () => {
       const devices = [{ id: 'Item1', customData: { pinNeeded: '1234' } }];
-      const result = await TestCommand1.execute(apiHandler, devices, { on: true }, {});
+      const result = await TestCommand1.execute(apiHandler, devices, { on: true });
       expect(getItemMock).toHaveBeenCalledTimes(0);
       expect(sendCommandMock).toHaveBeenCalledTimes(0);
       expect(result).toStrictEqual([
@@ -217,7 +217,7 @@ describe('Default Command', () => {
 
     test('execute with ackNeeded', async () => {
       const devices = [{ id: 'Item1', customData: { ackNeeded: true } }];
-      const result = await TestCommand1.execute(apiHandler, devices, { on: true }, {});
+      const result = await TestCommand1.execute(apiHandler, devices, { on: true });
       expect(getItemMock).toHaveBeenCalledTimes(0);
       expect(sendCommandMock).toHaveBeenCalledTimes(0);
       expect(result).toStrictEqual([
@@ -238,7 +238,7 @@ describe('Default Command', () => {
 
     test('execute with ackNeeded and state', async () => {
       const devices = [{ id: 'Item1', customData: { ackNeeded: true } }];
-      const result = await TestCommand2.execute(apiHandler, devices, { on: true }, {});
+      const result = await TestCommand2.execute(apiHandler, devices, { on: true });
       expect(getItemMock).toHaveBeenCalledTimes(1);
       expect(sendCommandMock).toHaveBeenCalledTimes(0);
       expect(result).toStrictEqual([
@@ -268,7 +268,7 @@ describe('Default Command', () => {
     test('execute with device not found', async () => {
       getItemMock.mockReturnValue(Promise.reject({ statusCode: '404' }));
       const devices = [{ id: 'Item1' }];
-      const result = await TestCommand2.execute(apiHandler, devices, { on: true }, {});
+      const result = await TestCommand2.execute(apiHandler, devices, { on: true });
       expect(getItemMock).toHaveBeenCalledTimes(1);
       expect(sendCommandMock).toHaveBeenCalledTimes(0);
       expect(result).toStrictEqual([
@@ -282,7 +282,7 @@ describe('Default Command', () => {
 
     test('execute with not supported', async () => {
       const devices = [{ id: 'Item1' }];
-      const result = await TestCommand4.execute(apiHandler, devices, { on: true }, {});
+      const result = await TestCommand4.execute(apiHandler, devices, { on: true });
       expect(getItemMock).toHaveBeenCalledTimes(0);
       expect(sendCommandMock).toHaveBeenCalledTimes(0);
       expect(result).toStrictEqual([
@@ -297,7 +297,7 @@ describe('Default Command', () => {
     test('execute with device offline', async () => {
       sendCommandMock.mockReturnValue(Promise.reject({ statusCode: 500 }));
       const devices = [{ id: 'Item1' }];
-      const result = await TestCommand1.execute(apiHandler, devices, { on: true }, {});
+      const result = await TestCommand1.execute(apiHandler, devices, { on: true });
       expect(getItemMock).toHaveBeenCalledTimes(0);
       expect(sendCommandMock).toHaveBeenCalledTimes(1);
       expect(result).toStrictEqual([
@@ -312,7 +312,7 @@ describe('Default Command', () => {
     test('execute with errorCode', async () => {
       sendCommandMock.mockReturnValue(Promise.reject({ errorCode: 'noAvailableChannel' }));
       const devices = [{ id: 'Item1' }];
-      const result = await TestCommand1.execute(apiHandler, devices, { on: true }, {});
+      const result = await TestCommand1.execute(apiHandler, devices, { on: true });
       expect(getItemMock).toHaveBeenCalledTimes(0);
       expect(sendCommandMock).toHaveBeenCalledTimes(1);
       expect(result).toStrictEqual([
