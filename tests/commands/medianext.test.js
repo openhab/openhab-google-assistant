@@ -5,35 +5,18 @@ describe('mediaNext Command', () => {
     expect(Command.validateParams({})).toBe(true);
   });
 
-  test('requiresItem', () => {
-    expect(Command.requiresItem()).toBe(true);
-  });
-
-  describe('getItemName', () => {
-    test('getItemName', () => {
-      const item = {
-        members: [
-          {
-            name: 'TransportItem',
-            metadata: {
-              ga: {
-                value: 'tvTransport'
-              }
-            }
-          }
-        ]
-      };
-      expect(Command.getItemName(item)).toBe('TransportItem');
-    });
-
-    test('getItemName no transport', () => {
-      const item = {
-        members: []
-      };
-      expect(() => {
-        Command.getItemName(item);
-      }).toThrow();
-    });
+  test('getItemName', () => {
+    const device = {
+      customData: {
+        members: {
+          tvTransport: 'TransportItem'
+        }
+      }
+    };
+    expect(Command.getItemName(device)).toBe('TransportItem');
+    expect(() => {
+      Command.getItemName({ customData: { members: {} } });
+    }).toThrow();
   });
 
   test('convertParamsToValue', () => {

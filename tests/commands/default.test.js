@@ -1,9 +1,6 @@
 const Command = require('../../functions/commands/default.js');
 
 class TestCommand1 extends Command {
-  static requiresItem() {
-    return false;
-  }
   static convertParamsToValue() {
     return 'TEST';
   }
@@ -50,11 +47,7 @@ describe('Default Command', () => {
   });
 
   test('getItemName', () => {
-    expect(Command.getItemName({ name: 'Item' }, {})).toBe('Item');
-  });
-
-  test('requiresItem', () => {
-    expect(Command.requiresItem({})).toBe(false);
+    expect(Command.getItemName({ id: 'Item' })).toBe('Item');
   });
 
   test('handleAuthPin', () => {
@@ -120,8 +113,8 @@ describe('Default Command', () => {
   describe('execute', () => {
     const getItemMock = jest.fn();
     const sendCommandMock = jest.fn();
-    sendCommandMock.mockReturnValue(Promise.resolve());
-    getItemMock.mockReturnValue(Promise.resolve({ name: 'TestItem' }));
+    sendCommandMock.mockResolvedValue();
+    getItemMock.mockResolvedValue({ name: 'TestItem' });
 
     const apiHandler = {
       getItem: getItemMock,
@@ -257,6 +250,27 @@ describe('Default Command', () => {
       ]);
     });
 
+    test('execute with ackNeeded, state and missing ack', async () => {
+      const devices = [{ id: 'Item1', customData: { ackNeeded: true } }];
+      const result = await TestCommand2.execute(apiHandler, devices, { on: true }, { pin: '1234' });
+      expect(getItemMock).toHaveBeenCalledTimes(1);
+      expect(sendCommandMock).toHaveBeenCalledTimes(0);
+      expect(result).toStrictEqual([
+        {
+          ids: ['Item1'],
+          challengeNeeded: {
+            type: 'ackNeeded'
+          },
+          errorCode: 'challengeNeeded',
+          states: {
+            on: true,
+            online: true
+          },
+          status: 'ERROR'
+        }
+      ]);
+    });
+
     test('execute with ack', async () => {
       const devices = [{ id: 'Item1', customData: { ackNeeded: true } }];
       const result = await TestCommand1.execute(apiHandler, devices, { on: true }, { ack: true });
@@ -266,7 +280,7 @@ describe('Default Command', () => {
     });
 
     test('execute with device not found', async () => {
-      getItemMock.mockReturnValue(Promise.reject({ statusCode: '404' }));
+      getItemMock.mockRejectedValue({ statusCode: '404' });
       const devices = [{ id: 'Item1' }];
       const result = await TestCommand2.execute(apiHandler, devices, { on: true });
       expect(getItemMock).toHaveBeenCalledTimes(1);
@@ -295,7 +309,7 @@ describe('Default Command', () => {
     });
 
     test('execute with device offline', async () => {
-      sendCommandMock.mockReturnValue(Promise.reject({ statusCode: 500 }));
+      sendCommandMock.mockRejectedValue({ statusCode: 500 });
       const devices = [{ id: 'Item1' }];
       const result = await TestCommand1.execute(apiHandler, devices, { on: true });
       expect(getItemMock).toHaveBeenCalledTimes(0);
@@ -310,7 +324,7 @@ describe('Default Command', () => {
     });
 
     test('execute with errorCode', async () => {
-      sendCommandMock.mockReturnValue(Promise.reject({ errorCode: 'noAvailableChannel' }));
+      sendCommandMock.mockRejectedValue({ errorCode: 'noAvailableChannel' });
       const devices = [{ id: 'Item1' }];
       const result = await TestCommand1.execute(apiHandler, devices, { on: true });
       expect(getItemMock).toHaveBeenCalledTimes(0);

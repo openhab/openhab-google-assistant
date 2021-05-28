@@ -14,11 +14,10 @@ class ThermostatTemperatureSetpointLow extends DefaultCommand {
   static requiresItem() {
     return true;
   }
-
-  static getItemName(item) {
-    const members = Thermostat.getMembers(item);
+  static getItemName(device) {
+    const members = (device.customData && device.customData.members) || {};
     if ('thermostatTemperatureSetpointLow' in members) {
-      return members.thermostatTemperatureSetpointLow.name;
+      return members.thermostatTemperatureSetpointLow;
     }
     throw { statusCode: 400 };
   }

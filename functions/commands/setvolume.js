@@ -1,5 +1,4 @@
 const DefaultCommand = require('./default.js');
-const TV = require('../devices/tv.js');
 
 class SetVolume extends DefaultCommand {
   static get type() {
@@ -10,19 +9,15 @@ class SetVolume extends DefaultCommand {
     return 'volumeLevel' in params && typeof params.volumeLevel === 'number';
   }
 
-  static requiresItem(device) {
-    return this.getDeviceType(device) === 'TV';
-  }
-
-  static getItemName(item, device) {
+  static getItemName(device) {
     if (this.getDeviceType(device) === 'TV') {
-      const members = TV.getMembers(item);
+      const members = (device.customData && device.customData.members) || {};
       if ('tvVolume' in members) {
-        return members.tvVolume.name;
+        return members.tvVolume;
       }
       throw { statusCode: 400 };
     }
-    return item.name;
+    return device.id;
   }
 
   static convertParamsToValue(params) {

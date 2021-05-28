@@ -14,21 +14,16 @@ describe('ThermostatTemperatureSetpoint Command', () => {
 
   test('getItemName', () => {
     expect(() => {
-      Command.getItemName({ name: 'Item' });
+      Command.getItemName({ id: 'Item' });
     }).toThrow();
-    const item = {
-      members: [
-        {
-          name: 'SetpointItem',
-          metadata: {
-            ga: {
-              value: 'thermostatTemperatureSetpoint'
-            }
-          }
+    const device = {
+      customData: {
+        members: {
+          thermostatTemperatureSetpoint: 'SetpointItem'
         }
-      ]
+      }
     };
-    expect(Command.getItemName(item)).toBe('SetpointItem');
+    expect(Command.getItemName(device)).toBe('SetpointItem');
   });
 
   test('convertParamsToValue', () => {

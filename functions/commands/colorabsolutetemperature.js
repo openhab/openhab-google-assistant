@@ -1,5 +1,4 @@
 const DefaultCommand = require('./default.js');
-const SpecialColorLight = require('../devices/specialcolorlight.js');
 const rgb2hsv = require('../utilities.js').rgb2hsv;
 const kelvin2rgb = require('../utilities.js').kelvin2rgb;
 
@@ -17,28 +16,29 @@ class ColorAbsoluteTemperature extends DefaultCommand {
     );
   }
 
-  static requiresItem() {
-    return true;
+  static requiresItem(device) {
+    return this.getDeviceType(device) !== 'SpecialColorLight';
   }
 
-  static getItemName(item, device) {
+  static getItemName(device) {
     if (this.getDeviceType(device) === 'SpecialColorLight') {
-      const members = SpecialColorLight.getMembers(item);
+      const members = (device.customData && device.customData.members) || {};
       if ('lightColorTemperature' in members) {
-        return members.lightColorTemperature.name;
+        return members.lightColorTemperature;
       }
       throw { statusCode: 400 };
     }
-    return item.name;
+    return device.id;
   }
 
   static convertParamsToValue(params, item, device) {
     if (this.getDeviceType(device) === 'SpecialColorLight') {
       try {
-        if (SpecialColorLight.useKelvin(item)) {
+        const customData = device.customData || {};
+        if (customData.useKelvin) {
           return params.color.temperature.toString();
         }
-        const { temperatureMinK, temperatureMaxK } = SpecialColorLight.getAttributes(item).colorTemperatureRange;
+        const { temperatureMinK, temperatureMaxK } = customData.colorTemperatureRange;
         return (
           100 -
           ((params.color.temperature - temperatureMinK) / (temperatureMaxK - temperatureMinK)) * 100

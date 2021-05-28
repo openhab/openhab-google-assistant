@@ -1,9 +1,9 @@
 const Device = require('../../functions/devices/camera.js');
 
 describe('Camera Device', () => {
-  test('isCompatible', () => {
+  test('matchesDeviceType', () => {
     expect(
-      Device.isCompatible({
+      Device.matchesDeviceType({
         metadata: {
           ga: {
             value: 'CAMERA'

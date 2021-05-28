@@ -20,8 +20,8 @@ class DefaultDevice {
   /**
    * @param {object} item
    */
-  static isCompatible(item) {
-    return (
+  static matchesDeviceType(item) {
+    return !!(
       item.metadata &&
       item.metadata.ga &&
       this.type.toLowerCase() === `action.devices.types.${item.metadata.ga.value}`.toLowerCase()
@@ -32,7 +32,7 @@ class DefaultDevice {
    * @param {object} item
    */
   static matchesItemType(item) {
-    return (
+    return !!(
       !this.requiredItemTypes.length ||
       this.requiredItemTypes.includes((item.groupType || item.type || '').split(':')[0])
     );
@@ -96,6 +96,13 @@ class DefaultDevice {
     }
     if (typeof config.pinNeeded === 'string' || typeof config.tfaPin === 'string') {
       metadata.customData.pinNeeded = config.pinNeeded || config.tfaPin;
+    }
+    if (typeof this.getMembers === 'function') {
+      const members = this.getMembers(item);
+      metadata.customData.members = {};
+      for (const member in members) {
+        metadata.customData.members[member] = members[member].name;
+      }
     }
     return metadata;
   }

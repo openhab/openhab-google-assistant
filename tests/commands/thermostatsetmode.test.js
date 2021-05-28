@@ -14,21 +14,16 @@ describe('ThermostatSetMode Command', () => {
 
   test('getItemName', () => {
     expect(() => {
-      Command.getItemName({ name: 'Item' });
+      Command.getItemName({ id: 'Item' });
     }).toThrow();
-    const item = {
-      members: [
-        {
-          name: 'ModeItem',
-          metadata: {
-            ga: {
-              value: 'thermostatMode'
-            }
-          }
+    const device = {
+      customData: {
+        members: {
+          thermostatMode: 'ModeItem'
         }
-      ]
+      }
     };
-    expect(Command.getItemName(item)).toBe('ModeItem');
+    expect(Command.getItemName(device)).toBe('ModeItem');
   });
 
   test('convertParamsToValue', () => {

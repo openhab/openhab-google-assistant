@@ -1,9 +1,9 @@
 const Device = require('../../functions/devices/speaker.js');
 
 describe('Speaker Device', () => {
-  test('isCompatible', () => {
+  test('matchesDeviceType', () => {
     expect(
-      Device.isCompatible({
+      Device.matchesDeviceType({
         metadata: {
           ga: {
             value: 'SPEAKER'

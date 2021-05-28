@@ -8,34 +8,25 @@ describe('setVolume Command', () => {
     expect(Command.validateParams(params)).toBe(true);
   });
 
-  test('requiresItem', () => {
-    expect(Command.requiresItem({})).toBe(false);
-    expect(Command.requiresItem({ customData: { deviceType: 'TV' } })).toBe(true);
-  });
-
   describe('getItemName', () => {
     test('getItemName', () => {
-      expect(Command.getItemName({ name: 'Item' }, {})).toBe('Item');
-      expect(Command.getItemName({ name: 'Item' }, { customData: {} })).toBe('Item');
+      expect(Command.getItemName({ id: 'Item' })).toBe('Item');
+      expect(Command.getItemName({ id: 'Item', customData: {} })).toBe('Item');
     });
 
     test('getItemName TV', () => {
       expect(() => {
-        Command.getItemName({ name: 'Item' }, { customData: { deviceType: 'TV' } });
+        Command.getItemName({ id: 'Item', customData: { deviceType: 'TV' } });
       }).toThrow();
-      const item = {
-        members: [
-          {
-            name: 'VolumeItem',
-            metadata: {
-              ga: {
-                value: 'tvVolume'
-              }
-            }
+      const device = {
+        customData: {
+          deviceType: 'TV',
+          members: {
+            tvVolume: 'VolumeItem'
           }
-        ]
+        }
       };
-      expect(Command.getItemName(item, { customData: { deviceType: 'TV' } })).toBe('VolumeItem');
+      expect(Command.getItemName(device)).toBe('VolumeItem');
     });
   });
 
