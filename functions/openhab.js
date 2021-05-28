@@ -188,8 +188,6 @@ class OpenHAB {
               errorCode:
                 error.statusCode == 404
                   ? 'deviceNotFound'
-                  : error.statusCode == 400
-                  ? 'notSupported'
                   : error.statusCode == 406
                   ? 'deviceNotReady'
                   : 'deviceOffline'
