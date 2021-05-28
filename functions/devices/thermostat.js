@@ -74,24 +74,6 @@ class Thermostat extends DefaultDevice {
           if (memberType) {
             members[memberType] = { name: member.name, state: member.state };
           }
-        } else {
-          if (
-            this.hasTag(member, 'HeatingCoolingMode') ||
-            this.hasTag(member, 'homekit:HeatingCoolingMode') ||
-            this.hasTag(member, 'homekit:TargetHeatingCoolingMode') ||
-            this.hasTag(member, 'homekit:CurrentHeatingCoolingMode')
-          ) {
-            members.thermostatMode = { name: member.name, state: member.state };
-          }
-          if (this.hasTag(member, 'TargetTemperature') || this.hasTag(member, 'homekit:TargetTemperature')) {
-            members.thermostatTemperatureSetpoint = { name: member.name, state: member.state };
-          }
-          if (this.hasTag(member, 'CurrentTemperature')) {
-            members.thermostatTemperatureAmbient = { name: member.name, state: member.state };
-          }
-          if (this.hasTag(member, 'CurrentHumidity')) {
-            members.thermostatHumidityAmbient = { name: member.name, state: member.state };
-          }
         }
       });
     }
@@ -100,7 +82,7 @@ class Thermostat extends DefaultDevice {
 
   static useFahrenheit(item) {
     const config = this.getConfig(item);
-    return config.thermostatTemperatureUnit === 'F' || config.useFahrenheit === true || this.hasTag(item, 'Fahrenheit');
+    return config.thermostatTemperatureUnit === 'F' || config.useFahrenheit === true;
   }
 
   static getModeMap(item) {

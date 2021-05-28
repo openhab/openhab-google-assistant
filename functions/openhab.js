@@ -57,7 +57,11 @@ class OpenHAB {
    * @param {object} item
    */
   static getDeviceForItem(item) {
-    return Devices.find((device) => device.matchesItemType(item) && device.isCompatible(item));
+    return (
+      item.metadata &&
+      item.metadata.ga &&
+      Devices.find((device) => device.matchesItemType(item) && device.isCompatible(item))
+    );
   }
 
   /**
@@ -143,6 +147,7 @@ class OpenHAB {
   handleSync() {
     return this._apiHandler.getItems().then((items) => {
       let discoveredDevicesList = [];
+      items = items.filter((item) => item.metadata && item.metadata.ga);
       items.forEach((item) => {
         item.members = items.filter((member) => member.groupNames && member.groupNames.includes(item.name));
         const DeviceType = OpenHAB.getDeviceForItem(item);
