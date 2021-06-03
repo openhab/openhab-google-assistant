@@ -16,12 +16,6 @@ describe('OnOff Command', () => {
       expect(() => {
         Command.getItemName({ id: 'Item', customData: { deviceType: 'SpecialColorLight' } });
       }).toThrow();
-    });
-
-    test('getItemName SpecialColorLight', () => {
-      expect(() => {
-        Command.getItemName({ id: 'Item', customData: { deviceType: 'SpecialColorLight' } });
-      }).toThrow();
       const device = {
         id: 'Item',
         customData: {
@@ -48,6 +42,24 @@ describe('OnOff Command', () => {
         }
       };
       expect(Command.getItemName(device)).toBe('PowerItem');
+    });
+
+    test('getItemName Fan', () => {
+      expect(() => {
+        Command.getItemName({ name: 'Item', customData: { deviceType: 'Fan', itemType: 'Group' } });
+      }).toThrow();
+      const device = {
+        id: 'Item',
+        customData: {
+          deviceType: 'Fan',
+          itemType: 'Group',
+          members: {
+            fanPower: 'PowerItem'
+          }
+        }
+      };
+      expect(Command.getItemName(device)).toBe('PowerItem');
+      expect(Command.getItemName({ id: 'Item', customData: { deviceType: 'Fan', itemType: 'Dimmer' } })).toBe('Item');
     });
   });
 

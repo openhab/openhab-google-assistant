@@ -9,6 +9,18 @@ class SetFanSpeed extends DefaultCommand {
     return 'fanSpeed' in params && typeof params.fanSpeed === 'string';
   }
 
+  static getItemName(device) {
+    const deviceType = this.getDeviceType(device);
+    if (['AirPurifier', 'Fan', 'Hood'].includes(deviceType) && this.getItemType(device) !== 'Dimmer') {
+      const members = (device.customData && device.customData.members) || {};
+      if ('fanSpeed' in members) {
+        return members.fanSpeed;
+      }
+      throw { statusCode: 400 };
+    }
+    return device.id;
+  }
+
   static convertParamsToValue(params) {
     return params.fanSpeed.toString();
   }

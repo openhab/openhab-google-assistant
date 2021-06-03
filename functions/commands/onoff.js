@@ -24,6 +24,12 @@ class OnOff extends DefaultCommand {
       }
       throw { statusCode: 400 };
     }
+    if (['AirPurifier', 'Fan', 'Hood'].includes(deviceType) && this.getItemType(device) !== 'Dimmer') {
+      if ('fanPower' in members) {
+        return members.fanPower;
+      }
+      throw { statusCode: 400 };
+    }
     return device.id;
   }
 
