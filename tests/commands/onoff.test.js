@@ -22,6 +22,7 @@ describe('OnOff Command', () => {
       expect(() => {
         Command.getItemName({ name: 'Item' }, { customData: { deviceType: 'SpecialColorLight' } });
       }).toThrow();
+
       const item = {
         members: [
           {
@@ -35,12 +36,27 @@ describe('OnOff Command', () => {
         ]
       };
       expect(Command.getItemName(item, { customData: { deviceType: 'SpecialColorLight' } })).toBe('BrightnessItem');
+
+      const item_power = {
+        members: [
+          {
+            name: 'PowerItem',
+            metadata: {
+              ga: {
+                value: 'lightPower'
+              }
+            }
+          }
+        ]
+      };
+      expect(Command.getItemName(item_power, { customData: { deviceType: 'SpecialColorLight' } })).toBe('PowerItem');
     });
 
     test('getItemName TV', () => {
       expect(() => {
         Command.getItemName({ name: 'Item' }, { customData: { deviceType: 'TV' } });
       }).toThrow();
+
       const item = {
         members: [
           {
