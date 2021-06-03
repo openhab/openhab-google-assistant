@@ -15,19 +15,15 @@ class Sensor extends DefaultDevice {
 
   static getAttributes(item) {
     const config = this.getConfig(item);
-    const attributes = { sensorStatesSupported: {} };
-    if ('sensorName' in config) {
-      attributes.sensorStatesSupported = {
-        name: config.sensorName
-      };
-    }
+    if (!('sensorName' in config) || (!('valueUnit' in config) && !('states' in config))) return {};
+    const attributes = { sensorStatesSupported: [{ name: config.sensorName }] };
     if ('valueUnit' in config) {
-      attributes.sensorStatesSupported.numericCapabilities = {
+      attributes.sensorStatesSupported[0].numericCapabilities = {
         rawValueUnit: config.valueUnit
       };
     }
     if ('states' in config) {
-      attributes.sensorStatesSupported.descriptiveCapabilities = {
+      attributes.sensorStatesSupported[0].descriptiveCapabilities = {
         availableStates: config.states.split(',').map((s) => s.trim().split('=')[0].trim())
       };
     }
@@ -37,11 +33,13 @@ class Sensor extends DefaultDevice {
   static getState(item) {
     const config = this.getConfig(item);
     return {
-      currentSensorStateData: {
-        name: config.sensorName,
-        currentSensorState: this.translateStateToGoogle(item),
-        rawValue: Number(item.state) || 0
-      }
+      currentSensorStateData: [
+        {
+          name: config.sensorName,
+          currentSensorState: this.translateStateToGoogle(item),
+          rawValue: Number(item.state) || 0
+        }
+      ]
     };
   }
 
