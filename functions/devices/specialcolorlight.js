@@ -9,10 +9,14 @@ class SpecialColorLight extends DefaultDevice {
     return ['action.devices.traits.OnOff', 'action.devices.traits.Brightness', 'action.devices.traits.ColorSetting'];
   }
 
-  static matchesItemType(item) {
-    return (
-      item.type === 'Group' &&
-      Object.keys(this.getMembers(item)).length > 1 &&
+  static get requiredItemTypes() {
+    return ['Group'];
+  }
+
+  static matchesDeviceType(item) {
+    return !!(
+      super.matchesDeviceType(item) &&
+      Object.keys(this.getMembers(item)).length === 2 &&
       (this.useKelvin(item) || !!this.getAttributes(item).colorTemperatureRange)
     );
   }
@@ -30,6 +34,13 @@ class SpecialColorLight extends DefaultDevice {
       }
     }
     return attributes;
+  }
+
+  static getMetadata(item) {
+    const metadata = super.getMetadata(item);
+    metadata.customData.colorTemperatureRange = this.getAttributes(item).colorTemperatureRange;
+    metadata.customData.useKelvin = this.useKelvin(item);
+    return metadata;
   }
 
   static getState(item) {
@@ -75,8 +86,7 @@ class SpecialColorLight extends DefaultDevice {
   }
 
   static useKelvin(item) {
-    const config = this.getConfig(item);
-    return config.useKelvin === true;
+    return this.getConfig(item).useKelvin === true;
   }
 }
 

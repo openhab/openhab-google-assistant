@@ -14,29 +14,27 @@ describe('ColorAbsoluteTemperature Command', () => {
   });
 
   test('requiresItem', () => {
-    expect(Command.requiresItem()).toBe(true);
+    expect(Command.requiresItem({})).toBe(true);
+    expect(Command.requiresItem({ customData: { deviceType: 'SpecialColorLight' } })).toBe(false);
   });
 
   test('getItemName', () => {
-    expect(Command.getItemName({ name: 'Item' }, {})).toBe('Item');
-    expect(Command.getItemName({ name: 'Item' }, { customData: {} })).toBe('Item');
+    expect(Command.getItemName({ id: 'Item' })).toBe('Item');
+    expect(Command.getItemName({ id: 'Item', customData: {} })).toBe('Item');
     expect(() => {
-      Command.getItemName({ name: 'Item' }, { customData: { deviceType: 'SpecialColorLight' } });
+      Command.getItemName({ id: 'Item', customData: { deviceType: 'SpecialColorLight' } });
     }).toThrow();
-    const item = {
-      name: 'Item',
-      members: [
-        {
-          name: 'ColorItem',
-          metadata: {
-            ga: {
-              value: 'lightColorTemperature'
-            }
+    expect(
+      Command.getItemName({
+        id: 'Item',
+        customData: {
+          deviceType: 'SpecialColorLight',
+          members: {
+            lightColorTemperature: 'ColorItem'
           }
         }
-      ]
-    };
-    expect(Command.getItemName(item, { customData: { deviceType: 'SpecialColorLight' } })).toBe('ColorItem');
+      })
+    ).toBe('ColorItem');
   });
 
   describe('convertParamsToValue', () => {
@@ -45,33 +43,41 @@ describe('ColorAbsoluteTemperature Command', () => {
     });
 
     test('convertParamsToValue SpecialColorLight', () => {
-      const item = {
-        metadata: {
-          ga: {
-            config: {
-              colorTemperatureRange: '1000,5000'
+      expect(
+        Command.convertParamsToValue(
+          params,
+          {},
+          {
+            customData: {
+              deviceType: 'SpecialColorLight',
+              colorTemperatureRange: { temperatureMinK: 1000, temperatureMaxK: 5000 }
             }
           }
-        }
-      };
-      const device = { customData: { deviceType: 'SpecialColorLight' } };
-      expect(Command.convertParamsToValue(params, item, device)).toBe('75');
-      expect(Command.convertParamsToValue(params, { state: '100,100,50' }, device)).toBe('0');
+        )
+      ).toBe('75');
+      expect(
+        Command.convertParamsToValue(
+          params,
+          { state: '100,100,50' },
+          {
+            customData: {
+              deviceType: 'SpecialColorLight'
+            }
+          }
+        )
+      ).toBe('0');
     });
 
     test('convertParamsToValue SpecialColorLight Kelvin', () => {
-      const item = {
-        metadata: {
-          ga: {
-            config: {
-              colorTemperatureRange: '1000,5000',
-              useKelvin: true
-            }
+      expect(
+        Command.convertParamsToValue(
+          params,
+          {},
+          {
+            customData: { deviceType: 'SpecialColorLight', useKelvin: true }
           }
-        }
-      };
-      const device = { customData: { deviceType: 'SpecialColorLight' } };
-      expect(Command.convertParamsToValue(params, item, device)).toBe('2000');
+        )
+      ).toBe('2000');
     });
   });
 

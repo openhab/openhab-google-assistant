@@ -14,21 +14,16 @@ describe('selectChannel Command', () => {
 
   test('getItemName', () => {
     expect(() => {
-      Command.getItemName({ name: 'Item' });
+      Command.getItemName({ id: 'Item' });
     }).toThrow();
-    const item = {
-      members: [
-        {
-          name: 'ChannelItem',
-          metadata: {
-            ga: {
-              value: 'tvChannel'
-            }
-          }
+    const device = {
+      customData: {
+        members: {
+          tvChannel: 'ChannelItem'
         }
-      ]
+      }
     };
-    expect(Command.getItemName(item)).toBe('ChannelItem');
+    expect(Command.getItemName(device)).toBe('ChannelItem');
   });
 
   test('convertParamsToValue', () => {

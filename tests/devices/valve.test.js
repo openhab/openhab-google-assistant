@@ -1,9 +1,9 @@
 const Device = require('../../functions/devices/valve.js');
 
 describe('Valve Device', () => {
-  test('isCompatible', () => {
+  test('matchesDeviceType', () => {
     expect(
-      Device.isCompatible({
+      Device.matchesDeviceType({
         metadata: {
           ga: {
             value: 'VALVE'

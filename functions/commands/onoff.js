@@ -1,6 +1,4 @@
 const DefaultCommand = require('./default.js');
-const SpecialColorLight = require('../devices/specialcolorlight.js');
-const TV = require('../devices/tv.js');
 
 class OnOff extends DefaultCommand {
   static get type() {
@@ -11,32 +9,33 @@ class OnOff extends DefaultCommand {
     return 'on' in params && typeof params.on === 'boolean';
   }
 
-  static requiresItem(device) {
-    return ['SpecialColorLight', 'TV'].includes(this.getDeviceType(device));
-  }
-
-  static getItemName(item, device) {
+  static getItemName(device) {
     const deviceType = this.getDeviceType(device);
+    const members = this.getMembers(device);
     if (deviceType === 'SpecialColorLight') {
-      const members = SpecialColorLight.getMembers(item);
       if ('lightBrightness' in members) {
-        return members.lightBrightness.name;
+        return members.lightBrightness;
       }
       throw { statusCode: 400 };
     }
     if (deviceType === 'TV') {
-      const members = TV.getMembers(item);
       if ('tvPower' in members) {
-        return members.tvPower.name;
+        return members.tvPower;
       }
       throw { statusCode: 400 };
     }
-    return item.name;
+    if (['AirPurifier', 'Fan', 'Hood'].includes(deviceType) && this.getItemType(device) !== 'Dimmer') {
+      if ('fanPower' in members) {
+        return members.fanPower;
+      }
+      throw { statusCode: 400 };
+    }
+    return device.id;
   }
 
   static convertParamsToValue(params, _, device) {
     let on = params.on;
-    if (this.isInverted(device) === true) {
+    if (this.isInverted(device)) {
       on = !on;
     }
     return on ? 'ON' : 'OFF';

@@ -1,7 +1,7 @@
-const Command = require('../../functions/commands/setfanspeed.js');
+const Command = require('../../functions/commands/setmodes.js');
 
-describe('SetFanSpeed Command', () => {
-  const params = { fanSpeed: '50' };
+describe('SetModes Command', () => {
+  const params = { updateModeSettings: { mode: 'value' } };
 
   test('validateParams', () => {
     expect(Command.validateParams({})).toBe(false);
@@ -16,27 +16,28 @@ describe('SetFanSpeed Command', () => {
 
     test('getItemName Fan', () => {
       expect(() => {
-        Command.getItemName({ id: 'Item', customData: { deviceType: 'Fan', itemType: 'Group' } });
+        Command.getItemName({ name: 'Item', customData: { deviceType: 'Fan' } });
       }).toThrow();
       const device = {
+        id: 'Item',
         customData: {
           deviceType: 'Fan',
-          itemType: 'Group',
           members: {
-            fanSpeed: 'SpeedItem'
+            fanMode: 'ModeItem'
           }
         }
       };
-      expect(Command.getItemName(device)).toBe('SpeedItem');
-      expect(Command.getItemName({ id: 'Item', customData: { deviceType: 'Fan', itemType: 'Dimmer' } })).toBe('Item');
+      expect(Command.getItemName(device)).toBe('ModeItem');
     });
   });
 
   test('convertParamsToValue', () => {
-    expect(Command.convertParamsToValue(params)).toBe('50');
+    expect(Command.convertParamsToValue(params)).toBe('value');
   });
 
   test('getResponseStates', () => {
-    expect(Command.getResponseStates(params)).toStrictEqual({ currentFanSpeedSetting: '50' });
+    expect(Command.getResponseStates(params)).toStrictEqual({
+      currentModeSettings: { mode: 'value' }
+    });
   });
 });

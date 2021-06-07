@@ -43,11 +43,10 @@ class DefaultCommand {
   }
 
   /**
-   * @param {object} item
    * @param {object} device
    */
-  static getItemName(item, device) {
-    return item.name;
+  static getItemName(device) {
+    return device.id;
   }
 
   /**
@@ -67,8 +66,15 @@ class DefaultCommand {
   /**
    * @param {object} device
    */
+  static getMembers(device) {
+    return (device.customData && device.customData.members) || {};
+  }
+
+  /**
+   * @param {object} device
+   */
   static isInverted(device) {
-    return device.customData && device.customData.inverted === true;
+    return !!(device.customData && device.customData.inverted === true);
   }
 
   /**
@@ -164,7 +170,7 @@ class DefaultCommand {
             return;
           }
 
-          const targetItem = this.getItemName(item, device);
+          const targetItem = this.getItemName(device);
           const targetValue = this.convertParamsToValue(params, item, device);
           let sendCommandPromise = Promise.resolve();
           if (typeof targetItem === 'string' && typeof targetValue === 'string') {

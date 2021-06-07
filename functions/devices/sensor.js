@@ -8,13 +8,20 @@ class Sensor extends DefaultDevice {
   static getTraits() {
     return ['action.devices.traits.SensorState'];
   }
-  static matchesItemType(item) {
-    const config = this.getConfig(item);
-    return 'sensorName' in config && ('valueUnit' in config || 'states' in config);
+
+  static get requiredItemTypes() {
+    return ['Number', 'String', 'Dimmer', 'Switch', 'Rollershutter', 'Contact'];
+  }
+
+  static matchesDeviceType(item) {
+    return super.matchesDeviceType(item) && !!this.getAttributes(item).sensorStatesSupported;
   }
 
   static getAttributes(item) {
     const config = this.getConfig(item);
+    if (!('sensorName' in config) || (!('valueUnit' in config) && !('states' in config))) {
+      return {};
+    }
     const attributes = { sensorStatesSupported: {} };
     if ('sensorName' in config) {
       attributes.sensorStatesSupported = {
