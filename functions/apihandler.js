@@ -18,6 +18,7 @@
  * @author Michael Krug - Rework
  *
  */
+const http = require('http');
 const https = require('https');
 
 class ApiHandler {
@@ -49,7 +50,9 @@ class ApiHandler {
    */
   getOptions(method = 'GET', itemName = '', length = 0) {
     const queryString =
-      '?metadata=ga,synonyms' + (itemName ? '' : '&fields=groupNames,groupType,name,label,metadata,type');
+      method === 'GET'
+        ? '?metadata=ga,synonyms' + (itemName ? '' : '&fields=groupNames,groupType,name,label,metadata,type')
+        : '';
     const options = {
       hostname: this._config.host,
       port: this._config.port,
@@ -80,9 +83,12 @@ class ApiHandler {
   getItem(itemName = '') {
     const options = this.getOptions('GET', itemName);
     return new Promise((resolve, reject) => {
-      const req = https.request(options, (response) => {
+      const protocol = options.port === 443 ? https : http;
+      const req = protocol.request(options, (response) => {
         if (200 !== response.statusCode) {
-          console.error('getItem failed for path: ' + options.path + ' code: ' + response.statusCode);
+          console.error(
+            'openhabGoogleAssistant - getItem - failed for path: ' + options.path + ' code: ' + response.statusCode
+          );
           reject({ statusCode: response.statusCode, message: 'getItem failed' });
           return;
         }
@@ -114,9 +120,12 @@ class ApiHandler {
   sendCommand(itemName, payload) {
     const options = this.getOptions('POST', itemName, payload.length);
     return new Promise((resolve, reject) => {
-      const req = https.request(options, (response) => {
+      const protocol = options.port === 443 ? https : http;
+      const req = protocol.request(options, (response) => {
         if (![200, 201].includes(response.statusCode)) {
-          console.error('sendCommand failed for path: ' + options.path + ' code: ' + response.statusCode);
+          console.error(
+            'openhabGoogleAssistant - sendCommand - failed for path: ' + options.path + ' code: ' + response.statusCode
+          );
           reject({ statusCode: response.statusCode, message: 'sendCommand failed' });
           return;
         }
