@@ -35,7 +35,7 @@ class OnOff extends DefaultCommand {
 
   static convertParamsToValue(params, _, device) {
     let on = params.on;
-    if (this.isInverted(device) === true) {
+    if (this.isInverted(device)) {
       on = !on;
     }
     return on ? 'ON' : 'OFF';

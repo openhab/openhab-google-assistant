@@ -21,7 +21,7 @@ class TemperatureSensor extends DefaultDevice {
     return ['Number'];
   }
 
-  static matchesDeviceType(item = {}) {
+  static matchesDeviceType(item) {
     return item.metadata && item.metadata.ga && item.metadata.ga.value.toLowerCase() == 'temperaturesensor';
   }
 
