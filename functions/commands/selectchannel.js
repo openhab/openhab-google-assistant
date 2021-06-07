@@ -18,10 +18,10 @@ class SelectChannel extends DefaultCommand {
     return true;
   }
 
-  static getItemName(item) {
-    const members = TV.getMembers(item);
+  static getItemName(device) {
+    const members = (device.customData && device.customData.members) || {};
     if ('tvChannel' in members) {
-      return members.tvChannel.name;
+      return members.tvChannel;
     }
     throw { statusCode: 400 };
   }

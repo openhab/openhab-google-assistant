@@ -1,33 +1,39 @@
 const Device = require('../../functions/devices/tv.js');
 
 describe('TV Device', () => {
-  test('isCompatible', () => {
+  test('matchesDeviceType', () => {
     expect(
-      Device.isCompatible({
+      Device.matchesDeviceType({
         metadata: {
           ga: {
             value: 'TV'
           }
         }
       })
+    ).toBe(false);
+    expect(
+      Device.matchesDeviceType({
+        metadata: {
+          ga: {
+            value: 'TV'
+          }
+        },
+        members: [
+          {
+            metadata: {
+              ga: {
+                value: 'tvPower'
+              }
+            }
+          }
+        ]
+      })
     ).toBe(true);
   });
 
   test('matchesItemType', () => {
-    const item = {
-      type: 'Group',
-      members: [
-        {
-          metadata: {
-            ga: {
-              value: 'tvPower'
-            }
-          }
-        }
-      ]
-    };
-    expect(Device.matchesItemType(item)).toBe(true);
-    expect(Device.matchesItemType({ type: 'Group' })).toBe(false);
+    expect(Device.matchesItemType({ type: 'Switch' })).toBe(false);
+    expect(Device.matchesItemType({ type: 'Group' })).toBe(true);
   });
 
   describe('getTraits', () => {

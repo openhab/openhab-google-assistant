@@ -8,12 +8,10 @@ describe('OpenHAB', () => {
     expect(command.name).toBe('OnOff');
   });
 
-  describe('getDeviceForItem', () => {
-    test('getDeviceForItem switch', () => {
-      const device = OpenHAB.getDeviceForItem({ type: 'Switch', metadata: { ga: { value: 'Switch' } } });
-      expect(device).not.toBeUndefined();
-      expect(device.name).toBe('Switch');
-    });
+  test('getDeviceForItem switch', () => {
+    const device = OpenHAB.getDeviceForItem({ type: 'Switch', metadata: { ga: { value: 'Switch' } } });
+    expect(device).not.toBeUndefined();
+    expect(device.name).toBe('Switch');
   });
 
   test('setTokenFromHeader', () => {
@@ -192,7 +190,11 @@ describe('OpenHAB', () => {
             },
             customData: {
               deviceType: 'TV',
-              itemType: 'Group'
+              itemType: 'Group',
+              members: {
+                tvMute: 'TVMute',
+                tvPower: 'TVPower'
+              }
             },
             deviceInfo: {
               manufacturer: 'openHAB',
@@ -628,7 +630,12 @@ describe('OpenHAB', () => {
           devices: [
             {
               id: 'TestItem',
-              customData: {}
+              customData: {
+                members: {
+                  thermostatTemperatureSetpointHigh: 'Test1',
+                  thermostatTemperatureSetpointLow: 'Test2'
+                }
+              }
             }
           ],
           execution: [

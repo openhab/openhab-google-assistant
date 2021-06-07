@@ -1,9 +1,9 @@
 const Device = require('../../functions/devices/lock.js');
 
 describe('Lock Device', () => {
-  test('isCompatible', () => {
+  test('matchesDeviceType', () => {
     expect(
-      Device.isCompatible({
+      Device.matchesDeviceType({
         metadata: {
           ga: {
             value: 'LOCK'

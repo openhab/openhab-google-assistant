@@ -1,9 +1,9 @@
 const Device = require('../../functions/devices/temperaturesensor.js');
 
 describe('TemperatureSensor Device', () => {
-  test('isCompatible', () => {
+  test('matchesDeviceType', () => {
     expect(
-      Device.isCompatible({
+      Device.matchesDeviceType({
         metadata: {
           ga: {
             value: 'temperaturesensor'

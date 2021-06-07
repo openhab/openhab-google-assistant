@@ -60,7 +60,7 @@ class OpenHAB {
     return (
       item.metadata &&
       item.metadata.ga &&
-      Devices.find((device) => device.matchesItemType(item) && device.isCompatible(item))
+      Devices.find((device) => device.matchesItemType(item) && device.matchesDeviceType(item))
     );
   }
 
