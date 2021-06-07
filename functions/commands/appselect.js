@@ -18,7 +18,7 @@ class AppSelect extends DefaultCommand {
   }
 
   static getItemName(device) {
-    const members = (device.customData && device.customData.members) || {};
+    const members = this.getMembers(device);
     if ('tvApplication' in members) {
       return members.tvApplication;
     }

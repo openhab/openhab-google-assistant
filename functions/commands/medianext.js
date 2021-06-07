@@ -6,7 +6,7 @@ class MediaNext extends DefaultCommand {
   }
 
   static getItemName(device) {
-    const members = (device.customData && device.customData.members) || {};
+    const members = this.getMembers(device);
     if ('tvTransport' in members) {
       return members.tvTransport;
     }

@@ -16,6 +16,7 @@ class TV extends DefaultDevice {
     if ('tvApplication' in members) traits.push('action.devices.traits.AppSelector');
     return traits;
   }
+
   static get requiredItemTypes() {
     return ['Group'];
   }

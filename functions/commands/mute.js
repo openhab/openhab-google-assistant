@@ -11,7 +11,7 @@ class Mute extends DefaultCommand {
 
   static getItemName(device) {
     if (this.getDeviceType(device) === 'TV') {
-      const members = (device.customData && device.customData.members) || {};
+      const members = this.getMembers(device);
       if ('tvMute' in members) {
         return members.tvMute;
       }
@@ -26,7 +26,7 @@ class Mute extends DefaultCommand {
   static convertParamsToValue(params, item, device) {
     let itemType = this.getItemType(device);
     if (this.getDeviceType(device) === 'TV') {
-      const members = (device.customData && device.customData.members) || {};
+      const members = this.getMembers(device);
       if ('tvMute' in members) {
         itemType = 'Switch';
       }

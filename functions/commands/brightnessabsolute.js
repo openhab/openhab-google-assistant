@@ -11,7 +11,7 @@ class BrightnessAbsolute extends DefaultCommand {
 
   static getItemName(device) {
     if (this.getDeviceType(device) === 'SpecialColorLight') {
-      const members = (device.customData && device.customData.members) || {};
+      const members = this.getMembers(device);
       if ('lightBrightness' in members) {
         return members.lightBrightness;
       }

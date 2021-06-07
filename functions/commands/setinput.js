@@ -10,7 +10,7 @@ class SetInput extends DefaultCommand {
   }
 
   static getItemName(device) {
-    const members = (device.customData && device.customData.members) || {};
+    const members = this.getMembers(device);
     if ('tvInput' in members) {
       return members.tvInput;
     }

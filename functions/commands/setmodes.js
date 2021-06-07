@@ -11,7 +11,7 @@ class SetModes extends DefaultCommand {
 
   static getItemName(device) {
     const deviceType = this.getDeviceType(device);
-    const members = (device.customData && device.customData.members) || {};
+    const members = this.getMembers(device);
     if (['AirPurifier', 'Fan', 'Hood'].includes(deviceType)) {
       if ('fanMode' in members) {
         return members.fanMode;

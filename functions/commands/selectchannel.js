@@ -19,7 +19,7 @@ class SelectChannel extends DefaultCommand {
   }
 
   static getItemName(device) {
-    const members = (device.customData && device.customData.members) || {};
+    const members = this.getMembers(device);
     if ('tvChannel' in members) {
       return members.tvChannel;
     }

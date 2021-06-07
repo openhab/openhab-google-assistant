@@ -165,7 +165,6 @@ class Fan extends DefaultDevice {
     }
   }
 
-
   static getMembers(item) {
     const supportedMembers = [
       { name: 'fanPower', types: ['Switch'] },

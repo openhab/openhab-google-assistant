@@ -50,6 +50,13 @@ describe('Default Command', () => {
     expect(Command.getItemName({ id: 'Item' })).toBe('Item');
   });
 
+  test('getMembers', () => {
+    expect(Command.getMembers({})).toStrictEqual({});
+    expect(Command.getMembers({ customData: { members: { testMember: 'testItem' } } })).toStrictEqual({
+      testMember: 'testItem'
+    });
+  });
+
   test('handleAuthPin', () => {
     expect(Command.handleAuthPin({ id: 'Item', customData: {} }, undefined)).toBeUndefined();
     expect(Command.handleAuthPin({ id: 'Item', customData: { pinNeeded: '1234' } }, { pin: '1234' })).toBeUndefined();

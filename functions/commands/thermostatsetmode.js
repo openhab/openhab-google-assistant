@@ -15,7 +15,7 @@ class ThermostatSetMode extends DefaultCommand {
   }
 
   static getItemName(device) {
-    const members = (device.customData && device.customData.members) || {};
+    const members = this.getMembers(device);
     if ('thermostatMode' in members) {
       return members.thermostatMode;
     }

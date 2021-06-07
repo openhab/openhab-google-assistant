@@ -66,6 +66,13 @@ class DefaultCommand {
   /**
    * @param {object} device
    */
+  static getMembers(device) {
+    return (device.customData && device.customData.members) || {};
+  }
+
+  /**
+   * @param {object} device
+   */
   static isInverted(device) {
     return !!(device.customData && device.customData.inverted === true);
   }

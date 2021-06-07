@@ -16,7 +16,7 @@ class ThermostatTemperatureSetpoint extends DefaultCommand {
   }
 
   static getItemName(device) {
-    const members = (device.customData && device.customData.members) || {};
+    const members = this.getMembers(device);
     if ('thermostatTemperatureSetpoint' in members) {
       return members.thermostatTemperatureSetpoint;
     }
