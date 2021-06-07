@@ -172,6 +172,46 @@ describe('SpecialColorLight Device', () => {
         }
       });
     });
+
+    test('getState zero brightness', () => {
+      const item = {
+        type: 'Group',
+        metadata: {
+          ga: {
+            value: 'LIGHT',
+            config: {
+              colorTemperatureRange: '1000,4000'
+            }
+          }
+        },
+        members: [
+          {
+            state: '0',
+            metadata: {
+              ga: {
+                value: 'lightBrightness'
+              }
+            }
+          },
+          {
+            state: '20',
+            metadata: {
+              ga: {
+                value: 'lightColorTemperature'
+              }
+            }
+          }
+        ]
+      };
+      expect(Device.getState(item)).toStrictEqual({
+        on: false,
+        brightness: 0,
+        color: {
+          temperatureK: 3400
+        }
+      });
+    });
+
     test('getState use kelvin', () => {
       const item = {
         type: 'Group',
@@ -208,6 +248,53 @@ describe('SpecialColorLight Device', () => {
         brightness: 50,
         color: {
           temperatureK: 2000
+        }
+      });
+    });
+
+    test('getState lightPower', () => {
+      const item = {
+        type: 'Group',
+        metadata: {
+          ga: {
+            value: 'LIGHT',
+            config: {
+              colorTemperatureRange: '1000,4000'
+            }
+          }
+        },
+        members: [
+          {
+            state: 'OFF',
+            metadata: {
+              ga: {
+                value: 'lightPower'
+              }
+            }
+          },
+          {
+            state: '50',
+            metadata: {
+              ga: {
+                value: 'lightBrightness'
+              }
+            }
+          },
+          {
+            state: '20',
+            metadata: {
+              ga: {
+                value: 'lightColorTemperature'
+              }
+            }
+          }
+        ]
+      };
+      expect(Device.getState(item)).toStrictEqual({
+        on: false,
+        brightness: 50,
+        color: {
+          temperatureK: 3400
         }
       });
     });

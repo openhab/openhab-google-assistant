@@ -37,9 +37,14 @@ class SpecialColorLight extends DefaultDevice {
     const members = this.getMembers(item);
     for (const member in members) {
       switch (member) {
+        case 'lightPower':
+          state.on = members[member].state === 'ON';
+          break;
         case 'lightBrightness':
           state.brightness = Number(members[member].state) || 0;
-          state.on = state.brightness > 0;
+          if (!('lightPower' in members)) {
+            state.on = state.brightness > 0;
+          }
           break;
         case 'lightColorTemperature':
           try {
@@ -59,7 +64,7 @@ class SpecialColorLight extends DefaultDevice {
   }
 
   static getMembers(item) {
-    const supportedMembers = ['lightBrightness', 'lightColorTemperature'];
+    const supportedMembers = ['lightBrightness', 'lightColorTemperature', 'lightPower'];
     const members = Object();
     if (item.members && item.members.length) {
       item.members.forEach((member) => {

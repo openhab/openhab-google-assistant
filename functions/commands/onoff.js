@@ -19,6 +19,9 @@ class OnOff extends DefaultCommand {
     const deviceType = this.getDeviceType(device);
     if (deviceType === 'SpecialColorLight') {
       const members = SpecialColorLight.getMembers(item);
+      if ('lightPower' in members) {
+        return members.lightPower.name;
+      }
       if ('lightBrightness' in members) {
         return members.lightBrightness.name;
       }
