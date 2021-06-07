@@ -81,5 +81,5 @@ jobs:
           runtime: nodejs12
           source_dir: ./functions
           entry_point: openhabGoogleAssistant
-          region: europe-west3
+          region: us-central1
           env_vars: OH_HOST=myopenhab.org,OH_PORT=443,OH_PATH=/rest/items/
