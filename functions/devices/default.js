@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-const packageVersion = require('../../package.json').version;
+const packageVersion = require('../package.json').version;
 
 class DefaultDevice {
   static get type() {

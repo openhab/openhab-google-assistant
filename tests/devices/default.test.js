@@ -1,5 +1,5 @@
 const Device = require('../../functions/devices/default.js');
-const packageVersion = require('../../package.json').version;
+const packageVersion = require('../../functions/package.json').version;
 
 describe('Default Device', () => {
   const item = {

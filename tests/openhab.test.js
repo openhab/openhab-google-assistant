@@ -1,5 +1,5 @@
 const OpenHAB = require('../functions/openhab.js');
-const packageVersion = require('../package.json').version;
+const packageVersion = require('../functions/package.json').version;
 
 describe('OpenHAB', () => {
   test('getCommandType', () => {
