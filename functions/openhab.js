@@ -84,11 +84,15 @@ class OpenHAB {
 
     this.setTokenFromHeader(headers);
 
-    const payload = await this.handleSync().catch(() => ({
-      errorCode: 'actionNotAvailable',
-      status: 'ERROR',
-      devices: []
-    }));
+    const payload = await this.handleSync().catch((e) => {
+      console.log(e);
+
+      return {
+        errorCode: 'actionNotAvailable',
+        status: 'ERROR',
+        devices: []
+      };
+    });
 
     return {
       requestId: body.requestId,

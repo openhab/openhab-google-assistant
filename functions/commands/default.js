@@ -25,6 +25,24 @@ class DefaultCommand {
   }
 
   /**
+   * Is the requested new state valid
+   * @param {object} params Requested change params
+   * @param {object} item Current state of item
+   * @returns {object} Error response if invalid state change or null if the state change is allowed
+   */
+  static validateStateChange(params, item, device) {
+    return;
+  }
+
+  /**
+   * Must the state change be checked before applying?
+   * @returns {boolean}
+   */
+  static shouldValidateStateChange() {
+    return false;
+  }
+
+  /**
    * @param {object} params
    * @param {object} item
    * @param {object} device
@@ -43,10 +61,49 @@ class DefaultCommand {
   }
 
   /**
+   * Get the new state to be returned to Google Home
+   * @param {object} params Original command params received
+   * @param {object} item The state of the item after executing the command
+   * @param {object} device Google Home Graph device
+   * @return {object} New state to send to Google in the response
+   */
+  static getNewState(params, item, device) {
+    return this.getResponseStates(params, item, device);
+  }
+
+  static shouldGetLatestState() {
+    return false;
+  }
+
+  /**
+   * Check if new state is as expected.
+   * @param {object} params
    * @param {object} item
    * @param {object} device
+   * @return {object} Error message if state update failed. Null if all ok.
    */
-  static getItemName(item, device) {
+  static checkUpdateFailed(params, item, device) {
+    return;
+  }
+
+  /**
+   * Wait x seconds for the state to update within OpenHab
+   * @param {object} device Google Home Graph device
+   * @returns {number} Seconds to wait before querying state. 0 if disabled
+   */
+  static waitForStateChange(device) {
+    if (device.customData && device.customData.waitForStateChange) {
+      return device.customData.waitForStateChange;
+    }
+    return 0;
+  }
+
+  /**
+   * @param {object} item
+   * @param {object} device
+   * @param {object} params
+   */
+  static getItemName(item, device, params) {
     return item.name;
   }
 
@@ -124,6 +181,28 @@ class DefaultCommand {
     };
   }
 
+  static delayPromise(device) {
+    const secondsToWait = this.waitForStateChange(device);
+    if (secondsToWait === 0) {
+      return Promise.resolve();
+    }
+
+    return new Promise((resolve) => {
+      console.log(`Waiting ${secondsToWait} second(s) for state to update`);
+      setTimeout(() => {
+        console.log(`Finished Waiting`);
+        resolve();
+      }, secondsToWait * 1000);
+    });
+  }
+
+  static getItemState(device, expectedState, apiHandler) {
+    if (this.shouldGetLatestState()) {
+      return apiHandler.getItem(device.id);
+    }
+    return Promise.resolve(expectedState);
+  }
+
   /**
    * @param {object} apiHandler
    * @param {array} devices
@@ -146,8 +225,9 @@ class DefaultCommand {
         (device.customData.ackNeeded || device.customData.tfaAck) &&
         !(challenge && challenge.ack);
 
+      const confirmStateChange = this.shouldValidateStateChange();
       let getItemPromise = Promise.resolve({ name: device.id });
-      if (this.requiresItem(device) || ackWithState) {
+      if (this.requiresItem(device) || ackWithState || confirmStateChange) {
         getItemPromise = apiHandler.getItem(device.id);
       }
 
@@ -158,28 +238,49 @@ class DefaultCommand {
             responseStates.online = true;
           }
 
+          if (confirmStateChange) {
+            const preCheckResponse = this.validateStateChange(params, item, device);
+            if (preCheckResponse) {
+              commandsResponse.push(preCheckResponse);
+              return;
+            }
+          }
+
           const authAckResponse = this.handleAuthAck(device, challenge, responseStates);
           if (authAckResponse) {
             commandsResponse.push(authAckResponse);
             return;
           }
 
-          const targetItem = this.getItemName(item, device);
+          const targetItem = this.getItemName(item, device, params);
           const targetValue = this.convertParamsToValue(params, item, device);
           let sendCommandPromise = Promise.resolve();
           if (typeof targetItem === 'string' && typeof targetValue === 'string') {
             sendCommandPromise = apiHandler.sendCommand(targetItem, targetValue);
           }
-          return sendCommandPromise.then(() => {
-            commandsResponse.push({
-              ids: [device.id],
-              status: 'SUCCESS',
-              states: responseStates
+          return sendCommandPromise
+            .then(() => this.delayPromise(device))
+            .then(() => this.getItemState(device, responseStates, apiHandler))
+            .then((newState) => {
+              const updateFailedResponse = this.checkUpdateFailed(params, newState, device);
+              if (updateFailedResponse) {
+                commandsResponse.push(updateFailedResponse);
+                return;
+              }
+              let updatedResponseState = this.shouldGetLatestState()
+                ? this.getNewState(params, newState, device)
+                : responseStates;
+
+              commandsResponse.push({
+                ids: [device.id],
+                status: 'SUCCESS',
+                states: updatedResponseState
+              });
             });
-          });
         })
         .catch((error) => {
           console.error(`openhabGoogleAssistant - ${this.type}: ERROR ${JSON.stringify(error)}`);
+          console.error(error.stack);
           commandsResponse.push({
             ids: [device.id],
             status: 'ERROR',
@@ -187,10 +288,10 @@ class DefaultCommand {
               typeof error.errorCode === 'string'
                 ? error.errorCode
                 : error.statusCode == 404
-                ? 'deviceNotFound'
-                : error.statusCode == 400
-                ? 'notSupported'
-                : 'deviceOffline'
+                  ? 'deviceNotFound'
+                  : error.statusCode == 400
+                    ? 'notSupported'
+                    : 'deviceOffline'
           });
         });
     });

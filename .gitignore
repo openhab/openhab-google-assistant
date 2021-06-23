@@ -6,3 +6,4 @@
 /functions/node_modules/
 /coverage
 /.eslintcache
+/.vscode/
