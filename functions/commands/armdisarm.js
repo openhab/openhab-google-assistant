@@ -10,11 +10,11 @@ class ArmDisarm extends DefaultCommand {
     return 'arm' in params && typeof params.arm === 'boolean';
   }
 
-  static convertParamsToValue(params, _, device) {
+  static convertParamsToValue(params, item, device) {
     let arm = params.arm;
     let armLevel = params.armLevel;
 
-    if (armLevel) {
+    if (armLevel && item.type === 'Group') {
       return armLevel;
     }
     if (this.isInverted(device)) {
@@ -51,11 +51,15 @@ class ArmDisarm extends DefaultCommand {
 
   static validateStateChange(params, item, device) {
     const members = SecuritySystem.getMembers(item);
-    const isCurrentlyArmed = members[SecuritySystem.armedMemberName].state === 'ON';
+    const isCurrentlyArmed =
+      (item.type === 'Switch' ? item.state : members[SecuritySystem.armedMemberName].state) === 'ON';
     const currentLevel =
-      SecuritySystem.armLevelMemberName in members && members[SecuritySystem.armLevelMemberName].state;
+      item.type === 'Switch'
+        ? undefined
+        : SecuritySystem.armLevelMemberName in members && members[SecuritySystem.armLevelMemberName].state;
 
-    if (params.armLevel) {
+    //ArmLevel not supported for legacy Switch type
+    if (params.armLevel && item.type === 'Group') {
       const alreadyArmedAtThisLevel = params.arm && isCurrentlyArmed && params.armLevel === currentLevel;
       if (alreadyArmedAtThisLevel) {
         return this.getErrorMessage(device, 'alreadyInState');
@@ -82,12 +86,18 @@ class ArmDisarm extends DefaultCommand {
 
   static checkUpdateFailed(params, item, device) {
     const members = SecuritySystem.getMembers(item);
-    const isCurrentlyArmed = members[SecuritySystem.armedMemberName].state === 'ON';
+    const isCurrentlyArmed =
+      (item.type === 'Switch' ? item.state : members[SecuritySystem.armedMemberName].state) === 'ON';
     const currentLevel =
-      SecuritySystem.armLevelMemberName in members ? members[SecuritySystem.armLevelMemberName].state : '';
+      item.type === 'Switch'
+        ? undefined
+        : SecuritySystem.armLevelMemberName in members
+        ? members[SecuritySystem.armLevelMemberName].state
+        : '';
 
     const armStatusSuccessful = params.arm === isCurrentlyArmed;
-    const armLevelSuccessful = params.armLevel ? params.armLevel === currentLevel : true;
+    const armLevelSuccessful =
+      item.type === 'Switch' ? true : params.armLevel ? params.armLevel === currentLevel : true;
 
     if (armStatusSuccessful && armLevelSuccessful) {
       return;
@@ -100,9 +110,9 @@ class ArmDisarm extends DefaultCommand {
     const members = SecuritySystem.getMembers(item);
     let response = {
       online: true,
-      isArmed: members[SecuritySystem.armedMemberName].state === 'ON'
+      isArmed: (item.type === 'Switch' ? item.state : members[SecuritySystem.armedMemberName].state) === 'ON'
     };
-    if (params.armLevel) {
+    if (params.armLevel && item.type === 'Group') {
       response.currentArmLevel = members[SecuritySystem.armLevelMemberName].state;
     }
     return response;

@@ -46,6 +46,10 @@ class SecuritySystem extends DefaultDevice {
   }
 
   static getMemberToSendArmCommand(item, params) {
+    if (item.type === 'Switch') {
+      return item.name;
+    }
+
     const members = this.getMembers(item);
     if (params.armLevel) {
       if (memberArmLevel in members) {
@@ -127,10 +131,19 @@ class SecuritySystem extends DefaultDevice {
 
   static getState(item) {
     const members = this.getMembers(item);
-    let state = members[memberArmed].state === stateSwitchActive;
+
+    let state = null;
     let armLevel = undefined;
-    if (state && memberArmLevel in members) {
-      armLevel = members[memberArmLevel].state;
+
+    //Backwards compatible with existing GA metadata. ArmLevel not supported when using a Switch
+    if (item.type === 'Switch') {
+      state = item.state === stateSwitchActive;
+    } else if (item.type === 'Group') {
+      state = members[memberArmed].state === stateSwitchActive;
+      armLevel = undefined;
+      if (state && memberArmLevel in members) {
+        armLevel = members[memberArmLevel].state;
+      }
     }
 
     if (this.isTrueish(this.getConfig(item).inverted)) {
