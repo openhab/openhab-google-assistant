@@ -135,18 +135,30 @@ class DefaultCommand {
     return false;
   }
 
+  /*
+   * Allow individual commands to choose when to enforce the pin
+   * e.g. Security System only enforcing for disarming but not arming
+   */
+  static bypassPin(device, params) {
+    return false;
+  }
+
   /**
    * @param {object} device
    * @param {object} challenge
    */
-  static handleAuthPin(device, challenge) {
-    if (
-      !device.customData ||
-      !(device.customData.pinNeeded || device.customData.tfaPin) ||
-      (challenge && challenge.pin === (device.customData.pinNeeded || device.customData.tfaPin))
-    ) {
+  static handleAuthPin(device, challenge, params) {
+    if (this.bypassPin(device, params)) {
       return;
     }
+
+    let pinRequired = device.customData && (device.customData.pinNeeded || device.customData.tfaPin);
+    let pinReceived = challenge && challend.pin;
+
+    if (!pinRequired || pinRequired === pinReceived) {
+      return;
+    }
+
     return {
       ids: [device.id],
       status: 'ERROR',
@@ -213,7 +225,7 @@ class DefaultCommand {
     console.log(`openhabGoogleAssistant - ${this.type}: ${JSON.stringify({ devices: devices, params: params })}`);
     const commandsResponse = [];
     const promises = devices.map((device) => {
-      const authPinResponse = this.handleAuthPin(device, challenge);
+      const authPinResponse = this.handleAuthPin(device, challenge, params);
       if (authPinResponse) {
         commandsResponse.push(authPinResponse);
         return Promise.resolve();

@@ -1,5 +1,6 @@
 const DefaultCommand = require('./default.js');
 const SecuritySystem = require('../devices/securitysystem.js');
+const { getConfig, getStatusReport } = require('../devices/securitysystem.js');
 
 class ArmDisarm extends DefaultCommand {
   static get type() {
@@ -29,6 +30,15 @@ class ArmDisarm extends DefaultCommand {
 
   static requiresItem() {
     return true;
+  }
+
+  static bypassPin(device, params) {
+    if (device.customData.pinOnDisarmOnly) {
+      if (params.armLevel || params.arm) {
+        return true;
+      }
+    }
+    return false;
   }
 
   static getResponseStates(params) {
@@ -103,7 +113,22 @@ class ArmDisarm extends DefaultCommand {
       return;
     }
 
-    return this.getErrorMessage(device, params.arm ? 'armFailure' : 'disarmFailure');
+    //Arm failure
+    if (params.arm) {
+      let report = SecuritySystem.getStatusReport(item, members);
+      if (report.length) {
+        let response = {
+          ids: [device.id],
+          status: 'EXCEPTIONS',
+          states: this.getNewState(params, item)
+        };
+        response.states.currentStatusReport = report;
+        return response;
+      }
+      return this.getErrorMessage(device, 'armFailure');
+    }
+
+    return this.getErrorMessage(device, 'disarmFailure');
   }
 
   static getNewState(params, item) {

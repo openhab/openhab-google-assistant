@@ -8,6 +8,7 @@ const zoneTypeOpenClose = 'OpenClose';
 const zoneTypeMotion = 'Motion';
 const zoneConfigBlocking = 'blocking';
 const zoneConfigType = 'zoneType';
+const zoneLabel = 'label';
 
 const memberArmed = 'securitySystemArmed';
 const memberArmLevel = 'securitySystemArmLevel';
@@ -70,8 +71,8 @@ class SecuritySystem extends DefaultDevice {
 
   static getAttributes(item) {
     //Group [armLevels="L1=Stay,L2=Away", lang="en", ordered=true]
-    //Zone [zoneType="OpenClose", blocking=true]
-    //Zone [zoneType="Motion", blocking=false]
+    //Zone [zoneType="OpenClose", blocking=true, label="Front Door"]
+    //Zone [zoneType="Motion", blocking=false, label="Living Room"]
 
     const config = this.getConfig(item);
     if (!config || Object.keys(config).length === 0) {

@@ -96,6 +96,9 @@ class DefaultDevice {
     }
     if (typeof config.pinNeeded === 'string' || typeof config.tfaPin === 'string') {
       metadata.customData.pinNeeded = config.pinNeeded || config.tfaPin;
+      if (typeof config.pinOnDisarmOnly != undefined) {
+        metadata.customData.pinOnDisarmOnly = config.pinOnDisarmOnly;
+      }
     }
     if (config.waitForStateChange) {
       metadata.customData.waitForStateChange = config.waitForStateChange;
