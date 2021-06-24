@@ -153,7 +153,7 @@ class DefaultCommand {
     }
 
     let pinRequired = device.customData && (device.customData.pinNeeded || device.customData.tfaPin);
-    let pinReceived = challenge && challend.pin;
+    let pinReceived = challenge && challenge.pin;
 
     if (!pinRequired || pinRequired === pinReceived) {
       return;
@@ -300,10 +300,10 @@ class DefaultCommand {
               typeof error.errorCode === 'string'
                 ? error.errorCode
                 : error.statusCode == 404
-                ? 'deviceNotFound'
-                : error.statusCode == 400
-                ? 'notSupported'
-                : 'deviceOffline'
+                  ? 'deviceNotFound'
+                  : error.statusCode == 400
+                    ? 'notSupported'
+                    : 'deviceOffline'
           });
         });
     });
