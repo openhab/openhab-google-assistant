@@ -14,7 +14,7 @@
   "scripts": {
     "start": "node testServer.js",
     "test": "jest --silent --coverage",
-    "test-ci": "jest --silent --coverage --ci ",
+    "test-ci": "jest --silent --coverage --ci",
     "lint": "eslint --ext .js --cache .",
     "fix": "eslint --fix --ext .js --cache .",
     "release-major": "npm version major -m \":bookmark: Release (major): %s\"",
