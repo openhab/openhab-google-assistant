@@ -24,8 +24,30 @@ describe('SecuritySystem Device', () => {
   });
 
   describe('getState', () => {
+
+    test.only('getState with legacy switch type', () => {
+      let device = {
+        type: 'Switch',
+        state: 'ON',
+        members: []
+      };
+      expect(Device.getState(device)).toStrictEqual({
+        isArmed: true,
+        currentArmLevel: undefined,
+        currentStatusReport: []
+      });
+      device.state = 'OFF';
+
+      expect(Device.getState(device)).toStrictEqual({
+        isArmed: false,
+        currentArmLevel: undefined,
+        currentStatusReport: []
+      });
+    });
+
     test('getState', () => {
       let device = {
+        type: 'Group',
         members: [
           {
             metadata: {

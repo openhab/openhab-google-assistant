@@ -10,9 +10,9 @@ describe('ArmDisarm Command', () => {
 
   describe('convertParamsToValue', () => {
     test('convertParamsToValue', () => {
-      expect(Command.convertParamsToValue({ arm: true }, {}, {})).toBe('ON');
-      expect(Command.convertParamsToValue({ arm: false }, {}, {})).toBe('OFF');
-      expect(Command.convertParamsToValue({ arm: true, armLevel: 'L1' }, {}, {})).toBe('L1');
+      expect(Command.convertParamsToValue({ arm: true }, { type: 'Group' }, {})).toBe('ON');
+      expect(Command.convertParamsToValue({ arm: false }, { type: 'Group' }, {})).toBe('OFF');
+      expect(Command.convertParamsToValue({ arm: true, armLevel: 'L1' }, { type: 'Group' }, {})).toBe('L1');
     });
 
     test('convertParamsToValue inverted', () => {
@@ -58,6 +58,7 @@ describe('ArmDisarm Command', () => {
 
   describe('validateStateChange', () => {
     const item = {
+      type: 'Group',
       members: [
         {
           state: 'ON',
@@ -167,6 +168,7 @@ describe('ArmDisarm Command', () => {
 
   describe('getNewState', () => {
     const item = {
+      type: 'Group',
       members: [
         {
           metadata: { ga: { value: SecuritySystem.armedMemberName } }
