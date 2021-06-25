@@ -24,7 +24,6 @@ describe('SecuritySystem Device', () => {
   });
 
   describe('getState', () => {
-
     test.only('getState with legacy switch type', () => {
       let device = {
         type: 'Switch',

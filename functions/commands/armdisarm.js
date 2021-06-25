@@ -1,6 +1,5 @@
 const DefaultCommand = require('./default.js');
 const SecuritySystem = require('../devices/securitysystem.js');
-const { getConfig, getStatusReport } = require('../devices/securitysystem.js');
 
 class ArmDisarm extends DefaultCommand {
   static get type() {
@@ -68,7 +67,7 @@ class ArmDisarm extends DefaultCommand {
         ? undefined
         : SecuritySystem.armLevelMemberName in members && members[SecuritySystem.armLevelMemberName].state;
 
-    //ArmLevel not supported for legacy Switch type
+    //ArmLevel not supported for Switch type
     if (params.armLevel && item.type === 'Group') {
       const alreadyArmedAtThisLevel = params.arm && isCurrentlyArmed && params.armLevel === currentLevel;
       if (alreadyArmedAtThisLevel) {
