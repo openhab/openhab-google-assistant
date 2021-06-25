@@ -154,17 +154,58 @@ Switch { ga="Lock" [ pinNeeded="1234" ] }
 
 #### `SecuritySystem`
 
+
 | | |
 |---|---|
 | **Device Type** | [SecuritySystem](https://developers.google.com/assistant/smarthome/guides/securitysystem) |
-| **Supported Traits** | [ArmDisarm](https://developers.google.com/assistant/smarthome/traits/armdisarm) |
-| **Supported Items** | Switch |
-| **Configuration** | (optional) `ackNeeded=true/false`<br>(optional) `pinNeeded="1234"` |
+| **Supported Traits** | [ArmDisarm](https://developers.google.com/assistant/smarthome/traits/armdisarm)<br>[StatusReport](https://developers.google.com/assistant/smarthome/traits/statusreport) |
+| **Supported Items** | Switch as `SecuritySystem` <br>OR  <br>Group as `SecuritySystem` with the following members: <br> - Switch as `securitySystemArmed`<br> - String as `securitySystemArmLevel`  (optional) <br> - Switch as `securitySystemTrouble` (optional) <br> - String as `securitySystemTroubleCode` (optional) <br> - Zero or more Contact zones as `securitySystemZone` |
+| **Configuration** | On the Switch or Group:<br> (optional) `ackNeeded=true/false`<br>(optional) `pinNeeded="1234"`<br> (optional) `pinOnDisarmOnly=true/false` <br>(optional) `waitForStateChange=2`<br>On the Group:<br><nr> (optional) `armLevels="L1=Level 1,L2=Level 2"` <br> <br> On Zone Contacts:<br> (required) `zoneType=OpenClose/Motion` <br> (optional) `blocking=true/false`|
+
+SecuritySystem can be configured as a single Switch or as a Group for advanced functionality.  
+
+`pinNeeded="1234"` will request and check the configured PIN before performing an action 
+
+`pinOnDisarmOnly=true` will enforce the PIN on disarming only. Arming will be done without the pin.
+
+`waitForStateChange=0` is the number of seconds to wait for the security system state to update before checking that the arm/disarm was successful. Default to 0s if left out.
+
+**Switch Configuration**
+
+As a Switch, you will be limited to arming and disarming the system.
+
+Google Command: "*Hey Google, arm House Alarm*" OR "*Hey Google, disarm House Alarm*".
 
 ```shell
-Switch { ga="SecuritySystem" [ pinNeeded="1234" ] }
+Switch houseAlarm "House Alarm" {ga="SecuritySystem", pinNeeded="1234"}
 ```
 
+**Group Configuration**
+
+When configured as a group, you can add arm levels as well as report errors and get details of zones causing the system to not arm.
+
+`armLevels="Key=Label"` - The label is used for commanding Google Assistant, the key is the matching value sent to OpenHab.
+
+Google Command: "*Hey Google, set House Alarm to Level 1*" (L1 sent to item).
+
+When using arm levels, Google will send the mapped level ID (L1,L2 in below example) to the item tagged with `securitySystemArmLevel`. It will then use the status of the item `securitySystemArmed` to confirm that arming was successful.
+
+When arming (when using a Switch) or disarming (in both use cases), Google will send ON/OFF to the item tagged `securitySystemArmed`
+
+If arming fails and blocking zones have been configured with `securitySystemZone` and `blocking=true`, Google will attempt to check for zones that are causing the arming to fail.
+
+
+`ga=securitySystemTrouble` and `ga=securitySystemTroubleCode` are used in a `StatusReport` to report any errors on the alarm, e.g. a flat battery
+
+```shell
+Group gHouseAlarm "House Alarm" {ga="SecuritySystem" [pinNeeded="1234", armLevels="L1=Level 1,L2=Level 2" ]}
+Switch alarmArmed (gHouseAlarm) {ga="securitySystemArmed"}
+String alarmArmLevel (gHouseAlarm) {ga="securitySystemArmLevel"}
+Switch alarmTrouble (gHouseAlarm) {ga="securitySystemTrouble"}
+String alarmTroubleErrorCode (gHouseAlarm) {ga="securitySystemTroubleCode"}
+
+Contact frontDoorSensor (gHouseAlarm) {ga="securitySystemZone" [zoneType="OpenClose", blocking="true"]}
+```
 #### `Camera`
 
 | | |

@@ -8,7 +8,6 @@ const zoneTypeOpenClose = 'OpenClose';
 const zoneTypeMotion = 'Motion';
 const zoneConfigBlocking = 'blocking';
 const zoneConfigType = 'zoneType';
-const zoneLabel = 'label';
 
 const memberArmed = 'securitySystemArmed';
 const memberArmLevel = 'securitySystemArmLevel';
