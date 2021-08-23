@@ -12,7 +12,7 @@
   ],
   "license": "EPL-2.0",
   "dependencies": {
-    "actions-on-google": "^2.14.0",
+    "actions-on-google": "^3.0.0",
     "glob": "^7.1.7"
   }
 }
