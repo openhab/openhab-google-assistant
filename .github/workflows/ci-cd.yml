@@ -69,6 +69,8 @@ jobs:
         uses: actions/setup-node@v2.4.0
         with:
           node-version: 12.x
+          cache: 'npm'
+          cache-dependency-path: 'functions/package-lock.json'
 
       - name: Install dependencies
         working-directory: ./functions
