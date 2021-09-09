@@ -13,9 +13,36 @@ describe('ColorAbsolute Command', () => {
     expect(Command.validateParams(params)).toBe(true);
   });
 
+  test('toItemName', () => {
+    expect(Command.getItemName({ name: 'Item' }, { customData: { deviceType: 'ColorLight' } })).toBe('Item');
+    expect(() => {
+      Command.getItemName({ name: 'Item' }, { customData: { deviceType: 'SpecialColorLight' } });
+    }).toThrow();
+    const item = {
+      name: 'Item',
+      members: [
+        {
+          name: 'ColorItem',
+          metadata: {
+            ga: {
+              value: 'lightColor'
+            }
+          }
+        }
+      ]
+    };
+    expect(Command.getItemName(item, { customData: { deviceType: 'SpecialColorLight' } })).toBe('ColorItem');
+  });
+
   test('convertParamsToValue', () => {
     expect(Command.convertParamsToValue(params, {}, { customData: { deviceType: 'ColorLight' } })).toBe('10,20,30');
     expect(() => Command.convertParamsToValue(params, {}, { customData: { deviceType: 'Light' } })).toThrow();
+  });
+
+  test('convertParamsToValue SpecialColorLight', () => {
+    expect(Command.convertParamsToValue(params, {}, { customData: { deviceType: 'SpecialColorLight' } })).toBe(
+      '10,20,30'
+    );
   });
 
   test('getResponseStates', () => {
