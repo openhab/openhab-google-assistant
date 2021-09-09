@@ -19,6 +19,10 @@ class SpecialColorLight extends DefaultDevice {
 
   static getAttributes(item) {
     const attributes = {};
+    const members = this.getMembers(item);
+    if ('lightColor' in members) {
+      attributes.colorModel = 'hsv';
+    }
     const config = this.getConfig(item);
     if ('colorTemperatureRange' in config) {
       const [min, max] = config.colorTemperatureRange.split(',').map((s) => Number(s.trim()));
@@ -46,7 +50,25 @@ class SpecialColorLight extends DefaultDevice {
             state.on = state.brightness > 0;
           }
           break;
+        case 'lightColor':
+          try {
+            const [hue, sat, val] = members[member].state.split(',').map((s) => Number(s.trim()));
+            if (val !== 0) {
+              state.color.spectrumHSV = {
+                hue: hue,
+                saturation: sat / 100,
+                value: val / 100
+              };
+              delete state.color.temperatureK;
+            }
+          } catch (error) {
+            //
+          }
+          break;
         case 'lightColorTemperature':
+          if (state.color.spectrumHSV) {
+            break;
+          }
           try {
             const { temperatureMinK, temperatureMaxK } = this.getAttributes(item).colorTemperatureRange;
             state.color = {};
@@ -64,8 +86,8 @@ class SpecialColorLight extends DefaultDevice {
   }
 
   static getMembers(item) {
-    const supportedMembers = ['lightBrightness', 'lightColorTemperature', 'lightPower'];
-    const members = Object();
+    const supportedMembers = ['lightBrightness', 'lightColor', 'lightColorTemperature', 'lightPower'];
+    const members = {};
     if (item.members && item.members.length) {
       item.members.forEach((member) => {
         if (member.metadata && member.metadata.ga) {
