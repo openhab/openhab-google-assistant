@@ -27,12 +27,11 @@ class ColorAbsolute extends DefaultCommand {
   }
 
   static convertParamsToValue(params, _, device) {
-    if (this.getDeviceType(device) === 'ColorLight' || this.getDeviceType(device) === 'SpecialColorLight') {
-      const hsv = params.color.spectrumHSV;
-      return [hsv.hue, hsv.saturation * 100, hsv.value * 100].join(',');
-    } else {
+    if (this.getDeviceType(device) !== 'ColorLight' && this.getDeviceType(device) !== 'SpecialColorLight') {
       throw { statusCode: 400 };
     }
+    const hsv = params.color.spectrumHSV;
+    return [hsv.hue, hsv.saturation * 100, hsv.value * 100].join(',');
   }
 
   static getResponseStates(params) {

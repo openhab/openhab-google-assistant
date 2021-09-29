@@ -37,7 +37,7 @@ class SpecialColorLight extends DefaultDevice {
   }
 
   static getState(item) {
-    const state = { color: {} };
+    const state = {};
     const members = this.getMembers(item);
     for (const member in members) {
       switch (member) {
@@ -53,24 +53,26 @@ class SpecialColorLight extends DefaultDevice {
         case 'lightColor':
           try {
             const [hue, sat, val] = members[member].state.split(',').map((s) => Number(s.trim()));
-            if (val !== 0) {
-              state.color.spectrumHSV = {
-                hue: hue,
-                saturation: sat / 100,
-                value: val / 100
+            if (val > 0) {
+              state.color = {
+                spectrumHSV: {
+                  hue: hue,
+                  saturation: sat / 100,
+                  value: val / 100
+                }
               };
-              delete state.color.temperatureK;
             }
           } catch (error) {
             //
           }
           break;
         case 'lightColorTemperature':
-          if (state.color.spectrumHSV) {
+          if (state.color) {
             break;
           }
           try {
             const { temperatureMinK, temperatureMaxK } = this.getAttributes(item).colorTemperatureRange;
+            state.color = {};
             state.color.temperatureK = this.useKelvin(item)
               ? Number(members[member].state)
               : temperatureMinK +

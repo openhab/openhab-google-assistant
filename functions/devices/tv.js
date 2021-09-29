@@ -126,7 +126,7 @@ class TV extends DefaultDevice {
 
   static getMembers(item) {
     const supportedMembers = ['tvApplication', 'tvChannel', 'tvVolume', 'tvInput', 'tvTransport', 'tvPower', 'tvMute'];
-    const members = Object();
+    const members = {};
     if (item.members && item.members.length) {
       item.members.forEach((member) => {
         if (member.metadata && member.metadata.ga) {
