@@ -68,7 +68,7 @@ describe('ApiHandler', () => {
         },
         hostname: 'example.org',
         method: 'POST',
-        path: '/items/TestItem',
+        path: '/items/TestItem?metadata=ga,synonyms',
         port: 443
       });
     });
@@ -96,9 +96,24 @@ describe('ApiHandler', () => {
     test('getItem', async () => {
       const scope = nock('https://example.org')
         .get('/items/TestItem?metadata=ga,synonyms')
-        .reply(200, { name: 'TestItem' });
+        .reply(200, [{ name: 'TestItem' }]);
       const result = await apiHandler.getItem('TestItem');
-      expect(result).toStrictEqual({ name: 'TestItem' });
+      expect(result).toStrictEqual([{ name: 'TestItem' }]);
+      expect(scope.isDone()).toBe(true);
+    });
+
+    test('getItem failed', async () => {
+      const scope = nock('https://example.org').get('/items/TestItem?metadata=ga,synonyms').reply(400, {});
+      let error = {};
+      try {
+        await apiHandler.getItem('TestItem');
+      } catch (e) {
+        error = e;
+      }
+      expect(error).toStrictEqual({
+        message: 'getItem failed',
+        statusCode: 400
+      });
       expect(scope.isDone()).toBe(true);
     });
   });
@@ -142,7 +157,7 @@ describe('ApiHandler', () => {
 
     test('sendCommand', async () => {
       const scope = nock('https://example.org')
-        .post('/items/TestItem')
+        .post('/items/TestItem?metadata=ga,synonyms')
         .reply(200, [{ name: 'TestItem' }]);
       const result = await apiHandler.sendCommand('TestItem', 'OFF');
       expect(result).toBeUndefined();
@@ -150,7 +165,7 @@ describe('ApiHandler', () => {
     });
 
     test('sendCommand failed', async () => {
-      const scope = nock('https://example.org').post('/items/TestItem').reply(400, {});
+      const scope = nock('https://example.org').post('/items/TestItem?metadata=ga,synonyms').reply(400, {});
       let error = {};
       try {
         await apiHandler.sendCommand('TestItem', 'OFF');
