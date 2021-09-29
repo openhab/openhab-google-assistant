@@ -7,7 +7,7 @@ describe('Config', () => {
 
   test('Properties used from ENV', () => {
     expect(Config.host).toBe('test.host');
-    expect(Config.port).toBe('1234');
+    expect(Config.port).toBe(1234);
     expect(Config.path).toBe('/test/items');
   });
 });
