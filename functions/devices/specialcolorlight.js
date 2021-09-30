@@ -10,10 +10,13 @@ class SpecialColorLight extends DefaultDevice {
   }
 
   static matchesItemType(item) {
+    const members = this.getMembers(item);
     return (
       item.type === 'Group' &&
-      Object.keys(this.getMembers(item)).length > 1 &&
-      (this.useKelvin(item) || !!this.getAttributes(item).colorTemperatureRange)
+      Object.keys(members).length > 1 &&
+      (!('lightColorTemperature' in members) ||
+        this.useKelvin(item) ||
+        !!this.getAttributes(item).colorTemperatureRange)
     );
   }
 
@@ -71,12 +74,18 @@ class SpecialColorLight extends DefaultDevice {
             break;
           }
           try {
-            const { temperatureMinK, temperatureMaxK } = this.getAttributes(item).colorTemperatureRange;
-            state.color = {};
-            state.color.temperatureK = this.useKelvin(item)
-              ? Number(members[member].state)
-              : temperatureMinK +
-                (((temperatureMaxK - temperatureMinK) / 100) * (100 - Number(members[member].state)) || 0);
+            if (this.useKelvin(item)) {
+              state.color = {
+                temperatureK: Number(members[member].state)
+              };
+            } else {
+              const { temperatureMinK, temperatureMaxK } = this.getAttributes(item).colorTemperatureRange;
+              state.color = {
+                temperatureK:
+                  temperatureMinK +
+                  (((temperatureMaxK - temperatureMinK) / 100) * (100 - Number(members[member].state)) || 0)
+              };
+            }
           } catch (error) {
             //
           }
@@ -103,8 +112,7 @@ class SpecialColorLight extends DefaultDevice {
   }
 
   static useKelvin(item) {
-    const config = this.getConfig(item);
-    return config.useKelvin === true;
+    return this.getConfig(item).useKelvin === true;
   }
 }
 
