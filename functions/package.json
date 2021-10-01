@@ -1,6 +1,6 @@
 {
   "name": "openhab.google-assistant-smarthome.cloud-function",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "description": "A Google Assistant, Actions on Google based implementation for openHAB",
   "repository": {
     "type": "git",
@@ -12,7 +12,7 @@
   ],
   "license": "EPL-2.0",
   "dependencies": {
-    "actions-on-google": "^2.14.0",
-    "glob": "^7.1.7"
+    "actions-on-google": "^3.0.0",
+    "glob": "^7.2.0"
   }
 }
