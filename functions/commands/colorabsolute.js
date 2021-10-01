@@ -15,6 +15,10 @@ class ColorAbsolute extends DefaultCommand {
     );
   }
 
+  static requiresItem(device) {
+    return this.getDeviceType(device) === 'SpecialColorLight';
+  }
+
   static getItemName(item, device) {
     if (this.getDeviceType(device) === 'SpecialColorLight') {
       const members = SpecialColorLight.getMembers(item);

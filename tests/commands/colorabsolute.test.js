@@ -13,6 +13,11 @@ describe('ColorAbsolute Command', () => {
     expect(Command.validateParams(params)).toBe(true);
   });
 
+  test('requiresItem', () => {
+    expect(Command.requiresItem({})).toBe(false);
+    expect(Command.requiresItem({ customData: { deviceType: 'SpecialColorLight' } })).toBe(true);
+  });
+
   test('getItemName', () => {
     expect(Command.getItemName({ name: 'Item' }, {})).toBe('Item');
     expect(Command.getItemName({ name: 'Item' }, { customData: {} })).toBe('Item');
