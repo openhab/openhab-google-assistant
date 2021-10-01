@@ -1,3 +1,4 @@
+const SecuritySystem = require('../../functions/devices/securitysystem.js');
 const Device = require('../../functions/devices/securitysystem.js');
 
 describe('SecuritySystem Device', () => {
@@ -14,9 +15,23 @@ describe('SecuritySystem Device', () => {
   });
 
   test('matchesItemType', () => {
-    expect(Device.matchesItemType({ type: 'Switch' })).toBe(true);
+    const item = {
+      type: 'Group',
+      members: [
+        {
+          metadata: {
+            ga: {
+              value: SecuritySystem.armedMemberName
+            }
+          }
+        }
+      ]
+    };
+    expect(Device.matchesItemType(item)).toBe(true);
+    expect(Device.matchesItemType({ type: 'Switch' })).toBe(false);
     expect(Device.matchesItemType({ type: 'String' })).toBe(false);
-    expect(Device.matchesItemType({ type: 'Group', groupType: 'Switch' })).toBe(true);
+    expect(Device.matchesItemType({ type: 'Group', groupType: 'Switch' })).toBe(false);
+    expect(Device.matchesItemType({ type: 'Group', groupType: 'String' })).toBe(false);
   });
 
   test('getTraits', () => {
@@ -24,27 +39,7 @@ describe('SecuritySystem Device', () => {
   });
 
   describe('getState', () => {
-    test.only('getState with legacy switch type', () => {
-      let device = {
-        type: 'Switch',
-        state: 'ON',
-        members: []
-      };
-      expect(Device.getState(device)).toStrictEqual({
-        isArmed: true,
-        currentArmLevel: undefined,
-        currentStatusReport: []
-      });
-      device.state = 'OFF';
-
-      expect(Device.getState(device)).toStrictEqual({
-        isArmed: false,
-        currentArmLevel: undefined,
-        currentStatusReport: []
-      });
-    });
-
-    test('getState', () => {
+    test('getState without armLevel', () => {
       let device = {
         type: 'Group',
         members: [
@@ -59,16 +54,37 @@ describe('SecuritySystem Device', () => {
         ]
       };
       expect(Device.getState(device)).toStrictEqual({
-        isArmed: true,
-        currentArmLevel: undefined,
-        currentStatusReport: []
+        currentStatusReport: [],
+        isArmed: true
       });
-      device.members[0].state = 'OFF';
 
+      device.members[0].state = 'OFF';
       expect(Device.getState(device)).toStrictEqual({
-        isArmed: false,
-        currentArmLevel: undefined,
-        currentStatusReport: []
+        currentStatusReport: [],
+        isArmed: false
+      });
+    });
+
+    test('getState without armed', () => {
+      let device = {
+        members: [
+          {
+            metadata: {
+              ga: {
+                value: Device.armLevelMemberName
+              }
+            },
+            state: 'L1'
+          }
+        ]
+      };
+      expect(Device.getState(device)).toStrictEqual({
+        isArmed: false
+      });
+
+      device.members[0].state = 'OFF';
+      expect(Device.getState(device)).toStrictEqual({
+        isArmed: false
       });
     });
 
@@ -98,11 +114,10 @@ describe('SecuritySystem Device', () => {
         currentArmLevel: 'L1',
         currentStatusReport: []
       });
-      device.members[0].state = 'OFF';
 
+      device.members[0].state = 'OFF';
       expect(Device.getState(device)).toStrictEqual({
         isArmed: false,
-        currentArmLevel: undefined,
         currentStatusReport: []
       });
     });
@@ -130,67 +145,8 @@ describe('SecuritySystem Device', () => {
 
       expect(Device.getState(item)).toStrictEqual({
         isArmed: false,
-        currentArmLevel: undefined,
         currentStatusReport: []
       });
-    });
-  });
-
-  describe('getMemberToSendArmCommand', () => {
-    test('normal case', () => {
-      let device = {
-        members: [
-          {
-            name: 'armed',
-            metadata: {
-              ga: {
-                value: Device.armedMemberName
-              }
-            },
-            state: 'ON'
-          },
-          {
-            name: 'armLevel',
-            metadata: {
-              ga: {
-                value: Device.armLevelMemberName
-              }
-            },
-            state: 'L1'
-          }
-        ]
-      };
-      expect(Device.getMemberToSendArmCommand(device, { arm: true })).toBe('armed');
-      expect(Device.getMemberToSendArmCommand(device, { arm: true, armLevel: 'L1' })).toBe('armLevel');
-    });
-
-    test('missing armLevel member', () => {
-      let device = {
-        members: [
-          {
-            name: 'armed',
-            metadata: {
-              ga: {
-                value: Device.armedMemberName
-              }
-            },
-            state: 'ON'
-          }
-        ]
-      };
-      expect(() => {
-        Device.getMemberToSendArmCommand(device, { arm: true, armLevel: 'L1' });
-      }).toThrow();
-    });
-
-    test('missing armed member', () => {
-      let device = { members: [] };
-      expect(() => {
-        Device.getMemberToSendArmCommand(device, { arm: true, armLevel: 'L1' });
-      }).toThrow();
-      expect(() => {
-        Device.getMemberToSendArmCommand(device, { arm: true });
-      }).toThrow();
     });
   });
 
@@ -375,7 +331,7 @@ describe('SecuritySystem Device', () => {
         ]
       };
       const members = Device.getMembers(device);
-      let expectedMembers = { zones: [] };
+      let expectedMembers = {};
       expectedMembers[memberArmed] = { name: 'armed', state: 'ON', config: {} };
 
       expect(members).toStrictEqual(expectedMembers);
@@ -396,7 +352,7 @@ describe('SecuritySystem Device', () => {
         ]
       };
       const members = Device.getMembers(device);
-      let expectedMembers = { zones: [] };
+      let expectedMembers = {};
       expect(members).toStrictEqual(expectedMembers);
     });
 
@@ -475,7 +431,7 @@ describe('SecuritySystem Device', () => {
         ]
       };
       const members = Device.getMembers(device);
-      let expectedMembers = { zones: [] };
+      let expectedMembers = {};
       expectedMembers[memberArmed] = { name: 'armed', state: 'ON', config: {} };
       expect(members).toStrictEqual(expectedMembers);
     });
