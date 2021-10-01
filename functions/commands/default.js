@@ -292,7 +292,6 @@ class DefaultCommand {
         })
         .catch((error) => {
           console.error(`openhabGoogleAssistant - ${this.type}: ERROR ${JSON.stringify(error)}`);
-          console.error(error.stack);
           commandsResponse.push({
             ids: [device.id],
             status: 'ERROR',
