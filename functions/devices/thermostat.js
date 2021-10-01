@@ -66,7 +66,7 @@ class Thermostat extends DefaultDevice {
       'thermostatTemperatureAmbient',
       'thermostatHumidityAmbient'
     ];
-    const members = Object();
+    const members = {};
     if (item.members && item.members.length) {
       item.members.forEach((member) => {
         if (member.metadata && member.metadata.ga) {

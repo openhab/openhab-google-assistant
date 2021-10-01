@@ -27,7 +27,7 @@ describe('ColorAbsoluteTemperature Command', () => {
       name: 'Item',
       members: [
         {
-          name: 'ColorItem',
+          name: 'ColorTemperatureItem',
           metadata: {
             ga: {
               value: 'lightColorTemperature'
@@ -36,7 +36,7 @@ describe('ColorAbsoluteTemperature Command', () => {
         }
       ]
     };
-    expect(Command.getItemName(item, { customData: { deviceType: 'SpecialColorLight' } })).toBe('ColorItem');
+    expect(Command.getItemName(item, { customData: { deviceType: 'SpecialColorLight' } })).toBe('ColorTemperatureItem');
   });
 
   describe('convertParamsToValue', () => {
@@ -64,7 +64,6 @@ describe('ColorAbsoluteTemperature Command', () => {
         metadata: {
           ga: {
             config: {
-              colorTemperatureRange: '1000,5000',
               useKelvin: true
             }
           }
