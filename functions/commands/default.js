@@ -87,18 +87,6 @@ class DefaultCommand {
   }
 
   /**
-   * Wait x seconds for the state to update within OpenHab
-   * @param {object} device Google Home Graph device
-   * @returns {number} Seconds to wait before querying state. 0 if disabled
-   */
-  static waitForStateChange(device) {
-    if (device.customData && device.customData.waitForStateChange) {
-      return device.customData.waitForStateChange;
-    }
-    return 0;
-  }
-
-  /**
    * @param {object} item
    * @param {object} device
    * @param {object} params
@@ -193,26 +181,19 @@ class DefaultCommand {
     };
   }
 
-  static delayPromise(device) {
-    const secondsToWait = this.waitForStateChange(device);
+  static getDelayPromise(device) {
+    const secondsToWait = (device.customData && parseInt(device.customData.waitForStateChange)) || 0;
     if (secondsToWait === 0) {
       return Promise.resolve();
     }
 
     return new Promise((resolve) => {
-      console.log(`Waiting ${secondsToWait} second(s) for state to update`);
+      console.log(`openhabGoogleAssistant - Waiting ${secondsToWait} second(s) for state to update`);
       setTimeout(() => {
-        console.log(`Finished Waiting`);
+        console.log(`openhabGoogleAssistant - Finished Waiting`);
         resolve();
       }, secondsToWait * 1000);
     });
-  }
-
-  static getItemState(device, expectedState, apiHandler) {
-    if (this.shouldGetLatestState()) {
-      return apiHandler.getItem(device.id);
-    }
-    return Promise.resolve(expectedState);
   }
 
   /**
@@ -270,25 +251,31 @@ class DefaultCommand {
           if (typeof targetItem === 'string' && typeof targetValue === 'string') {
             sendCommandPromise = apiHandler.sendCommand(targetItem, targetValue);
           }
-          return sendCommandPromise
-            .then(() => this.delayPromise(device))
-            .then(() => this.getItemState(device, responseStates, apiHandler))
-            .then((newState) => {
-              const updateFailedResponse = this.checkUpdateFailed(params, newState, device);
-              if (updateFailedResponse) {
-                commandsResponse.push(updateFailedResponse);
-                return;
-              }
-              let updatedResponseState = this.shouldGetLatestState()
-                ? this.getNewState(params, newState, device)
-                : responseStates;
 
+          return sendCommandPromise.then(() => {
+            if (this.shouldGetLatestState()) {
+              return this.getDelayPromise(device).then(() => {
+                return apiHandler.getItem(device.id).then((item) => {
+                  const updateFailedResponse = this.checkUpdateFailed(params, item, device);
+                  if (updateFailedResponse) {
+                    commandsResponse.push(updateFailedResponse);
+                  } else {
+                    commandsResponse.push({
+                      ids: [device.id],
+                      status: 'SUCCESS',
+                      states: this.getNewState(params, item, device)
+                    });
+                  }
+                });
+              });
+            } else {
               commandsResponse.push({
                 ids: [device.id],
                 status: 'SUCCESS',
-                states: updatedResponseState
+                states: responseStates
               });
-            });
+            }
+          });
         })
         .catch((error) => {
           console.error(`openhabGoogleAssistant - ${this.type}: ERROR ${JSON.stringify(error)}`);

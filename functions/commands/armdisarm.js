@@ -81,26 +81,18 @@ class ArmDisarm extends DefaultCommand {
 
     if (params.armLevel && this.getDeviceType(device) === 'SecuritySystem') {
       if (params.arm && isCurrentlyArmed && params.armLevel === currentLevel) {
-        return this.getErrorMessage(device, 'alreadyInState');
+        throw { errorCode: 'alreadyInState' };
       }
       return;
     }
 
     if (params.arm && isCurrentlyArmed) {
-      return this.getErrorMessage(device, 'alreadyArmed');
+      throw { errorCode: 'alreadyArmed' };
     }
 
     if (!params.arm && !isCurrentlyArmed) {
-      return this.getErrorMessage(device, 'alreadyDisarmed');
+      throw { errorCode: 'alreadyDisarmed' };
     }
-  }
-
-  static getErrorMessage(device, errorCode) {
-    return {
-      ids: [device.id],
-      status: 'ERROR',
-      errorCode
-    };
   }
 
   static checkUpdateFailed(params, item, device) {
@@ -114,7 +106,7 @@ class ArmDisarm extends DefaultCommand {
       const armLevelSuccessful = params.armLevel ? params.armLevel === currentLevel : true;
       if (!armStatusSuccessful || !armLevelSuccessful) {
         if (!params.arm) {
-          return this.getErrorMessage(device, 'disarmFailure');
+          throw { errorCode: 'disarmFailure' };
         } else {
           let report = SecuritySystem.getStatusReport(item, members);
           if (report.length) {
@@ -126,12 +118,12 @@ class ArmDisarm extends DefaultCommand {
             response.states.currentStatusReport = report;
             return response;
           }
-          return this.getErrorMessage(device, 'armFailure');
+          throw { errorCode: 'armFailure' };
         }
       }
     } else {
       if (params.arm !== (item.state === (this.isInverted(device) ? 'OFF' : 'ON'))) {
-        return this.getErrorMessage(device, params.arm ? 'armFailure' : 'disarmFailure');
+        throw { errorCode: params.arm ? 'armFailure' : 'disarmFailure' };
       }
     }
   }

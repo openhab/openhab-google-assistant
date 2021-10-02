@@ -80,17 +80,15 @@ class OpenHAB {
    * @param {object} headers
    */
   async onSync(body, headers) {
-    console.log('openhabGoogleAssistant - handleSync');
+    console.log('openhabGoogleAssistant - onSync');
 
     this.setTokenFromHeader(headers);
 
-    const payload = await this.handleSync().catch(() => {
-      return {
-        errorCode: 'actionNotAvailable',
-        status: 'ERROR',
-        devices: []
-      };
-    });
+    const payload = await this.handleSync().catch(() => ({
+      errorCode: 'actionNotAvailable',
+      status: 'ERROR',
+      devices: []
+    }));
 
     return {
       requestId: body.requestId,
@@ -106,7 +104,7 @@ class OpenHAB {
     const devices =
       (body && body.inputs && body.inputs[0] && body.inputs[0].payload && body.inputs[0].payload.devices) || [];
 
-    console.log(`openhabGoogleAssistant - handleQuery - devices: ${JSON.stringify(devices)}`);
+    console.log(`openhabGoogleAssistant - onQuery - devices: ${JSON.stringify(devices)}`);
 
     this.setTokenFromHeader(headers);
 
@@ -130,7 +128,7 @@ class OpenHAB {
     const commands =
       (body && body.inputs && body.inputs[0] && body.inputs[0].payload && body.inputs[0].payload.commands) || [];
 
-    console.log(`openhabGoogleAssistant - handleExecute - commands: ${JSON.stringify(commands)}`);
+    console.log(`openhabGoogleAssistant - onExecute - commands: ${JSON.stringify(commands)}`);
 
     this.setTokenFromHeader(headers);
 
@@ -183,18 +181,14 @@ class OpenHAB {
           }
           payload.devices[device.id] = Object.assign({ status: 'SUCCESS', online: true }, DeviceType.getState(item));
         })
-        .catch(
-          (error) =>
-            (payload.devices[device.id] = {
-              status: 'ERROR',
-              errorCode:
-                error.statusCode == 404
-                  ? 'deviceNotFound'
-                  : error.statusCode == 406
-                  ? 'deviceNotReady'
-                  : 'deviceOffline'
-            })
-        )
+        .catch((error) => {
+          console.error(`openhabGoogleAssistant - handleQuery - getItem: ERROR ${JSON.stringify(error)}`);
+          payload.devices[device.id] = {
+            status: 'ERROR',
+            errorCode:
+              error.statusCode == 404 ? 'deviceNotFound' : error.statusCode == 406 ? 'deviceNotReady' : 'deviceOffline'
+          };
+        })
     );
 
     return Promise.all(promises).then(() => payload);
@@ -228,6 +222,9 @@ class OpenHAB {
         }
         const CommandType = OpenHAB.getCommandType(execution.command, execution.params);
         if (!CommandType) {
+          console.error(
+            `openhabGoogleAssistant - handleExecute - functionNotSupported: ERROR ${JSON.stringify(execution)}`
+          );
           promises.push(
             Promise.resolve({
               ids: command.devices.map((device) => device.id),

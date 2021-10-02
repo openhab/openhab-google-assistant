@@ -86,10 +86,7 @@ class ApiHandler {
       const protocol = options.port === 443 ? https : http;
       const req = protocol.request(options, (response) => {
         if (200 !== response.statusCode) {
-          console.error(
-            'openhabGoogleAssistant - getItem - failed for path: ' + options.path + ' code: ' + response.statusCode
-          );
-          reject({ statusCode: response.statusCode, message: 'getItem failed' });
+          reject({ statusCode: response.statusCode, message: 'getItem - failed for path: ' + options.path });
           return;
         }
 
@@ -123,10 +120,7 @@ class ApiHandler {
       const protocol = options.port === 443 ? https : http;
       const req = protocol.request(options, (response) => {
         if (![200, 201].includes(response.statusCode)) {
-          console.error(
-            'openhabGoogleAssistant - sendCommand - failed for path: ' + options.path + ' code: ' + response.statusCode
-          );
-          reject({ statusCode: response.statusCode, message: 'sendCommand failed' });
+          reject({ statusCode: response.statusCode, message: 'sendCommand - failed for path: ' + options.path });
           return;
         }
         resolve();
