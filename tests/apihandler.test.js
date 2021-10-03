@@ -128,7 +128,8 @@ describe('ApiHandler', () => {
         error = e;
       }
       expect(error).toStrictEqual({
-        message: 'getItem failed',
+        message:
+          'getItem - failed for path: /items/?metadata=ga,synonyms&fields=groupNames,groupType,name,label,metadata,type',
         statusCode: 400
       });
       expect(scope.isDone()).toBe(true);
@@ -158,7 +159,7 @@ describe('ApiHandler', () => {
         error = e;
       }
       expect(error).toStrictEqual({
-        message: 'sendCommand failed',
+        message: 'sendCommand - failed for path: /items/TestItem',
         statusCode: 400
       });
       expect(scope.isDone()).toBe(true);
