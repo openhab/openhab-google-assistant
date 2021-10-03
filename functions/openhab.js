@@ -139,10 +139,10 @@ class OpenHAB {
         .then((item) => {
           const DeviceType = getDeviceForItem(item);
           if (!DeviceType) {
-            throw { statusCode: 404 };
+            throw { statusCode: 404, message: `Device type not found for item: ${item.type} ${item.name}` };
           }
           if (item.state === 'NULL' && !('getMembers' in DeviceType)) {
-            throw { statusCode: 406 };
+            throw { statusCode: 406, message: `Item state is NULL: ${item.type} ${item.name}` };
           }
           payload.devices[device.id] = Object.assign({ status: 'SUCCESS', online: true }, DeviceType.getState(item));
         })

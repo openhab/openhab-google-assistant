@@ -176,9 +176,9 @@ class DefaultCommand {
   static handleUpdateValidation(apiHandler, device, params) {
     return this.getDelayPromise(device).then(() => {
       return apiHandler.getItem(device.id).then((item) => {
-        const updateFailedResponse = this.validateUpdate(params, item, device);
-        if (updateFailedResponse) {
-          return updateFailedResponse;
+        const validateUpdateResponse = this.validateUpdate(params, item, device);
+        if (validateUpdateResponse) {
+          return validateUpdateResponse;
         } else {
           const getDeviceForItem = require('../devices').getDeviceForItem;
           const deviceType = getDeviceForItem(item);
