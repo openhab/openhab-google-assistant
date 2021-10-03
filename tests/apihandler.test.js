@@ -129,6 +129,7 @@ describe('ApiHandler', () => {
       }
       expect(error).toStrictEqual({
         message:
+          // eslint-disable-next-line max-len
           'getItem - failed for path: /items/?metadata=ga,synonyms&fields=groupNames,groupType,name,label,metadata,type',
         statusCode: 400
       });
