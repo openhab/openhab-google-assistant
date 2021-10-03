@@ -28,18 +28,25 @@ class DefaultCommand {
    * Is the requested new state valid
    * @param {object} params Requested change params
    * @param {object} item Current state of item
-   * @returns {object} Error response if invalid state change or null if the state change is allowed
+   * @returns {boolean} true if state change is valid otherwise throws error
    */
   static validateStateChange(params, item, device) {
-    return;
+    return true;
+  }
+
+  static get requiresUpdateValidation() {
+    return false;
   }
 
   /**
-   * Must the state change be checked before applying?
-   * @returns {boolean}
+   * Check if new state is as expected.
+   * @param {object} params
+   * @param {object} item
+   * @param {object} device
+   * @return {object} Error message if state update failed. Null if all ok.
    */
-  static shouldValidateStateChange() {
-    return false;
+  static validateUpdate(params, item, device) {
+    return;
   }
 
   /**
@@ -58,32 +65,6 @@ class DefaultCommand {
    */
   static getResponseStates(params, item, device) {
     return {};
-  }
-
-  /**
-   * Get the new state to be returned to Google Home
-   * @param {object} params Original command params received
-   * @param {object} item The state of the item after executing the command
-   * @param {object} device Google Home Graph device
-   * @return {object} New state to send to Google in the response
-   */
-  static getNewState(params, item, device) {
-    return this.getResponseStates(params, item, device);
-  }
-
-  static shouldGetLatestState() {
-    return false;
-  }
-
-  /**
-   * Check if new state is as expected.
-   * @param {object} params
-   * @param {object} item
-   * @param {object} device
-   * @return {object} Error message if state update failed. Null if all ok.
-   */
-  static checkUpdateFailed(params, item, device) {
-    return;
   }
 
   /**
@@ -136,14 +117,10 @@ class DefaultCommand {
    * @param {object} challenge
    */
   static handleAuthPin(device, challenge, params) {
-    if (this.bypassPin(device, params)) {
-      return;
-    }
+    const pinRequired = device.customData && (device.customData.pinNeeded || device.customData.tfaPin);
+    const pinReceived = challenge && challenge.pin;
 
-    let pinRequired = device.customData && (device.customData.pinNeeded || device.customData.tfaPin);
-    let pinReceived = challenge && challenge.pin;
-
-    if (!pinRequired || pinRequired === pinReceived) {
+    if (this.bypassPin(device, params) || !pinRequired || pinRequired === pinReceived) {
       return;
     }
 
@@ -182,17 +159,39 @@ class DefaultCommand {
   }
 
   static getDelayPromise(device) {
-    const secondsToWait = (device.customData && parseInt(device.customData.waitForStateChange)) || 0;
+    const secondsToWait = (device.customData && device.customData.waitForStateChange) || 0;
     if (secondsToWait === 0) {
       return Promise.resolve();
     }
 
     return new Promise((resolve) => {
-      console.log(`openhabGoogleAssistant - Waiting ${secondsToWait} second(s) for state to update`);
+      console.log(`openhabGoogleAssistant - ${this.type}: Waiting ${secondsToWait} second(s) for state to update`);
       setTimeout(() => {
-        console.log(`openhabGoogleAssistant - Finished Waiting`);
+        console.log(`openhabGoogleAssistant - ${this.type}: Finished Waiting`);
         resolve();
       }, secondsToWait * 1000);
+    });
+  }
+
+  static handleUpdateValidation(apiHandler, device, params) {
+    return this.getDelayPromise(device).then(() => {
+      return apiHandler.getItem(device.id).then((item) => {
+        const updateFailedResponse = this.validateUpdate(params, item, device);
+        if (updateFailedResponse) {
+          return updateFailedResponse;
+        } else {
+          const getDeviceForItem = require('../devices').getDeviceForItem;
+          const deviceType = getDeviceForItem(item);
+          if (!deviceType) {
+            throw { statusCode: 404 };
+          }
+          return {
+            ids: [device.id],
+            status: 'SUCCESS',
+            states: Object.assign({ online: true }, deviceType.getState(item))
+          };
+        }
+      });
     });
   }
 
@@ -218,25 +217,18 @@ class DefaultCommand {
         (device.customData.ackNeeded || device.customData.tfaAck) &&
         !(challenge && challenge.ack);
 
-      const confirmStateChange = this.shouldValidateStateChange();
       let getItemPromise = Promise.resolve({ name: device.id });
-      if (this.requiresItem(device) || ackWithState || confirmStateChange) {
+      if (this.requiresItem(device) || ackWithState || this.requiresUpdateValidation) {
         getItemPromise = apiHandler.getItem(device.id);
       }
 
       return getItemPromise
         .then((item) => {
+          this.validateStateChange(params, item, device);
+
           const responseStates = this.getResponseStates(params, item, device);
           if (Object.keys(responseStates).length) {
             responseStates.online = true;
-          }
-
-          if (confirmStateChange) {
-            const preCheckResponse = this.validateStateChange(params, item, device);
-            if (preCheckResponse) {
-              commandsResponse.push(preCheckResponse);
-              return;
-            }
           }
 
           const authAckResponse = this.handleAuthAck(device, challenge, responseStates);
@@ -252,22 +244,9 @@ class DefaultCommand {
             sendCommandPromise = apiHandler.sendCommand(targetItem, targetValue);
           }
 
-          return sendCommandPromise.then(() => {
-            if (this.shouldGetLatestState()) {
-              return this.getDelayPromise(device).then(() => {
-                return apiHandler.getItem(device.id).then((item) => {
-                  const updateFailedResponse = this.checkUpdateFailed(params, item, device);
-                  if (updateFailedResponse) {
-                    commandsResponse.push(updateFailedResponse);
-                  } else {
-                    commandsResponse.push({
-                      ids: [device.id],
-                      status: 'SUCCESS',
-                      states: this.getNewState(params, item, device)
-                    });
-                  }
-                });
-              });
+          return sendCommandPromise.then(async () => {
+            if (this.requiresUpdateValidation) {
+              commandsResponse.push(await this.handleUpdateValidation(apiHandler, device, params));
             } else {
               commandsResponse.push({
                 ids: [device.id],

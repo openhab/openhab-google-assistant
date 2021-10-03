@@ -96,12 +96,12 @@ class DefaultDevice {
     }
     if (typeof config.pinNeeded === 'string' || typeof config.tfaPin === 'string') {
       metadata.customData.pinNeeded = config.pinNeeded || config.tfaPin;
-      if (typeof config.pinOnDisarmOnly != undefined && config.pinOnDisarmOnly != null) {
-        metadata.customData.pinOnDisarmOnly = config.pinOnDisarmOnly;
+      if (config.pinOnDisarmOnly === true) {
+        metadata.customData.pinOnDisarmOnly = true;
       }
     }
     if (config.waitForStateChange) {
-      metadata.customData.waitForStateChange = config.waitForStateChange;
+      metadata.customData.waitForStateChange = parseInt(config.waitForStateChange);
     }
     return metadata;
   }

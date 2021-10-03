@@ -43,7 +43,7 @@ class ArmDisarm extends DefaultCommand {
   }
 
   static bypassPin(device, params) {
-    return device.customData.pinOnDisarmOnly && (params.armLevel || params.arm);
+    return !!(device.customData && device.customData.pinOnDisarmOnly && (params.armLevel || params.arm));
   }
 
   static getResponseStates(params) {
@@ -56,11 +56,7 @@ class ArmDisarm extends DefaultCommand {
     return response;
   }
 
-  static shouldValidateStateChange() {
-    return true;
-  }
-
-  static shouldGetLatestState() {
+  static get requiresUpdateValidation() {
     return true;
   }
 
@@ -83,7 +79,7 @@ class ArmDisarm extends DefaultCommand {
       if (params.arm && isCurrentlyArmed && params.armLevel === currentLevel) {
         throw { errorCode: 'alreadyInState' };
       }
-      return;
+      return true;
     }
 
     if (params.arm && isCurrentlyArmed) {
@@ -93,9 +89,11 @@ class ArmDisarm extends DefaultCommand {
     if (!params.arm && !isCurrentlyArmed) {
       throw { errorCode: 'alreadyDisarmed' };
     }
+
+    return true;
   }
 
-  static checkUpdateFailed(params, item, device) {
+  static validateUpdate(params, item, device) {
     if (this.getDeviceType(device) === 'SecuritySystem') {
       const members = SecuritySystem.getMembers(item);
       const isCurrentlyArmed =
@@ -108,15 +106,13 @@ class ArmDisarm extends DefaultCommand {
         if (!params.arm) {
           throw { errorCode: 'disarmFailure' };
         } else {
-          let report = SecuritySystem.getStatusReport(item, members);
+          const report = SecuritySystem.getStatusReport(item, members);
           if (report.length) {
-            let response = {
+            return {
               ids: [device.id],
               status: 'EXCEPTIONS',
-              states: this.getNewState(params, item, device)
+              states: Object.assign({ currentStatusReport: report }, SecuritySystem.getState(item))
             };
-            response.states.currentStatusReport = report;
-            return response;
           }
           throw { errorCode: 'armFailure' };
         }
@@ -126,18 +122,6 @@ class ArmDisarm extends DefaultCommand {
         throw { errorCode: params.arm ? 'armFailure' : 'disarmFailure' };
       }
     }
-  }
-
-  static getNewState(params, item, device) {
-    const members = SecuritySystem.getMembers(item);
-    let response = {
-      online: true,
-      isArmed: members[SecuritySystem.armedMemberName].state === (this.isInverted(device) ? 'OFF' : 'ON')
-    };
-    if (params.armLevel) {
-      response.currentArmLevel = members[SecuritySystem.armLevelMemberName].state;
-    }
-    return response;
   }
 }
 

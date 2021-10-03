@@ -2,18 +2,6 @@ const OpenHAB = require('../functions/openhab.js');
 const packageVersion = require('../functions/package.json').version;
 
 describe('OpenHAB', () => {
-  test('getCommandType', () => {
-    const command = OpenHAB.getCommandType('action.devices.commands.OnOff', { on: true });
-    expect(command).not.toBeUndefined();
-    expect(command.name).toBe('OnOff');
-  });
-
-  test('getDeviceForItem', () => {
-    const device = OpenHAB.getDeviceForItem({ type: 'Switch', metadata: { ga: { value: 'Switch' } } });
-    expect(device).not.toBeUndefined();
-    expect(device.name).toBe('Switch');
-  });
-
   test('setTokenFromHeader', () => {
     const openHAB = new OpenHAB({ authToken: '' });
     openHAB.setTokenFromHeader({});
