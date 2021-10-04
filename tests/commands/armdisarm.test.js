@@ -338,7 +338,8 @@ describe('ArmDisarm Command', () => {
                 statusCode: 'ErrorCode123'
               }
             ],
-            isArmed: false
+            isArmed: false,
+            online: true
           },
           status: 'EXCEPTIONS'
         });
