@@ -197,7 +197,8 @@ Dimmer { ga="Speaker" [ volumeDefaultPercentage="50", levelStepSize="10", volume
 | | |
 |---|---|
 | **Device Type** | [TV](https://developers.google.com/assistant/smarthome/guides/tv) |
-| **Supported Traits** | [OnOff](https://developers.google.com/assistant/smarthome/traits/onoff), [Volume](https://developers.google.com/assistant/smarthome/traits/volume), [TransportControl](https://developers.google.com/assistant/smarthome/traits/transportcontrol), [InputSelector](https://developers.google.com/assistant/smarthome/traits/inputselector), [AppSelector](https://developers.google.com/assistant/smarthome/traits/appselector), [Channel](https://developers.google.com/assistant/smarthome/traits/channel) (depending on used members) |
+| **Supported Traits** | [OnOff](https://developers.google.com/assistant/smarthome/traits/onoff), [Volume](https://developers.google.com/assistant/smarthome/traits/volume), [
+sportControl](https://developers.google.com/assistant/smarthome/traits/transportcontrol), [InputSelector](https://developers.google.com/assistant/smarthome/traits/inputselector), [AppSelector](https://developers.google.com/assistant/smarthome/traits/appselector), [Channel](https://developers.google.com/assistant/smarthome/traits/channel) (depending on used members) |
 | **Supported Items** | Group as `TV` with the following optional members: Switch as `tvPower`, Switch as `tvMute`, Dimmer as `tvVolume`, String as `tvChannel`, String as `tvInput`, String as `tvApplication`, Player as `tvTransport` |
 | **Configuration** | (optional) `volumeDefaultPercentage="20"`<br>(optional) `levelStepSize="5"`<br>(optional) `volumeMaxLevel="100"`<br>(optional) `transportControlSupportedCommands="NEXT,PREVIOUS,PAUSE,RESUME"`<br>(optional) `availableChannels="channelNumber=channelId=channelName:channelSynonym:...,..."`<br>(optional) `availableInputs="inputKey=inputName:inputSynonym:...,..."`<br>(optional) `availableApplications="applicationKey=applicationName:applicationSynonym:...,..."`<br>(optional) `lang="en"` |
 
@@ -245,7 +246,7 @@ Dimmer { ga="AirPurifier" [ speeds="0=off,50=mid,100=high" ] }
 | **Configuration** | (optional) `inverted=true/false` |
 
 Blinds and simiar devices should always use the `Rollershutter` item type for proper functionallity.
-Since Google and openHAB use the oposite percentage value for "opened" and "closed", the action will tranlate this automatically.
+Since Google and openHAB use the oposite percentage value for "opened" and "closed", the action will translate this automatically.
 If the values are still inverted in your case, you can state the `inverted=true` option for all `Rollershutter` items.
 
 Since Google only tells the open percentage (and not the verb "close" or "down"), it can not be differentiated between saying "set blind to 100%" or "open blind".
