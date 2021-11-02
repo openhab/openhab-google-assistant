@@ -7,7 +7,7 @@ description: "Google Assistant is Google's virtual personal assistant and uses A
 
 # Google Assistant Action
 
-Google Assistant is Google’s virtual personal assistant and uses Actions on Google as the platform for "Actions" (software applications) to extend the functionality of the Google Assistant. Users engage Google Assistant in conversation to get things done, like controlling their devices and things at home. You can use the officially certified openHAB Action for Google Assistant to easily manage and control youimismart home by conversational experiences between you and your openHAB smart home powered by voiced commands.
+Google Assistant is Google’s virtual personal assistant and uses Actions on Google as the platform for "Actions" (software applications) to extend the functionality of the Google Assistant. Users engage Google Assistant in conversation to get things done, like controlling their devices and things at home. You can use the officially certified openHAB Action for Google Assistant to easily manage and control your smart home by conversational experiences between you and your openHAB smart home powered by voiced commands.
 
 This guide describes step by step how to use the [openHAB Google Assistant Smart Home Action](https://assistant.google.com/services/a/uid/000000f5c61c627e?hl=en-US&source=web). The openHAB Action links your openHAB setup through the [myopenHAB.org](https://www.myopenhab.org) cloud service to the Google Assistant platform (for technical insights, please refer to this [guide](https://github.com/openhab/openhab-google-assistant/blob/master/README.md) to read more about setup options and development information).
 
@@ -245,7 +245,7 @@ Dimmer { ga="AirPurifier" [ speeds="0=off,50=mid,100=high" ] }
 | **Configuration** | (optional) `inverted=true/false` |
 
 Blinds and similar devices should always use the `Rollershutter` item type for proper functionallity.
-Since Google and openHAB use the oposite percentage value for "opened" and "closed", the action will tranlate this automatically.
+Since Google and openHAB use the oposite percentage value for "opened" and "closed", the action will translate this automatically.
 If the values are still inverted in your case, you can state the `inverted=true` option for all `Rollershutter` items.
 
 Since Google only tells the open percentage (and not the verb "close" or "down"), it can not be differentiated between saying "set blind to 100%" or "open blind".
