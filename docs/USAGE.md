@@ -24,7 +24,6 @@ More information can be found in the corresponding [docs page](https://www.openh
 
 ### Requirements
 
-
 * The openHAB Cloud Connector configured using myopenHAB.org (Items DO NOT need to be exposed to and will not show up on myopenHAB.org, this is only required for the IFTTT service!)
 * A Google account
 * A Google Home/Nest Voice Assistant Device or the Google Assistant on your phone
