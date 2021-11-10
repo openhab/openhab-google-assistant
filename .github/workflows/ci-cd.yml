@@ -60,6 +60,7 @@ jobs:
         locale: 'US'
         fail_on_error: true
         filter_mode: 'nofilter'
+        exclude: '*.json'
 
     - name: Check style and grammar
       uses: reviewdog/action-languagetool@v1

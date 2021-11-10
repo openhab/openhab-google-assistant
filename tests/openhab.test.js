@@ -362,7 +362,7 @@ describe('OpenHAB', () => {
       });
     });
 
-    test('handleQuery mutliple devices', async () => {
+    test('handleQuery multiple devices', async () => {
       getItemMock.mockReturnValueOnce(
         Promise.resolve({
           name: 'TestItem',

@@ -244,7 +244,7 @@ Dimmer { ga="AirPurifier" [ speeds="0=off,50=mid,100=high" ] }
 | **Supported Items** | Contact (no device control), Switch (no open percentage), Rollershutter |
 | **Configuration** | (optional) `inverted=true/false` |
 
-Blinds and similar devices should always use the `Rollershutter` item type for proper functionallity.
+Blinds and similar devices should always use the `Rollershutter` item type for proper functionality.
 Since Google and openHAB use the opposite percentage value for "opened" and "closed", the action will translate this automatically.
 If the values are still inverted in your case, you can state the `inverted=true` option for all `Rollershutter` items.
 
@@ -325,7 +325,7 @@ For now only exact matches of the numeric value will report the descriptive stat
 Number { ga="Sensor" [ sensorName="AirQuality", valueUnit="AQI", states="good=10,moderate=50,poor=90" ] }
 ```
 
-### Addtional Information
+### Additional Information
 
 Item labels are not mandatory in openHAB, but for the Google Assistant Action they are absolutely necessary!
 
@@ -364,7 +364,7 @@ NOTE: metadata is not available via paperUI in openHAB v2. Either you create you
 
 #### Two-Factor-Authentication
 
-For some actions, Google recommends to use TFA (Two-Factor-Authentication) to prevent accidential or unauthorized triggers of sensitive actions. See [Two-factor authentication &nbsp;|&nbsp; Actions on Google Smart Home](https://developers.google.com/assistant/smarthome/develop/two-factor-authentication).
+For some actions, Google recommends to use TFA (Two-Factor-Authentication) to prevent accidental or unauthorized triggers of sensitive actions. See [Two-factor authentication &nbsp;|&nbsp; Actions on Google Smart Home](https://developers.google.com/assistant/smarthome/develop/two-factor-authentication).
 
 The openHAB Google Assistant integration supports both _ackNeeded_ and _pinNeeded_. You can use both types on all devices types and traits.
 
