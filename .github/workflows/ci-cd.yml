@@ -57,6 +57,9 @@ jobs:
       uses: reviewdog/action-misspell@v1
       with:
         github_token: ${{ secrets.github_token }}
+        locale: 'US'
+        fail_on_error: true
+        filter_mode: 'nofilter'
 
     - name: Check style and grammar
       uses: reviewdog/action-languagetool@v1
