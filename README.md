@@ -143,7 +143,7 @@ Note: Anytime you make changes to the settings to your Action on the _Actions By
 * From the app home screen, select the `Add` button and then `Set up device`. Then `Works with Google > Have something already set up?`
 * You should be shown a list of providers and your Test action should be available. eg. `[test] open hab` - select it
 * Login at your Backend (e.g. <https://myopenhab.org>) with your username and password and authorize the OAuth screen
-* If there is no errors, return back to the home screen and scroll to the bottom, your new devices should appear unassigned to any home or room. Complete the assignments as you see fit.
+* If there is no error, return to the home screen and scroll to the bottom, your new devices should appear unassigned to any home or room. Complete the assignments as you see fit.
 * You can now control those devices from the Google Assistant!
 
 If you're lucky this works! You'll need to configure your items (below) and then sync again.
