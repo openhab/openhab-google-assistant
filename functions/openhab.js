@@ -18,24 +18,8 @@
  * @author Michael Krug - Rework
  *
  */
-const glob = require('glob');
-
-const Commands = [];
-const Devices = [];
-
-glob.sync('./commands/*.js', { cwd: __dirname }).forEach((file) => {
-  const command = require(file);
-  if (command.type) {
-    Commands.push(command);
-  }
-});
-
-glob.sync('./devices/*.js', { cwd: __dirname }).forEach((file) => {
-  const device = require(file);
-  if (device.type) {
-    Devices.push(device);
-  }
-});
+const getDeviceForItem = require('./devices').getDeviceForItem;
+const getCommandType = require('./commands').getCommandType;
 
 class OpenHAB {
   /**
@@ -43,25 +27,6 @@ class OpenHAB {
    */
   constructor(apiHandler) {
     this._apiHandler = apiHandler;
-  }
-
-  /**
-   * @param {string} command
-   * @param {object} params
-   */
-  static getCommandType(command, params) {
-    return Commands.find((commandType) => command === commandType.type && commandType.validateParams(params));
-  }
-
-  /**
-   * @param {object} item
-   */
-  static getDeviceForItem(item) {
-    return (
-      item.metadata &&
-      item.metadata.ga &&
-      Devices.find((device) => device.matchesItemType(item) && device.isCompatible(item))
-    );
   }
 
   /**
@@ -80,7 +45,7 @@ class OpenHAB {
    * @param {object} headers
    */
   async onSync(body, headers) {
-    console.log('openhabGoogleAssistant - handleSync');
+    console.log('openhabGoogleAssistant - onSync');
 
     this.setTokenFromHeader(headers);
 
@@ -104,7 +69,7 @@ class OpenHAB {
     const devices =
       (body && body.inputs && body.inputs[0] && body.inputs[0].payload && body.inputs[0].payload.devices) || [];
 
-    console.log(`openhabGoogleAssistant - handleQuery - devices: ${JSON.stringify(devices)}`);
+    console.log(`openhabGoogleAssistant - onQuery - devices: ${JSON.stringify(devices)}`);
 
     this.setTokenFromHeader(headers);
 
@@ -128,7 +93,7 @@ class OpenHAB {
     const commands =
       (body && body.inputs && body.inputs[0] && body.inputs[0].payload && body.inputs[0].payload.commands) || [];
 
-    console.log(`openhabGoogleAssistant - handleExecute - commands: ${JSON.stringify(commands)}`);
+    console.log(`openhabGoogleAssistant - onExecute - commands: ${JSON.stringify(commands)}`);
 
     this.setTokenFromHeader(headers);
 
@@ -150,7 +115,7 @@ class OpenHAB {
       items = items.filter((item) => item.metadata && item.metadata.ga);
       items.forEach((item) => {
         item.members = items.filter((member) => member.groupNames && member.groupNames.includes(item.name));
-        const DeviceType = OpenHAB.getDeviceForItem(item);
+        const DeviceType = getDeviceForItem(item);
         if (DeviceType) {
           console.log(
             `openhabGoogleAssistant - handleSync - SYNC is adding: ${item.type}:${item.name}` +
@@ -172,27 +137,23 @@ class OpenHAB {
       this._apiHandler
         .getItem(device.id)
         .then((item) => {
-          const DeviceType = OpenHAB.getDeviceForItem(item);
+          const DeviceType = getDeviceForItem(item);
           if (!DeviceType) {
-            throw { statusCode: 404 };
+            throw { statusCode: 404, message: `Device type not found for item: ${item.type} ${item.name}` };
           }
           if (item.state === 'NULL' && !('getMembers' in DeviceType)) {
-            throw { statusCode: 406 };
+            throw { statusCode: 406, message: `Item state is NULL: ${item.type} ${item.name}` };
           }
           payload.devices[device.id] = Object.assign({ status: 'SUCCESS', online: true }, DeviceType.getState(item));
         })
-        .catch(
-          (error) =>
-            (payload.devices[device.id] = {
-              status: 'ERROR',
-              errorCode:
-                error.statusCode == 404
-                  ? 'deviceNotFound'
-                  : error.statusCode == 406
-                  ? 'deviceNotReady'
-                  : 'deviceOffline'
-            })
-        )
+        .catch((error) => {
+          console.error(`openhabGoogleAssistant - handleQuery - getItem: ERROR ${JSON.stringify(error)}`);
+          payload.devices[device.id] = {
+            status: 'ERROR',
+            errorCode:
+              error.statusCode == 404 ? 'deviceNotFound' : error.statusCode == 406 ? 'deviceNotReady' : 'deviceOffline'
+          };
+        })
     );
 
     return Promise.all(promises).then(() => payload);
@@ -207,14 +168,8 @@ class OpenHAB {
       command.execution.forEach((execution) => {
         // Special handling of ThermostatTemperatureSetRange that requires updating two values
         if (execution.command === 'action.devices.commands.ThermostatTemperatureSetRange') {
-          const SetHigh = OpenHAB.getCommandType(
-            'action.devices.commands.ThermostatTemperatureSetpointHigh',
-            execution.params
-          );
-          const SetLow = OpenHAB.getCommandType(
-            'action.devices.commands.ThermostatTemperatureSetpointLow',
-            execution.params
-          );
+          const SetHigh = getCommandType('action.devices.commands.ThermostatTemperatureSetpointHigh', execution.params);
+          const SetLow = getCommandType('action.devices.commands.ThermostatTemperatureSetpointLow', execution.params);
           if (SetHigh && SetLow) {
             promises.push(
               SetHigh.execute(this._apiHandler, command.devices, execution.params, execution.challenge).then(() => {
@@ -224,8 +179,11 @@ class OpenHAB {
             return;
           }
         }
-        const CommandType = OpenHAB.getCommandType(execution.command, execution.params);
+        const CommandType = getCommandType(execution.command, execution.params);
         if (!CommandType) {
+          console.error(
+            `openhabGoogleAssistant - handleExecute - functionNotSupported: ERROR ${JSON.stringify(execution)}`
+          );
           promises.push(
             Promise.resolve({
               ids: command.devices.map((device) => device.id),

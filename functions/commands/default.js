@@ -25,6 +25,31 @@ class DefaultCommand {
   }
 
   /**
+   * Is the requested new state valid
+   * @param {object} params Requested change params
+   * @param {object} item Current state of item
+   * @returns {boolean} true if state change is valid otherwise throws error
+   */
+  static validateStateChange(params, item, device) {
+    return true;
+  }
+
+  static get requiresUpdateValidation() {
+    return false;
+  }
+
+  /**
+   * Check if new state is as expected.
+   * @param {object} params
+   * @param {object} item
+   * @param {object} device
+   * @return {object} Error message if state update failed. Null if all ok.
+   */
+  static validateUpdate(params, item, device) {
+    return;
+  }
+
+  /**
    * @param {object} params
    * @param {object} item
    * @param {object} device
@@ -45,8 +70,9 @@ class DefaultCommand {
   /**
    * @param {object} item
    * @param {object} device
+   * @param {object} params
    */
-  static getItemName(item, device) {
+  static getItemName(item, device, params) {
     return item.name;
   }
 
@@ -78,18 +104,26 @@ class DefaultCommand {
     return false;
   }
 
+  /*
+   * Allow individual commands to choose when to enforce the pin
+   * e.g. Security System only enforcing for disarming but not arming
+   */
+  static bypassPin(device, params) {
+    return false;
+  }
+
   /**
    * @param {object} device
    * @param {object} challenge
    */
-  static handleAuthPin(device, challenge) {
-    if (
-      !device.customData ||
-      !(device.customData.pinNeeded || device.customData.tfaPin) ||
-      (challenge && challenge.pin === (device.customData.pinNeeded || device.customData.tfaPin))
-    ) {
+  static handleAuthPin(device, challenge, params) {
+    const pinRequired = device.customData && (device.customData.pinNeeded || device.customData.tfaPin);
+    const pinReceived = challenge && challenge.pin;
+
+    if (this.bypassPin(device, params) || !pinRequired || pinRequired === pinReceived) {
       return;
     }
+
     return {
       ids: [device.id],
       status: 'ERROR',
@@ -124,6 +158,43 @@ class DefaultCommand {
     };
   }
 
+  static getDelayPromise(device) {
+    const secondsToWait = (device.customData && device.customData.waitForStateChange) || 0;
+    if (secondsToWait === 0) {
+      return Promise.resolve();
+    }
+
+    return new Promise((resolve) => {
+      console.log(`openhabGoogleAssistant - ${this.type}: Waiting ${secondsToWait} second(s) for state to update`);
+      setTimeout(() => {
+        console.log(`openhabGoogleAssistant - ${this.type}: Finished Waiting`);
+        resolve();
+      }, secondsToWait * 1000);
+    });
+  }
+
+  static handleUpdateValidation(apiHandler, device, params) {
+    return this.getDelayPromise(device).then(() => {
+      return apiHandler.getItem(device.id).then((item) => {
+        const validateUpdateResponse = this.validateUpdate(params, item, device);
+        if (validateUpdateResponse) {
+          return validateUpdateResponse;
+        } else {
+          const getDeviceForItem = require('../devices').getDeviceForItem;
+          const deviceType = getDeviceForItem(item);
+          if (!deviceType) {
+            throw { statusCode: 404 };
+          }
+          return {
+            ids: [device.id],
+            status: 'SUCCESS',
+            states: Object.assign({ online: true }, deviceType.getState(item))
+          };
+        }
+      });
+    });
+  }
+
   /**
    * @param {object} apiHandler
    * @param {array} devices
@@ -134,7 +205,7 @@ class DefaultCommand {
     console.log(`openhabGoogleAssistant - ${this.type}: ${JSON.stringify({ devices: devices, params: params })}`);
     const commandsResponse = [];
     const promises = devices.map((device) => {
-      const authPinResponse = this.handleAuthPin(device, challenge);
+      const authPinResponse = this.handleAuthPin(device, challenge, params);
       if (authPinResponse) {
         commandsResponse.push(authPinResponse);
         return Promise.resolve();
@@ -147,12 +218,14 @@ class DefaultCommand {
         !(challenge && challenge.ack);
 
       let getItemPromise = Promise.resolve({ name: device.id });
-      if (this.requiresItem(device) || ackWithState) {
+      if (this.requiresItem(device) || ackWithState || this.requiresUpdateValidation) {
         getItemPromise = apiHandler.getItem(device.id);
       }
 
       return getItemPromise
         .then((item) => {
+          this.validateStateChange(params, item, device);
+
           const responseStates = this.getResponseStates(params, item, device);
           if (Object.keys(responseStates).length) {
             responseStates.online = true;
@@ -164,18 +237,23 @@ class DefaultCommand {
             return;
           }
 
-          const targetItem = this.getItemName(item, device);
+          const targetItem = this.getItemName(item, device, params);
           const targetValue = this.convertParamsToValue(params, item, device);
           let sendCommandPromise = Promise.resolve();
           if (typeof targetItem === 'string' && typeof targetValue === 'string') {
             sendCommandPromise = apiHandler.sendCommand(targetItem, targetValue);
           }
-          return sendCommandPromise.then(() => {
-            commandsResponse.push({
-              ids: [device.id],
-              status: 'SUCCESS',
-              states: responseStates
-            });
+
+          return sendCommandPromise.then(async () => {
+            if (this.requiresUpdateValidation) {
+              commandsResponse.push(await this.handleUpdateValidation(apiHandler, device, params));
+            } else {
+              commandsResponse.push({
+                ids: [device.id],
+                status: 'SUCCESS',
+                states: responseStates
+              });
+            }
           });
         })
         .catch((error) => {

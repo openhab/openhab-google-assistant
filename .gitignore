@@ -1,8 +1,8 @@
-/.project
-/.settings/
-/node_modules/
-/creds.data
-/gactions
-/functions/node_modules/
-/coverage
 /.eslintcache
+/creds.data
+/.settings/
+/.vscode/
+/coverage/
+/gactions/
+/node_modules/
+/functions/node_modules/
