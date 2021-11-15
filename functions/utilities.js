@@ -21,13 +21,13 @@
 module.exports = {
   /**
    * @param {number} value temperature in Fahrenheit
-   * @returns {number} temperature value converted to Celcius
+   * @returns {number} temperature value converted to Celsius
    */
   convertToCelsius: (value) => {
     return Number((((value - 32) * 5) / 9).toFixed(1));
   },
   /**
-   * @param {number} value temperature in Celcius
+   * @param {number} value temperature in Celsius
    * @returns {number} temperature value converted to Fahrenheit
    */
   convertToFahrenheit: (value) => {
