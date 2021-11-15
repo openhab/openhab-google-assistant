@@ -172,7 +172,7 @@ Google Command: "*Hey Google, arm House Alarm*" OR "*Hey Google, disarm House Al
 Switch houseAlarm "House Alarm" { ga="SecuritySystem", pinNeeded="1234" }
 ```
 
-#### `SecuritySystem as Group with advanced functionallity`
+#### `SecuritySystem as Group with advanced functionality`
 
 | | |
 |---|---|
