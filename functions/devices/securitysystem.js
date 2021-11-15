@@ -29,9 +29,6 @@ class SecuritySystem extends DefaultDevice {
   }
 
   static getAttributes(item) {
-    //Group [armLevels="L1=Stay,L2=Away", lang="en", ordered=true]
-    //Zone [zoneType="OpenClose", blocking=true, label="Front Door"]
-    //Zone [zoneType="Motion", blocking=false, label="Living Room"]
     const config = this.getConfig(item);
     if ('armLevels' in config) {
       const attributes = {
