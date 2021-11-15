@@ -8,10 +8,15 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
+      - name: Get version tag
+        id: get_version_tag
+        run: |
+          [[ ! "$GITHUB_REF" =~ refs/tags ]] && exit
+          echo "::set-output name=tag::${GITHUB_REF#refs/tags/}"
       - name: Draft Release
         uses: release-drafter/release-drafter@v5
         with:
-          name: ${GITHUB_REF#refs/tags/}
-          tag: ${GITHUB_REF#refs/tags/}
+          name: ${{steps.get_version_tag.outputs.tag}}
+          tag: ${{steps.get_version_tag.outputs.tag}}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

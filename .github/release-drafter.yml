@@ -12,17 +12,9 @@ categories:
     labels:
       - 'maintenance'
       - 'dependencies'
-version-resolver:
-  major:
+  - title: '📖 Documentation'
     labels:
-      - 'major'
-  minor:
-    labels:
-      - 'minor'
-  patch:
-    labels:
-      - 'patch'
-  default: patch
+      - 'documentation'
 template: |
   ## Changes
 
