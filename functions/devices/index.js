@@ -2,7 +2,7 @@ const glob = require('glob');
 
 const Devices = [];
 
-glob.sync('./*.js', { cwd: __dirname }).forEach((file) => {
+glob.sync('./!(index).js', { cwd: __dirname }).forEach((file) => {
   const device = require(file);
   if (device.type) {
     Devices.push(device);
