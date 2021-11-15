@@ -10,5 +10,8 @@ jobs:
     steps:
       - name: Draft Release
         uses: release-drafter/release-drafter@v5
+        with:
+          name: ${GITHUB_REF#refs/tags/}
+          tag: ${GITHUB_REF#refs/tags/}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -68,7 +68,7 @@ Here you need to develop your actions to engage users on Google Home, Pixel, and
 
 * Create and setup an "Actions on Google" project on the [Actions Console using the Actions SDK](https://console.actions.google.com/).
   1. Select your existing project
-  1. Select "Smart Home Actions". The fulfilment URL is the one saves from the `glcoud beta functions` you saved earlier.
+  1. Select "Smart Home Actions". The fulfillment URL is the one saves from the `glcoud beta functions` you saved earlier.
   1. Fill out all the App information. Feel free to use fake data and images, you're not actually going to submit this.
   1. Move on to Account linking.
      * Select Authorization Code
@@ -99,7 +99,7 @@ When you ask your assistant to “Turn on the light”, it will use the auth bea
     "automation" :
     {
      "name": "automation",
-     "url": "https://YOUR-FULFILMENT-URL-GIVEN-FROM-DEPLOYMENT"
+     "url": "https://YOUR-FULFILLMENT-URL-GIVEN-FROM-DEPLOYMENT"
     }
   }
 }
@@ -142,8 +142,8 @@ Note: Anytime you make changes to the settings to your Action on the _Actions By
 * Start the updated Google Home app on your phone
 * From the app home screen, select the `Add` button and then `Set up device`. Then `Works with Google > Have something already set up?`
 * You should be shown a list of providers and your Test action should be available. eg. `[test] open hab` - select it
-* Login at your Backend (e.g. <https://myopenhab.org>) with your username and password and authorise the OAuth screen
-* If there is no errors, return back to the home screen and scroll to the bottom, your new devices should appear unassigned to any home or room. Complete the assignments as you see fit.
+* Login at your Backend (e.g. <https://myopenhab.org>) with your username and password and authorize the OAuth screen
+* If there is no error, return to the home screen and scroll to the bottom, your new devices should appear unassigned to any home or room. Complete the assignments as you see fit.
 * You can now control those devices from the Google Assistant!
 
 If you're lucky this works! You'll need to configure your items (below) and then sync again.
