@@ -104,10 +104,14 @@ jobs:
         working-directory: ./functions
         run: npm ci
 
-      - name: Deploy to Google Cloud Functions
-        uses: google-github-actions/deploy-cloud-functions@main
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v0.4.0
         with:
-          credentials: ${{ secrets.GCP_SA_KEY }}
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Deploy to Google Cloud Functions
+        uses: google-github-actions/deploy-cloud-functions@v0.6.0
+        with:
           name: ${{ github.event_name == 'release' && 'openhabGoogleAssistant' || 'openhabGoogleAssistant_test' }}
           runtime: nodejs14
           source_dir: ./functions
