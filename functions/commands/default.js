@@ -202,7 +202,7 @@ class DefaultCommand {
    * @param {object} challenge
    */
   static execute(apiHandler, devices, params, challenge) {
-    console.log(`openhabGoogleAssistant - ${this.type}: ${JSON.stringify({ devices: devices, params: params })}`);
+    // console.log(`openhabGoogleAssistant - ${this.type}: ${JSON.stringify({ devices: devices, params: params })}`);
     const commandsResponse = [];
     const promises = devices.map((device) => {
       const authPinResponse = this.handleAuthPin(device, challenge, params);
