@@ -91,14 +91,21 @@ class ApiHandler {
         }
 
         response.setEncoding('utf8');
-        let body = '';
+        let data = '';
 
-        response.on('data', (data) => {
-          body += data.toString('utf-8');
+        response.on('data', (chunk) => {
+          data += chunk;
         });
 
         response.on('end', () => {
-          resolve(JSON.parse(body));
+          try {
+            resolve(JSON.parse(data));
+          } catch (e) {
+            reject({
+              statusCode: 415,
+              message: 'getItem - JSON parse failed for path: ' + options.path + ' - ' + e.toString()
+            });
+          }
         });
       });
       req.on('error', reject);
