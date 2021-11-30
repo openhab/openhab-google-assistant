@@ -39,6 +39,7 @@ jobs:
         github_token: ${{ secrets.github_token }}
 
   unit-testing:
+    if: github.event_name != 'release'
     name: Unit Testing
     runs-on: ubuntu-latest
 
@@ -68,6 +69,7 @@ jobs:
         path: coverage/
 
   code-analysis:
+    if: github.event_name != 'release'
     name: Code Analysis
     runs-on: ubuntu-latest
 
