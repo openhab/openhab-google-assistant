@@ -107,7 +107,7 @@ jobs:
         run: npm ci
 
       - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v0.4.0
+        uses: google-github-actions/auth@v0.4.1
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
