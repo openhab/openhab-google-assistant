@@ -112,7 +112,7 @@ jobs:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
       - name: Deploy to Google Cloud Functions
-        uses: google-github-actions/deploy-cloud-functions@v0.6.0
+        uses: google-github-actions/deploy-cloud-functions@v0.7.2
         with:
           name: ${{ github.event_name == 'release' && 'openhabGoogleAssistant' || 'openhabGoogleAssistant_test' }}
           runtime: nodejs14
