@@ -44,7 +44,6 @@ describe('Charge Command', () => {
     const item = {
       members: [
         {
-          name: 'ChargingItem',
           metadata: {
             ga: {
               value: 'chargerCharging'
@@ -53,7 +52,6 @@ describe('Charge Command', () => {
           state: 'OFF'
         },
         {
-          name: 'ChargingItem',
           metadata: {
             ga: {
               value: 'chargerCapacityRemaining'
