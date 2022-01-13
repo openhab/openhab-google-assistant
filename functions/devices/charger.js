@@ -17,7 +17,7 @@ class Charger extends DefaultDevice {
     const config = this.getConfig(item);
     const members = this.getMembers(item);
     const attributes = {
-      isRechargeable: config.isRechargeable || false,
+      isRechargeable: config.isRechargeable === true,
       queryOnlyEnergyStorage: !('chargerCharging' in members)
     };
     return attributes;
