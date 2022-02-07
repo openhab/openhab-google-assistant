@@ -118,5 +118,6 @@ jobs:
           entry_point: openhabGoogleAssistant
           region: us-central1
           timeout: 180
-          min_instances: 4
+          min_instances: 2
+          max_instances: 20
           env_vars: OH_HOST=myopenhab.org,OH_PORT=443,OH_PATH=/rest/items/
