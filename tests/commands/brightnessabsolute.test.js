@@ -14,16 +14,16 @@ describe('BrightnessAbsolute Command', () => {
   });
 
   test('getItemName', () => {
-    expect(Command.getItemName({ name: 'Item' }, {})).toBe('Item');
-    expect(Command.getItemName({ name: 'Item' }, { customData: {} })).toBe('Item');
+    expect(Command.getItemNameAndState({ name: 'Item' }, {})).toStrictEqual({ name: 'Item', state: undefined });
     expect(() => {
-      Command.getItemName({ name: 'Item' }, { customData: { deviceType: 'SpecialColorLight' } });
+      Command.getItemNameAndState({ name: 'Item' }, { customData: { deviceType: 'SpecialColorLight' } });
     }).toThrow();
     const item = {
       name: 'Item',
       members: [
         {
           name: 'BrightnessItem',
+          state: '80',
           metadata: {
             ga: {
               value: 'lightBrightness'
@@ -32,7 +32,10 @@ describe('BrightnessAbsolute Command', () => {
         }
       ]
     };
-    expect(Command.getItemName(item, { customData: { deviceType: 'SpecialColorLight' } })).toBe('BrightnessItem');
+    expect(Command.getItemNameAndState(item, { customData: { deviceType: 'SpecialColorLight' } })).toStrictEqual({
+      name: 'BrightnessItem',
+      state: '80'
+    });
   });
 
   test('convertParamsToValue', () => {

@@ -15,18 +15,18 @@ describe('setVolume Command', () => {
 
   describe('getItemName', () => {
     test('getItemName', () => {
-      expect(Command.getItemName({ name: 'Item' }, {})).toBe('Item');
-      expect(Command.getItemName({ name: 'Item' }, { customData: {} })).toBe('Item');
+      expect(Command.getItemNameAndState({ name: 'Item' }, {})).toStrictEqual({ name: 'Item', state: undefined });
     });
 
     test('getItemName TV', () => {
       expect(() => {
-        Command.getItemName({ name: 'Item' }, { customData: { deviceType: 'TV' } });
+        Command.getItemNameAndState({ name: 'Item' }, { customData: { deviceType: 'TV' } });
       }).toThrow();
       const item = {
         members: [
           {
             name: 'VolumeItem',
+            state: '20',
             metadata: {
               ga: {
                 value: 'tvVolume'
@@ -35,7 +35,10 @@ describe('setVolume Command', () => {
           }
         ]
       };
-      expect(Command.getItemName(item, { customData: { deviceType: 'TV' } })).toBe('VolumeItem');
+      expect(Command.getItemNameAndState(item, { customData: { deviceType: 'TV' } })).toStrictEqual({
+        name: 'VolumeItem',
+        state: '20'
+      });
     });
   });
 
@@ -45,5 +48,30 @@ describe('setVolume Command', () => {
 
   test('getResponseStates', () => {
     expect(Command.getResponseStates(params)).toStrictEqual({ currentVolume: 20 });
+  });
+
+  test('checkCurrentState', () => {
+    expect.assertions(6);
+
+    expect(Command.checkCurrentState('100', '10')).toBeUndefined();
+    try {
+      Command.checkCurrentState('100', '100');
+    } catch (e) {
+      expect(e.errorCode).toBe('volumeAlreadyMax');
+    }
+
+    expect(Command.checkCurrentState('0', '10')).toBeUndefined();
+    try {
+      Command.checkCurrentState('0', '0');
+    } catch (e) {
+      expect(e.errorCode).toBe('volumeAlreadyMin');
+    }
+
+    expect(Command.checkCurrentState('20', '40')).toBeUndefined();
+    try {
+      Command.checkCurrentState('20', '20');
+    } catch (e) {
+      expect(e.errorCode).toBe('alreadyInState');
+    }
   });
 });

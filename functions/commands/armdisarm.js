@@ -21,21 +21,21 @@ class ArmDisarm extends DefaultCommand {
     return arm ? 'ON' : 'OFF';
   }
 
-  static getItemName(item, device, params) {
+  static getItemNameAndState(item, device, params) {
     if (this.getDeviceType(device) === 'SecuritySystem') {
       const members = SecuritySystem.getMembers(item);
       if (params.armLevel) {
         if (SecuritySystem.armLevelMemberName in members) {
-          return members[SecuritySystem.armLevelMemberName].name;
+          return members[SecuritySystem.armLevelMemberName];
         }
         throw { statusCode: 400 };
       }
       if (SecuritySystem.armedMemberName in members) {
-        return members[SecuritySystem.armedMemberName].name;
+        return members[SecuritySystem.armedMemberName];
       }
       throw { statusCode: 400 };
     }
-    return item.name;
+    return super.getItemNameAndState(item);
   }
 
   static requiresItem() {
@@ -60,37 +60,13 @@ class ArmDisarm extends DefaultCommand {
     return true;
   }
 
-  static validateStateChange(params, item, device) {
-    let isCurrentlyArmed;
-    let currentLevel;
-
-    if (this.getDeviceType(device) === 'SecuritySystem') {
-      const members = SecuritySystem.getMembers(item);
-      isCurrentlyArmed =
-        (SecuritySystem.armedMemberName in members && members[SecuritySystem.armedMemberName].state) ===
-        (this.isInverted(device) ? 'OFF' : 'ON');
-      currentLevel =
-        (SecuritySystem.armLevelMemberName in members && members[SecuritySystem.armLevelMemberName].state) || undefined;
-    } else {
-      isCurrentlyArmed = item.state === (this.isInverted(device) ? 'OFF' : 'ON');
+  static checkCurrentState(target, state, params) {
+    if (params.armLevel && target === state) {
+      throw { errorCode: 'alreadyInState' };
     }
-
-    if (params.armLevel && this.getDeviceType(device) === 'SecuritySystem') {
-      if (params.arm && isCurrentlyArmed && params.armLevel === currentLevel) {
-        throw { errorCode: 'alreadyInState' };
-      }
-      return true;
+    if (target === state) {
+      throw { errorCode: params.arm ? 'alreadyArmed' : 'alreadyDisarmed' };
     }
-
-    if (params.arm && isCurrentlyArmed) {
-      throw { errorCode: 'alreadyArmed' };
-    }
-
-    if (!params.arm && !isCurrentlyArmed) {
-      throw { errorCode: 'alreadyDisarmed' };
-    }
-
-    return true;
   }
 
   static validateUpdate(params, item, device) {

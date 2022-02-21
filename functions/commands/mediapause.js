@@ -10,10 +10,10 @@ class MediaPause extends DefaultCommand {
     return true;
   }
 
-  static getItemName(item) {
+  static getItemNameAndState(item) {
     const members = TV.getMembers(item);
     if ('tvTransport' in members) {
-      return members.tvTransport.name;
+      return members.tvTransport;
     }
     throw { statusCode: 400 };
   }

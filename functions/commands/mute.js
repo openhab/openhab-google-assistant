@@ -14,18 +14,18 @@ class Mute extends DefaultCommand {
     return this.getDeviceType(device) === 'TV';
   }
 
-  static getItemName(item, device) {
+  static getItemNameAndState(item, device) {
     if (this.getDeviceType(device) === 'TV') {
       const members = TV.getMembers(item);
       if ('tvMute' in members) {
-        return members.tvMute.name;
+        return members.tvMute;
       }
       if ('tvVolume' in members) {
-        return members.tvVolume.name;
+        return members.tvVolume;
       }
       throw { statusCode: 400 };
     }
-    return item.name;
+    return super.getItemNameAndState(item);
   }
 
   static convertParamsToValue(params, item, device) {

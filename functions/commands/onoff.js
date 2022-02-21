@@ -15,26 +15,26 @@ class OnOff extends DefaultCommand {
     return ['SpecialColorLight', 'TV'].includes(this.getDeviceType(device));
   }
 
-  static getItemName(item, device) {
+  static getItemNameAndState(item, device) {
     const deviceType = this.getDeviceType(device);
     if (deviceType === 'SpecialColorLight') {
       const members = SpecialColorLight.getMembers(item);
       if ('lightPower' in members) {
-        return members.lightPower.name;
+        return members.lightPower;
       }
       if ('lightBrightness' in members) {
-        return members.lightBrightness.name;
+        return members.lightBrightness;
       }
       throw { statusCode: 400 };
     }
     if (deviceType === 'TV') {
       const members = TV.getMembers(item);
       if ('tvPower' in members) {
-        return members.tvPower.name;
+        return members.tvPower;
       }
       throw { statusCode: 400 };
     }
-    return item.name;
+    return super.getItemNameAndState(item);
   }
 
   static convertParamsToValue(params, _, device) {
@@ -49,6 +49,12 @@ class OnOff extends DefaultCommand {
     return {
       on: params.on
     };
+  }
+
+  static checkCurrentState(target, state, params) {
+    if (target === state) {
+      throw { errorCode: params.on ? 'alreadyOn' : 'alreadyOff' };
+    }
   }
 }
 

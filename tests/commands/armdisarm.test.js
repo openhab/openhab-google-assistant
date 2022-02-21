@@ -38,8 +38,11 @@ describe('ArmDisarm Command', () => {
   describe('getItemName', () => {
     test('getItemName SimpleSecuritySystem', () => {
       expect(
-        Command.getItemName({ name: 'SwitchItem' }, { customData: { deviceType: 'SimpleSecuritySystem' } })
-      ).toStrictEqual('SwitchItem');
+        Command.getItemNameAndState(
+          { name: 'SwitchItem', state: 'ON' },
+          { customData: { deviceType: 'SimpleSecuritySystem' } }
+        )
+      ).toStrictEqual({ name: 'SwitchItem', state: 'ON' });
     });
 
     describe('getItemName SecuritySystem', () => {
@@ -51,20 +54,26 @@ describe('ArmDisarm Command', () => {
           members: [
             {
               name: itemNameArmed,
+              state: 'ON',
               metadata: { ga: { value: SecuritySystem.armedMemberName } }
             },
             {
               name: itemNameArmLevel,
+              state: 'L1',
               metadata: { ga: { value: SecuritySystem.armLevelMemberName } }
             }
           ]
         };
         expect(
-          Command.getItemName(item, { customData: { deviceType: 'SecuritySystem' } }, { arm: true })
-        ).toStrictEqual(itemNameArmed);
+          Command.getItemNameAndState(item, { customData: { deviceType: 'SecuritySystem' } }, { arm: true })
+        ).toStrictEqual({ config: {}, name: 'itemNameArmed', state: 'ON' });
         expect(
-          Command.getItemName(item, { customData: { deviceType: 'SecuritySystem' } }, { arm: true, armLevel: 'L1' })
-        ).toStrictEqual(itemNameArmLevel);
+          Command.getItemNameAndState(
+            item,
+            { customData: { deviceType: 'SecuritySystem' } },
+            { arm: true, armLevel: 'L1' }
+          )
+        ).toStrictEqual({ config: {}, name: 'itemNameArmLevel', state: 'L1' });
       });
 
       test('getItemName SecuritySystem missing armed member', () => {
@@ -77,7 +86,7 @@ describe('ArmDisarm Command', () => {
           ]
         };
         expect(() => {
-          Command.getItemName(item, { customData: { deviceType: 'SecuritySystem' } }, { arm: true });
+          Command.getItemNameAndState(item, { customData: { deviceType: 'SecuritySystem' } }, { arm: true });
         }).toThrow();
       });
 
@@ -91,7 +100,11 @@ describe('ArmDisarm Command', () => {
           ]
         };
         expect(() => {
-          Command.getItemName(item, { customData: { deviceType: 'SecuritySystem' } }, { arm: true, armLevel: 'L1' });
+          Command.getItemNameAndState(
+            item,
+            { customData: { deviceType: 'SecuritySystem' } },
+            { arm: true, armLevel: 'L1' }
+          );
         }).toThrow();
       });
     });
@@ -112,128 +125,30 @@ describe('ArmDisarm Command', () => {
     expect(Command.bypassPin({ customData: { pinOnDisarmOnly: true } }, { armLevel: 'L1' })).toBe(true);
   });
 
-  describe('validateStateChange', () => {
-    test('validateStateChange SimpleSecuritySystem', () => {
-      expect.assertions(6);
+  test('checkCurrentState', () => {
+    expect.assertions(6);
 
-      const item = { type: 'Switch', state: 'ON' };
+    expect(Command.checkCurrentState('ON', 'OFF', { arm: true })).toBeUndefined();
+    try {
+      Command.checkCurrentState('ON', 'ON', { arm: true });
+    } catch (e) {
+      expect(e.errorCode).toBe('alreadyArmed');
+    }
 
-      expect(Command.validateStateChange({ arm: false }, item, {})).toBe(true);
-      try {
-        Command.validateStateChange({ arm: true }, item, {});
-      } catch (e) {
-        expect(e.errorCode).toBe('alreadyArmed');
-      }
+    expect(Command.checkCurrentState('OFF', 'ON', { arm: false })).toBeUndefined();
+    try {
+      Command.checkCurrentState('OFF', 'OFF', { arm: false });
+    } catch (e) {
+      expect(e.errorCode).toBe('alreadyDisarmed');
+    }
 
-      item.state = 'OFF';
-      expect(Command.validateStateChange({ arm: true }, item, {})).toBe(true);
-      try {
-        Command.validateStateChange({ arm: false }, item, {});
-      } catch (e) {
-        expect(e.errorCode).toBe('alreadyDisarmed');
-      }
+    expect(Command.checkCurrentState('L2', 'L1', { arm: true, armLevel: 'L2' })).toBeUndefined();
 
-      item.state = 'ON';
-      expect(
-        Command.validateStateChange({ arm: true }, item, {
-          customData: { inverted: true }
-        })
-      ).toBe(true);
-      item.state = 'OFF';
-      try {
-        Command.validateStateChange({ arm: true }, item, {
-          customData: { inverted: true }
-        });
-      } catch (e) {
-        expect(e.errorCode).toBe('alreadyArmed');
-      }
-    });
-
-    describe('validateStateChange SecuritySystem', () => {
-      const item = {
-        members: [
-          {
-            state: 'ON',
-            metadata: { ga: { value: SecuritySystem.armedMemberName } }
-          },
-          {
-            state: 'L0',
-            metadata: { ga: { value: SecuritySystem.armLevelMemberName } }
-          }
-        ]
-      };
-
-      test('arming without level', () => {
-        expect.assertions(2);
-        item.members[0].state = 'ON';
-        try {
-          Command.validateStateChange({ arm: true }, item, { customData: { deviceType: 'SecuritySystem' } });
-        } catch (e) {
-          expect(e.errorCode).toBe('alreadyArmed');
-        }
-
-        item.members[0].state = 'OFF';
-        expect(Command.validateStateChange({ arm: true }, item, { customData: { deviceType: 'SecuritySystem' } })).toBe(
-          true
-        );
-      });
-
-      test('arming without level inverted', () => {
-        expect.assertions(2);
-        item.members[0].state = 'OFF';
-        try {
-          Command.validateStateChange({ arm: true }, item, {
-            customData: { deviceType: 'SecuritySystem', inverted: true }
-          });
-        } catch (e) {
-          expect(e.errorCode).toBe('alreadyArmed');
-        }
-
-        item.members[0].state = 'ON';
-        expect(
-          Command.validateStateChange({ arm: true }, item, {
-            customData: { deviceType: 'SecuritySystem', inverted: true }
-          })
-        ).toBe(true);
-      });
-
-      test('arming with level', () => {
-        expect.assertions(2);
-        item.members[0].state = 'OFF';
-        item.members[1].state = 'L1';
-        expect(
-          Command.validateStateChange({ arm: true, armLevel: 'L2' }, item, {
-            customData: { deviceType: 'SecuritySystem' }
-          })
-        ).toBe(true);
-
-        item.members[0].state = 'ON';
-        try {
-          Command.validateStateChange({ arm: true, armLevel: 'L1' }, item, {
-            customData: { deviceType: 'SecuritySystem' }
-          });
-        } catch (e) {
-          expect(e.errorCode).toBe('alreadyInState');
-        }
-      });
-
-      test('disarming', () => {
-        expect.assertions(2);
-        item.members[0].state = 'ON';
-        expect(
-          Command.validateStateChange({ arm: false }, item, { customData: { deviceType: 'SecuritySystem' } })
-        ).toBe(true);
-
-        item.members[0].state = 'OFF';
-        try {
-          Command.validateStateChange({ arm: false }, item, {
-            customData: { deviceType: 'SecuritySystem' }
-          });
-        } catch (e) {
-          expect(e.errorCode).toBe('alreadyDisarmed');
-        }
-      });
-    });
+    try {
+      Command.checkCurrentState('L2', 'L2', { arm: true, armLevel: 'L2' });
+    } catch (e) {
+      expect(e.errorCode).toBe('alreadyInState');
+    }
   });
 
   describe('validateUpdate', () => {

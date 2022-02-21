@@ -19,7 +19,7 @@ class OpenClose extends DefaultCommand {
       openPercent = 100 - openPercent;
     }
     if (itemType === 'Rollershutter') {
-      return openPercent === 0 ? 'DOWN' : openPercent === 100 ? 'UP' : (100 - openPercent).toString();
+      return (100 - openPercent).toString();
     }
     if (itemType === 'Switch') {
       return openPercent === 0 ? 'OFF' : 'ON';
@@ -31,6 +31,12 @@ class OpenClose extends DefaultCommand {
     return {
       openPercent: params.openPercent
     };
+  }
+
+  static checkCurrentState(target, state, params) {
+    if (target === state) {
+      throw { errorCode: params.openPercent === 0 ? 'alreadyClosed' : 'alreadyOpen' };
+    }
   }
 }
 

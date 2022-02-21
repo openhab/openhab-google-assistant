@@ -16,12 +16,13 @@ describe('appSelect Command', () => {
 
   test('getItemName', () => {
     expect(() => {
-      Command.getItemName({ name: 'Item' });
+      Command.getItemNameAndState({ name: 'Item', state: '1' });
     }).toThrow();
     const item = {
       members: [
         {
           name: 'ApplicationItem',
+          state: '2',
           metadata: {
             ga: {
               value: 'tvApplication'
@@ -30,7 +31,7 @@ describe('appSelect Command', () => {
         }
       ]
     };
-    expect(Command.getItemName(item)).toBe('ApplicationItem');
+    expect(Command.getItemNameAndState(item)).toStrictEqual({ name: 'ApplicationItem', state: '2' });
   });
 
   test('convertParamsToValue', () => {

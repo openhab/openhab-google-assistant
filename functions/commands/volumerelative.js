@@ -14,15 +14,15 @@ class VolumeRelative extends DefaultCommand {
     return true;
   }
 
-  static getItemName(item, device) {
+  static getItemNameAndState(item, device) {
     if (this.getDeviceType(device) === 'TV') {
       const members = TV.getMembers(item);
       if ('tvVolume' in members) {
-        return members.tvVolume.name;
+        return members.tvVolume;
       }
       throw { statusCode: 400 };
     }
-    return item.name;
+    return super.getItemNameAndState(item);
   }
 
   static convertParamsToValue(params, item, device) {
@@ -43,6 +43,14 @@ class VolumeRelative extends DefaultCommand {
     return {
       currentVolume: parseInt(this.convertParamsToValue(params, item, device))
     };
+  }
+
+  static checkCurrentState(target, state) {
+    if (target === state) {
+      throw {
+        errorCode: state === '100' ? 'volumeAlreadyMax' : state === '0' ? 'volumeAlreadyMin' : 'alreadyInState'
+      };
+    }
   }
 }
 

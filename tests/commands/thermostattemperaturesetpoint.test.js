@@ -14,12 +14,13 @@ describe('ThermostatTemperatureSetpoint Command', () => {
 
   test('getItemName', () => {
     expect(() => {
-      Command.getItemName({ name: 'Item' });
+      Command.getItemNameAndState({ name: 'Item' });
     }).toThrow();
     const item = {
       members: [
         {
           name: 'SetpointItem',
+          state: '20',
           metadata: {
             ga: {
               value: 'thermostatTemperatureSetpoint'
@@ -28,7 +29,7 @@ describe('ThermostatTemperatureSetpoint Command', () => {
         }
       ]
     };
-    expect(Command.getItemName(item)).toBe('SetpointItem');
+    expect(Command.getItemNameAndState(item)).toStrictEqual({ name: 'SetpointItem', state: '20' });
   });
 
   test('convertParamsToValue', () => {

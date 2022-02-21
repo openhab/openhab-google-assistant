@@ -11,9 +11,12 @@ describe('Default Device', () => {
       ga: {
         value: '',
         config: {
-          inverted: true,
           ackNeeded: true,
-          pinNeeded: '1234'
+          checkState: true,
+          inverted: true,
+          pinNeeded: '1234',
+          pinOnDisarmOnly: true,
+          waitForStateChange: '5'
         }
       },
       synonyms: {
@@ -29,8 +32,11 @@ describe('Default Device', () => {
   test('getConfig', () => {
     expect(Device.getConfig(item)).toStrictEqual({
       ackNeeded: true,
+      checkState: true,
       inverted: true,
-      pinNeeded: '1234'
+      pinNeeded: '1234',
+      pinOnDisarmOnly: true,
+      waitForStateChange: '5'
     });
   });
 
@@ -43,10 +49,13 @@ describe('Default Device', () => {
       attributes: {},
       customData: {
         ackNeeded: true,
+        checkState: true,
         deviceType: 'DefaultDevice',
         inverted: true,
         itemType: 'Number',
-        pinNeeded: '1234'
+        pinNeeded: '1234',
+        pinOnDisarmOnly: true,
+        waitForStateChange: 5
       },
       deviceInfo: {
         manufacturer: 'openHAB',

@@ -14,15 +14,15 @@ class SetVolume extends DefaultCommand {
     return this.getDeviceType(device) === 'TV';
   }
 
-  static getItemName(item, device) {
+  static getItemNameAndState(item, device) {
     if (this.getDeviceType(device) === 'TV') {
       const members = TV.getMembers(item);
       if ('tvVolume' in members) {
-        return members.tvVolume.name;
+        return members.tvVolume;
       }
       throw { statusCode: 400 };
     }
-    return item.name;
+    return super.getItemNameAndState(item);
   }
 
   static convertParamsToValue(params) {
@@ -33,6 +33,14 @@ class SetVolume extends DefaultCommand {
     return {
       currentVolume: params.volumeLevel
     };
+  }
+
+  static checkCurrentState(target, state) {
+    if (target === state) {
+      throw {
+        errorCode: state === '100' ? 'volumeAlreadyMax' : state === '0' ? 'volumeAlreadyMin' : 'alreadyInState'
+      };
+    }
   }
 }
 

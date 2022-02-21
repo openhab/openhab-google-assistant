@@ -25,13 +25,16 @@ class DefaultCommand {
   }
 
   /**
-   * Is the requested new state valid
-   * @param {object} params Requested change params
-   * @param {object} item Current state of item
-   * @returns {boolean} true if state change is valid otherwise throws error
+   * Is the requested new state change valid?
+   * @param {string} target Requested change params
+   * @param {string} state Current state of item
+   * @param {object} params Parameters of the command
+   * @returns {void} returns if current state is different otherwise throws error
    */
-  static validateStateChange(params, item, device) {
-    return true;
+  static checkCurrentState(target, state, params) {
+    if (target === state) {
+      throw { errorCode: 'alreadyInState' };
+    }
   }
 
   static get requiresUpdateValidation() {
@@ -72,8 +75,8 @@ class DefaultCommand {
    * @param {object} device
    * @param {object} params
    */
-  static getItemName(item, device, params) {
-    return item.name;
+  static getItemNameAndState(item, device, params) {
+    return { name: item.name, state: item.state };
   }
 
   /**
@@ -94,7 +97,7 @@ class DefaultCommand {
    * @param {object} device
    */
   static isInverted(device) {
-    return device.customData && device.customData.inverted === true;
+    return (device.customData && device.customData.inverted === true) || false;
   }
 
   /**
@@ -202,7 +205,6 @@ class DefaultCommand {
    * @param {object} challenge
    */
   static execute(apiHandler, devices, params, challenge) {
-    // console.log(`openhabGoogleAssistant - ${this.type}: ${JSON.stringify({ devices: devices, params: params })}`);
     const commandsResponse = [];
     const promises = devices.map((device) => {
       const authPinResponse = this.handleAuthPin(device, challenge, params);
@@ -217,14 +219,20 @@ class DefaultCommand {
         (device.customData.ackNeeded || device.customData.tfaAck) &&
         !(challenge && challenge.ack);
 
-      let getItemPromise = Promise.resolve({ name: device.id });
-      if (this.requiresItem(device) || ackWithState || this.requiresUpdateValidation) {
+      const shouldCheckState = device.customData && device.customData.checkState;
+
+      let getItemPromise = Promise.resolve({ name: device.id, state: null });
+      if (this.requiresItem(device) || ackWithState || shouldCheckState) {
         getItemPromise = apiHandler.getItem(device.id);
       }
 
       return getItemPromise
         .then((item) => {
-          this.validateStateChange(params, item, device);
+          const targetItem = this.getItemNameAndState(item, device, params);
+          const targetValue = this.convertParamsToValue(params, item, device);
+          if (shouldCheckState) {
+            this.checkCurrentState(targetValue, targetItem.state, params);
+          }
 
           const responseStates = this.getResponseStates(params, item, device);
           if (Object.keys(responseStates).length) {
@@ -237,11 +245,9 @@ class DefaultCommand {
             return;
           }
 
-          const targetItem = this.getItemName(item, device, params);
-          const targetValue = this.convertParamsToValue(params, item, device);
           let sendCommandPromise = Promise.resolve();
-          if (typeof targetItem === 'string' && typeof targetValue === 'string') {
-            sendCommandPromise = apiHandler.sendCommand(targetItem, targetValue);
+          if (typeof targetItem.name === 'string' && typeof targetValue === 'string') {
+            sendCommandPromise = apiHandler.sendCommand(targetItem.name, targetValue);
           }
 
           return sendCommandPromise.then(async () => {

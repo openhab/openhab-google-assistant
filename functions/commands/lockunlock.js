@@ -25,6 +25,12 @@ class LockUnlock extends DefaultCommand {
       isLocked: params.lock
     };
   }
+
+  static checkCurrentState(target, state, params) {
+    if (target === state) {
+      throw { errorCode: params.lock ? 'alreadyLocked' : 'alreadyUnlocked' };
+    }
+  }
 }
 
 module.exports = LockUnlock;
