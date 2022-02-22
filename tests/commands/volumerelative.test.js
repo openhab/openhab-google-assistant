@@ -14,18 +14,18 @@ describe('volumeRelative Command', () => {
 
   describe('getItemName', () => {
     test('getItemName', () => {
-      expect(Command.getItemNameAndState({ name: 'Item' }, {})).toStrictEqual({ name: 'Item', state: undefined });
+      expect(Command.getItemName({ name: 'Item' }, {})).toBe('Item');
+      expect(Command.getItemName({ name: 'Item' }, { customData: {} })).toBe('Item');
     });
 
     test('getItemName TV', () => {
       expect(() => {
-        Command.getItemNameAndState({ name: 'Item' }, { customData: { deviceType: 'TV' } });
+        Command.getItemName({ name: 'Item' }, { customData: { deviceType: 'TV' } });
       }).toThrow();
       const item = {
         members: [
           {
             name: 'VolumeItem',
-            state: '20',
             metadata: {
               ga: {
                 value: 'tvVolume'
@@ -34,10 +34,7 @@ describe('volumeRelative Command', () => {
           }
         ]
       };
-      expect(Command.getItemNameAndState(item, { customData: { deviceType: 'TV' } })).toStrictEqual({
-        name: 'VolumeItem',
-        state: '20'
-      });
+      expect(Command.getItemName(item, { customData: { deviceType: 'TV' } })).toBe('VolumeItem');
     });
   });
 

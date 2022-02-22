@@ -17,10 +17,10 @@ class ThermostatTemperatureSetpointHigh extends DefaultCommand {
     return true;
   }
 
-  static getItemNameAndState(item) {
+  static getItemName(item) {
     const members = Thermostat.getMembers(item);
     if ('thermostatTemperatureSetpointHigh' in members) {
-      return members.thermostatTemperatureSetpointHigh;
+      return members.thermostatTemperatureSetpointHigh.name;
     }
     throw { statusCode: 400 };
   }

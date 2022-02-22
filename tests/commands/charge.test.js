@@ -12,14 +12,13 @@ describe('Charge Command', () => {
 
   test('getItemName', () => {
     expect(() => {
-      Command.getItemNameAndState({ name: 'Item' });
+      Command.getItemName({ name: 'Item' });
     }).toThrow();
 
     const item = {
       members: [
         {
           name: 'ChargingItem',
-          state: '80',
           metadata: {
             ga: {
               value: 'chargerCharging'
@@ -28,7 +27,7 @@ describe('Charge Command', () => {
         }
       ]
     };
-    expect(Command.getItemNameAndState(item)).toStrictEqual({ name: 'ChargingItem', state: '80' });
+    expect(Command.getItemName(item)).toBe('ChargingItem');
   });
 
   describe('convertParamsToValue', () => {

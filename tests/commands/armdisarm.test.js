@@ -38,11 +38,8 @@ describe('ArmDisarm Command', () => {
   describe('getItemName', () => {
     test('getItemName SimpleSecuritySystem', () => {
       expect(
-        Command.getItemNameAndState(
-          { name: 'SwitchItem', state: 'ON' },
-          { customData: { deviceType: 'SimpleSecuritySystem' } }
-        )
-      ).toStrictEqual({ name: 'SwitchItem', state: 'ON' });
+        Command.getItemName({ name: 'SwitchItem' }, { customData: { deviceType: 'SimpleSecuritySystem' } })
+      ).toStrictEqual('SwitchItem');
     });
 
     describe('getItemName SecuritySystem', () => {
@@ -54,26 +51,20 @@ describe('ArmDisarm Command', () => {
           members: [
             {
               name: itemNameArmed,
-              state: 'ON',
               metadata: { ga: { value: SecuritySystem.armedMemberName } }
             },
             {
               name: itemNameArmLevel,
-              state: 'L1',
               metadata: { ga: { value: SecuritySystem.armLevelMemberName } }
             }
           ]
         };
         expect(
-          Command.getItemNameAndState(item, { customData: { deviceType: 'SecuritySystem' } }, { arm: true })
-        ).toStrictEqual({ config: {}, name: 'itemNameArmed', state: 'ON' });
+          Command.getItemName(item, { customData: { deviceType: 'SecuritySystem' } }, { arm: true })
+        ).toStrictEqual(itemNameArmed);
         expect(
-          Command.getItemNameAndState(
-            item,
-            { customData: { deviceType: 'SecuritySystem' } },
-            { arm: true, armLevel: 'L1' }
-          )
-        ).toStrictEqual({ config: {}, name: 'itemNameArmLevel', state: 'L1' });
+          Command.getItemName(item, { customData: { deviceType: 'SecuritySystem' } }, { arm: true, armLevel: 'L1' })
+        ).toStrictEqual(itemNameArmLevel);
       });
 
       test('getItemName SecuritySystem missing armed member', () => {
@@ -86,7 +77,7 @@ describe('ArmDisarm Command', () => {
           ]
         };
         expect(() => {
-          Command.getItemNameAndState(item, { customData: { deviceType: 'SecuritySystem' } }, { arm: true });
+          Command.getItemName(item, { customData: { deviceType: 'SecuritySystem' } }, { arm: true });
         }).toThrow();
       });
 
@@ -100,11 +91,7 @@ describe('ArmDisarm Command', () => {
           ]
         };
         expect(() => {
-          Command.getItemNameAndState(
-            item,
-            { customData: { deviceType: 'SecuritySystem' } },
-            { arm: true, armLevel: 'L1' }
-          );
+          Command.getItemName(item, { customData: { deviceType: 'SecuritySystem' } }, { arm: true, armLevel: 'L1' });
         }).toThrow();
       });
     });

@@ -14,10 +14,10 @@ class SetInput extends DefaultCommand {
     return true;
   }
 
-  static getItemNameAndState(item) {
+  static getItemName(item) {
     const members = TV.getMembers(item);
     if ('tvInput' in members) {
-      return members.tvInput;
+      return members.tvInput.name;
     }
     throw { statusCode: 400 };
   }

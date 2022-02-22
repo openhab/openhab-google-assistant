@@ -15,26 +15,26 @@ class OnOff extends DefaultCommand {
     return ['SpecialColorLight', 'TV'].includes(this.getDeviceType(device));
   }
 
-  static getItemNameAndState(item, device) {
+  static getItemName(item, device) {
     const deviceType = this.getDeviceType(device);
     if (deviceType === 'SpecialColorLight') {
       const members = SpecialColorLight.getMembers(item);
       if ('lightPower' in members) {
-        return members.lightPower;
+        return members.lightPower.name;
       }
       if ('lightBrightness' in members) {
-        return members.lightBrightness;
+        return members.lightBrightness.name;
       }
       throw { statusCode: 400 };
     }
     if (deviceType === 'TV') {
       const members = TV.getMembers(item);
       if ('tvPower' in members) {
-        return members.tvPower;
+        return members.tvPower.name;
       }
       throw { statusCode: 400 };
     }
-    return super.getItemNameAndState(item);
+    return item.name;
   }
 
   static convertParamsToValue(params, _, device) {

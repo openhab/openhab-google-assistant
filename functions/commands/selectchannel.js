@@ -18,10 +18,10 @@ class SelectChannel extends DefaultCommand {
     return true;
   }
 
-  static getItemNameAndState(item) {
+  static getItemName(item) {
     const members = TV.getMembers(item);
     if ('tvChannel' in members) {
-      return members.tvChannel;
+      return members.tvChannel.name;
     }
     throw { statusCode: 400 };
   }

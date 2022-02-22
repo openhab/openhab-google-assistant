@@ -75,8 +75,8 @@ class DefaultCommand {
    * @param {object} device
    * @param {object} params
    */
-  static getItemNameAndState(item, device, params) {
-    return { name: item.name, state: item.state };
+  static getItemName(item, device, params) {
+    return item.name;
   }
 
   /**
@@ -221,17 +221,22 @@ class DefaultCommand {
 
       const shouldCheckState = device.customData && device.customData.checkState;
 
-      let getItemPromise = Promise.resolve({ name: device.id, state: null });
+      let getItemPromise = Promise.resolve({ name: device.id, state: null, members: [] });
       if (this.requiresItem(device) || ackWithState || shouldCheckState) {
         getItemPromise = apiHandler.getItem(device.id);
       }
 
       return getItemPromise
         .then((item) => {
-          const targetItem = this.getItemNameAndState(item, device, params);
+          const targetItem = this.getItemName(item, device, params);
           const targetValue = this.convertParamsToValue(params, item, device);
           if (shouldCheckState) {
-            this.checkCurrentState(targetValue, targetItem.state, params);
+            let currentState = item.state;
+            if (this.requiresItem(device) && item.members && item.members.length) {
+              const member = item.members.find((m) => m.name === targetItem);
+              currentState = member.state;
+            }
+            this.checkCurrentState(targetValue, currentState, params);
           }
 
           const responseStates = this.getResponseStates(params, item, device);
@@ -246,8 +251,8 @@ class DefaultCommand {
           }
 
           let sendCommandPromise = Promise.resolve();
-          if (typeof targetItem.name === 'string' && typeof targetValue === 'string') {
-            sendCommandPromise = apiHandler.sendCommand(targetItem.name, targetValue);
+          if (typeof targetItem === 'string' && typeof targetValue === 'string') {
+            sendCommandPromise = apiHandler.sendCommand(targetItem, targetValue);
           }
 
           return sendCommandPromise.then(async () => {

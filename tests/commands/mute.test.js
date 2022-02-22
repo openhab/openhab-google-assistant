@@ -14,12 +14,13 @@ describe('Mute Command', () => {
 
   describe('getItemName', () => {
     test('getItemName', () => {
-      expect(Command.getItemNameAndState({ name: 'Item' }, {})).toStrictEqual({ name: 'Item', state: undefined });
+      expect(Command.getItemName({ name: 'Item' }, {})).toBe('Item');
+      expect(Command.getItemName({ name: 'Item' }, { customData: {} })).toBe('Item');
     });
 
     test('getItemName TV no members', () => {
       expect(() => {
-        Command.getItemNameAndState({ name: 'Item' }, { customData: { deviceType: 'TV' } });
+        Command.getItemName({ name: 'Item' }, { customData: { deviceType: 'TV' } });
       }).toThrow();
     });
 
@@ -29,7 +30,6 @@ describe('Mute Command', () => {
         members: [
           {
             name: 'MuteItem',
-            state: 'OFF',
             metadata: {
               ga: {
                 value: 'tvMute'
@@ -38,10 +38,7 @@ describe('Mute Command', () => {
           }
         ]
       };
-      expect(Command.getItemNameAndState(item, { customData: { deviceType: 'TV' } })).toStrictEqual({
-        name: 'MuteItem',
-        state: 'OFF'
-      });
+      expect(Command.getItemName(item, { customData: { deviceType: 'TV' } })).toBe('MuteItem');
     });
 
     test('getItemName TV volume', () => {
@@ -50,7 +47,6 @@ describe('Mute Command', () => {
         members: [
           {
             name: 'VolumeItem',
-            state: '80',
             metadata: {
               ga: {
                 value: 'tvVolume'
@@ -59,10 +55,7 @@ describe('Mute Command', () => {
           }
         ]
       };
-      expect(Command.getItemNameAndState(item, { customData: { deviceType: 'TV' } })).toStrictEqual({
-        name: 'VolumeItem',
-        state: '80'
-      });
+      expect(Command.getItemName(item, { customData: { deviceType: 'TV' } })).toBe('VolumeItem');
     });
   });
 

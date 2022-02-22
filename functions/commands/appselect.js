@@ -17,10 +17,10 @@ class AppSelect extends DefaultCommand {
     return true;
   }
 
-  static getItemNameAndState(item) {
+  static getItemName(item) {
     const members = TV.getMembers(item);
     if ('tvApplication' in members) {
-      return members.tvApplication;
+      return members.tvApplication.name;
     }
     throw { statusCode: 400 };
   }

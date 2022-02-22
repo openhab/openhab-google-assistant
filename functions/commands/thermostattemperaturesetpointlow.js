@@ -15,10 +15,10 @@ class ThermostatTemperatureSetpointLow extends DefaultCommand {
     return true;
   }
 
-  static getItemNameAndState(item) {
+  static getItemName(item) {
     const members = Thermostat.getMembers(item);
     if ('thermostatTemperatureSetpointLow' in members) {
-      return members.thermostatTemperatureSetpointLow;
+      return members.thermostatTemperatureSetpointLow.name;
     }
     throw { statusCode: 400 };
   }

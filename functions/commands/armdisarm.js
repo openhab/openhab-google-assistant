@@ -21,21 +21,21 @@ class ArmDisarm extends DefaultCommand {
     return arm ? 'ON' : 'OFF';
   }
 
-  static getItemNameAndState(item, device, params) {
+  static getItemName(item, device, params) {
     if (this.getDeviceType(device) === 'SecuritySystem') {
       const members = SecuritySystem.getMembers(item);
       if (params.armLevel) {
         if (SecuritySystem.armLevelMemberName in members) {
-          return members[SecuritySystem.armLevelMemberName];
+          return members[SecuritySystem.armLevelMemberName].name;
         }
         throw { statusCode: 400 };
       }
       if (SecuritySystem.armedMemberName in members) {
-        return members[SecuritySystem.armedMemberName];
+        return members[SecuritySystem.armedMemberName].name;
       }
       throw { statusCode: 400 };
     }
-    return super.getItemNameAndState(item);
+    return item.name;
   }
 
   static requiresItem() {

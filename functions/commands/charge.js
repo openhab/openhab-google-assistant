@@ -14,10 +14,10 @@ class Charge extends DefaultCommand {
     return true;
   }
 
-  static getItemNameAndState(item) {
+  static getItemName(item) {
     const members = Charger.getMembers(item);
     if ('chargerCharging' in members) {
-      return members.chargerCharging;
+      return members.chargerCharging.name;
     }
     throw { statusCode: 400 };
   }

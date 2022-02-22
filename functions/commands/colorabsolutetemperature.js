@@ -21,15 +21,15 @@ class ColorAbsoluteTemperature extends DefaultCommand {
     return true;
   }
 
-  static getItemNameAndState(item, device) {
+  static getItemName(item, device) {
     if (this.getDeviceType(device) === 'SpecialColorLight') {
       const members = SpecialColorLight.getMembers(item);
       if ('lightColorTemperature' in members) {
-        return members.lightColorTemperature;
+        return members.lightColorTemperature.name;
       }
       throw { statusCode: 400 };
     }
-    return super.getItemNameAndState(item);
+    return item.name;
   }
 
   static convertParamsToValue(params, item, device) {

@@ -14,19 +14,19 @@ describe('OnOff Command', () => {
 
   describe('getItemName', () => {
     test('getItemName', () => {
-      expect(Command.getItemNameAndState({ name: 'Item' }, {})).toStrictEqual({ name: 'Item', state: undefined });
+      expect(Command.getItemName({ name: 'Item' }, {})).toBe('Item');
+      expect(Command.getItemName({ name: 'Item' }, { customData: {} })).toBe('Item');
     });
 
     test('getItemName SpecialColorLight', () => {
       expect(() => {
-        Command.getItemNameAndState({ name: 'Item' }, { customData: { deviceType: 'SpecialColorLight' } });
+        Command.getItemName({ name: 'Item' }, { customData: { deviceType: 'SpecialColorLight' } });
       }).toThrow();
 
       const item = {
         members: [
           {
             name: 'BrightnessItem',
-            state: '80',
             metadata: {
               ga: {
                 value: 'lightBrightness'
@@ -35,16 +35,12 @@ describe('OnOff Command', () => {
           }
         ]
       };
-      expect(Command.getItemNameAndState(item, { customData: { deviceType: 'SpecialColorLight' } })).toStrictEqual({
-        name: 'BrightnessItem',
-        state: '80'
-      });
+      expect(Command.getItemName(item, { customData: { deviceType: 'SpecialColorLight' } })).toBe('BrightnessItem');
 
       const item_power = {
         members: [
           {
             name: 'PowerItem',
-            state: 'ON',
             metadata: {
               ga: {
                 value: 'lightPower'
@@ -53,24 +49,18 @@ describe('OnOff Command', () => {
           }
         ]
       };
-      expect(
-        Command.getItemNameAndState(item_power, { customData: { deviceType: 'SpecialColorLight' } })
-      ).toStrictEqual({
-        name: 'PowerItem',
-        state: 'ON'
-      });
+      expect(Command.getItemName(item_power, { customData: { deviceType: 'SpecialColorLight' } })).toBe('PowerItem');
     });
 
     test('getItemName TV', () => {
       expect(() => {
-        Command.getItemNameAndState({ name: 'Item' }, { customData: { deviceType: 'TV' } });
+        Command.getItemName({ name: 'Item' }, { customData: { deviceType: 'TV' } });
       }).toThrow();
 
       const item = {
         members: [
           {
             name: 'PowerItem',
-            state: 'ON',
             metadata: {
               ga: {
                 value: 'tvPower'
@@ -79,10 +69,7 @@ describe('OnOff Command', () => {
           }
         ]
       };
-      expect(Command.getItemNameAndState(item, { customData: { deviceType: 'TV' } })).toStrictEqual({
-        name: 'PowerItem',
-        state: 'ON'
-      });
+      expect(Command.getItemName(item, { customData: { deviceType: 'TV' } })).toBe('PowerItem');
     });
   });
 

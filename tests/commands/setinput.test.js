@@ -14,13 +14,12 @@ describe('SetInput Command', () => {
 
   test('getItemName', () => {
     expect(() => {
-      Command.getItemNameAndState({ name: 'Item' });
+      Command.getItemName({ name: 'Item' });
     }).toThrow();
     const item = {
       members: [
         {
           name: 'InputItem',
-          state: 'hdmi1',
           metadata: {
             ga: {
               value: 'tvInput'
@@ -29,7 +28,7 @@ describe('SetInput Command', () => {
         }
       ]
     };
-    expect(Command.getItemNameAndState(item)).toStrictEqual({ name: 'InputItem', state: 'hdmi1' });
+    expect(Command.getItemName(item)).toBe('InputItem');
   });
 
   test('convertParamsToValue', () => {

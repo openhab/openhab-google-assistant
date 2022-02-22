@@ -14,15 +14,15 @@ class SetVolume extends DefaultCommand {
     return this.getDeviceType(device) === 'TV';
   }
 
-  static getItemNameAndState(item, device) {
+  static getItemName(item, device) {
     if (this.getDeviceType(device) === 'TV') {
       const members = TV.getMembers(item);
       if ('tvVolume' in members) {
-        return members.tvVolume;
+        return members.tvVolume.name;
       }
       throw { statusCode: 400 };
     }
-    return super.getItemNameAndState(item);
+    return item.name;
   }
 
   static convertParamsToValue(params) {

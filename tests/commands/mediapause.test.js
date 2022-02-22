@@ -15,7 +15,6 @@ describe('mediaPause Command', () => {
         members: [
           {
             name: 'TransportItem',
-            state: 'STOPPED',
             metadata: {
               ga: {
                 value: 'tvTransport'
@@ -24,7 +23,7 @@ describe('mediaPause Command', () => {
           }
         ]
       };
-      expect(Command.getItemNameAndState(item)).toStrictEqual({ name: 'TransportItem', state: 'STOPPED' });
+      expect(Command.getItemName(item)).toBe('TransportItem');
     });
 
     test('getItemName no transport', () => {
@@ -32,7 +31,7 @@ describe('mediaPause Command', () => {
         members: []
       };
       expect(() => {
-        Command.getItemNameAndState(item);
+        Command.getItemName(item);
       }).toThrow();
     });
   });

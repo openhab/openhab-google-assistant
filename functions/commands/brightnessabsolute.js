@@ -14,15 +14,15 @@ class BrightnessAbsolute extends DefaultCommand {
     return this.getDeviceType(device) === 'SpecialColorLight';
   }
 
-  static getItemNameAndState(item, device) {
+  static getItemName(item, device) {
     if (this.getDeviceType(device) === 'SpecialColorLight') {
       const members = SpecialColorLight.getMembers(item);
       if ('lightBrightness' in members) {
-        return members.lightBrightness;
+        return members.lightBrightness.name;
       }
       throw { statusCode: 400 };
     }
-    return super.getItemNameAndState(item);
+    return item.name;
   }
 
   static convertParamsToValue(params) {

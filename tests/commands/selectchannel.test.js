@@ -14,13 +14,12 @@ describe('selectChannel Command', () => {
 
   test('getItemName', () => {
     expect(() => {
-      Command.getItemNameAndState({ name: 'Item' });
+      Command.getItemName({ name: 'Item' });
     }).toThrow();
     const item = {
       members: [
         {
           name: 'ChannelItem',
-          state: 'channel1',
           metadata: {
             ga: {
               value: 'tvChannel'
@@ -29,7 +28,7 @@ describe('selectChannel Command', () => {
         }
       ]
     };
-    expect(Command.getItemNameAndState(item)).toStrictEqual({ name: 'ChannelItem', state: 'channel1' });
+    expect(Command.getItemName(item)).toBe('ChannelItem');
   });
 
   test('convertParamsToValue', () => {

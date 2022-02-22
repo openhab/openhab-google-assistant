@@ -14,13 +14,12 @@ describe('ThermostatSetMode Command', () => {
 
   test('getItemName', () => {
     expect(() => {
-      Command.getItemNameAndState({ name: 'Item' });
+      Command.getItemName({ name: 'Item' });
     }).toThrow();
     const item = {
       members: [
         {
           name: 'ModeItem',
-          state: 'ECO',
           metadata: {
             ga: {
               value: 'thermostatMode'
@@ -29,7 +28,7 @@ describe('ThermostatSetMode Command', () => {
         }
       ]
     };
-    expect(Command.getItemNameAndState(item)).toStrictEqual({ name: 'ModeItem', state: 'ECO' });
+    expect(Command.getItemName(item)).toBe('ModeItem');
   });
 
   test('convertParamsToValue', () => {

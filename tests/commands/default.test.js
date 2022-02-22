@@ -64,7 +64,7 @@ describe('Default Command', () => {
   });
 
   test('getItemName', () => {
-    expect(Command.getItemNameAndState({ name: 'Item' }, {})).toStrictEqual({ name: 'Item', state: undefined });
+    expect(Command.getItemName({ name: 'Item' }, {})).toBe('Item');
   });
 
   test('requiresItem', () => {
