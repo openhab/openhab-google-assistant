@@ -61,11 +61,8 @@ class ArmDisarm extends DefaultCommand {
   }
 
   static checkCurrentState(target, state, params) {
-    if (params.armLevel && target === state) {
-      throw { errorCode: 'alreadyInState' };
-    }
     if (target === state) {
-      throw { errorCode: params.arm ? 'alreadyArmed' : 'alreadyDisarmed' };
+      throw { errorCode: params.armLevel ? 'alreadyInState' : params.arm ? 'alreadyArmed' : 'alreadyDisarmed' };
     }
   }
 

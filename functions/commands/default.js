@@ -26,7 +26,7 @@ class DefaultCommand {
 
   /**
    * Is the requested new state change valid?
-   * @param {string} target Requested change params
+   * @param {string} target Requested target state
    * @param {string} state Current state of item
    * @param {object} params Parameters of the command
    * @returns {void} returns if current state is different otherwise throws error
@@ -97,7 +97,7 @@ class DefaultCommand {
    * @param {object} device
    */
   static isInverted(device) {
-    return (device.customData && device.customData.inverted === true) || false;
+    return (device.customData && device.customData.inverted) || false;
   }
 
   /**
