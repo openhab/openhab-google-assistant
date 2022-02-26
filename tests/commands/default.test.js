@@ -13,6 +13,10 @@ class TestCommand1 extends Command {
 }
 
 class TestCommand2 extends TestCommand1 {
+  static getItemName() {
+    return 'PowerItem';
+  }
+
   static requiresItem() {
     return true;
   }
@@ -174,7 +178,7 @@ describe('Default Command', () => {
       getItemMock.mockClear();
       sendCommandMock.mockClear();
       sendCommandMock.mockReturnValue(Promise.resolve());
-      getItemMock.mockReturnValue(Promise.resolve({ name: 'TestItem' }));
+      getItemMock.mockReturnValue(Promise.resolve({ name: 'Item1' }));
     });
 
     test('execute without responseStates', async () => {
@@ -378,7 +382,7 @@ describe('Default Command', () => {
 
     describe('execute with checkCurrentState', () => {
       const checkCurrentStateSpy = jest.spyOn(TestCommand1, 'checkCurrentState');
-      const item = { name: 'TestItem', type: 'Switch', state: 'OFF', metadata: { ga: { value: 'Switch' } } };
+      const item = { name: 'Item1', type: 'Switch', state: 'OFF', metadata: { ga: { value: 'Switch' } } };
 
       afterEach(() => {
         checkCurrentStateSpy.mockClear();
@@ -412,18 +416,47 @@ describe('Default Command', () => {
           }
         ]);
       });
+
+      test('execute with failing checkCurrentState on group', async () => {
+        const groupItem = {
+          name: 'Item1',
+          type: 'Group',
+          state: 'NULL',
+          metadata: {
+            ga: { value: 'TV' }
+          },
+          members: [{ name: 'PowerItem', type: 'Switch', state: 'ON', metadata: { ga: { value: 'tvPower' } } }]
+        };
+        getItemMock.mockReturnValue(Promise.resolve(groupItem));
+        const devices = [{ id: 'Item1', customData: { checkState: true } }];
+        const result = await TestCommand2.execute(apiHandler, devices, { on: true });
+        expect(checkCurrentStateSpy).toHaveBeenCalledTimes(1);
+        expect(checkCurrentStateSpy).toHaveBeenCalledWith('ON', 'ON', { on: true });
+        expect(getItemMock).toHaveBeenCalledTimes(1);
+        expect(sendCommandMock).toHaveBeenCalledTimes(0);
+        expect(result).toStrictEqual([
+          {
+            errorCode: 'alreadyInState',
+            ids: ['Item1'],
+            status: 'ERROR'
+          }
+        ]);
+      });
     });
 
     describe('execute with validateUpdate', () => {
       const validateUpdateSpy = jest.spyOn(TestCommand5, 'validateUpdate');
-      const item = { name: 'TestItem', type: 'Switch', state: 'ON', metadata: { ga: { value: 'Switch' } } };
+      const item = { name: 'Item1', type: 'Switch', state: 'ON', metadata: { ga: { value: 'Switch' } } };
+
+      beforeEach(() => {
+        getItemMock.mockReturnValue(Promise.resolve(item));
+      });
 
       afterEach(() => {
         validateUpdateSpy.mockClear();
       });
 
       test('execute with validateUpdate', async () => {
-        getItemMock.mockReturnValue(Promise.resolve(item));
         const devices = [{ id: 'Item1' }];
         const result = await TestCommand5.execute(apiHandler, devices, { on: true });
         expect(getItemMock).toHaveBeenCalledTimes(1);
@@ -434,12 +467,13 @@ describe('Default Command', () => {
       });
 
       test('execute with validateUpdate and device not found', async () => {
+        getItemMock.mockReturnValue(Promise.resolve({ name: 'InvalidItem' }));
         const devices = [{ id: 'Item1' }];
         const result = await TestCommand5.execute(apiHandler, devices, { on: true });
         expect(getItemMock).toHaveBeenCalledTimes(1);
         expect(sendCommandMock).toHaveBeenCalledTimes(1);
         expect(validateUpdateSpy).toHaveBeenCalledTimes(1);
-        expect(validateUpdateSpy).toHaveBeenCalledWith({ on: true }, { name: 'TestItem' }, devices[0]);
+        expect(validateUpdateSpy).toHaveBeenCalledWith({ on: true }, { name: 'InvalidItem' }, devices[0]);
         expect(result).toStrictEqual([
           {
             errorCode: 'deviceNotFound',
@@ -453,7 +487,6 @@ describe('Default Command', () => {
         const timeoutSpy = jest.spyOn(global, 'setTimeout');
         // @ts-ignore
         timeoutSpy.mockImplementation((fn) => fn());
-        getItemMock.mockReturnValue(Promise.resolve(item));
         const devices = [{ id: 'Item1', customData: { waitForStateChange: 5 } }];
         const result = await TestCommand5.execute(apiHandler, devices, { on: true });
         expect(getItemMock).toHaveBeenCalledTimes(1);
@@ -466,7 +499,6 @@ describe('Default Command', () => {
       });
 
       test('execute with failed validateUpdate', async () => {
-        getItemMock.mockReturnValue(Promise.resolve(item));
         const devices = [{ id: 'Item1' }];
         const result = await TestCommand6.execute(apiHandler, devices, { on: true });
         expect(getItemMock).toHaveBeenCalledTimes(1);
