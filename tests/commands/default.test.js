@@ -82,6 +82,14 @@ describe('Default Command', () => {
     }
   });
 
+  test('getNormalizedState', () => {
+    expect(Command.getNormalizedState({ type: 'Switch', state: 'ON' })).toBe('ON');
+    expect(Command.getNormalizedState({ type: 'Number', state: '1' })).toBe('1');
+    expect(Command.getNormalizedState({ type: 'Number:Temperature', state: '10 °C' })).toBe('10');
+    expect(Command.getNormalizedState({ type: 'Number:DataAmount', state: '3.9375 GB' })).toBe('3.9375');
+    expect(Command.getNormalizedState({ type: 'Number:Energy', state: 'NULL' })).toBe('NULL');
+  });
+
   test('handleAuthPin', () => {
     expect(Command.handleAuthPin({ id: 'Item', customData: {} }, undefined)).toBeUndefined();
     expect(Command.handleAuthPin({ id: 'Item', customData: { pinNeeded: '1234' } }, { pin: '1234' })).toBeUndefined();
