@@ -44,6 +44,14 @@ class VolumeRelative extends DefaultCommand {
       currentVolume: parseInt(this.convertParamsToValue(params, item, device))
     };
   }
+
+  static checkCurrentState(target, state) {
+    if (target === state) {
+      throw {
+        errorCode: state === '100' ? 'volumeAlreadyMax' : state === '0' ? 'volumeAlreadyMin' : 'alreadyInState'
+      };
+    }
+  }
 }
 
 module.exports = VolumeRelative;

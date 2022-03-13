@@ -26,4 +26,22 @@ describe('LockUnlock Command', () => {
     expect(Command.getResponseStates({ lock: true })).toStrictEqual({ isLocked: true });
     expect(Command.getResponseStates({ lock: false })).toStrictEqual({ isLocked: false });
   });
+
+  test('checkCurrentState', () => {
+    expect.assertions(4);
+
+    expect(Command.checkCurrentState('ON', 'OFF', { lock: true })).toBeUndefined();
+    try {
+      Command.checkCurrentState('ON', 'ON', { lock: true });
+    } catch (e) {
+      expect(e.errorCode).toBe('alreadyLocked');
+    }
+
+    expect(Command.checkCurrentState('OFF', 'ON', { lock: false })).toBeUndefined();
+    try {
+      Command.checkCurrentState('OFF', 'OFF', { lock: false });
+    } catch (e) {
+      expect(e.errorCode).toBe('alreadyUnlocked');
+    }
+  });
 });

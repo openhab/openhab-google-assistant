@@ -15,7 +15,6 @@ describe('OnOff Command', () => {
   describe('getItemName', () => {
     test('getItemName', () => {
       expect(Command.getItemName({ name: 'Item' }, {})).toBe('Item');
-      expect(Command.getItemName({ name: 'Item' }, { customData: {} })).toBe('Item');
     });
 
     test('getItemName SpecialColorLight', () => {
@@ -86,5 +85,23 @@ describe('OnOff Command', () => {
   test('getResponseStates', () => {
     expect(Command.getResponseStates({ on: true })).toStrictEqual({ on: true });
     expect(Command.getResponseStates({ on: false })).toStrictEqual({ on: false });
+  });
+
+  test('checkCurrentState', () => {
+    expect.assertions(4);
+
+    expect(Command.checkCurrentState('ON', 'OFF', { on: true })).toBeUndefined();
+    try {
+      Command.checkCurrentState('ON', 'ON', { on: true });
+    } catch (e) {
+      expect(e.errorCode).toBe('alreadyOn');
+    }
+
+    expect(Command.checkCurrentState('OFF', 'ON', { on: false })).toBeUndefined();
+    try {
+      Command.checkCurrentState('OFF', 'OFF', { on: false });
+    } catch (e) {
+      expect(e.errorCode).toBe('alreadyOff');
+    }
   });
 });

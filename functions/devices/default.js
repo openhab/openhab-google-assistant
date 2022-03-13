@@ -91,6 +91,9 @@ class DefaultDevice {
     if (config.inverted === true) {
       metadata.customData.inverted = true;
     }
+    if (config.checkState === true) {
+      metadata.customData.checkState = true;
+    }
     if (config.ackNeeded === true || config.tfaAck === true) {
       metadata.customData.ackNeeded = true;
     }

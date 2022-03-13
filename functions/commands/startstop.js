@@ -26,6 +26,12 @@ class StartStop extends DefaultCommand {
       isPaused: !params.start
     };
   }
+
+  static checkCurrentState(target, state, params) {
+    if (target === state) {
+      throw { errorCode: params.start ? 'alreadyStarted' : 'alreadyStopped' };
+    }
+  }
 }
 
 module.exports = StartStop;

@@ -20,7 +20,6 @@ describe('ColorAbsolute Command', () => {
 
   test('getItemName', () => {
     expect(Command.getItemName({ name: 'Item' }, {})).toBe('Item');
-    expect(Command.getItemName({ name: 'Item' }, { customData: {} })).toBe('Item');
     expect(Command.getItemName({ name: 'Item' }, { customData: { deviceType: 'ColorLight' } })).toBe('Item');
     expect(() => {
       Command.getItemName({ name: 'Item' }, { customData: { deviceType: 'SpecialColorLight' } });

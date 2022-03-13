@@ -31,4 +31,22 @@ describe('StartStop Command', () => {
     expect(Command.getResponseStates({ start: true })).toStrictEqual({ isRunning: true, isPaused: false });
     expect(Command.getResponseStates({ start: false })).toStrictEqual({ isRunning: false, isPaused: true });
   });
+
+  test('checkCurrentState', () => {
+    expect.assertions(4);
+
+    expect(Command.checkCurrentState('ON', 'OFF', { start: true })).toBeUndefined();
+    try {
+      Command.checkCurrentState('ON', 'ON', { start: true });
+    } catch (e) {
+      expect(e.errorCode).toBe('alreadyStarted');
+    }
+
+    expect(Command.checkCurrentState('OFF', 'ON', { start: false })).toBeUndefined();
+    try {
+      Command.checkCurrentState('OFF', 'OFF', { start: false });
+    } catch (e) {
+      expect(e.errorCode).toBe('alreadyStopped');
+    }
+  });
 });
