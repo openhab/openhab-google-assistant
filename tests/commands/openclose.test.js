@@ -27,9 +27,9 @@ describe('OpenClose Command', () => {
 
     test('convertParamsToValue Rollershutter', () => {
       const device = { customData: { itemType: 'Rollershutter' } };
-      expect(Command.convertParamsToValue({ openPercent: 0 }, {}, device)).toBe('100');
+      expect(Command.convertParamsToValue({ openPercent: 0 }, {}, device)).toBe('DOWN');
       expect(Command.convertParamsToValue({ openPercent: 20 }, {}, device)).toBe('80');
-      expect(Command.convertParamsToValue({ openPercent: 100 }, {}, device)).toBe('0');
+      expect(Command.convertParamsToValue({ openPercent: 100 }, {}, device)).toBe('UP');
     });
 
     test('convertParamsToValue Switch', () => {
@@ -53,7 +53,7 @@ describe('OpenClose Command', () => {
 
   describe('checkCurrentState', () => {
     test('Switch', () => {
-      expect.assertions(4);
+      expect.assertions(8);
 
       expect(Command.checkCurrentState('ON', 'OFF', { openPercent: 100 })).toBeUndefined();
       try {
@@ -65,6 +65,20 @@ describe('OpenClose Command', () => {
       expect(Command.checkCurrentState('OFF', 'ON', { openPercent: 0 })).toBeUndefined();
       try {
         Command.checkCurrentState('OFF', 'OFF', { openPercent: 0 });
+      } catch (e) {
+        expect(e.errorCode).toBe('alreadyClosed');
+      }
+
+      expect(Command.checkCurrentState('UP', '100', { openPercent: 100 })).toBeUndefined();
+      try {
+        Command.checkCurrentState('UP', '0', { openPercent: 100 });
+      } catch (e) {
+        expect(e.errorCode).toBe('alreadyOpen');
+      }
+
+      expect(Command.checkCurrentState('DOWN', '0', { openPercent: 0 })).toBeUndefined();
+      try {
+        Command.checkCurrentState('DOWN', '100', { openPercent: 0 });
       } catch (e) {
         expect(e.errorCode).toBe('alreadyClosed');
       }
