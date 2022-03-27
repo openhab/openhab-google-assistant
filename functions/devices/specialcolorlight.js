@@ -9,6 +9,10 @@ class SpecialColorLight extends DefaultDevice {
     return ['action.devices.traits.OnOff', 'action.devices.traits.Brightness', 'action.devices.traits.ColorSetting'];
   }
 
+  static isCompatible(item = {}) {
+    return item.metadata && item.metadata.ga && item.metadata.ga.value.toLowerCase() == 'specialcolorlight';
+  }
+
   static matchesItemType(item) {
     const members = this.getMembers(item);
     return (
