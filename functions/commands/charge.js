@@ -24,7 +24,7 @@ class Charge extends DefaultCommand {
 
   static convertParamsToValue(params, _, device) {
     let charge = params.charge;
-    if (this.isInverted(device) === true) {
+    if (this.isInverted(device)) {
       charge = !charge;
     }
     return charge ? 'ON' : 'OFF';

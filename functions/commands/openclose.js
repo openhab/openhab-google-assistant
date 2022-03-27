@@ -15,7 +15,7 @@ class OpenClose extends DefaultCommand {
       throw { statusCode: 400 };
     }
     let openPercent = params.openPercent;
-    if (this.isInverted(device) === true) {
+    if (this.isInverted(device)) {
       openPercent = 100 - openPercent;
     }
     if (itemType === 'Rollershutter') {
