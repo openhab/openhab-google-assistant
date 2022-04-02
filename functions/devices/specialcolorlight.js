@@ -35,9 +35,10 @@ class SpecialColorLight extends DefaultDevice {
     if ('colorTemperatureRange' in config) {
       const [min, max] = config.colorTemperatureRange.split(',').map((s) => Number(s.trim()));
       if (!isNaN(min) && !isNaN(max)) {
+        const colorUnit = this.getColorUnit(item);
         attributes.colorTemperatureRange = {
-          temperatureMinK: min,
-          temperatureMaxK: max
+          temperatureMinK: colorUnit === 'mired' ? convertMired(max) : min,
+          temperatureMaxK: colorUnit === 'mired' ? convertMired(min) : max
         };
       }
     }

@@ -235,6 +235,25 @@ describe('SpecialColorLight Device', () => {
       expect(Device.getAttributes(item1)).toStrictEqual({});
     });
 
+    test('getAttributes colorTemperatureRange with mired', () => {
+      const item = {
+        metadata: {
+          ga: {
+            config: {
+              colorUnit: 'mired',
+              colorTemperatureRange: '250,454'
+            }
+          }
+        }
+      };
+      expect(Device.getAttributes(item)).toStrictEqual({
+        colorTemperatureRange: {
+          temperatureMinK: 2203,
+          temperatureMaxK: 4000
+        }
+      });
+    });
+
     test('getAttributes color', () => {
       const item = {
         metadata: {
