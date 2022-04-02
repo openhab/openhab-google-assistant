@@ -23,22 +23,22 @@ module.exports = {
    * @param {number} value temperature in Fahrenheit
    * @returns {number} temperature value converted to Celsius
    */
-  convertToCelsius: (value) => {
+  convertFahrenheitToCelsius: (value) => {
     return Number((((value - 32) * 5) / 9).toFixed(1));
   },
   /**
    * @param {number} value temperature in Celsius
    * @returns {number} temperature value converted to Fahrenheit
    */
-  convertToFahrenheit: (value) => {
+  convertCelsiusToFahrenheit: (value) => {
     return Math.round((value * 9) / 5 + 32);
   },
   /**
-   * @param {number} kelvin color temperature as Kelvin
+   * @param {number} value color temperature as Kelvin
    * @returns {object} color temperature value converted to RGB
    */
-  kelvin2rgb: (kelvin) => {
-    const temp = kelvin / 100;
+  convertKelvinToRgb: (value) => {
+    const temp = value / 100;
     const r = temp <= 66 ? 255 : 329.698727446 * Math.pow(temp - 60, -0.1332047592);
     const g =
       temp <= 66
@@ -52,10 +52,17 @@ module.exports = {
     };
   },
   /**
+   * @param {number} value color temperature as Kelvin or Mired
+   * @returns {number} color temperature value converted to Mired or Kelvin
+   */
+  convertMired: (value) => {
+    return Math.round(Math.pow(10, 6) / value);
+  },
+  /**
    * @param {object} rgb color as RGB
    * @returns {object} color value converted to HSV
    */
-  rgb2hsv: ({ r, g, b }) => {
+  convertRgbToHsv: ({ r, g, b }) => {
     r = r / 255;
     g = g / 255;
     b = b / 255;

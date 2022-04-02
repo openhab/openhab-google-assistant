@@ -1,4 +1,5 @@
 const DefaultDevice = require('./default.js');
+const convertMired = require('../utilities.js').convertMired;
 
 class SpecialColorLight extends DefaultDevice {
   static get type() {
@@ -15,7 +16,7 @@ class SpecialColorLight extends DefaultDevice {
       item.type === 'Group' &&
       Object.keys(members).length > 1 &&
       (!('lightColorTemperature' in members) ||
-        this.useKelvin(item) ||
+        this.getColorUnit(item) !== 'percent' ||
         !!this.getAttributes(item).colorTemperatureRange)
     );
   }
@@ -74,9 +75,14 @@ class SpecialColorLight extends DefaultDevice {
             break;
           }
           try {
-            if (this.useKelvin(item)) {
+            const colorUnit = this.getColorUnit(item);
+            if (colorUnit === 'kelvin') {
               state.color = {
                 temperatureK: Number(members[member].state)
+              };
+            } else if (colorUnit === 'mired') {
+              state.color = {
+                temperatureK: convertMired(Number(members[member].state))
               };
             } else {
               const { temperatureMinK, temperatureMaxK } = this.getAttributes(item).colorTemperatureRange;
@@ -111,8 +117,9 @@ class SpecialColorLight extends DefaultDevice {
     return members;
   }
 
-  static useKelvin(item) {
-    return this.getConfig(item).useKelvin === true;
+  static getColorUnit(item) {
+    const colorUnit = this.getConfig(item).colorUnit || 'percent';
+    return colorUnit.toLowerCase();
   }
 }
 
