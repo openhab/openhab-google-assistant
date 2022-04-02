@@ -42,7 +42,7 @@ class Mute extends DefaultCommand {
     if (itemType !== 'Switch') {
       return mute ? '0' : undefined;
     }
-    if (this.isInverted(device) === true) {
+    if (this.isInverted(device)) {
       mute = !mute;
     }
     return mute ? 'ON' : 'OFF';

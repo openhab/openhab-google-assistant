@@ -71,6 +71,13 @@ describe('Default Command', () => {
     expect(Command.getItemName({ name: 'Item' }, {})).toBe('Item');
   });
 
+  test('isInverted', () => {
+    expect(Command.isInverted({})).toBe(false);
+    expect(Command.isInverted({ id: 'Item', customData: {} })).toBe(false);
+    expect(Command.isInverted({ id: 'Item', customData: { inverted: false } })).toBe(false);
+    expect(Command.isInverted({ id: 'Item', customData: { inverted: true } })).toBe(true);
+  });
+
   test('requiresItem', () => {
     expect(Command.requiresItem({})).toBe(false);
   });
