@@ -6,7 +6,7 @@ describe('SpecialColorLight Device', () => {
       Device.isCompatible({
         metadata: {
           ga: {
-            value: 'LIGHT'
+            value: 'SpecialColorLight'
           }
         }
       })
