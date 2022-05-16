@@ -13,6 +13,6 @@
   "license": "EPL-2.0",
   "dependencies": {
     "actions-on-google": "^3.0.0",
-    "glob": "^8.0.1"
+    "glob": "^8.0.3"
   }
 }
