@@ -18,8 +18,7 @@ class Fan extends DefaultDevice {
       availableFanSpeeds: {
         speeds: [],
         ordered: config.ordered === true
-      },
-      reversible: false
+      }
     };
     config.speeds.split(',').forEach((speedEntry) => {
       try {

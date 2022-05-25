@@ -76,8 +76,7 @@ describe('Fan Device', () => {
             }
           ],
           ordered: true
-        },
-        reversible: false
+        }
       });
     });
   });

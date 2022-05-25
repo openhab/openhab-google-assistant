@@ -1,4 +1,5 @@
 const DefaultCommand = require('./default.js');
+const ACUnit = require('../devices/acunit.js');
 
 class SetFanSpeed extends DefaultCommand {
   static get type() {
@@ -7,6 +8,22 @@ class SetFanSpeed extends DefaultCommand {
 
   static validateParams(params) {
     return 'fanSpeed' in params && typeof params.fanSpeed === 'string';
+  }
+
+  static requiresItem(device) {
+    return this.getDeviceType(device) === 'ACUnit';
+  }
+
+  static getItemName(item, device) {
+    const deviceType = this.getDeviceType(device);
+    if (deviceType === 'ACUnit') {
+      const members = ACUnit.getMembers(item);
+      if ('fanPower' in members) {
+        return members.fanPower.name;
+      }
+      throw { statusCode: 400 };
+    }
+    return item.name;
   }
 
   static convertParamsToValue(params) {
