@@ -29,7 +29,7 @@ describe('Fan Device', () => {
           }
         }
       };
-      expect(Device.getAttributes(item)).toStrictEqual({});
+      expect(Device.getAttributes(item)).toStrictEqual({ supportsFanSpeedPercent: true });
     });
 
     test('getAttributes speeds', () => {
@@ -76,13 +76,21 @@ describe('Fan Device', () => {
             }
           ],
           ordered: true
-        }
+        },
+        supportsFanSpeedPercent: true
       });
     });
   });
 
   test('getState', () => {
     expect(Device.getState({ state: '50' })).toStrictEqual({
+      currentFanSpeedPercent: 50,
+      on: true
+    });
+    expect(
+      Device.getState({ state: '50', metadata: { ga: { config: { speeds: '0=null:off,50=slow,100=full:fast' } } } })
+    ).toStrictEqual({
+      currentFanSpeedPercent: 50,
       currentFanSpeedSetting: '50',
       on: true
     });

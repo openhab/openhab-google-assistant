@@ -8,11 +8,7 @@ class ACUnit extends DefaultDevice {
   }
 
   static getTraits() {
-    return [
-      'action.devices.traits.TemperatureSetting',
-      'action.devices.traits.FanSpeed',
-      'action.devices.traits.OnOff'
-    ];
+    return [...Fan.getTraits(), ...Thermostat.getTraits()];
   }
 
   static matchesItemType(item) {
@@ -30,8 +26,6 @@ class ACUnit extends DefaultDevice {
 
   static getState(item) {
     const state = {
-      on: false,
-      currentFanSpeedSetting: '0',
       ...Thermostat.getState(item)
     };
 
@@ -41,7 +35,10 @@ class ACUnit extends DefaultDevice {
         state.on = members[member].state === 'ON';
       }
       if (member == 'fanSpeed') {
-        state.currentFanSpeedSetting = members[member].state.toString();
+        if ('speeds' in this.getConfig(item)) {
+          state.currentFanSpeedSetting = members[member].state.toString();
+        }
+        state.currentFanSpeedPercent = Number(members[member].state);
       }
     }
 

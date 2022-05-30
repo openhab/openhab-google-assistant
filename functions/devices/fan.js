@@ -10,47 +10,53 @@ class Fan extends DefaultDevice {
   }
 
   static getAttributes(item) {
-    const config = this.getConfig(item);
-    if (!config || !config.speeds) {
-      return {};
-    }
     const attributes = {
-      availableFanSpeeds: {
+      supportsFanSpeedPercent: true
+    };
+
+    const config = this.getConfig(item);
+    if ('speeds' in config) {
+      attributes.availableFanSpeeds = {
         speeds: [],
         ordered: config.ordered === true
-      }
-    };
-    config.speeds.split(',').forEach((speedEntry) => {
-      try {
-        const [speedName, speedSynonyms] = speedEntry
-          .trim()
-          .split('=')
-          .map((s) => s.trim());
-        attributes.availableFanSpeeds.speeds.push({
-          speed_name: speedName,
-          speed_values: [
-            {
-              speed_synonym: speedSynonyms.split(':').map((s) => s.trim()),
-              lang: config.lang || 'en'
-            }
-          ]
-        });
-      } catch (error) {
-        //
-      }
-    });
+      };
+      config.speeds.split(',').forEach((speedEntry) => {
+        try {
+          const [speedName, speedSynonyms] = speedEntry
+            .trim()
+            .split('=')
+            .map((s) => s.trim());
+          attributes.availableFanSpeeds.speeds.push({
+            speed_name: speedName,
+            speed_values: [
+              {
+                speed_synonym: speedSynonyms.split(':').map((s) => s.trim()),
+                lang: config.lang || 'en'
+              }
+            ]
+          });
+        } catch (error) {
+          //
+        }
+      });
+    }
+
     return attributes;
   }
 
   static get requiredItemTypes() {
-    return ['Dimmer'];
+    return ['Dimmer', 'Number'];
   }
 
   static getState(item) {
-    return {
-      currentFanSpeedSetting: item.state.toString(),
-      on: Number(item.state) > 0
+    const state = {
+      on: Number(item.state) > 0,
+      currentFanSpeedPercent: Number(item.state)
     };
+    if ('speeds' in this.getConfig(item)) {
+      state.currentFanSpeedSetting = item.state.toString();
+    }
+    return state;
   }
 }
 

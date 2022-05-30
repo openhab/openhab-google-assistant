@@ -41,132 +41,8 @@ describe('ACUnit Device', () => {
       };
       expect(Device.getAttributes(item)).toStrictEqual({
         availableThermostatModes: ['off', 'heat', 'cool', 'on', 'heatcool', 'auto', 'eco'],
-        thermostatTemperatureUnit: 'C'
-      });
-    });
-
-    test('getAttributes modes, fahrenheit', () => {
-      const item = {
-        metadata: {
-          ga: {
-            config: {
-              modes: 'on=1,off=2',
-              useFahrenheit: true
-            }
-          }
-        }
-      };
-      expect(Device.getAttributes(item)).toStrictEqual({
-        availableThermostatModes: ['on', 'off'],
-        thermostatTemperatureUnit: 'F'
-      });
-    });
-
-    test('getAttributes temperaturerange', () => {
-      const item = {
-        metadata: {
-          ga: {
-            config: {
-              thermostatTemperatureRange: '10,30'
-            }
-          }
-        }
-      };
-      expect(Device.getAttributes(item)).toStrictEqual({
-        availableThermostatModes: ['off', 'heat', 'cool', 'on', 'heatcool', 'auto', 'eco'],
         thermostatTemperatureUnit: 'C',
-        thermostatTemperatureRange: {
-          maxThresholdCelsius: 30,
-          minThresholdCelsius: 10
-        }
-      });
-    });
-
-    test('getAttributes invalid temperaturerange', () => {
-      const item = {
-        metadata: {
-          ga: {
-            config: {
-              thermostatTemperatureRange: 'a,b'
-            }
-          }
-        }
-      };
-      expect(Device.getAttributes(item)).toStrictEqual({
-        availableThermostatModes: ['off', 'heat', 'cool', 'on', 'heatcool', 'auto', 'eco'],
-        thermostatTemperatureUnit: 'C'
-      });
-    });
-
-    test('getAttributes queryOnly', () => {
-      const item = {
-        metadata: {
-          ga: {
-            config: {}
-          }
-        },
-        members: [
-          {
-            metadata: {
-              ga: {
-                value: 'thermostatTemperatureAmbient'
-              }
-            }
-          }
-        ]
-      };
-      expect(Device.getAttributes(item)).toStrictEqual({
-        thermostatTemperatureUnit: 'C',
-        queryOnlyTemperatureSetting: true
-      });
-    });
-
-    test('getAttributes speeds', () => {
-      const item = {
-        metadata: {
-          ga: {
-            config: {
-              ordered: true,
-              speeds: '0=null:off,50=slow,100=full:fast'
-            }
-          }
-        }
-      };
-      expect(Device.getAttributes(item)).toStrictEqual({
-        availableThermostatModes: ['off', 'heat', 'cool', 'on', 'heatcool', 'auto', 'eco'],
-        availableFanSpeeds: {
-          speeds: [
-            {
-              speed_name: '0',
-              speed_values: [
-                {
-                  speed_synonym: ['null', 'off'],
-                  lang: 'en'
-                }
-              ]
-            },
-            {
-              speed_name: '50',
-              speed_values: [
-                {
-                  speed_synonym: ['slow'],
-                  lang: 'en'
-                }
-              ]
-            },
-            {
-              speed_name: '100',
-              speed_values: [
-                {
-                  speed_synonym: ['full', 'fast'],
-                  lang: 'en'
-                }
-              ]
-            }
-          ],
-          ordered: true
-        },
-        thermostatTemperatureUnit: 'C'
+        supportsFanSpeedPercent: true
       });
     });
   });
@@ -367,7 +243,7 @@ describe('ACUnit Device', () => {
         ]
       };
       expect(Device.getState(item)).toStrictEqual({
-        currentFanSpeedSetting: '20',
+        currentFanSpeedPercent: 20,
         on: true,
         thermostatHumidityAmbient: 50,
         thermostatMode: 'on',
@@ -375,6 +251,45 @@ describe('ACUnit Device', () => {
         thermostatTemperatureSetpoint: 20,
         thermostatTemperatureSetpointHigh: 25,
         thermostatTemperatureSetpointLow: 5
+      });
+    });
+
+    test('getState speeds', () => {
+      const item = {
+        metadata: {
+          ga: {
+            config: {
+              ordered: true,
+              speeds: '0=null:off,50=slow,100=full:fast',
+              lang: 'en'
+            }
+          }
+        },
+        members: [
+          {
+            name: 'FanSpeed',
+            state: '50',
+            metadata: {
+              ga: {
+                value: 'fanSpeed'
+              }
+            }
+          },
+          {
+            name: 'FanPower',
+            state: 'ON',
+            metadata: {
+              ga: {
+                value: 'fanPower'
+              }
+            }
+          }
+        ]
+      };
+      expect(Device.getState(item)).toStrictEqual({
+        currentFanSpeedPercent: 50,
+        currentFanSpeedSetting: '50',
+        on: true
       });
     });
   });
