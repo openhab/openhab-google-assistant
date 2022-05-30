@@ -26,16 +26,16 @@ describe('SetFanSpeed Command', () => {
       const item = {
         members: [
           {
-            name: 'PowerItem',
+            name: 'SpeedItem',
             metadata: {
               ga: {
-                value: 'fanPower'
+                value: 'fanSpeed'
               }
             }
           }
         ]
       };
-      expect(Command.getItemName(item, { customData: { deviceType: 'ACUnit' } })).toBe('PowerItem');
+      expect(Command.getItemName(item, { customData: { deviceType: 'ACUnit' } })).toBe('SpeedItem');
     });
   });
 

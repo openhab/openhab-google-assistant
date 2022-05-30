@@ -18,8 +18,8 @@ class SetFanSpeed extends DefaultCommand {
     const deviceType = this.getDeviceType(device);
     if (deviceType === 'ACUnit') {
       const members = ACUnit.getMembers(item);
-      if ('fanPower' in members) {
-        return members.fanPower.name;
+      if ('fanSpeed' in members) {
+        return members.fanSpeed.name;
       }
       throw { statusCode: 400 };
     }
