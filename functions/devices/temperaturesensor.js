@@ -1,5 +1,5 @@
 const DefaultDevice = require('./default.js');
-const convertToCelsius = require('../utilities.js').convertToCelsius;
+const convertFahrenheitToCelsius = require('../utilities.js').convertFahrenheitToCelsius;
 
 class TemperatureSensor extends DefaultDevice {
   static get type() {
@@ -28,7 +28,7 @@ class TemperatureSensor extends DefaultDevice {
   static getState(item) {
     let state = Number(parseFloat(item.state).toFixed(1));
     if (this.getConfig(item).useFahrenheit === true) {
-      state = convertToCelsius(state);
+      state = convertFahrenheitToCelsius(state);
     }
     return {
       temperatureSetpointCelsius: state,

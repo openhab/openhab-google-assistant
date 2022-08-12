@@ -63,13 +63,27 @@ describe('ColorAbsoluteTemperature Command', () => {
         metadata: {
           ga: {
             config: {
-              useKelvin: true
+              colorUnit: 'kelvin'
             }
           }
         }
       };
       const device = { customData: { deviceType: 'SpecialColorLight' } };
       expect(Command.convertParamsToValue(params, item, device)).toBe('2000');
+    });
+
+    test('convertParamsToValue SpecialColorLight Mired', () => {
+      const item = {
+        metadata: {
+          ga: {
+            config: {
+              colorUnit: 'mired'
+            }
+          }
+        }
+      };
+      const device = { customData: { deviceType: 'SpecialColorLight' } };
+      expect(Command.convertParamsToValue(params, item, device)).toBe('500');
     });
   });
 

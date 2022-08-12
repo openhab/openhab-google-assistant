@@ -1,5 +1,5 @@
 const DefaultDevice = require('./default.js');
-const convertToCelsius = require('../utilities.js').convertToCelsius;
+const convertFahrenheitToCelsius = require('../utilities.js').convertFahrenheitToCelsius;
 
 class Thermostat extends DefaultDevice {
   static get type() {
@@ -50,7 +50,7 @@ class Thermostat extends DefaultDevice {
       } else {
         state[member] = Number(parseFloat(members[member].state).toFixed(1));
         if (member.indexOf('Temperature') > 0 && this.useFahrenheit(item)) {
-          state[member] = convertToCelsius(state[member]);
+          state[member] = convertFahrenheitToCelsius(state[member]);
         }
       }
     }
