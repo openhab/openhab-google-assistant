@@ -119,6 +119,6 @@ jobs:
           region: us-central1
           timeout: 180
           memory_mb: 256MB
-          min_instances: 2
+          min_instances: 1
           max_instances: 20
           env_vars: OH_HOST=myopenhab.org,OH_PORT=443,OH_PATH=/rest/items/
