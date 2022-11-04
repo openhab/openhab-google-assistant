@@ -1,6 +1,7 @@
 const DefaultCommand = require('./default.js');
 const SpecialColorLight = require('../devices/specialcolorlight.js');
 const TV = require('../devices/tv.js');
+const ACUnit = require('../devices/acunit.js');
 
 class OnOff extends DefaultCommand {
   static get type() {
@@ -12,7 +13,7 @@ class OnOff extends DefaultCommand {
   }
 
   static requiresItem(device) {
-    return ['SpecialColorLight', 'TV'].includes(this.getDeviceType(device));
+    return ['SpecialColorLight', 'TV', 'ACUnit'].includes(this.getDeviceType(device));
   }
 
   static getItemName(item, device) {
@@ -31,6 +32,13 @@ class OnOff extends DefaultCommand {
       const members = TV.getMembers(item);
       if ('tvPower' in members) {
         return members.tvPower.name;
+      }
+      throw { statusCode: 400 };
+    }
+    if (deviceType === 'ACUnit') {
+      const members = ACUnit.getMembers(item);
+      if ('fanPower' in members) {
+        return members.fanPower.name;
       }
       throw { statusCode: 400 };
     }

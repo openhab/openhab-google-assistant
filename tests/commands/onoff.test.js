@@ -70,6 +70,26 @@ describe('OnOff Command', () => {
       };
       expect(Command.getItemName(item, { customData: { deviceType: 'TV' } })).toBe('PowerItem');
     });
+
+    test('getItemName ACUnit', () => {
+      expect(() => {
+        Command.getItemName({ name: 'Item' }, { customData: { deviceType: 'ACUnit' } });
+      }).toThrow();
+
+      const item = {
+        members: [
+          {
+            name: 'PowerItem',
+            metadata: {
+              ga: {
+                value: 'fanPower'
+              }
+            }
+          }
+        ]
+      };
+      expect(Command.getItemName(item, { customData: { deviceType: 'ACUnit' } })).toBe('PowerItem');
+    });
   });
 
   describe('convertParamsToValue', () => {

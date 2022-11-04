@@ -266,11 +266,12 @@ Player transportItem   (tvGroup) { ga="tvTransport" }
 |---|---|
 | **Device Type** | [Fan](https://developers.google.com/assistant/smarthome/guides/fan), [Hood](https://developers.google.com/assistant/smarthome/guides/hood), [AirPurifier](https://developers.google.com/assistant/smarthome/guides/airpurifier) |
 | **Supported Traits** | [OnOff](https://developers.google.com/assistant/smarthome/traits/OnOff), [FanSpeed](https://developers.google.com/assistant/smarthome/traits/fanspeed) (depending on used item type) |
-| **Supported Items** | Switch (no speed control), Dimmer |
-| **Configuration** | (optional) `checkState=true/false`<br>(optional) `speeds="0=away:zero,50=default:standard:one,100=high:two"`<br>(optional) `lang="en"`<br>(optional) `ordered=true/false`<br>_Hint: if you are using a Dimmer then `speeds` is required_ |
+| **Supported Items** | Switch (no speed control), Dimmer, Number |
+| **Configuration** | (optional) `checkState=true/false`<br>(optional) `speeds="0=away:zero,50=default:standard:one,100=high:two"`<br>(optional) `lang="en"`<br>(optional) `ordered=true/false` |
 
 Fans (and similar device types, like AirPurifier or Hood) support the `FanSpeed` trait.
-With that you will be able to set up and use human speakable modes, e.g. "fast" for 100% or "slow" for 25%.
+If you do not specify the `speeds` option, Google will use and expect percentage values for the fan speed.
+Otherwise, you will be able to set up and use human speakable modes, e.g. "fast" for 100% or "slow" for 25%.
 
 `speeds` will be a comma-separated list of modes with a percentage number followed by an equal sign and different aliases for that mode after a colon.
 So here both "high" and "two" would set the speed to 100%.
@@ -279,8 +280,8 @@ The option `ordered` will tell the system that your list is ordered and you will
 
 ```shell
 Dimmer { ga="Fan" [ speeds="0=away:zero,50=default:standard:one,100=high:two", lang="en", ordered=true ] }
-Switch { ga="Hood" }
-Dimmer { ga="AirPurifier" [ speeds="0=off,50=mid,100=high" ] }
+Switch { ga="Hood" } # No speed control - only on/off
+Number { ga="AirPurifier" } # Only percentage values for the speed
 ```
 
 #### `Awning`, `Blinds`, `Curtain`, `Door`, `Garage`, `Gate`, `Pergola`, `Shutter`, `Window`
