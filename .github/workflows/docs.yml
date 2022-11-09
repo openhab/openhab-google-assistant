@@ -14,5 +14,5 @@ jobs:
         with:
           token: ${{ secrets.DOCS_REPO_ACCESS_TOKEN }}
           repository: openhab/openhab-docs
-          event-type: update-openhabian-docs-event
+          event-type: update-openhab-google-assistant-docs-event
           client-payload: '{"ref": "${{ github.ref }}"}'
