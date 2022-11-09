@@ -1,0 +1,18 @@
+name: Update Documentation
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  triggerWorkflowDispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.DOCS_REPO_ACCESS_TOKEN }}
+          repository: openhab/openhab-docs
+          event-type: update-openhabian-docs-event
+          client-payload: '{"ref": "${{ github.ref }}"}'

@@ -122,12 +122,3 @@ jobs:
           min_instances: 1
           max_instances: 20
           env_vars: OH_HOST=myopenhab.org,OH_PORT=443,OH_PATH=/rest/items/
-
-      - name: Update documentation at openhab-docs
-        if: github.event_name == 'release'
-        uses: peter-evans/repository-dispatch@v2
-        with:
-          token: ${{ secrets.DOCS_REPO_ACCESS_TOKEN }}
-          repository: openhab/openhab-docs
-          event-type: update-openhab-google-assistant-docs-event
-          client-payload: '{"ref": "${{ github.ref }}"}'
