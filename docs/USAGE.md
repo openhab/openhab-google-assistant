@@ -72,7 +72,7 @@ Color  { ga="Light" [ colorTemperatureRange="2000,9000" ] }
 |---|---|
 | **Device Type** | [Light](https://developers.google.com/assistant/smarthome/guides/light) |
 | **Supported Traits** | [OnOff](https://developers.google.com/assistant/smarthome/traits/onoff), [ColorSetting](https://developers.google.com/assistant/smarthome/traits/colorsetting), [Brightness](https://developers.google.com/assistant/smarthome/traits/brightness) |
-| **Supported Items** | Group as `SpecialColorLight` with the following members: (optional) Number or Dimmer as `lightBrightness`, (optional) Number or Dimmer as `lightColorTemperature`, (optional) Color as `lightColor`, (optional) Switch as `lightPower` |
+| **Supported Items** | Group as `SpecialColorLight` with the following members:<br>(optional) Number or Dimmer as `lightBrightness`<br>(optional) Number or Dimmer as `lightColorTemperature`<br>(optional) Color as `lightColor`<br>(optional) Switch as `lightPower` |
 | **Configuration** | (optional) `colorUnit=percent/kelvin/mired`<br>(optional) `checkState=true/false`<br>(optional) `colorTemperatureRange="minK,maxK"`<br>_Hint: if you want to use `lightColorTemperature` you either need to set `colorUnit` to `kelvin` or `mired` or define a `colorTemperatureRange` as `colorUnit` defaults to `percent`_ |
 
 ```shell
@@ -146,7 +146,7 @@ Switch { ga="Vacuum" [ inverted=false ] }
 | **Device Type** | [Lock](https://developers.google.com/assistant/smarthome/guides/lock) |
 | **Supported Traits** | [LockUnlock](https://developers.google.com/assistant/smarthome/traits/lockunlock) |
 | **Supported Items** | Contact (no device control), Switch |
-| **Configuration** | (optional) (optional) `inverted=true/false`<br>(optional) `checkState=true/false`<br>`ackNeeded=true/false`<br>(optional) `pinNeeded="1234"` |
+| **Configuration** | (optional) `inverted=true/false`<br>(optional) `checkState=true/false`<br>(optional) `ackNeeded=true/false`<br>(optional) `pinNeeded="1234"` |
 
 ```shell
 Switch { ga="Lock" [ ackNeeded=true ] }
@@ -160,7 +160,7 @@ Switch { ga="Lock" [ pinNeeded="1234" ] }
 | **Device Type** | [SecuritySystem](https://developers.google.com/assistant/smarthome/guides/securitysystem) |
 | **Supported Traits** | [ArmDisarm](https://developers.google.com/assistant/smarthome/traits/armdisarm) |
 | **Supported Items** | Switch |
-| **Configuration** | (optional) (optional) `inverted=true/false`<br>(optional) `checkState=true/false`<br>`ackNeeded=true/false`<br>(optional) `pinNeeded="1234"`<br>(optional) `pinOnDisarmOnly=true/false`<br>(optional) `waitForStateChange=2` |
+| **Configuration** | (optional) `inverted=true/false`<br>(optional) `checkState=true/false`<br>(optional) `ackNeeded=true/false`<br>(optional) `pinNeeded="1234"`<br>(optional) `pinOnDisarmOnly=true/false`<br>(optional) `waitForStateChange=2` |
 
 When used as a Switch, you will be limited to arming and disarming the system.
 
@@ -246,7 +246,7 @@ Dimmer { ga="Speaker" [ volumeDefaultPercentage="50", levelStepSize="10", volume
 |---|---|
 | **Device Type** | [TV](https://developers.google.com/assistant/smarthome/guides/tv) |
 | **Supported Traits** | [OnOff](https://developers.google.com/assistant/smarthome/traits/onoff), [Volume](https://developers.google.com/assistant/smarthome/traits/volume), [TransportControl](https://developers.google.com/assistant/smarthome/traits/transportcontrol), [InputSelector](https://developers.google.com/assistant/smarthome/traits/inputselector), [AppSelector](https://developers.google.com/assistant/smarthome/traits/appselector), [Channel](https://developers.google.com/assistant/smarthome/traits/channel) (depending on used members) |
-| **Supported Items** | Group as `TV` with the following optional members: Switch as `tvPower`, Switch as `tvMute`, Dimmer as `tvVolume`, String as `tvChannel`, String as `tvInput`, String as `tvApplication`, Player as `tvTransport` |
+| **Supported Items** | Group as `TV` with the following members:<br>(optional) Switch as `tvPower`<br>(optional) Switch as `tvMute`<br>(optional) Dimmer as `tvVolume`<br>(optional) String as `tvChannel`<br>(optional) String as `tvInput`<br>(optional) String as `tvApplication`<br>(optional) Player as `tvTransport` |
 | **Configuration** | (optional) `checkState=true/false`<br>(optional) `volumeDefaultPercentage="20"`<br>(optional) `levelStepSize="5"`<br>(optional) `volumeMaxLevel="100"`<br>(optional) `transportControlSupportedCommands="NEXT,PREVIOUS,PAUSE,RESUME"`<br>(optional) `availableChannels="channelNumber=channelId=channelName:channelSynonym:...,..."`<br>(optional) `availableInputs="inputKey=inputName:inputSynonym:...,..."`<br>(optional) `availableApplications="applicationKey=applicationName:applicationSynonym:...,..."`<br>(optional) `lang="en"` |
 
 ```shell
@@ -317,7 +317,7 @@ Rollershutter { ga="Window" }
 |---|---|
 | **Device Type** | [Charger](https://developers.google.com/assistant/smarthome/guides/charger) |
 | **Supported Traits** | [EnergyStorage](https://developers.google.com/assistant/smarthome/traits/energystorage) |
-| **Supported Items** | Group as `Charger` with the following optional members: Switch as `chargerCharging`, Switch as `chargerPluggedIn`, Number or Dimmer as `chargerCapacityRemaining`, Number or Dimmer as `chargerCapacityUntilFull` |
+| **Supported Items** | Group as `Charger` with the following members:<br>(optional) Switch as `chargerCharging`<br>(optional) Switch as `chargerPluggedIn`<br>(optional) Number or Dimmer as `chargerCapacityRemaining`<br>(optional) Number or Dimmer as `chargerCapacityUntilFull` |
 | **Configuration** | (optional) `checkState=true/false`<br>(optional) `isRechargeable=true/false`<br>(optional) `unit="PERCENTAGE"` |
 
 The configuration option `unit` supports the following values: `PERCENTAGE` (default), `SECONDS`, `MILES`, `KILOMETERS`, `KILOWATT_HOURS`
@@ -353,7 +353,7 @@ Number { ga="TemperatureSensor" [ useFahrenheit=true ] }
 |---|---|
 | **Device Type** | [Thermostat](https://developers.google.com/assistant/smarthome/guides/thermostat) |
 | **Supported Traits** | [TemperatureSetting](https://developers.google.com/assistant/smarthome/traits/temperaturesetting) |
-| **Supported Items** | Group as `Thermostat` with the following optional members: Number as `thermostatTemperatureAmbient`, Number as `thermostatTemperatureSetpoint`, Number as `thermostatTemperatureSetpointLow`, Number as `thermostatTemperatureSetpointHigh`, Number as `thermostatHumidityAmbient`, String or Number as `thermostatMode` |
+| **Supported Items** | Group as `Thermostat` with the following members:<br>String or Number as `thermostatMode`<br>(optional) Number as `thermostatHumidityAmbient`<br>(optional) Number as `thermostatTemperatureAmbient`<br>(optional) Number as `thermostatTemperatureSetpoint`<br>(optional) Number as `thermostatTemperatureSetpointLow`<br>(optional) Number as `thermostatTemperatureSetpointHigh` |
 | **Configuration** | (optional) `checkState=true/false`<br>(optional) `useFahrenheit=true/false`<br>(optional) `thermostatTemperatureRange="10,30"`<br>(optional) `modes="off=OFF:WINDOW_OPEN,heat=COMFORT:BOOST,eco=ECO,on=ON,auto"` |
 
 Thermostat requires a group of items to be properly configured to be used with Google Assistant. The default temperature unit is Celsius.
@@ -456,7 +456,7 @@ Switch HouseAlarm "House Alarm" { ga="SecuritySystem" [ pinNeeded="1234" ] }
 
 * Make sure Google Play Services is up to date.
 * Visit "Google Home" app entry in Google Play Store on Android.
-* Set up the voice-activated speaker, Pixel, or Android phone (version 6+) with the same  account.
+* Set up the voice-activated speaker or Android phone (version 6+) with your Google account.
 * Make sure you're the correct user.
 * Start the updated Google Home app on your phone.
 * Go to the settings part: `Account > Settings`.
@@ -512,32 +512,19 @@ Here are some example voice commands:
 
 My New items did not appear in the Google Home app.
 
-* Say: Hey Google, sync my devices.
+* Say: `Hey Google, sync my devices`
 
 I'm not able to connect openHAB to Google Home.
 
 * Check, recheck and after that check again your items!
 * The items that you want to expose to Google Assistant should have the right metadata assigned.
 * The items that you want to expose to Google Assistant must have a item label! [Item Definition and Syntax](https://www.openhab.org/docs/configuration/items.html#item-definition-and-syntax)
-* If you expose thermostats make sure than you have:
-  * A Group item with the metadata value `{ ga="Thermostat" }`
-  * A Number or String item with the metadata value `{ ga="thermostatMode" }` as part of the thermostat group
-  * A Number item with the metadata value `{ ga="thermostatTemperatureAmbient" }` as part of the thermostat group
-  * A Number item with the metadata value `{ ga="thermostatTemperatureSetpoint" }` as part of the thermostat group
-
-  ```shell
-  Group  g_HK_Basement_TSTAT  "Basement Thermostat"                                 { ga="Thermostat" [ useFahrenheit=true ] }
-  Number HK_Basement_Mode     "Basement Heating/Cooling Mode" (g_HK_Basement_TSTAT) { ga="thermostatMode" }
-  Number HK_Basement_Setpoint "Basement Setpoint"             (g_HK_Basement_TSTAT) { ga="thermostatTemperatureSetpoint" }
-  Number HK_Basement_Temp     "Basement Temperature"          (g_HK_Basement_TSTAT) { ga="thermostatTemperatureAmbient" }
-  ```
-
 * If none of the above solutions works for you:
   * Remove all the metadata.
   * Make a new .item file with 1 item to expose.
 
   ```shell
-  Switch TestLight "Test Light" { ga="Switch" }
+  Switch TestSwitch "Test Switch" { ga="Switch" }
   ```
 
   * Relink your account.
