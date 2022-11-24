@@ -498,32 +498,32 @@ Switch HouseAlarm "House Alarm" { ga="SecuritySystem" [ pinNeeded="1234" ] }
 - Start the Google Home app on your phone.
 - Go to the settings part: `Home > Settings`.
 
-![openHAB Google App](images/Screenshot_1.jpg)
+![openHAB Google App](images/Screenshot_1.png)
 
 - Press the `+ Add device` button in the Settings screen.
 
-![openHAB Google App](images/Screenshot_2.jpg)
+![openHAB Google App](images/Screenshot_2.png)
 
 - Choose `Works with Google`
 
-![openHAB Google App](images/Screenshot_3.jpg)
+![openHAB Google App](images/Screenshot_3.png)
 
 - Search and select `openHAB`.
 
-![openHAB Google App](images/Screenshot_4.jpg)
+![openHAB Google App](images/Screenshot_4.png)
 
 - Continue with linking your account.
 
-![openHAB Google App](images/Screenshot_5.jpg)
+![openHAB Google App](images/Screenshot_5.png)
 
 - Login at `myopenhab.org` with your username and password.
 
-![openHAB Google App](images/Screenshot_6.jpg)
+![openHAB Google App](images/Screenshot_6.png)
 
 - Make sure to assign your devices to rooms to properly use voice commands.
 - You can now control your devices from the Google Assistant and Google Home.
 
-![openHAB Google App](images/Screenshot_7.jpg)
+![openHAB Google App](images/Screenshot_7.png)
 
 ## Example Voice Commands
 
