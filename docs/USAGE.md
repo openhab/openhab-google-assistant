@@ -15,20 +15,57 @@ With the Action you can voice control your openHAB items and it supports lights,
 
 If you have any issues, questions or an idea for additional features, please take a look at the [repository on GitHub](https://github.com/openhab/openhab-google-assistant).
 
-## General Configuration Instructions
+## Table of Contents
 
-::: tip
+- [Latest Changes](#latest-changes)
+- [General Configuration](#general-configuration)
+- [Item Configuration](#item-configuration)
+  - [`Switch`](#switch)
+  - [`Light`](#light)
+  - [`Light` as Group with separate Controls](#light-as-group-with-separate-controls)
+  - [`Scene`](#scene)
+  - [`Outlet`, `Coffee_Maker`, `WaterHeater`, `Fireplace`](#outlet-coffee_maker-waterheater-fireplace)
+  - [`Valve`](#valve)
+  - [`Sprinkler`, `Vacuum`](#sprinkler-vacuum)
+  - [`Lock`](#lock)
+  - [`SecuritySystem` as Switch](#securitysystem-as-switch)
+  - [`SecuritySystem` as Group with advanced functionality](#securitysystem-as-group-with-advanced-functionality)
+  - [`Camera`](#camera)
+  - [`Speaker` (volume control only)](#speaker-volume-control-only)
+  - [`TV`](#tv)
+  - [`Fan`, `Hood`, `AirPurifier`](#fan-hood-airpurifier)
+  - [`Awning`, `Blinds`, `Curtain`, `Door`, `Garage`, `Gate`, `Pergola`, `Shutter`, `Window`](#awning-blinds-curtain-door-garage-gate-pergola-shutter-window)
+  - [`Charger`](#charger)
+  - [`TemperatureSensor`](#temperaturesensor)
+  - [`Thermostat`](#thermostat)
+  - [`Sensor`](#sensor)
+- [Additional Configuration](#additional-configuration)
+  - [Two-Factor-Authentication](#two-factor-authentication)
+- [Setup \& Usage of the Google Home App](#setup--usage-of-the-google-home-app)
+- [Example Voice Commands](#example-voice-commands)
+- [Frequently Asked Question](#frequently-asked-question)
+
+## Latest Changes
+
+::: tip State of this document
+This documentation refers to release [v3.5.1](https://github.com/openhab/openhab-google-assistant/releases/tag/v3.5.1) of [openHAB Google Assistant](https://github.com/openhab/openhab-google-assistant) published on 2022-11-09 :::
+
+- `ga="light"` for SpecialColorLight is replaced by `ga="specialcolorlight"`
+- `useKelvin=true` is replaced by `colorUnit="kelvin"`
+- Support for color temperature in Mired added
+
+## General Configuration
+
+::: tip Note
 This integration relies on the cloud connector addon.
 More information can be found in the corresponding [docs page](https://www.openhab.org/link/openhabcloud).
 :::
 
-### Requirements
+- The openHAB Cloud Connector configured using [myopenHAB.org](https://www.myopenhab.org) (Items do NOT need to be exposed to and will not show up on myopenHAB.org, this is only required for the IFTTT service!)
+- A Google account
+- A Google Home / Nest Voice Assistant Device or the Google Assistant on your phone
 
-* The openHAB Cloud Connector configured using myopenHAB.org (Items DO NOT need to be exposed to and will not show up on myopenHAB.org, this is only required for the IFTTT service!)
-* A Google account
-* A Google Home/Nest Voice Assistant Device or the Google Assistant on your phone
-
-### Item configuration
+## Item Configuration
 
 To expose [items](https://www.openhab.org/docs/concepts/items.html) to Google Assistent you will need to add [metadata](https://www.openhab.org/docs/concepts/items.html#item-metadata) in the `ga` namespace.
 
@@ -36,7 +73,7 @@ Currently the following devices are supported (also depending on Google's API ca
 
 _Hint: The value of `ga` is **not** case-sensitive._
 
-#### `Switch`
+### `Switch`
 
 | | |
 |---|---|
@@ -51,7 +88,7 @@ _Hint: The value of `ga` is **not** case-sensitive._
 Switch { ga="Switch" [ inverted=false ] }
 ```
 
-#### `Light`
+### `Light`
 
 | | |
 |---|---|
@@ -66,7 +103,7 @@ Dimmer { ga="Light" }
 Color  { ga="Light" [ colorTemperatureRange="2000,9000" ] }
 ```
 
-#### `Light as Group with separate Controls`
+### `Light` as Group with separate controls
 
 | | |
 |---|---|
@@ -83,7 +120,7 @@ Color  colorItem            (lightGroup) { ga="lightColor" }
 Number colorTemperatureItem (lightGroup) { ga="lightColorTemperature" }
 ```
 
-#### `Scene`
+### `Scene`
 
 | | |
 |---|---|
@@ -96,7 +133,7 @@ Number colorTemperatureItem (lightGroup) { ga="lightColorTemperature" }
 Switch { ga="Scene" [ sceneReversible=false ] }
 ```
 
-#### `Outlet`, `Coffee_Maker`, `WaterHeater`, `Fireplace`
+### `Outlet`, `Coffee_Maker`, `WaterHeater`, `Fireplace`
 
 | | |
 |---|---|
@@ -112,7 +149,7 @@ Switch { ga="WaterHeater" [ inverted=false ] }
 Switch { ga="Fireplace" }
 ```
 
-#### `Valve`
+### `Valve`
 
 | | |
 |---|---|
@@ -125,7 +162,7 @@ Switch { ga="Fireplace" }
 Switch { ga="Valve" [ inverted=true ] }
 ```
 
-#### `Sprinkler`, `Vacuum`
+### `Sprinkler`, `Vacuum`
 
 | | |
 |---|---|
@@ -139,7 +176,7 @@ Switch { ga="Sprinkler" [ inverted=true ] }
 Switch { ga="Vacuum" [ inverted=false ] }
 ```
 
-#### `Lock`
+### `Lock`
 
 | | |
 |---|---|
@@ -153,7 +190,7 @@ Switch { ga="Lock" [ ackNeeded=true ] }
 Switch { ga="Lock" [ pinNeeded="1234" ] }
 ```
 
-#### `SecuritySystem as Switch`
+### `SecuritySystem` as Switch
 
 | | |
 |---|---|
@@ -172,7 +209,7 @@ Google Command: "_Hey Google, arm House Alarm_" OR "_Hey Google, disarm House Al
 Switch houseAlarm "House Alarm" { ga="SecuritySystem", pinNeeded="1234" }
 ```
 
-#### `SecuritySystem as Group with advanced functionality`
+### `SecuritySystem` as Group with advanced functionality
 
 | | |
 |---|---|
@@ -185,11 +222,11 @@ Configuring the `SecuritySystem` as a Group will enable a lot of advanced functi
 
 The `Switch` and the `Group` configuration support the following configuration parameters:
 
-* `checkState=true` will compare the current state with the requested one and responds accordingly.
-* `ackNeeded=true` will request an acknowledgement before performing an action.
-* `pinNeeded="1234"` will request and check the configured PIN before performing an action.
-* `pinOnDisarmOnly=true` will enforce the PIN on disarming only. Arming will be done without the PIN.
-* `waitForStateChange=0` defines the number of seconds to wait for the security system state to update before checking that the arm/disarm was successful. Defaults to 0 if not specified.
+- `checkState=true` will compare the current state with the requested one and responds accordingly.
+- `ackNeeded=true` will request an acknowledgement before performing an action.
+- `pinNeeded="1234"` will request and check the configured PIN before performing an action.
+- `pinOnDisarmOnly=true` will enforce the PIN on disarming only. Arming will be done without the PIN.
+- `waitForStateChange=0` defines the number of seconds to wait for the security system state to update before checking that the arm/disarm was successful. Defaults to 0 if not specified.
 
 When configured as a group, you can add arm levels as well as report errors and get details of zones causing the system to not arm.
 
@@ -214,7 +251,7 @@ String  alarmTroubleErrorCode (gHouseAlarm) { ga="securitySystemTroubleCode" }
 Contact frontDoorSensor       (gHouseAlarm) { ga="securitySystemZone" [ zoneType="OpenClose", blocking="true" ] }
 ```
 
-#### `Camera`
+### `Camera`
 
 | | |
 |---|---|
@@ -227,7 +264,7 @@ Contact frontDoorSensor       (gHouseAlarm) { ga="securitySystemZone" [ zoneType
 String { ga="Camera" [ protocols="hls,dash" ] }
 ```
 
-#### `Speaker` (volume control only)
+### `Speaker` (volume control only)
 
 | | |
 |---|---|
@@ -240,7 +277,7 @@ String { ga="Camera" [ protocols="hls,dash" ] }
 Dimmer { ga="Speaker" [ volumeDefaultPercentage="50", levelStepSize="10", volumeMaxLevel="90" ] }
 ```
 
-#### `TV`
+### `TV`
 
 | | |
 |---|---|
@@ -260,7 +297,7 @@ String applicationItem (tvGroup) { ga="tvApplication" }
 Player transportItem   (tvGroup) { ga="tvTransport" }
 ```
 
-#### `Fan`, `Hood`, `AirPurifier`
+### `Fan`, `Hood`, `AirPurifier`
 
 | | |
 |---|---|
@@ -283,7 +320,7 @@ Switch { ga="Hood" }
 Dimmer { ga="AirPurifier" [ speeds="0=off,50=mid,100=high" ] }
 ```
 
-#### `Awning`, `Blinds`, `Curtain`, `Door`, `Garage`, `Gate`, `Pergola`, `Shutter`, `Window`
+### `Awning`, `Blinds`, `Curtain`, `Door`, `Garage`, `Gate`, `Pergola`, `Shutter`, `Window`
 
 | | |
 |---|---|
@@ -311,7 +348,7 @@ Rollershutter { ga="Shutter" }
 Rollershutter { ga="Window" }
 ```
 
-#### `Charger`
+### `Charger`
 
 | | |
 |---|---|
@@ -334,7 +371,7 @@ Number capacityRemainItem   (chargerGroup) { ga="chargerCapacityRemaining" }
 Number capacityFullItem     (chargerGroup) { ga="chargerCapacityUntilFull" }
 ```
 
-#### `TemperatureSensor`
+### `TemperatureSensor`
 
 | | |
 |---|---|
@@ -347,7 +384,7 @@ Number capacityFullItem     (chargerGroup) { ga="chargerCapacityUntilFull" }
 Number { ga="TemperatureSensor" [ useFahrenheit=true ] }
 ```
 
-#### `Thermostat`
+### `Thermostat`
 
 | | |
 |---|---|
@@ -380,7 +417,7 @@ Number setpointItemHigh (thermostatGroup) { ga="thermostatTemperatureSetpointHig
 String modeItem         (thermostatGroup) { ga="thermostatMode" }
 ```
 
-#### `Sensor`
+### `Sensor`
 
 | | |
 |---|---|
@@ -396,7 +433,7 @@ For now only exact matches of the numeric value will report the descriptive stat
 Number { ga="Sensor" [ sensorName="AirQuality", valueUnit="AQI", states="good=10,moderate=50,poor=90" ] }
 ```
 
-### Additional Information
+## Additional Configuration
 
 Item labels are not mandatory in openHAB, but for the Google Assistant Action they are absolutely necessary!
 
@@ -410,8 +447,8 @@ To ease setting up new devices you can add a room hint: `[ roomHint="Living Room
 
 For devices supporting the OpenClose trait, the attributes `[ discreteOnly=false, queryOnly=false ]` can be configured.
 
-* `discreteOnly` defaults to false. When set to true, this indicates that the device must either be fully open or fully closed (that is, it does not support values between 0% and 100%). An example of such a device may be a valve.
-* `queryOnly` defaults to false. Is set to true for `Contact` items. Indicates if the device can only be queried for state information and cannot be controlled. Sensors that can only report open state should set this field to true.
+- `discreteOnly` defaults to false. When set to true, this indicates that the device must either be fully open or fully closed (that is, it does not support values between 0% and 100%). An example of such a device may be a valve.
+- `queryOnly` defaults to false. Is set to true for `Contact` items. Indicates if the device can only be queried for state information and cannot be controlled. Sensors that can only report open state should set this field to true.
 
 All device types support checking the current state before sending an updated state by a command. This can be enabled by setting `[ checkState=true ]` in the metadata. When this is enabled, the current state of the target item is queried and compared to the potential new state triggered by the command. If it is identical, a special error message is triggered and communicated to the user.
 
@@ -419,13 +456,13 @@ All device types support checking the current state before sending an updated st
 
 NOTE: metadata is not available via paperUI in openHAB v2. Either you create your items via ".items" files, or you can:
 
-* add metadata via console:
+- add metadata via console:
 
   ```shell
   smarthome:metadata add BedroomLights ga Light
   ```
 
-* add metadata using the REST API:
+- add metadata using the REST API:
 
   ```js
   PUT /rest/items/BedroomLights/metadata/ga
@@ -435,7 +472,7 @@ NOTE: metadata is not available via paperUI in openHAB v2. Either you create you
   }
   ```
 
-#### Two-Factor-Authentication
+### Two-Factor-Authentication
 
 For some actions, Google recommends to use TFA (Two-Factor-Authentication) to prevent accidental or unauthorized triggers of sensitive actions. See [Two-factor authentication &nbsp;|&nbsp; Actions on Google Smart Home](https://developers.google.com/assistant/smarthome/develop/two-factor-authentication).
 
@@ -452,79 +489,73 @@ Switch DoorLock   "Front Door"  { ga="Lock" [ ackNeeded=true ] }
 Switch HouseAlarm "House Alarm" { ga="SecuritySystem" [ pinNeeded="1234" ] }
 ```
 
-## Setup & Usage on Google Assistant App
+## Setup & Usage of the Google Home App
 
-* Make sure Google Play Services is up to date.
-* Visit "Google Home" app entry in Google Play Store on Android.
-* Set up the voice-activated speaker or Android phone (version 6+) with your Google account.
-* Make sure you're the correct user.
-* Start the updated Google Home app on your phone.
-* Go to the settings part: `Account > Settings`.
+- Make sure Google Play Services is up to date.
+- Visit "Google Home" app entry in Google Play Store on Android.
+- Set up the voice-activated speaker or Android phone (version 6+) with your Google account.
+- Make sure you're the correct user.
+- Start the Google Home app on your phone.
+- Go to the settings part: `Home > Settings`.
 
-![openHAB Google App](images/Screenshot_1.png)
+![openHAB Google App](images/Screenshot_1.jpg)
 
-* Go to the home control part: `Assistant > Home control`.
+- Press the `+ Add device` button in the Settings screen.
 
-![openHAB Google App](images/Screenshot_2.png)
+![openHAB Google App](images/Screenshot_2.jpg)
 
-* Press the `+` button.
+- Choose `Works with Google`
 
-![openHAB Google App](images/Screenshot_3.png)
+![openHAB Google App](images/Screenshot_3.jpg)
 
-* Select `openHAB`.
+- Search and select `openHAB`.
 
-![openHAB Google App](images/Screenshot_4.png)
+![openHAB Google App](images/Screenshot_4.jpg)
 
-* Login at myopenhab.org with your username and password.
+- Continue with linking your account.
 
-![openHAB Google App](images/Screenshot_5.png)
+![openHAB Google App](images/Screenshot_5.jpg)
 
-* Allow Google access to your account.
+- Login at `myopenhab.org` with your username and password.
 
-![openHAB Google App](images/Screenshot_6.png)
-![openHAB Google App](images/Screenshot_7.png)
+![openHAB Google App](images/Screenshot_6.jpg)
 
-* You will now be able to see your previously configured items and devices. Assign them to a room. Press Done.
+- Make sure to assign your devices to rooms to properly use voice commands.
+- You can now control your devices from the Google Assistant and Google Home.
 
-![openHAB Google App](images/Screenshot_8.png)
-![openHAB Google App](images/Screenshot_9.png)
-
-* You can now control those devices from the Google Assistant.
-
-![openHAB Google App](images/Screenshot_10.png)
-![openHAB Google App](images/Screenshot_11.png)
+![openHAB Google App](images/Screenshot_7.jpg)
 
 ## Example Voice Commands
 
 Here are some example voice commands:
 
-* Turn on Office Lights.
-* Dim/Brighten Office Lights (increments 15%).
-* Set Office Lights to 35%.
-* Open/Close the blinds
-* Turn off Pool Waterfall.
-* Turn on House Fan.
-* Turn on Home Theater Scene.
-* Set Basement Thermostat to 15 degrees.
-* What is the current Basement Thermostat Temperature?
+- Turn on Office Lights.
+- Dim/Brighten Office Lights (increments 15%).
+- Set Office Lights to 35%.
+- Open/Close the blinds
+- Turn off Pool Waterfall.
+- Turn on House Fan.
+- Turn on Home Theater Scene.
+- Set Basement Thermostat to 15 degrees.
+- What is the current Basement Thermostat Temperature?
 
 ## Frequently Asked Question
 
 My New items did not appear in the Google Home app.
 
-* Say: `Hey Google, sync my devices`
+- Say: `Hey Google, sync my devices`
 
 I'm not able to connect openHAB to Google Home.
 
-* Check, recheck and after that check again your items!
-* The items that you want to expose to Google Assistant should have the right metadata assigned.
-* The items that you want to expose to Google Assistant must have a item label! [Item Definition and Syntax](https://www.openhab.org/docs/configuration/items.html#item-definition-and-syntax)
-* If none of the above solutions works for you:
-  * Remove all the metadata.
-  * Make a new .item file with 1 item to expose.
+- Check, recheck and after that check again your items!
+- The items that you want to expose to Google Assistant should have the right metadata assigned.
+- The items that you want to expose to Google Assistant must have a item label! [Item Definition and Syntax](https://www.openhab.org/docs/configuration/items.html#item-definition-and-syntax)
+- If none of the above solutions works for you:
+  - Remove all the metadata.
+  - Make a new .item file with 1 item to expose.
 
   ```shell
   Switch TestSwitch "Test Switch" { ga="Switch" }
   ```
 
-  * Relink your account.
+  - Relink your account.
