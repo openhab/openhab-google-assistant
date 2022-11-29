@@ -15,8 +15,6 @@ With the Action you can voice control your openHAB items and it supports lights,
 
 If you have any issues, questions or an idea for additional features, please take a look at the [repository on GitHub](https://github.com/openhab/openhab-google-assistant).
 
-## Table of Contents
-
 [[toc]]
 
 ## Latest Changes
