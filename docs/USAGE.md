@@ -95,6 +95,25 @@ Color  colorItem            (lightGroup) { ga="lightColor" }
 Number colorTemperatureItem (lightGroup) { ga="lightColorTemperature" }
 ```
 
+In case you want to control multiple lights using one device with Google Assistant, you can apply the following pattern:
+
+```shell
+Group        lightGroup { ga="SpecialColorLight" [ colorUnit="kelvin", colorTemperatureRange="2000,9000" ] }
+Group:Switch powerItems      (lightGroup) { ga="lightPower" }
+Group:Dimmer brightnessItems (lightGroup) { ga="lightBrightness" }
+Group:Color  colorItems      (lightGroup) { ga="lightColor" }
+...
+Switch powerItem1            (powerItems)
+Switch powerItem2            (powerItems)
+...
+Dimmer brightnessItem1       (brightnessItems)
+Dimmer brightnessItem2       (brightnessItems)
+...
+Color colorItem1             (colorItems)
+Color colorItem2             (colorItems)
+...
+```
+
 ### Scene
 
 | | |
