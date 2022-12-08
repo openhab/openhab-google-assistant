@@ -65,7 +65,7 @@ class DefaultCommand {
    * @param {object} device
    */
   static convertParamsToValue(params, item, device) {
-    return null;
+    return '';
   }
 
   /**
@@ -178,7 +178,7 @@ class DefaultCommand {
       console.log(`openhabGoogleAssistant - ${this.type}: Waiting ${secondsToWait} second(s) for state to update`);
       setTimeout(() => {
         console.log(`openhabGoogleAssistant - ${this.type}: Finished Waiting`);
-        resolve();
+        resolve(null);
       }, secondsToWait * 1000);
     });
   }
