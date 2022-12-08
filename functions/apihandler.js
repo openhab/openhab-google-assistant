@@ -108,7 +108,10 @@ class ApiHandler {
           }
         });
       });
-      req.on('error', reject);
+      req.on('error', (error) => {
+        console.error(`openhabGoogleAssistant - getItem: ERROR ${JSON.stringify(error)}`);
+        reject(error);
+      });
       req.end();
     });
   }
@@ -130,9 +133,12 @@ class ApiHandler {
           reject({ statusCode: response.statusCode, message: 'sendCommand - failed for path: ' + options.path });
           return;
         }
-        resolve();
+        resolve(null);
       });
-      req.on('error', reject);
+      req.on('error', (error) => {
+        console.error(`openhabGoogleAssistant - sendCommand: ERROR ${JSON.stringify(error)}`);
+        reject(error);
+      });
       req.write(payload);
       req.end();
     });
