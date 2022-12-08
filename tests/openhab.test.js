@@ -510,6 +510,38 @@ describe('OpenHAB', () => {
       });
     });
 
+    test('handleExecute error', async () => {
+      sendCommandMock.mockReturnValue(Promise.reject({ errorCode: 0 }));
+      const commands = [
+        {
+          devices: [
+            {
+              id: 'TestItem',
+              customData: {}
+            }
+          ],
+          execution: [
+            {
+              command: 'action.devices.commands.OnOff',
+              params: { on: true }
+            }
+          ]
+        }
+      ];
+      const result = await openHAB.handleExecute(commands);
+      expect(getItemMock).toHaveBeenCalledTimes(0);
+      expect(sendCommandMock).toHaveBeenCalledTimes(1);
+      expect(result).toStrictEqual({
+        commands: [
+          {
+            ids: ['TestItem'],
+            errorCode: 'deviceOffline',
+            status: 'ERROR'
+          }
+        ]
+      });
+    });
+
     test('handleExecute function not supported', async () => {
       const commands = [
         {
