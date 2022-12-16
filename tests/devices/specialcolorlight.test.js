@@ -297,7 +297,7 @@ describe('SpecialColorLight Device', () => {
         },
         members: [
           {
-            state: '50',
+            state: '50.421',
             metadata: {
               ga: {
                 value: 'lightBrightness'
@@ -344,7 +344,7 @@ describe('SpecialColorLight Device', () => {
             }
           },
           {
-            state: '2000',
+            state: '2000.345',
             metadata: {
               ga: {
                 value: 'lightColorTemperature'
