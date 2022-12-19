@@ -8,17 +8,22 @@ class DefaultDevice {
 
   /**
    * @param {object} item
+   * @returns {Array<string>}
    */
   static getTraits(item) {
     return [];
   }
 
+  /**
+   * @returns {Array<string>}
+   */
   static get requiredItemTypes() {
     return [];
   }
 
   /**
    * @param {object} item
+   * @returns {boolean}
    */
   static isCompatible(item) {
     return (

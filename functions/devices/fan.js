@@ -27,6 +27,7 @@ class Fan extends DefaultDevice {
           .trim()
           .split('=')
           .map((s) => s.trim());
+        // @ts-ignore
         attributes.availableFanSpeeds.speeds.push({
           speed_name: speedName,
           speed_values: [
