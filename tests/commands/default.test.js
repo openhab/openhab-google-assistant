@@ -60,7 +60,7 @@ describe('Default Command', () => {
   });
 
   test('convertParamsToValue', () => {
-    expect(Command.convertParamsToValue({}, {}, {})).toBe('');
+    expect(Command.convertParamsToValue({}, {}, {})).toBe(null);
   });
 
   test('getResponseStates', () => {

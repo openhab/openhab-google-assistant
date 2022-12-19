@@ -26,7 +26,7 @@ class DefaultCommand {
 
   /**
    * Is the requested new state change valid?
-   * @param {string} target Requested target state
+   * @param {string | null} target Requested target state
    * @param {string} state Current state of item
    * @param {object} params Parameters of the command
    * @returns {void} returns if current state is different otherwise throws error
@@ -63,9 +63,10 @@ class DefaultCommand {
    * @param {object} params
    * @param {object} item
    * @param {object} device
+   * @returns {string | null}
    */
   static convertParamsToValue(params, item, device) {
-    return '';
+    return null;
   }
 
   /**
@@ -240,6 +241,7 @@ class DefaultCommand {
           if (shouldCheckState) {
             let currentState = this.getNormalizedState(item);
             if (targetItem !== device.id && item.members && item.members.length) {
+              // @ts-ignore
               const member = item.members.find((m) => m.name === targetItem);
               currentState = member ? this.getNormalizedState(member) : currentState;
             }

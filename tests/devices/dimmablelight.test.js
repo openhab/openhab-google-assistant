@@ -25,6 +25,10 @@ describe('DimmableLight Device', () => {
       on: true,
       brightness: 50
     });
+    expect(Device.getState({ state: '12.56754' })).toStrictEqual({
+      on: true,
+      brightness: 13
+    });
     expect(Device.getState({ state: 'NULL' })).toStrictEqual({
       on: false,
       brightness: 0

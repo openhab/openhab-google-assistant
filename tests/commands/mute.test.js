@@ -60,7 +60,7 @@ describe('Mute Command', () => {
   describe('convertParamsToValue', () => {
     test('convertParamsToValue no Switch', () => {
       expect(Command.convertParamsToValue({ mute: true }, {}, {})).toBe('0');
-      expect(Command.convertParamsToValue({ mute: false }, {}, {})).toBeUndefined();
+      expect(Command.convertParamsToValue({ mute: false }, {}, {})).toBe(null);
     });
 
     test('convertParamsToValue Switch', () => {

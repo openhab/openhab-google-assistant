@@ -54,7 +54,7 @@ class SpecialColorLight extends DefaultDevice {
           state.on = members[member].state === 'ON';
           break;
         case 'lightBrightness':
-          state.brightness = Number(members[member].state) || 0;
+          state.brightness = Math.round(Number(members[member].state)) || 0;
           if (!('lightPower' in members)) {
             state.on = state.brightness > 0;
           }
@@ -83,18 +83,18 @@ class SpecialColorLight extends DefaultDevice {
             const colorUnit = this.getColorUnit(item);
             if (colorUnit === 'kelvin') {
               state.color = {
-                temperatureK: Number(members[member].state)
+                temperatureK: Math.round(Number(members[member].state))
               };
             } else if (colorUnit === 'mired') {
               state.color = {
-                temperatureK: convertMired(Number(members[member].state))
+                temperatureK: convertMired(Math.round(Number(members[member].state)))
               };
             } else {
               const { temperatureMinK, temperatureMaxK } = this.getAttributes(item).colorTemperatureRange;
               state.color = {
                 temperatureK:
                   temperatureMinK +
-                  (((temperatureMaxK - temperatureMinK) / 100) * (100 - Number(members[member].state)) || 0)
+                  Math.round(((temperatureMaxK - temperatureMinK) / 100) * (100 - Number(members[member].state)) || 0)
               };
             }
           } catch (error) {

@@ -590,7 +590,7 @@ describe('TV Device', () => {
         },
         members: [
           {
-            state: '50',
+            state: '50.43',
             metadata: {
               ga: {
                 value: 'tvVolume'

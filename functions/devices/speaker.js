@@ -33,7 +33,7 @@ class Speaker extends DefaultDevice {
 
   static getState(item) {
     return {
-      currentVolume: Number(item.state) || 0
+      currentVolume: Math.round(Number(item.state)) || 0
     };
   }
 }

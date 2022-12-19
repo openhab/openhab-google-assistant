@@ -40,7 +40,7 @@ class Mute extends DefaultCommand {
     }
     let mute = params.mute;
     if (itemType !== 'Switch') {
-      return mute ? '0' : undefined;
+      return mute ? '0' : null;
     }
     if (this.isInverted(device)) {
       mute = !mute;

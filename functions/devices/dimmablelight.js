@@ -14,7 +14,7 @@ class DimmableLight extends DefaultDevice {
   }
 
   static getState(item) {
-    let brightness = Number(item.state) || 0;
+    const brightness = Math.round(Number(item.state)) || 0;
     return {
       on: brightness > 0,
       brightness: brightness

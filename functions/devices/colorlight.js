@@ -34,7 +34,7 @@ class ColorLight extends DefaultDevice {
     const [hue, sat, val] = item.state.split(',').map((s) => Number(s.trim()));
     return {
       on: val > 0,
-      brightness: val,
+      brightness: Math.round(val),
       color: {
         spectrumHSV: {
           hue: hue,
