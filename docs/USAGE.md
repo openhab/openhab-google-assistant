@@ -370,10 +370,14 @@ Number capacityFullItem     (chargerGroup) { ga="chargerCapacityUntilFull" }
 | **Device Type** | [Sensor](https://developers.google.com/assistant/smarthome/guides/sensor) |
 | **Supported Traits** | [TemperatureControl](https://developers.google.com/assistant/smarthome/traits/temperaturecontrol) |
 | **Supported Items** | Number |
-| **Configuration** | (optional) `useFahrenheit=true/false` |
+| **Configuration** | (optional) `useFahrenheit=true/false`<br>(optional) `temperatureRange="-10,50"` |
+
+By default the temperature range of a temperature sensor is set to -100°C to 100°C.
+The reported state values have to fall into that range!
+If you need to adjust the range, please add the config option `temperatureRange="-20,40"` to the item. Keep in mind that those values always have to be provided in Celsius!
 
 ```shell
-Number { ga="TemperatureSensor" [ useFahrenheit=true ] }
+Number { ga="TemperatureSensor" [ useFahrenheit=true, temperatureRange="-20,40" ] }
 ```
 
 ### Thermostat
@@ -387,7 +391,7 @@ Number { ga="TemperatureSensor" [ useFahrenheit=true ] }
 
 Thermostat requires a group of items to be properly configured to be used with Google Assistant. The default temperature unit is Celsius.
 To change the temperature unit to Fahrenheit, add the config option `useFahrenheit=true` to the thermostat group.
-To set the temperature range your thermostat supports, add the config option `thermostatTemperatureRange="10,30"` to the thermostat group.
+To set the temperature range your thermostat supports, add the config option `thermostatTemperatureRange="10,30"` to the thermostat group. Those values always have to be provided in Celsius!
 If your thermostat supports a range for the setpoint you can use both `thermostatTemperatureSetpointLow` and `thermostatTemperatureSetpointHigh` instead of the single `thermostatTemperatureSetpoint` item.
 
 If your thermostat does not have a mode, you should create one and manually assign a value (e.g. heat, cool, on, etc.) to have proper functionality.

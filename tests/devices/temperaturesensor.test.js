@@ -32,7 +32,11 @@ describe('TemperatureSensor Device', () => {
       };
       expect(Device.getAttributes(item1)).toStrictEqual({
         queryOnlyTemperatureControl: true,
-        temperatureUnitForUX: 'C'
+        temperatureUnitForUX: 'C',
+        temperatureRange: {
+          maxThresholdCelsius: 100,
+          minThresholdCelsius: -100
+        }
       });
     });
 
@@ -48,7 +52,31 @@ describe('TemperatureSensor Device', () => {
       };
       expect(Device.getAttributes(item2)).toStrictEqual({
         queryOnlyTemperatureControl: true,
-        temperatureUnitForUX: 'F'
+        temperatureUnitForUX: 'F',
+        temperatureRange: {
+          maxThresholdCelsius: 100,
+          minThresholdCelsius: -100
+        }
+      });
+    });
+
+    test('getAttributes temperatureRange', () => {
+      const item1 = {
+        metadata: {
+          ga: {
+            config: {
+              temperatureRange: '-20,40'
+            }
+          }
+        }
+      };
+      expect(Device.getAttributes(item1)).toStrictEqual({
+        queryOnlyTemperatureControl: true,
+        temperatureUnitForUX: 'C',
+        temperatureRange: {
+          maxThresholdCelsius: 40,
+          minThresholdCelsius: -20
+        }
       });
     });
   });
