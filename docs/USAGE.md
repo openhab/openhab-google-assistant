@@ -372,7 +372,7 @@ Number capacityFullItem     (chargerGroup) { ga="chargerCapacityUntilFull" }
 | **Supported Items** | Number |
 | **Configuration** | (optional) `useFahrenheit=true/false`<br>(optional) `temperatureRange="-10,50"` |
 
-By default the temperature range of a temperature sensor is set to -100°C to 100°C.
+By default, the temperature range of a temperature sensor is set to -100 °C to 100 °C.
 The reported state values have to fall into that range!
 If you need to adjust the range, please add the config option `temperatureRange="-20,40"` to the item. Keep in mind that those values always have to be provided in Celsius!
 
