@@ -7,13 +7,13 @@ class TemperatureSensor extends DefaultDevice {
   }
 
   static getTraits() {
-    return ['action.devices.traits.TemperatureControl'];
+    return ['action.devices.traits.TemperatureSetting'];
   }
 
   static getAttributes(item) {
     return {
-      queryOnlyTemperatureControl: true,
-      temperatureUnitForUX: this.getConfig(item).useFahrenheit === true ? 'F' : 'C'
+      queryOnlyTemperatureSetting: true,
+      thermostatTemperatureUnit: this.useFahrenheit(item) ? 'F' : 'C'
     };
   }
 
@@ -27,13 +27,17 @@ class TemperatureSensor extends DefaultDevice {
 
   static getState(item) {
     let state = Number(parseFloat(item.state).toFixed(1));
-    if (this.getConfig(item).useFahrenheit === true) {
+    if (this.useFahrenheit(item)) {
       state = convertFahrenheitToCelsius(state);
     }
     return {
-      temperatureSetpointCelsius: state,
-      temperatureAmbientCelsius: state
+      thermostatTemperatureAmbient: state
     };
+  }
+
+  static useFahrenheit(item) {
+    const config = this.getConfig(item);
+    return config.thermostatTemperatureUnit === 'F' || config.useFahrenheit === true;
   }
 }
 
