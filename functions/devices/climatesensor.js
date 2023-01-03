@@ -55,10 +55,7 @@ class ClimateSensor extends DefaultDevice {
   }
 
   static getMembers(item) {
-    const supportedMembers = [
-      'temperatureAmbient',
-      'humidityAmbient'
-    ];
+    const supportedMembers = ['temperatureAmbient', 'humidityAmbient'];
     const members = {};
     if (item.members && item.members.length) {
       item.members.forEach((member) => {
