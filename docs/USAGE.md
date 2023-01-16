@@ -13,6 +13,10 @@ This guide describes step by step how to use the [openHAB Google Assistant Smart
 
 With the Action you can voice control your openHAB items and it supports lights, plugs, switches, thermostats and many more. The openHAB Action comes with multiple language support like English, German or French language.
 
+::: tip Note
+Please be aware that the graphical user interface in the Google Home app or on Google Nest devices may not fully support interaction with some of the supported device types. We cannot influence this and rely on Google to implement user interfaces for more devices. Nevertheless, interaction via voice or in writing with Google Assistant should always work.
+:::
+
 If you have any issues, questions or an idea for additional features, please take a look at the [repository on GitHub](https://github.com/openhab/openhab-google-assistant).
 
 [[toc]]
@@ -42,9 +46,9 @@ More information can be found in the corresponding [docs page](https://www.openh
 
 To expose [items](https://www.openhab.org/docs/concepts/items.html) to Google Assistent you will need to add [metadata](https://www.openhab.org/docs/concepts/items.html#item-metadata) in the `ga` namespace.
 
-Currently the following devices are supported (also depending on Google's API capabilities):
-
 _Hint: The value of `ga` is **not** case-sensitive._
+
+Currently the following devices are supported (also depending on Google's API capabilities):
 
 ### Switch
 
