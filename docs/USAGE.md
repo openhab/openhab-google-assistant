@@ -24,10 +24,17 @@ If you have any issues, questions or an idea for additional features, please tak
 ## Latest Changes
 
 ::: tip State of this document
-This documentation refers to release [v3.5.2](https://github.com/openhab/openhab-google-assistant/releases/tag/v3.5.2) of [openHAB Google Assistant](https://github.com/openhab/openhab-google-assistant) published on 2022-12-19
+This documentation refers to release [v3.6.0](https://github.com/openhab/openhab-google-assistant/releases/tag/v3.6.0) of [openHAB Google Assistant](https://github.com/openhab/openhab-google-assistant) published on 2023-01-16
 :::
 
-- `ga="light"` for SpecialColorLight is replaced by `ga="specialcolorlight"`
+### v3.6.0
+
+- Added new device types [`HumiditySensor`](#humiditysensor) & [`ClimateSensor`](#climatesensor)
+- Changed trait of [`TemperatureSensor`](#temperaturesensor) to actually show a UI
+
+### v3.5.0
+
+- `ga="light"` for [`SpecialColorLight`](#light-as-group-with-separate-controls) is replaced by `ga="specialcolorlight"`
 - `useKelvin=true` is replaced by `colorUnit="kelvin"`
 - Support for color temperature in Mired added
 
@@ -388,7 +395,6 @@ Number { ga="TemperatureSensor" [ useFahrenheit=true ] }
 | **Device Type** | [Sensor](https://developers.google.com/assistant/smarthome/guides/sensor) |
 | **Supported Traits** | [HumiditySetting](https://developers.home.google.com/cloud-to-cloud/traits/humiditysetting) |
 | **Supported Items** | Number |
-| **Configuration** | |
 
 ```shell
 Number { ga="HumiditySensor" }
