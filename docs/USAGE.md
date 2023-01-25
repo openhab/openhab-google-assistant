@@ -290,7 +290,7 @@ Dimmer { ga="Speaker" [ volumeDefaultPercentage="50", levelStepSize="10", volume
 | **Configuration** | (optional) `checkState=true/false`<br>(optional) `volumeDefaultPercentage="20"`<br>(optional) `levelStepSize="5"`<br>(optional) `volumeMaxLevel="100"`<br>(optional) `transportControlSupportedCommands="NEXT,PREVIOUS,PAUSE,RESUME"`<br>(optional) `availableChannels="channelNumber=channelId=channelName:channelSynonym:...,..."`<br>(optional) `availableInputs="inputKey=inputName:inputSynonym:...,..."`<br>(optional) `availableApplications="applicationKey=applicationName:applicationSynonym:...,..."`<br>(optional) `lang="en"` |
 
 ```shell
-Group  tvGroup { ga="TV" [ volumeDefaultPercentage="20", levelStepSize="10", volumeMaxLevel="100", transportControlSupportedCommands="NEXT,PREVIOUS,PAUSE,RESUME", availableChannels="1=Channel1=NBC,2=Channel2=CBS", availableInputs="hdmi1=xbox:gaming,hdmi2=settopbox", availableApplications: "youtube=YouTube:Tube,netflix=Netflix:Chill" ] }
+Group  tvGroup { ga="TV" [ volumeDefaultPercentage="20", levelStepSize="10", volumeMaxLevel="100", transportControlSupportedCommands="NEXT,PREVIOUS,PAUSE,RESUME", availableChannels="1=Channel1=NBC,2=Channel2=CBS", availableInputs="hdmi1=xbox:gaming,hdmi2=settopbox", availableApplications="youtube=YouTube:Tube,netflix=Netflix:Chill" ] }
 Switch powerItem       (tvGroup) { ga="tvPower" }
 Switch muteItem        (tvGroup) { ga="tvMute" }
 Dimmer volumeItem      (tvGroup) { ga="tvVolume" }
