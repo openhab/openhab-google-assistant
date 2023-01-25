@@ -31,7 +31,8 @@ describe('HumiditySensor Device', () => {
 
   test('getState', () => {
     expect(Device.getState({ state: '10' })).toStrictEqual({
-      humidityAmbientPercent: 10
+      humidityAmbientPercent: 10,
+      humiditySetpointPercent: 10
     });
   });
 });
