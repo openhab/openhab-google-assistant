@@ -9,7 +9,8 @@ class ClimateSensor extends DefaultDevice {
   static getTraits(item) {
     const traits = [];
     const members = this.getMembers(item);
-    if ('temperatureAmbient' in members) traits.push('action.devices.traits.TemperatureSetting');
+    if ('temperatureAmbient' in members)
+      traits.push('action.devices.traits.TemperatureSetting', 'action.devices.traits.TemperatureControl');
     if ('humidityAmbient' in members) traits.push('action.devices.traits.HumiditySetting');
     return traits;
   }
@@ -18,10 +19,14 @@ class ClimateSensor extends DefaultDevice {
     const attributes = {};
     const members = this.getMembers(item);
     if ('temperatureAmbient' in members) {
+      attributes.queryOnlyTemperatureControl = true;
+      attributes.temperatureUnitForUX = this.useFahrenheit(item) ? 'F' : 'C';
       attributes.queryOnlyTemperatureSetting = true;
       attributes.thermostatTemperatureUnit = this.useFahrenheit(item) === true ? 'F' : 'C';
     }
-    if ('humidityAmbient' in members) attributes.queryOnlyHumiditySetting = true;
+    if ('humidityAmbient' in members) {
+      attributes.queryOnlyHumiditySetting = true;
+    }
     return attributes;
   }
 
@@ -42,18 +47,25 @@ class ClimateSensor extends DefaultDevice {
     const state = {};
     const members = this.getMembers(item);
     if ('temperatureAmbient' in members) {
-      let temperature = Number(parseFloat(members['temperatureAmbient'].state).toFixed(1));
+      let temperature = Number(parseFloat(members.temperatureAmbient.state).toFixed(1));
       if (this.useFahrenheit(item)) {
         temperature = convertFahrenheitToCelsius(temperature);
       }
       state.thermostatTemperatureAmbient = temperature;
+      state.temperatureAmbientCelsius = temperature;
+      state.temperatureSetpointCelsius = temperature;
     }
     if ('humidityAmbient' in members) {
-      state.humidityAmbientPercent = Number(parseFloat(members['humidityAmbient'].state).toFixed(1));
+      const humidity = Number(parseFloat(members.humidityAmbient.state).toFixed(1));
+      state.humidityAmbientPercent = humidity;
+      state.humiditySetpointPercent = humidity;
     }
     return state;
   }
 
+  /**
+   * @returns {object}
+   */
   static getMembers(item) {
     const supportedMembers = ['temperatureAmbient', 'humidityAmbient'];
     const members = {};

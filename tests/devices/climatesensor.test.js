@@ -112,7 +112,9 @@ describe('ClimateSensor Device', () => {
         ]
       };
       expect(Device.getAttributes(item)).toStrictEqual({
+        queryOnlyTemperatureControl: true,
         queryOnlyTemperatureSetting: true,
+        temperatureUnitForUX: 'F',
         thermostatTemperatureUnit: 'F'
       });
     });
@@ -145,7 +147,10 @@ describe('ClimateSensor Device', () => {
     };
     expect(Device.getState(item1)).toStrictEqual({
       thermostatTemperatureAmbient: 20,
-      humidityAmbientPercent: 60
+      temperatureAmbientCelsius: 20,
+      temperatureSetpointCelsius: 20,
+      humidityAmbientPercent: 60,
+      humiditySetpointPercent: 60
     });
     const item2 = {
       members: [
@@ -169,7 +174,27 @@ describe('ClimateSensor Device', () => {
       }
     };
     expect(Device.getState(item2)).toStrictEqual({
-      thermostatTemperatureAmbient: -12.2
+      thermostatTemperatureAmbient: -12.2,
+      temperatureSetpointCelsius: -12.2,
+      temperatureAmbientCelsius: -12.2
+    });
+    const item3 = {
+      members: [
+        {
+          name: 'Humidity',
+          state: '30',
+          type: 'Number',
+          metadata: {
+            ga: {
+              value: 'humidityAmbient'
+            }
+          }
+        }
+      ]
+    };
+    expect(Device.getState(item3)).toStrictEqual({
+      humidityAmbientPercent: 30,
+      humiditySetpointPercent: 30
     });
   });
 });

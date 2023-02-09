@@ -129,7 +129,7 @@ class ApiHandler {
     return new Promise((resolve, reject) => {
       const protocol = options.port === 443 ? https : http;
       const req = protocol.request(options, (response) => {
-        if (![200, 201].includes(response.statusCode)) {
+        if (!response.statusCode || ![200, 201].includes(response.statusCode)) {
           reject({ statusCode: response.statusCode, message: 'sendCommand - failed for path: ' + options.path });
           return;
         }
