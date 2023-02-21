@@ -56,7 +56,7 @@ class ClimateSensor extends DefaultDevice {
       state.temperatureSetpointCelsius = temperature;
     }
     if ('humidityAmbient' in members) {
-      const humidity = Number(parseFloat(members.humidityAmbient.state).toFixed(1));
+      const humidity = Math.round(Number(members.humidityAmbient.state));
       state.humidityAmbientPercent = humidity;
       state.humiditySetpointPercent = humidity;
     }
