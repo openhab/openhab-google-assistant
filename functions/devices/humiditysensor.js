@@ -24,7 +24,7 @@ class HumiditySensor extends DefaultDevice {
   }
 
   static getState(item) {
-    const state = Number(parseFloat(item.state).toFixed(1));
+    const state = Math.round(Number(item.state));
     return {
       humidityAmbientPercent: state,
       humiditySetpointPercent: state
