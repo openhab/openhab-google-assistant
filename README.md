@@ -32,7 +32,7 @@ Deploy the `openhabGoogleAssistant` (openHAB home automation) function:
 
 * Create a storage bucket (<https://console.cloud.google.com/storage/browser>)
 * `cd openhab-google-assistant/functions`
-* `gcloud beta functions deploy openhabGoogleAssistant --runtime nodejs14 --stage-bucket <BUCKET_NAME> --trigger-http --project <PROJECT ID>`
+* `gcloud beta functions deploy openhabGoogleAssistant --runtime nodejs18 --stage-bucket <BUCKET_NAME> --trigger-http --project <PROJECT ID>`
 * This commands will deploy the function to Google Cloud and give you the endpoint address.
 
 Keep the address somewhere, you'll need it (something like `https://us-central1-<PROJECT ID>.cloudfunctions.net/openhabGoogleAssistant`).

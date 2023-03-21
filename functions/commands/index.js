@@ -3,7 +3,7 @@ const glob = require('glob');
 const Commands = [];
 
 glob.sync('./!(index).js', { cwd: __dirname }).forEach((file) => {
-  const command = require(file);
+  const command = require(`./${file}`);
   if (command.type) {
     Commands.push(command);
   }
