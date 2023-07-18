@@ -2,7 +2,7 @@ const fs = require('fs');
 
 const Devices = [];
 
-fs.readdirSync(__dirname).forEach(file => {
+fs.readdirSync(__dirname).forEach((file) => {
   if (file === 'index.js' || !file.endsWith('.js')) return;
   const device = require(`./${file}`);
   if (device.type) {

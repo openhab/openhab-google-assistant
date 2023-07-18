@@ -2,7 +2,7 @@ const fs = require('fs');
 
 const Commands = [];
 
-fs.readdirSync(__dirname).forEach(file => {
+fs.readdirSync(__dirname).forEach((file) => {
   if (file === 'index.js' || !file.endsWith('.js')) return;
   const command = require(`./${file}`);
   if (command.type) {
