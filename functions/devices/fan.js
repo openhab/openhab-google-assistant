@@ -12,7 +12,9 @@ class Fan extends DefaultDevice {
   static getAttributes(item) {
     const config = this.getConfig(item);
     if (!config || !config.speeds) {
-      return {};
+      return {
+        supportsFanSpeedPercent: true
+      };
     }
     const attributes = {
       availableFanSpeeds: {

@@ -29,7 +29,9 @@ describe('Fan Device', () => {
           }
         }
       };
-      expect(Device.getAttributes(item)).toStrictEqual({});
+      expect(Device.getAttributes(item)).toStrictEqual({
+        supportsFanSpeedPercent: true
+      });
     });
 
     test('getAttributes speeds', () => {
