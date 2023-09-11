@@ -314,7 +314,8 @@ If you do not specify the `speeds` option, Google will use and expect percentage
 Otherwise, you will be able to set up and use human speakable modes, e.g. "fast" for 100% or "slow" for 25%.
 
 `speeds` will be a comma-separated list of values and an equal sign and different aliases for that mode after a colon.
-So here both "high" and "two" would set the speed to 100%. Some air purifiers expect a specific value, however, like "1", or "2", instead of a percentage. In this case you should adapt the example code, and replace the percentage values with the values that the device expects. (e.g.: `speeds="0=away:zero,1=default:standard:one,2=high:two"`). 
+So in the example stated below both "high" and "two" would set the speed to 100%.
+Some devices may expect a specific value instead of a percentage, like "1" or "2" as speed values. In this case, you can adjust the configuration and replace the percentage values with the values that the device expects. (e.g.: `speeds="0=away:zero,1=default:standard:one,2=high:two"`).
 You are also able to define the language of those aliases.
 The option `ordered` will tell the system that your list is ordered and you will then be able to also say "faster" or "slower" and Google will use the next or previous speed.
 
