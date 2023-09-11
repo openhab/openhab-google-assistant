@@ -320,10 +320,10 @@ You are also able to define the language of those aliases.
 The option `ordered` will tell the system that your list is ordered and you will then be able to also say "faster" or "slower" and Google will use the next or previous speed.
 
 ```shell
-Dimmer { ga="Fan" [ speeds="0=away:zero,50=default:standard:one,100=high:two", lang="en", ordered=true ] } # Only percentage values for the speed
+Dimmer { ga="Fan" [ speeds="0=away:zero,50=default:standard:one,100=high:two", lang="en", ordered=true ] } # Using specific percentage values for the speed
 Switch { ga="Hood" } # No speed control - only on/off
-Dimmer { ga="AirPurifier" } # Only percentage values for the speed
-Dimmer { ga="AirPurifier" [ speeds="0=away:zero,1=low:one,2=medium:two,3=high:three,4=turbo:four", lang="en", ordered=true ] } # Specific speed modes/values stated, which can differ from percentage
+Dimmer { ga="AirPurifier" } # Using percentage values for the speed
+Dimmer { ga="AirPurifier" [ speeds="0=away:zero,1=low:one,2=medium:two,3=high:three,4=turbo:four", lang="en", ordered=true ] } # Using specific speed modes/values, which differ from percentage
 Switch { ga="AirPurifier" } # No speed control - only on/off
 ```
 
