@@ -86,6 +86,23 @@ describe('Fan Device', () => {
 
   test('getState', () => {
     expect(Device.getState({ state: '50' })).toStrictEqual({
+      currentFanSpeedPercent: 50,
+      on: true
+    });
+    expect(
+      Device.getState({
+        state: '50',
+        metadata: {
+          ga: {
+            config: {
+              ordered: true,
+              speeds: '0=null:off,50=slow,100=full:fast',
+              lang: 'en'
+            }
+          }
+        }
+      })
+    ).toStrictEqual({
       currentFanSpeedSetting: '50',
       on: true
     });
