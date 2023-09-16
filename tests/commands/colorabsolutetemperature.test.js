@@ -54,7 +54,7 @@ describe('ColorAbsoluteTemperature Command', () => {
         }
       };
       const device = { customData: { deviceType: 'SpecialColorLight' } };
-      expect(Command.convertParamsToValue(params, item, device)).toBe('75');
+      expect(Command.convertParamsToValue(params, item, device)).toBe('25');
       expect(Command.convertParamsToValue(params, { state: '100,100,50' }, device)).toBe('0');
     });
 

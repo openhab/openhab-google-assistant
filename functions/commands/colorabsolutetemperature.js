@@ -42,10 +42,7 @@ class ColorAbsoluteTemperature extends DefaultCommand {
           return convertMired(params.color.temperature).toString();
         }
         const { temperatureMinK, temperatureMaxK } = SpecialColorLight.getAttributes(item).colorTemperatureRange;
-        return (
-          100 -
-          ((params.color.temperature - temperatureMinK) / (temperatureMaxK - temperatureMinK)) * 100
-        ).toString();
+        return (((params.color.temperature - temperatureMinK) / (temperatureMaxK - temperatureMinK)) * 100).toString();
       } catch (error) {
         return '0';
       }

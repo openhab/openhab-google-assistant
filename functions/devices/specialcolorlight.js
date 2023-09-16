@@ -94,7 +94,7 @@ class SpecialColorLight extends DefaultDevice {
               state.color = {
                 temperatureK:
                   temperatureMinK +
-                  Math.round(((temperatureMaxK - temperatureMinK) / 100) * (100 - Number(members[member].state)) || 0)
+                  Math.round(((temperatureMaxK - temperatureMinK) / 100) * Number(members[member].state) || 0)
               };
             }
           } catch (error) {
