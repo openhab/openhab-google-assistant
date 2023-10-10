@@ -94,7 +94,7 @@ Color  { ga="Light" [ colorTemperatureRange="2000,9000" ] }
 | **Device Type** | [Light](https://developers.home.google.com/cloud-to-cloud/guides/light) |
 | **Supported Traits** | [OnOff](https://developers.home.google.com/cloud-to-cloud/traits/onoff), [ColorSetting](https://developers.home.google.com/cloud-to-cloud/traits/colorsetting), [Brightness](https://developers.home.google.com/cloud-to-cloud/traits/brightness) |
 | **Supported Items** | Group as `SpecialColorLight` with the following members:<br>(optional) Number or Dimmer as `lightBrightness`<br>(optional) Number or Dimmer as `lightColorTemperature`<br>(optional) Color as `lightColor`<br>(optional) Switch as `lightPower` |
-| **Configuration** | (optional) `colorUnit=percent/kelvin/mired`<br>(optional) `checkState=true/false`<br>(optional) `colorTemperatureRange="minK,maxK"`<br>_Hint: if you want to use `lightColorTemperature` you either need to set `colorUnit` to `kelvin` or `mired` or define a `colorTemperatureRange` as `colorUnit` defaults to `percent`_ |
+| **Configuration** | (optional) `colorUnit=percent/kelvin/mired`<br>(optional) `checkState=true/false`<br>(optional) `colorTemperatureRange="minK,maxK"`<br>_Hint: if you want to use `lightColorTemperature`, you must either set `colorUnit` to `kelvin` or `mired` or define a `colorTemperatureRange`, because `colorUnit` defaults to `percent`_ |
 
 ```shell
 Group  lightGroup { ga="SpecialColorLight" [ colorUnit="kelvin", colorTemperatureRange="2000,9000" ] }
