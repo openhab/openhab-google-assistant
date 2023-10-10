@@ -307,7 +307,7 @@ Player transportItem   (tvGroup) { ga="tvTransport" }
 | **Device Type** | [Fan](https://developers.home.google.com/cloud-to-cloud/guides/fan), [Hood](https://developers.home.google.com/cloud-to-cloud/guides/hood), [AirPurifier](https://developers.home.google.com/cloud-to-cloud/guides/airpurifier) |
 | **Supported Traits** | [OnOff](https://developers.home.google.com/cloud-to-cloud/traits/OnOff), [FanSpeed](https://developers.home.google.com/cloud-to-cloud/traits/fanspeed) (depending on used item type) |
 | **Supported Items** | Switch (no speed control), Dimmer |
-| **Configuration** | (optional) `checkState=true/false`<br>(optional) `speeds="0=away:zero,50=default:standard:one,100=high:two"`<br>(optional) `lang="en"`<br>(optional) `ordered=true/false`<br>_Hint: if you are using a Dimmer then `speeds` is required_ |
+| **Configuration** | (optional) `checkState=true/false`<br>(optional) `speeds="0=away:zero,50=default:standard:one,100=high:two"`<br>(optional) `lang="en"`<br>(optional) `ordered=true/false` |
 
 Fans (and similar device types, like AirPurifier or Hood) support the `FanSpeed` trait.
 If you do not specify the `speeds` option, Google will use and expect percentage values for the fan speed.
@@ -320,10 +320,10 @@ You are also able to define the language of those aliases.
 The option `ordered` will tell the system that your list is ordered and you will then be able to also say "faster" or "slower" and Google will use the next or previous speed.
 
 ```shell
-Dimmer { ga="Fan" [ speeds="0=away:zero,50=default:standard:one,100=high:two", lang="en", ordered=true ] } # Only percentage values for the speed
+Dimmer { ga="Fan" [ speeds="0=away:zero,50=default:standard:one,100=high:two", lang="en", ordered=true ] } # Using specific percentage values for the speed
 Switch { ga="Hood" } # No speed control - only on/off
-Dimmer { ga="AirPurifier" } # Only percentage values for the speed
-Dimmer { ga="AirPurifier" [ speeds="0=away:zero,1=low:one,2=medium:two,3=high:three,4=turbo:four", lang="en", ordered=true ] } # Specific speed modes/values stated, which can differ from percentage
+Dimmer { ga="AirPurifier" } # Using percentage values for the speed
+Dimmer { ga="AirPurifier" [ speeds="0=away:zero,1=low:one,2=medium:two,3=high:three,4=turbo:four", lang="en", ordered=true ] } # Using specific speed modes/values, which differ from percentage
 Switch { ga="AirPurifier" } # No speed control - only on/off
 ```
 
