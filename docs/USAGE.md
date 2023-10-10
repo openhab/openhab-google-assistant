@@ -24,8 +24,13 @@ If you have any issues, questions or an idea for additional features, please tak
 ## Latest Changes
 
 ::: tip State of this document
-This documentation refers to release [v3.6.5](https://github.com/openhab/openhab-google-assistant/releases/tag/v3.6.5) of [openHAB Google Assistant](https://github.com/openhab/openhab-google-assistant) published on 2023-07-17
+This documentation refers to release [v3.7.0](https://github.com/openhab/openhab-google-assistant/releases/tag/v3.7.0) of [openHAB Google Assistant](https://github.com/openhab/openhab-google-assistant) published on 2023-10-10
 :::
+
+### v3.7.0
+
+- Adjusted [`Fan`](#fan-hood-airpurifier) to use `supportsFanSpeedPercent` option
+- Inverted `lightColorTemperature` percentage range when using `colorUnit="percent"` with [`SpecialColorLight`](#light-as-group-with-separate-controls)
 
 ### v3.6.0
 
@@ -94,7 +99,7 @@ Color  { ga="Light" [ colorTemperatureRange="2000,9000" ] }
 | **Device Type** | [Light](https://developers.home.google.com/cloud-to-cloud/guides/light) |
 | **Supported Traits** | [OnOff](https://developers.home.google.com/cloud-to-cloud/traits/onoff), [ColorSetting](https://developers.home.google.com/cloud-to-cloud/traits/colorsetting), [Brightness](https://developers.home.google.com/cloud-to-cloud/traits/brightness) |
 | **Supported Items** | Group as `SpecialColorLight` with the following members:<br>(optional) Number or Dimmer as `lightBrightness`<br>(optional) Number or Dimmer as `lightColorTemperature`<br>(optional) Color as `lightColor`<br>(optional) Switch as `lightPower` |
-| **Configuration** | (optional) `colorUnit=percent/kelvin/mired`<br>(optional) `checkState=true/false`<br>(optional) `colorTemperatureRange="minK,maxK"`<br>_Hint: if you want to use `lightColorTemperature`, you must either set `colorUnit` to `kelvin` or `mired` or define a `colorTemperatureRange`, because `colorUnit` defaults to `percent`_ |
+| **Configuration** | (optional) `colorUnit="percent/kelvin/mired"`<br>(optional) `checkState=true/false`<br>(optional) `colorTemperatureRange="minK,maxK"`<br>_Hint: if you want to use `lightColorTemperature`, you must either set `colorUnit` to `kelvin` or `mired` or define a `colorTemperatureRange`, because `colorUnit` defaults to `percent`_ |
 
 ```shell
 Group  lightGroup { ga="SpecialColorLight" [ colorUnit="kelvin", colorTemperatureRange="2000,9000" ] }
@@ -200,7 +205,7 @@ Switch { ga="Lock" [ pinNeeded="1234" ] }
 | **Device Type** | [SecuritySystem](https://developers.home.google.com/cloud-to-cloud/guides/securitysystem) |
 | **Supported Traits** | [ArmDisarm](https://developers.home.google.com/cloud-to-cloud/traits/armdisarm) |
 | **Supported Items** | Switch |
-| **Configuration** | (optional) `inverted=true/false`<br>(optional) `checkState=true/false`<br>(optional) `ackNeeded=true/false`<br>(optional) `pinNeeded="1234"`<br>(optional) `pinOnDisarmOnly=true/false`<br>(optional) `waitForStateChange=2` |
+| **Configuration** | (optional) `inverted=true/false`<br>(optional) `checkState=true/false`<br>(optional) `ackNeeded=true/false`<br>(optional) `pinNeeded="1234"`<br>(optional) `pinOnDisarmOnly=true/false`<br>(optional) `waitForStateChange="2"` |
 
 When used as a Switch, you will be limited to arming and disarming the system.
 
@@ -219,7 +224,7 @@ Switch houseAlarm "House Alarm" { ga="SecuritySystem", pinNeeded="1234" }
 | **Device Type** | [SecuritySystem](https://developers.home.google.com/cloud-to-cloud/guides/securitysystem) |
 | **Supported Traits** | [ArmDisarm](https://developers.home.google.com/cloud-to-cloud/traits/armdisarm)<br>[StatusReport](https://developers.home.google.com/cloud-to-cloud/traits/statusreport) |
 | **Supported Items** | Group as `SecuritySystem` with the following members: <br>Switch as `securitySystemArmed`<br>(optional) String as `securitySystemArmLevel`<br>(optional) Switch as `securitySystemTrouble`<br>(optional) String as `securitySystemTroubleCode`<br>(optional) Contact as `securitySystemZone` |
-| **Configuration** | (optional) `inverted=true/false`<br>(optional) `checkState=true/false`<br>(optional) `ackNeeded=true/false`<br>(optional) `pinNeeded="1234"`<br> (optional) `pinOnDisarmOnly=true/false` <br>(optional) `waitForStateChange=2`<br>(optional) `armLevels="L1=Level 1,L2=Level 2"`<br><br>Specifically on Zone Contacts:<br>(required) `zoneType=OpenClose/Motion` <br>(optional) `blocking=true/false`|
+| **Configuration** | (optional) `inverted=true/false`<br>(optional) `checkState=true/false`<br>(optional) `ackNeeded=true/false`<br>(optional) `pinNeeded="1234"`<br> (optional) `pinOnDisarmOnly=true/false` <br>(optional) `waitForStateChange="2"`<br>(optional) `armLevels="L1=Level 1,L2=Level 2"`<br><br>Specifically on Zone Contacts:<br>(required) `zoneType="OpenClose/Motion"` <br>(optional) `blocking=true/false`|
 
 Configuring the `SecuritySystem` as a Group will enable a lot of advanced functionality.
 
@@ -243,7 +248,7 @@ When arming and not using arm levels or disarming, Google will send ON/OFF to th
 
 If arming fails and blocking zones have been configured with `securitySystemZone` and `blocking=true`, Google will attempt to check for zones that are causing the arming to fail.
 
-`ga=securitySystemTrouble` and `ga=securitySystemTroubleCode` are used in a `StatusReport` to report any errors on the alarm, e.g. a flat battery.
+`ga="securitySystemTrouble"` and `ga="securitySystemTroubleCode"` are used in a `StatusReport` to report any errors on the alarm, e.g. a flat battery.
 
 ```shell
 Group   gHouseAlarm "House Alarm" { ga="SecuritySystem" [ pinNeeded="1234", armLevels="L1=Level 1,L2=Level 2" ] }
