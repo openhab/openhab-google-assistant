@@ -305,7 +305,7 @@ describe('SpecialColorLight Device', () => {
             }
           },
           {
-            state: '23',
+            state: '77',
             metadata: {
               ga: {
                 value: 'lightColorTemperature'
@@ -422,7 +422,7 @@ describe('SpecialColorLight Device', () => {
             }
           },
           {
-            state: '20',
+            state: '80',
             metadata: {
               ga: {
                 value: 'lightColorTemperature'
@@ -469,7 +469,7 @@ describe('SpecialColorLight Device', () => {
             }
           },
           {
-            state: '20',
+            state: '80',
             metadata: {
               ga: {
                 value: 'lightColorTemperature'
@@ -567,7 +567,7 @@ describe('SpecialColorLight Device', () => {
             }
           },
           {
-            state: '20',
+            state: '80',
             metadata: {
               ga: {
                 value: 'lightColorTemperature'
