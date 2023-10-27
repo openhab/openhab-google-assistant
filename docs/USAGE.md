@@ -114,6 +114,14 @@ Color  colorItem            (lightGroup) { ga="lightColor" }
 Number colorTemperatureItem (lightGroup) { ga="lightColorTemperature" }
 ```
 
+Example of a light device where low Kelvin values (warm light) are represented by high percentage values in the color temperature item:
+
+```shell
+Group  lightGroup { ga="SpecialColorLight" [ colorUnit="percent", colorTemperatureRange="2000,6500", colorTemperatureInverted=true ] }
+Dimmer brightnessItem       (lightGroup) { ga="lightBrightness" }
+Dimmer colorTemperatureItem (lightGroup) { ga="lightColorTemperature" }
+```
+
 In case you want to control multiple lights using one device with Google Assistant, you can apply the following pattern:
 
 ```shell
