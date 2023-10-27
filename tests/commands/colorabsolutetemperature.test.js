@@ -85,6 +85,21 @@ describe('ColorAbsoluteTemperature Command', () => {
       const device = { customData: { deviceType: 'SpecialColorLight' } };
       expect(Command.convertParamsToValue(params, item, device)).toBe('500');
     });
+
+    test('convertParamsToValue SpecialColorLight Percent Inverted', () => {
+      const item = {
+        metadata: {
+          ga: {
+            config: {
+              colorTemperatureRange: '1000,5000',
+              colorTemperatureInverted: true
+            }
+          }
+        }
+      };
+      const device = { customData: { deviceType: 'SpecialColorLight' } };
+      expect(Command.convertParamsToValue(params, item, device)).toBe('75');
+    });
   });
 
   test('getResponseStates', () => {

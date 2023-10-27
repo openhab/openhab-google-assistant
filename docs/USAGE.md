@@ -99,7 +99,12 @@ Color  { ga="Light" [ colorTemperatureRange="2000,9000" ] }
 | **Device Type** | [Light](https://developers.home.google.com/cloud-to-cloud/guides/light) |
 | **Supported Traits** | [OnOff](https://developers.home.google.com/cloud-to-cloud/traits/onoff), [ColorSetting](https://developers.home.google.com/cloud-to-cloud/traits/colorsetting), [Brightness](https://developers.home.google.com/cloud-to-cloud/traits/brightness) |
 | **Supported Items** | Group as `SpecialColorLight` with the following members:<br>(optional) Number or Dimmer as `lightBrightness`<br>(optional) Number or Dimmer as `lightColorTemperature`<br>(optional) Color as `lightColor`<br>(optional) Switch as `lightPower` |
-| **Configuration** | (optional) `colorUnit="percent/kelvin/mired"`<br>(optional) `checkState=true/false`<br>(optional) `colorTemperatureRange="minK,maxK"`<br>_Hint: if you want to use `lightColorTemperature`, you must either set `colorUnit` to `kelvin` or `mired` or define a `colorTemperatureRange`, because `colorUnit` defaults to `percent`_ |
+| **Configuration** | (optional) `colorUnit="percent/kelvin/mired"`<br>(optional) `checkState=true/false`<br>(optional) `colorTemperatureRange="minK,maxK"`<br>(optional) `colorTemperatureInverted=true/false` |
+
+**Important Hint:** If you want to use `lightColorTemperature`, you must either set `colorUnit` to `kelvin` or `mired` or define a `colorTemperatureRange`, because `colorUnit` defaults to `percent`.
+
+If you use `colorUnit` as percentage values, the lowest color temperature (warm light) will be converted to 0%, and correspondingly the highest color temperature (cold light) will be converted to 100%.
+If you need the inverted values for your device, you can set `colorTemperatureInverted=true`. This will convert low Kelvin values to high percentage values and vice versa.
 
 ```shell
 Group  lightGroup { ga="SpecialColorLight" [ colorUnit="kelvin", colorTemperatureRange="2000,9000" ] }

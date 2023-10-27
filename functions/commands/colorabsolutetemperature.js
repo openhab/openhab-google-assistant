@@ -42,7 +42,11 @@ class ColorAbsoluteTemperature extends DefaultCommand {
           return convertMired(params.color.temperature).toString();
         }
         const { temperatureMinK, temperatureMaxK } = SpecialColorLight.getAttributes(item).colorTemperatureRange;
-        return (((params.color.temperature - temperatureMinK) / (temperatureMaxK - temperatureMinK)) * 100).toString();
+        let percent = ((params.color.temperature - temperatureMinK) / (temperatureMaxK - temperatureMinK)) * 100;
+        if (SpecialColorLight.getColorTemperatureInverted(item)) {
+          percent = 100 - percent;
+        }
+        return percent.toString();
       } catch (error) {
         return '0';
       }
