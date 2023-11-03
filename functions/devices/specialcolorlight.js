@@ -91,10 +91,12 @@ class SpecialColorLight extends DefaultDevice {
               };
             } else {
               const { temperatureMinK, temperatureMaxK } = this.getAttributes(item).colorTemperatureRange;
+              let percent = Number(members[member].state);
+              if (this.getColorTemperatureInverted(item)) {
+                percent = 100 - percent;
+              }
               state.color = {
-                temperatureK:
-                  temperatureMinK +
-                  Math.round(((temperatureMaxK - temperatureMinK) / 100) * Number(members[member].state) || 0)
+                temperatureK: temperatureMinK + Math.round(((temperatureMaxK - temperatureMinK) / 100) * percent || 0)
               };
             }
           } catch (error) {
@@ -125,6 +127,10 @@ class SpecialColorLight extends DefaultDevice {
   static getColorUnit(item) {
     const colorUnit = this.getConfig(item).colorUnit || 'percent';
     return colorUnit.toLowerCase();
+  }
+
+  static getColorTemperatureInverted(item) {
+    return !!this.getConfig(item).colorTemperatureInverted === true;
   }
 }
 

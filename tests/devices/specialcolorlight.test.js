@@ -336,14 +336,6 @@ describe('SpecialColorLight Device', () => {
         },
         members: [
           {
-            state: '50',
-            metadata: {
-              ga: {
-                value: 'lightBrightness'
-              }
-            }
-          },
-          {
             state: '2000.345',
             metadata: {
               ga: {
@@ -354,10 +346,39 @@ describe('SpecialColorLight Device', () => {
         ]
       };
       expect(Device.getState(item)).toStrictEqual({
-        on: true,
-        brightness: 50,
         color: {
           temperatureK: 2000
+        }
+      });
+    });
+
+    test('getState percent inverted', () => {
+      const item = {
+        type: 'Group',
+        metadata: {
+          ga: {
+            value: 'LIGHT',
+            config: {
+              colorTemperatureRange: '2000,5000',
+              colorTemperatureInverted: true
+            }
+          }
+        },
+        members: [
+          {
+            state: '25',
+            type: 'Number',
+            metadata: {
+              ga: {
+                value: 'lightColorTemperature'
+              }
+            }
+          }
+        ]
+      };
+      expect(Device.getState(item)).toStrictEqual({
+        color: {
+          temperatureK: 4250
         }
       });
     });
@@ -375,14 +396,6 @@ describe('SpecialColorLight Device', () => {
         },
         members: [
           {
-            state: '50',
-            metadata: {
-              ga: {
-                value: 'lightBrightness'
-              }
-            }
-          },
-          {
             state: '200',
             metadata: {
               ga: {
@@ -393,8 +406,6 @@ describe('SpecialColorLight Device', () => {
         ]
       };
       expect(Device.getState(item)).toStrictEqual({
-        on: true,
-        brightness: 50,
         color: {
           temperatureK: 5000
         }
