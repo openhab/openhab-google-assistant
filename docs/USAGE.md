@@ -24,9 +24,13 @@ If you have any issues, questions or an idea for additional features, please tak
 ## Latest Changes
 
 ::: tip State of this document
-This documentation refers to release [v3.7.0](https://github.com/openhab/openhab-google-assistant/releases/tag/v3.7.0) of [openHAB Google Assistant](https://github.com/openhab/openhab-google-assistant) published on 2023-10-10
+This documentation refers to release [v3.8.0](https://github.com/openhab/openhab-google-assistant/releases/tag/v3.8.0) of [openHAB Google Assistant](https://github.com/openhab/openhab-google-assistant) published on 2023-11-03
 :::
 
+### v3.8.0
+
+- Added `colorTemperatureInverted=true` option to [`SpecialColorLight`](#light-as-group-with-separate-controls) allowing users to invert the percentage to Kelvin conversion for the `lightColorTemperature` item
+  
 ### v3.7.0
 
 - Adjusted [`Fan`](#fan-hood-airpurifier) to use `supportsFanSpeedPercent` option
