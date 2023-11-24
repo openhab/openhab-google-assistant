@@ -1,9 +1,9 @@
 const Device = require('../../functions/devices/humiditysensor.js');
 
 describe('HumiditySensor Device', () => {
-  test('isCompatible', () => {
+  test('matchesDeviceType', () => {
     expect(
-      Device.isCompatible({
+      Device.matchesDeviceType({
         metadata: {
           ga: {
             value: 'humiditysensor'

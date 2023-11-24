@@ -34,7 +34,11 @@ describe('TemperatureSensor Device', () => {
         queryOnlyTemperatureControl: true,
         queryOnlyTemperatureSetting: true,
         temperatureUnitForUX: 'C',
-        thermostatTemperatureUnit: 'C'
+        thermostatTemperatureUnit: 'C',
+        temperatureRange: {
+          maxThresholdCelsius: 100,
+          minThresholdCelsius: -100
+        }
       });
     });
 
@@ -52,7 +56,33 @@ describe('TemperatureSensor Device', () => {
         queryOnlyTemperatureControl: true,
         queryOnlyTemperatureSetting: true,
         temperatureUnitForUX: 'F',
-        thermostatTemperatureUnit: 'F'
+        thermostatTemperatureUnit: 'F',
+        temperatureRange: {
+          maxThresholdCelsius: 100,
+          minThresholdCelsius: -100
+        }
+      });
+    });
+
+    test('getAttributes temperatureRange', () => {
+      const item1 = {
+        metadata: {
+          ga: {
+            config: {
+              temperatureRange: '-20,40'
+            }
+          }
+        }
+      };
+      expect(Device.getAttributes(item1)).toStrictEqual({
+        queryOnlyTemperatureControl: true,
+        queryOnlyTemperatureSetting: true,
+        temperatureUnitForUX: 'C',
+        thermostatTemperatureUnit: 'C',
+        temperatureRange: {
+          maxThresholdCelsius: 40,
+          minThresholdCelsius: -20
+        }
       });
     });
   });

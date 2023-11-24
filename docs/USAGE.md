@@ -460,12 +460,16 @@ Number capacityFullItem     (chargerGroup) { ga="chargerCapacityUntilFull" }
 | **Device Type** | [Sensor](https://developers.home.google.com/cloud-to-cloud/guides/sensor) |
 | **Supported Traits** | [TemperatureControl](https://developers.home.google.com/cloud-to-cloud/traits/temperaturecontrol), [TemperatureSetting](https://developers.home.google.com/cloud-to-cloud/traits/temperaturesetting) |
 | **Supported Items** | Number |
-| **Configuration** | (optional) `useFahrenheit=true/false` |
+| **Configuration** | (optional) `useFahrenheit=true/false`<br>(optional) `temperatureRange="-10,50"` |
+
+By default, the temperature range of a temperature sensor is set to -100 °C to 100 °C.
+The reported state values have to fall into that range!
+If you need to adjust the range, please add the config option `temperatureRange="-20,40"` to the item. Keep in mind that those values always have to be provided in Celsius!
 
 _Hint:_ At the moment, sensor values will only be queriable by voice and will not show up anywhere in the Google Home app.
 
 ```shell
-Number { ga="TemperatureSensor" [ useFahrenheit=true ] }
+Number { ga="TemperatureSensor" [ useFahrenheit=true, temperatureRange="-20,40" ] }
 ```
 
 ### HumiditySensor
@@ -487,10 +491,14 @@ Number { ga="HumiditySensor" }
 | **Device Type** | [Sensor](https://developers.home.google.com/cloud-to-cloud/guides/sensor) |
 | **Supported Traits** | [HumiditySetting](https://developers.home.google.com/cloud-to-cloud/traits/humiditysetting), [TemperatureControl](https://developers.home.google.com/cloud-to-cloud/traits/temperaturecontrol), [TemperatureSetting](https://developers.home.google.com/cloud-to-cloud/traits/temperaturesetting) |
 | **Supported Items** | Group as `ClimateSensor` with the following members:<br>(optional) Number as `humidityAmbient`<br>(optional) Number as `temperatureAmbient` |
-| **Configuration** | (optional) `useFahrenheit=true/false` |
+| **Configuration** | (optional) `useFahrenheit=true/false`<br>(optional) `temperatureRange="-10,50"` |
+
+By default, the temperature range of a climate sensor is set to -100 °C to 100 °C.
+The reported state values have to fall into that range!
+If you need to adjust the range, please add the config option `temperatureRange="-20,40"` to the item. Keep in mind that those values always have to be provided in Celsius!
 
 ```shell
-Group  sensorGroup { ga="ClimateSensor" [ useFahrenheit=true ] }
+Group  sensorGroup { ga="ClimateSensor" [ useFahrenheit=true, temperatureRange="0,40" ] }
 Number temperatureItem (sensorGroup) { ga="temperatureAmbient" }
 Number humidityItem    (sensorGroup) { ga="humidityAmbient" }
 ```
