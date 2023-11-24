@@ -10,14 +10,16 @@ class SpecialColorLight extends DefaultDevice {
     return ['action.devices.traits.OnOff', 'action.devices.traits.Brightness', 'action.devices.traits.ColorSetting'];
   }
 
-  static isCompatible(item = {}) {
-    return item.metadata && item.metadata.ga && item.metadata.ga.value.toLowerCase() == 'specialcolorlight';
+  static get requiredItemTypes() {
+    return ['Group'];
   }
 
-  static matchesItemType(item) {
+  static matchesDeviceType(item) {
     const members = this.getMembers(item);
-    return (
-      item.type === 'Group' &&
+    return !!(
+      item.metadata &&
+      item.metadata.ga &&
+      item.metadata.ga.value.toLowerCase() == 'specialcolorlight' &&
       Object.keys(members).length > 1 &&
       (!('lightColorTemperature' in members) ||
         this.getColorUnit(item) !== 'percent' ||
@@ -43,6 +45,22 @@ class SpecialColorLight extends DefaultDevice {
       }
     }
     return attributes;
+  }
+
+  static getMetadata(item) {
+    const metadata = super.getMetadata(item);
+    const colorTemperatureRange = this.getAttributes(item).colorTemperatureRange;
+    if (colorTemperatureRange) {
+      metadata.customData.colorTemperatureRange = colorTemperatureRange;
+    }
+    const colorUnit = this.getColorUnit(item);
+    if (colorUnit !== 'percent') {
+      metadata.customData.colorUnit = colorUnit;
+    }
+    if (this.getColorTemperatureInverted(item)) {
+      metadata.customData.colorTemperatureInverted = true;
+    }
+    return metadata;
   }
 
   static getState(item) {
@@ -108,20 +126,13 @@ class SpecialColorLight extends DefaultDevice {
     return state;
   }
 
-  static getMembers(item) {
-    const supportedMembers = ['lightBrightness', 'lightColor', 'lightColorTemperature', 'lightPower'];
-    const members = {};
-    if (item.members && item.members.length) {
-      item.members.forEach((member) => {
-        if (member.metadata && member.metadata.ga) {
-          const memberType = supportedMembers.find((m) => member.metadata.ga.value.toLowerCase() === m.toLowerCase());
-          if (memberType) {
-            members[memberType] = { name: member.name, state: member.state };
-          }
-        }
-      });
-    }
-    return members;
+  static get supportedMembers() {
+    return [
+      { name: 'lightPower', types: ['Switch'] },
+      { name: 'lightColor', types: ['Color'] },
+      { name: 'lightBrightness', types: ['Dimmer', 'Number'] },
+      { name: 'lightColorTemperature', types: ['Dimmer', 'Number'] }
+    ];
   }
 
   static getColorUnit(item) {

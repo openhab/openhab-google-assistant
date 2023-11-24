@@ -6,28 +6,19 @@ describe('Charge Command', () => {
     expect(Command.validateParams({ charge: true })).toBe(true);
   });
 
-  test('requiresItem', () => {
-    expect(Command.requiresItem()).toBe(true);
-  });
-
   test('getItemName', () => {
     expect(() => {
-      Command.getItemName({ name: 'Item' });
+      Command.getItemName({ id: 'Item' });
     }).toThrow();
 
-    const item = {
-      members: [
-        {
-          name: 'ChargingItem',
-          metadata: {
-            ga: {
-              value: 'chargerCharging'
-            }
-          }
+    const device = {
+      customData: {
+        members: {
+          chargerCharging: 'ChargingItem'
         }
-      ]
+      }
     };
-    expect(Command.getItemName(item)).toBe('ChargingItem');
+    expect(Command.getItemName(device)).toBe('ChargingItem');
   });
 
   describe('convertParamsToValue', () => {
@@ -44,6 +35,7 @@ describe('Charge Command', () => {
     const item = {
       members: [
         {
+          type: 'Switch',
           metadata: {
             ga: {
               value: 'chargerCharging'
@@ -52,6 +44,7 @@ describe('Charge Command', () => {
           state: 'OFF'
         },
         {
+          type: 'Number',
           metadata: {
             ga: {
               value: 'chargerCapacityRemaining'

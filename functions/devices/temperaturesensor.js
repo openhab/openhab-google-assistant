@@ -23,7 +23,7 @@ class TemperatureSensor extends DefaultDevice {
     return ['Number'];
   }
 
-  static isCompatible(item = {}) {
+  static matchesDeviceType(item) {
     return item.metadata && item.metadata.ga && item.metadata.ga.value.toLowerCase() == 'temperaturesensor';
   }
 

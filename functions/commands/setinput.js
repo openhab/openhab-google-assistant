@@ -1,5 +1,4 @@
 const DefaultCommand = require('./default.js');
-const TV = require('../devices/tv.js');
 
 class SetInput extends DefaultCommand {
   static get type() {
@@ -10,14 +9,10 @@ class SetInput extends DefaultCommand {
     return 'newInput' in params && typeof params.newInput === 'string';
   }
 
-  static requiresItem() {
-    return true;
-  }
-
-  static getItemName(item) {
-    const members = TV.getMembers(item);
+  static getItemName(device) {
+    const members = this.getMembers(device);
     if ('tvInput' in members) {
-      return members.tvInput.name;
+      return members.tvInput;
     }
     throw { statusCode: 400 };
   }

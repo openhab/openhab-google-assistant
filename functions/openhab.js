@@ -141,7 +141,7 @@ class OpenHAB {
           if (!DeviceType) {
             throw { statusCode: 404, message: `Device type not found for item: ${item.type} ${item.name}` };
           }
-          if (item.state === 'NULL' && !('getMembers' in DeviceType)) {
+          if (item.state === 'NULL' && !DeviceType.supportedMembers.length) {
             throw { statusCode: 406, message: `Item state is NULL: ${item.type} ${item.name}` };
           }
           payload.devices[device.id] = Object.assign({ status: 'SUCCESS', online: true }, DeviceType.getState(item));

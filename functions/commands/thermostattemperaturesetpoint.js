@@ -15,10 +15,10 @@ class ThermostatTemperatureSetpoint extends DefaultCommand {
     return true;
   }
 
-  static getItemName(item) {
-    const members = Thermostat.getMembers(item);
+  static getItemName(device) {
+    const members = this.getMembers(device);
     if ('thermostatTemperatureSetpoint' in members) {
-      return members.thermostatTemperatureSetpoint.name;
+      return members.thermostatTemperatureSetpoint;
     }
     throw { statusCode: 400 };
   }

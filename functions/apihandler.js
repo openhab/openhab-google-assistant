@@ -133,7 +133,7 @@ class ApiHandler {
           reject({ statusCode: response.statusCode, message: 'sendCommand - failed for path: ' + options.path });
           return;
         }
-        resolve(null);
+        resolve(true);
       });
       req.on('error', (error) => {
         console.error(`openhabGoogleAssistant - sendCommand: ERROR ${JSON.stringify(error)}`);

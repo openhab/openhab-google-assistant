@@ -18,8 +18,12 @@ class TV extends DefaultDevice {
     return traits;
   }
 
-  static matchesItemType(item) {
-    return item.type === 'Group' && Object.keys(this.getMembers(item)).length > 0;
+  static get requiredItemTypes() {
+    return ['Group'];
+  }
+
+  static matchesDeviceType(item) {
+    return super.matchesDeviceType(item) && Object.keys(this.getMembers(item)).length > 0;
   }
 
   static getAttributes(item) {
@@ -129,20 +133,16 @@ class TV extends DefaultDevice {
     return state;
   }
 
-  static getMembers(item) {
-    const supportedMembers = ['tvApplication', 'tvChannel', 'tvVolume', 'tvInput', 'tvTransport', 'tvPower', 'tvMute'];
-    const members = {};
-    if (item.members && item.members.length) {
-      item.members.forEach((member) => {
-        if (member.metadata && member.metadata.ga) {
-          const memberType = supportedMembers.find((m) => member.metadata.ga.value.toLowerCase() === m.toLowerCase());
-          if (memberType) {
-            members[memberType] = { name: member.name, state: member.state };
-          }
-        }
-      });
-    }
-    return members;
+  static get supportedMembers() {
+    return [
+      { name: 'tvApplication', types: ['Number', 'String'] },
+      { name: 'tvChannel', types: ['Number', 'String'] },
+      { name: 'tvVolume', types: ['Number', 'Dimmer'] },
+      { name: 'tvInput', types: ['Number', 'String'] },
+      { name: 'tvTransport', types: ['Player'] },
+      { name: 'tvPower', types: ['Switch'] },
+      { name: 'tvMute', types: ['Switch'] }
+    ];
   }
 
   static getChannelMap(item) {

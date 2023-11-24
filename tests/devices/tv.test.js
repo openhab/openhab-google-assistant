@@ -1,33 +1,40 @@
 const Device = require('../../functions/devices/tv.js');
 
 describe('TV Device', () => {
-  test('isCompatible', () => {
+  test('matchesDeviceType', () => {
     expect(
-      Device.isCompatible({
+      Device.matchesDeviceType({
         metadata: {
           ga: {
             value: 'TV'
           }
         }
       })
+    ).toBe(false);
+    expect(
+      Device.matchesDeviceType({
+        metadata: {
+          ga: {
+            value: 'TV'
+          }
+        },
+        members: [
+          {
+            type: 'Switch',
+            metadata: {
+              ga: {
+                value: 'tvPower'
+              }
+            }
+          }
+        ]
+      })
     ).toBe(true);
   });
 
   test('matchesItemType', () => {
-    const item = {
-      type: 'Group',
-      members: [
-        {
-          metadata: {
-            ga: {
-              value: 'tvPower'
-            }
-          }
-        }
-      ]
-    };
-    expect(Device.matchesItemType(item)).toBe(true);
-    expect(Device.matchesItemType({ type: 'Group' })).toBe(false);
+    expect(Device.matchesItemType({ type: 'Switch' })).toBe(false);
+    expect(Device.matchesItemType({ type: 'Group' })).toBe(true);
   });
 
   describe('getTraits', () => {
@@ -36,6 +43,7 @@ describe('TV Device', () => {
         members: [
           {
             state: 'ON',
+            type: 'Switch',
             metadata: {
               ga: {
                 value: 'tvPower'
@@ -52,6 +60,7 @@ describe('TV Device', () => {
         members: [
           {
             state: '1',
+            type: 'Number',
             metadata: {
               ga: {
                 value: 'tvChannel'
@@ -60,6 +69,7 @@ describe('TV Device', () => {
           },
           {
             state: '50',
+            type: 'Dimmer',
             metadata: {
               ga: {
                 value: 'tvVolume'
@@ -68,6 +78,7 @@ describe('TV Device', () => {
           },
           {
             state: 'input1',
+            type: 'String',
             metadata: {
               ga: {
                 value: 'tvInput'
@@ -75,7 +86,8 @@ describe('TV Device', () => {
             }
           },
           {
-            state: 'PLAYING',
+            state: 'PLAY',
+            type: 'Player',
             metadata: {
               ga: {
                 value: 'tvTransport'
@@ -84,6 +96,7 @@ describe('TV Device', () => {
           },
           {
             state: 'ON',
+            type: 'Switch',
             metadata: {
               ga: {
                 value: 'tvPower'
@@ -92,6 +105,7 @@ describe('TV Device', () => {
           },
           {
             state: 'OFF',
+            type: 'Switch',
             metadata: {
               ga: {
                 value: 'tvMute'
@@ -100,6 +114,7 @@ describe('TV Device', () => {
           },
           {
             state: 'youtube',
+            type: 'String',
             metadata: {
               ga: {
                 value: 'tvApplication'
@@ -130,6 +145,7 @@ describe('TV Device', () => {
         },
         members: [
           {
+            type: 'Dimmer',
             metadata: {
               ga: {
                 value: 'tvVolume'
@@ -137,6 +153,7 @@ describe('TV Device', () => {
             }
           },
           {
+            type: 'Player',
             metadata: {
               ga: {
                 value: 'tvTransport'
@@ -166,6 +183,7 @@ describe('TV Device', () => {
         },
         members: [
           {
+            type: 'Number',
             metadata: {
               ga: {
                 value: 'tvVolume'
@@ -193,6 +211,7 @@ describe('TV Device', () => {
         },
         members: [
           {
+            type: 'Player',
             metadata: {
               ga: {
                 value: 'tvTransport'
@@ -200,6 +219,7 @@ describe('TV Device', () => {
             }
           },
           {
+            type: 'Switch',
             metadata: {
               ga: {
                 value: 'tvMute'
@@ -226,6 +246,7 @@ describe('TV Device', () => {
         },
         members: [
           {
+            type: 'String',
             metadata: {
               ga: {
                 value: 'tvInput'
@@ -271,6 +292,7 @@ describe('TV Device', () => {
         },
         members: [
           {
+            type: 'Number',
             metadata: {
               ga: {
                 value: 'tvChannel'
@@ -308,6 +330,7 @@ describe('TV Device', () => {
       },
       members: [
         {
+          type: 'String',
           metadata: {
             ga: {
               value: 'tvApplication'
@@ -349,6 +372,7 @@ describe('TV Device', () => {
         {
           name: 'Channel',
           state: '1',
+          type: 'Number',
           metadata: {
             ga: {
               value: 'tvChannel'
@@ -358,6 +382,7 @@ describe('TV Device', () => {
         {
           name: 'Volume',
           state: '50',
+          type: 'Dimmer',
           metadata: {
             ga: {
               value: 'tvVolume'
@@ -367,6 +392,7 @@ describe('TV Device', () => {
         {
           name: 'Input',
           state: 'input1',
+          type: 'String',
           metadata: {
             ga: {
               value: 'tvInput'
@@ -376,6 +402,7 @@ describe('TV Device', () => {
         {
           name: 'Transport',
           state: 'PLAY',
+          type: 'Player',
           metadata: {
             ga: {
               value: 'tvTransport'
@@ -385,6 +412,7 @@ describe('TV Device', () => {
         {
           name: 'Power',
           state: 'ON',
+          type: 'Switch',
           metadata: {
             ga: {
               value: 'tvPower'
@@ -394,6 +422,7 @@ describe('TV Device', () => {
         {
           name: 'Mute',
           state: 'OFF',
+          type: 'Switch',
           metadata: {
             ga: {
               value: 'tvMute'
@@ -403,6 +432,7 @@ describe('TV Device', () => {
         {
           name: 'Application',
           state: 'youtube',
+          type: 'String',
           metadata: {
             ga: {
               value: 'tvApplication'
@@ -493,6 +523,7 @@ describe('TV Device', () => {
         members: [
           {
             state: '1',
+            type: 'Number',
             metadata: {
               ga: {
                 value: 'tvChannel'
@@ -501,6 +532,7 @@ describe('TV Device', () => {
           },
           {
             state: '50',
+            type: 'Dimmer',
             metadata: {
               ga: {
                 value: 'tvVolume'
@@ -509,6 +541,7 @@ describe('TV Device', () => {
           },
           {
             state: 'input1',
+            type: 'String',
             metadata: {
               ga: {
                 value: 'tvInput'
@@ -517,6 +550,7 @@ describe('TV Device', () => {
           },
           {
             state: 'PLAYING',
+            type: 'Player',
             metadata: {
               ga: {
                 value: 'tvTransport'
@@ -525,6 +559,7 @@ describe('TV Device', () => {
           },
           {
             state: 'ON',
+            type: 'Switch',
             metadata: {
               ga: {
                 value: 'tvPower'
@@ -533,6 +568,7 @@ describe('TV Device', () => {
           },
           {
             state: 'OFF',
+            type: 'Switch',
             metadata: {
               ga: {
                 value: 'tvMute'
@@ -541,6 +577,7 @@ describe('TV Device', () => {
           },
           {
             state: 'youtube',
+            type: 'String',
             metadata: {
               ga: {
                 value: 'tvApplication'
@@ -567,6 +604,7 @@ describe('TV Device', () => {
         members: [
           {
             state: '1',
+            type: 'Number',
             metadata: {
               ga: {
                 value: 'tvChannel'
@@ -590,7 +628,8 @@ describe('TV Device', () => {
         },
         members: [
           {
-            state: '50.43',
+            state: '50',
+            type: 'Number',
             metadata: {
               ga: {
                 value: 'tvVolume'
@@ -599,6 +638,7 @@ describe('TV Device', () => {
           },
           {
             state: 'ON',
+            type: 'Switch',
             metadata: {
               ga: {
                 value: 'tvPower'

@@ -79,12 +79,11 @@ class DefaultCommand {
   }
 
   /**
-   * @param {object} item
    * @param {object} device
    * @param {object} params
    */
-  static getItemName(item, device, params) {
-    return item.name;
+  static getItemName(device, params) {
+    return device.id;
   }
 
   /**
@@ -99,6 +98,13 @@ class DefaultCommand {
    */
   static getItemType(device) {
     return (device.customData && device.customData.itemType) || '';
+  }
+
+  /**
+   * @param {object} device
+   */
+  static getMembers(device) {
+    return (device.customData && device.customData.members) || {};
   }
 
   /**
@@ -179,7 +185,7 @@ class DefaultCommand {
       console.log(`openhabGoogleAssistant - ${this.type}: Waiting ${secondsToWait} second(s) for state to update`);
       setTimeout(() => {
         console.log(`openhabGoogleAssistant - ${this.type}: Finished Waiting`);
-        resolve(null);
+        resolve(true);
       }, secondsToWait * 1000);
     });
   }
@@ -236,7 +242,7 @@ class DefaultCommand {
 
       return getItemPromise
         .then((item) => {
-          const targetItem = this.getItemName(item, device, params);
+          const targetItem = this.getItemName(device, params);
           const targetValue = this.convertParamsToValue(params, item, device);
           if (shouldCheckState) {
             let currentState = this.getNormalizedState(item);

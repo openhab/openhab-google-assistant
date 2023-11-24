@@ -160,7 +160,7 @@ describe('ApiHandler', () => {
         .post('/items/TestItem')
         .reply(200, [{ name: 'TestItem' }]);
       const result = await apiHandler.sendCommand('TestItem', 'OFF');
-      expect(result).toBeNull();
+      expect(result).toBe(true);
       expect(scope.isDone()).toBe(true);
     });
 

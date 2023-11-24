@@ -1,5 +1,4 @@
 const DefaultCommand = require('./default.js');
-const SpecialColorLight = require('../devices/specialcolorlight.js');
 const { convertMired, convertRgbToHsv, convertKelvinToRgb } = require('../utilities.js');
 
 class ColorAbsoluteTemperature extends DefaultCommand {
@@ -16,34 +15,35 @@ class ColorAbsoluteTemperature extends DefaultCommand {
     );
   }
 
-  static requiresItem() {
-    return true;
+  static requiresItem(device) {
+    return this.getDeviceType(device) !== 'SpecialColorLight';
   }
 
-  static getItemName(item, device) {
+  static getItemName(device) {
     if (this.getDeviceType(device) === 'SpecialColorLight') {
-      const members = SpecialColorLight.getMembers(item);
+      const members = this.getMembers(device);
       if ('lightColorTemperature' in members) {
-        return members.lightColorTemperature.name;
+        return members.lightColorTemperature;
       }
       throw { statusCode: 400 };
     }
-    return item.name;
+    return device.id;
   }
 
   static convertParamsToValue(params, item, device) {
     if (this.getDeviceType(device) === 'SpecialColorLight') {
       try {
-        const colorUnit = SpecialColorLight.getColorUnit(item);
+        const customData = device.customData || {};
+        const colorUnit = customData.colorUnit;
         if (colorUnit === 'kelvin') {
           return params.color.temperature.toString();
         }
         if (colorUnit === 'mired') {
           return convertMired(params.color.temperature).toString();
         }
-        const { temperatureMinK, temperatureMaxK } = SpecialColorLight.getAttributes(item).colorTemperatureRange;
+        const { temperatureMinK, temperatureMaxK } = customData.colorTemperatureRange;
         let percent = ((params.color.temperature - temperatureMinK) / (temperatureMaxK - temperatureMinK)) * 100;
-        if (SpecialColorLight.getColorTemperatureInverted(item)) {
+        if (customData.colorTemperatureInverted) {
           percent = 100 - percent;
         }
         return percent.toString();

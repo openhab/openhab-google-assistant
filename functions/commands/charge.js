@@ -10,14 +10,10 @@ class Charge extends DefaultCommand {
     return 'charge' in params && typeof params.charge === 'boolean';
   }
 
-  static requiresItem() {
-    return true;
-  }
-
-  static getItemName(item) {
-    const members = Charger.getMembers(item);
+  static getItemName(device) {
+    const members = this.getMembers(device);
     if ('chargerCharging' in members) {
-      return members.chargerCharging.name;
+      return members.chargerCharging;
     }
     throw { statusCode: 400 };
   }

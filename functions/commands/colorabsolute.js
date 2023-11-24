@@ -1,5 +1,4 @@
 const DefaultCommand = require('./default.js');
-const SpecialColorLight = require('../devices/specialcolorlight.js');
 
 class ColorAbsolute extends DefaultCommand {
   static get type() {
@@ -15,19 +14,15 @@ class ColorAbsolute extends DefaultCommand {
     );
   }
 
-  static requiresItem(device) {
-    return this.getDeviceType(device) === 'SpecialColorLight';
-  }
-
-  static getItemName(item, device) {
+  static getItemName(device) {
     if (this.getDeviceType(device) === 'SpecialColorLight') {
-      const members = SpecialColorLight.getMembers(item);
+      const members = this.getMembers(device);
       if ('lightColor' in members) {
-        return members.lightColor.name;
+        return members.lightColor;
       }
       throw { statusCode: 400 };
     }
-    return item.name;
+    return device.id;
   }
 
   static convertParamsToValue(params, _, device) {

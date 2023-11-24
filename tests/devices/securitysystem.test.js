@@ -2,9 +2,29 @@ const SecuritySystem = require('../../functions/devices/securitysystem.js');
 const Device = require('../../functions/devices/securitysystem.js');
 
 describe('SecuritySystem Device', () => {
-  test('isCompatible', () => {
+  test('matchesDeviceType', () => {
     expect(
-      Device.isCompatible({
+      Device.matchesDeviceType({
+        metadata: {
+          ga: {
+            value: 'SECURITYSYSTEM'
+          }
+        }
+      })
+    ).toBe(false);
+    expect(
+      Device.matchesDeviceType({
+        type: 'Group',
+        members: [
+          {
+            type: 'Switch',
+            metadata: {
+              ga: {
+                value: SecuritySystem.armedMemberName
+              }
+            }
+          }
+        ],
         metadata: {
           ga: {
             value: 'SECURITYSYSTEM'
@@ -19,6 +39,7 @@ describe('SecuritySystem Device', () => {
       type: 'Group',
       members: [
         {
+          type: 'Switch',
           metadata: {
             ga: {
               value: SecuritySystem.armedMemberName
@@ -44,6 +65,7 @@ describe('SecuritySystem Device', () => {
         type: 'Group',
         members: [
           {
+            type: 'Switch',
             metadata: {
               ga: {
                 value: Device.armedMemberName
@@ -69,6 +91,7 @@ describe('SecuritySystem Device', () => {
       let device = {
         members: [
           {
+            type: 'String',
             metadata: {
               ga: {
                 value: Device.armLevelMemberName
@@ -92,6 +115,7 @@ describe('SecuritySystem Device', () => {
       let device = {
         members: [
           {
+            type: 'Switch',
             metadata: {
               ga: {
                 value: Device.armedMemberName
@@ -100,6 +124,7 @@ describe('SecuritySystem Device', () => {
             state: 'ON'
           },
           {
+            type: 'String',
             metadata: {
               ga: {
                 value: Device.armLevelMemberName
@@ -126,6 +151,7 @@ describe('SecuritySystem Device', () => {
       const item = {
         members: [
           {
+            type: 'Switch',
             metadata: {
               ga: {
                 value: Device.armedMemberName
@@ -317,6 +343,7 @@ describe('SecuritySystem Device', () => {
         members: [
           {
             name: 'armed',
+            type: 'Switch',
             metadata: {
               ga: {
                 value: memberArmed
@@ -361,6 +388,7 @@ describe('SecuritySystem Device', () => {
         members: [
           {
             name: 'armed',
+            type: 'Switch',
             metadata: {
               ga: {
                 value: memberArmed
@@ -370,6 +398,7 @@ describe('SecuritySystem Device', () => {
           },
           {
             name: 'armLevel',
+            type: 'String',
             metadata: {
               ga: {
                 value: memberArmLevel
@@ -379,6 +408,7 @@ describe('SecuritySystem Device', () => {
           },
           {
             name: 'trouble',
+            type: 'Switch',
             metadata: {
               ga: {
                 value: memberTrouble
@@ -388,6 +418,7 @@ describe('SecuritySystem Device', () => {
           },
           {
             name: 'errorCode',
+            type: 'String',
             metadata: {
               ga: {
                 value: memberErrorCode
@@ -397,6 +428,7 @@ describe('SecuritySystem Device', () => {
           },
           {
             name: 'zone1',
+            type: 'Contact',
             metadata: {
               ga: {
                 value: memberZone
@@ -421,6 +453,7 @@ describe('SecuritySystem Device', () => {
         members: [
           {
             name: 'armed',
+            type: 'Switch',
             metadata: {
               ga: {
                 value: memberArmed
@@ -441,6 +474,7 @@ describe('SecuritySystem Device', () => {
         members: [
           {
             name: 'zone1',
+            type: 'Contact',
             metadata: {
               ga: {
                 value: memberZone,
@@ -469,6 +503,7 @@ describe('SecuritySystem Device', () => {
         members: [
           {
             name: 'trouble',
+            type: 'Switch',
             metadata: {
               ga: {
                 value: memberTrouble
@@ -478,6 +513,7 @@ describe('SecuritySystem Device', () => {
           },
           {
             name: 'errorCode',
+            type: 'String',
             metadata: {
               ga: {
                 value: memberErrorCode
@@ -503,6 +539,7 @@ describe('SecuritySystem Device', () => {
         members: [
           {
             name: 'zone1',
+            type: 'Contact',
             metadata: {
               ga: {
                 value: memberZone,
@@ -516,6 +553,7 @@ describe('SecuritySystem Device', () => {
           },
           {
             name: 'zone2',
+            type: 'Contact',
             metadata: {
               ga: {
                 value: memberZone,
@@ -529,6 +567,7 @@ describe('SecuritySystem Device', () => {
           },
           {
             name: 'zone3',
+            type: 'Contact',
             metadata: {
               ga: {
                 value: memberZone,
