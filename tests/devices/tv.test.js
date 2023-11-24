@@ -52,7 +52,14 @@ describe('TV Device', () => {
           }
         ]
       };
-      expect(Device.getTraits(item)).toStrictEqual(['action.devices.traits.OnOff']);
+      expect(Device.getTraits(item)).toStrictEqual([
+        'action.devices.traits.AppSelector',
+        'action.devices.traits.InputSelector',
+        'action.devices.traits.MediaState',
+        'action.devices.traits.OnOff',
+        'action.devices.traits.TransportControl',
+        'action.devices.traits.Volume'
+      ]);
     });
 
     test('getTraits all members', () => {
@@ -86,7 +93,7 @@ describe('TV Device', () => {
             }
           },
           {
-            state: 'PLAY',
+            state: 'PLAYING',
             type: 'Player',
             metadata: {
               ga: {
@@ -124,13 +131,13 @@ describe('TV Device', () => {
         ]
       };
       expect(Device.getTraits(item)).toStrictEqual([
-        'action.devices.traits.OnOff',
-        'action.devices.traits.Volume',
-        'action.devices.traits.Channel',
+        'action.devices.traits.AppSelector',
         'action.devices.traits.InputSelector',
-        'action.devices.traits.TransportControl',
         'action.devices.traits.MediaState',
-        'action.devices.traits.AppSelector'
+        'action.devices.traits.OnOff',
+        'action.devices.traits.TransportControl',
+        'action.devices.traits.Volume',
+        'action.devices.traits.Channel'
       ]);
     });
   });
@@ -166,6 +173,8 @@ describe('TV Device', () => {
         supportPlaybackState: true,
         transportControlSupportedCommands: ['NEXT', 'PREVIOUS', 'PAUSE', 'RESUME'],
         volumeCanMuteAndUnmute: false,
+        availableApplications: [],
+        availableInputs: [],
         volumeMaxLevel: 100
       });
     });
@@ -196,7 +205,10 @@ describe('TV Device', () => {
         levelStepSize: 10,
         volumeCanMuteAndUnmute: false,
         volumeDefaultPercentage: 20,
-        volumeMaxLevel: 80
+        volumeMaxLevel: 80,
+        availableApplications: [],
+        availableInputs: [],
+        transportControlSupportedCommands: []
       });
     });
 
@@ -231,7 +243,10 @@ describe('TV Device', () => {
       expect(Device.getAttributes(item)).toStrictEqual({
         supportPlaybackState: true,
         transportControlSupportedCommands: ['PAUSE', 'RESUME'],
-        volumeCanMuteAndUnmute: true
+        volumeCanMuteAndUnmute: true,
+        availableApplications: [],
+        availableInputs: [],
+        volumeMaxLevel: 100
       });
     });
 
@@ -277,7 +292,10 @@ describe('TV Device', () => {
           }
         ],
         orderedInputs: false,
-        volumeCanMuteAndUnmute: false
+        volumeCanMuteAndUnmute: false,
+        availableApplications: [],
+        transportControlSupportedCommands: [],
+        volumeMaxLevel: 100
       });
     });
 
@@ -314,6 +332,10 @@ describe('TV Device', () => {
             number: '2'
           }
         ],
+        availableApplications: [],
+        availableInputs: [],
+        transportControlSupportedCommands: [],
+        volumeMaxLevel: 100,
         volumeCanMuteAndUnmute: false
       });
     });
@@ -360,7 +382,10 @@ describe('TV Device', () => {
           ]
         }
       ],
-      volumeCanMuteAndUnmute: false
+      volumeCanMuteAndUnmute: false,
+      availableInputs: [],
+      transportControlSupportedCommands: [],
+      volumeMaxLevel: 100
     });
   });
 
@@ -628,7 +653,7 @@ describe('TV Device', () => {
         },
         members: [
           {
-            state: '50',
+            state: '50.43',
             type: 'Number',
             metadata: {
               ga: {

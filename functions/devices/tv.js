@@ -6,15 +6,16 @@ class TV extends DefaultDevice {
   }
 
   static getTraits(item) {
-    const traits = [];
+    const traits = [
+      'action.devices.traits.AppSelector',
+      'action.devices.traits.InputSelector',
+      'action.devices.traits.MediaState',
+      'action.devices.traits.OnOff',
+      'action.devices.traits.TransportControl',
+      'action.devices.traits.Volume'
+    ];
     const members = this.getMembers(item);
-    if ('tvPower' in members) traits.push('action.devices.traits.OnOff');
-    if ('tvMute' in members || 'tvVolume' in members) traits.push('action.devices.traits.Volume');
     if ('tvChannel' in members) traits.push('action.devices.traits.Channel');
-    if ('tvInput' in members) traits.push('action.devices.traits.InputSelector');
-    if ('tvTransport' in members)
-      traits.push('action.devices.traits.TransportControl', 'action.devices.traits.MediaState');
-    if ('tvApplication' in members) traits.push('action.devices.traits.AppSelector');
     return traits;
   }
 
@@ -30,10 +31,13 @@ class TV extends DefaultDevice {
     const config = this.getConfig(item);
     const members = this.getMembers(item);
     const attributes = {
+      availableApplications: [],
+      availableInputs: [],
+      transportControlSupportedCommands: [],
+      volumeMaxLevel: 100,
       volumeCanMuteAndUnmute: 'tvMute' in members
     };
     if ('tvVolume' in members) {
-      attributes.volumeMaxLevel = 100;
       if ('volumeMaxLevel' in config) {
         attributes.volumeMaxLevel = Number(config.volumeMaxLevel);
       }
@@ -54,7 +58,6 @@ class TV extends DefaultDevice {
       }
     }
     if ('tvInput' in members && 'availableInputs' in config) {
-      attributes.availableInputs = [];
       config.availableInputs.split(',').forEach((input) => {
         const [key, synonyms] = input.split('=');
         attributes.availableInputs.push({
@@ -81,7 +84,6 @@ class TV extends DefaultDevice {
       });
     }
     if ('tvApplication' in members && 'availableApplications' in config) {
-      attributes.availableApplications = [];
       config.availableApplications.split(',').forEach((application) => {
         const [key, synonyms] = application.split('=');
         attributes.availableApplications.push({
