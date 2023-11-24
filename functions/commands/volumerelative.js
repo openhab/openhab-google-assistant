@@ -35,7 +35,7 @@ class VolumeRelative extends DefaultCommand {
         throw { statusCode: 400 };
       }
     }
-    let level = parseInt(state) + params.relativeSteps;
+    const level = parseInt(state) + params.relativeSteps;
     return (level < 0 ? 0 : level > 100 ? 100 : level).toString();
   }
 

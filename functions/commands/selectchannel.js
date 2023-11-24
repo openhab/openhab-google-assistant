@@ -33,7 +33,7 @@ class SelectChannel extends DefaultCommand {
     }
     const search = params.channelName || params.channelCode;
     for (const number in channelMap) {
-      if (channelMap[number].includes(search)) {
+      if (channelMap[number].some((name) => name.toLowerCase() === search.toLowerCase())) {
         return number;
       }
     }

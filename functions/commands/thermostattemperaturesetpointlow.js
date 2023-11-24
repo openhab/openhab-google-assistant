@@ -14,6 +14,7 @@ class ThermostatTemperatureSetpointLow extends DefaultCommand {
   static requiresItem() {
     return true;
   }
+
   static getItemName(device) {
     const members = this.getMembers(device);
     if ('thermostatTemperatureSetpointLow' in members) {

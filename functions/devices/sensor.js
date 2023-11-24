@@ -53,7 +53,7 @@ class Sensor extends DefaultDevice {
       const states = config.states.split(',').map((s) => s.trim());
       for (const state of states) {
         const [key, value] = state.split('=').map((s) => s.trim());
-        if (value == item.state) {
+        if (value === item.state) {
           return key;
         }
       }

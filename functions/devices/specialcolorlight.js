@@ -19,7 +19,7 @@ class SpecialColorLight extends DefaultDevice {
     return !!(
       item.metadata &&
       item.metadata.ga &&
-      item.metadata.ga.value.toLowerCase() == 'specialcolorlight' &&
+      item.metadata.ga.value.toLowerCase() === 'specialcolorlight' &&
       Object.keys(members).length > 1 &&
       (!('lightColorTemperature' in members) ||
         this.getColorUnit(item) !== 'percent' ||

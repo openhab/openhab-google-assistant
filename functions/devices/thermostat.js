@@ -49,7 +49,7 @@ class Thermostat extends DefaultDevice {
     const state = {};
     const members = this.getMembers(item);
     for (const member in members) {
-      if (member == 'thermostatMode') {
+      if (member === 'thermostatMode') {
         state[member] = this.translateModeToGoogle(item, members[member].state);
       } else {
         state[member] = Number(parseFloat(members[member].state).toFixed(1));

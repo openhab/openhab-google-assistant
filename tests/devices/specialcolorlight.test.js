@@ -204,6 +204,29 @@ describe('SpecialColorLight Device', () => {
   });
 
   describe('getAttributes', () => {
+    test('getAttributes no config', () => {
+      const item = {
+        metadata: {
+          ga: {
+            config: {}
+          }
+        },
+        members: [
+          {
+            type: 'Color',
+            metadata: {
+              ga: {
+                value: 'lightColor'
+              }
+            }
+          }
+        ]
+      };
+      expect(Device.getAttributes(item)).toStrictEqual({
+        colorModel: 'hsv'
+      });
+    });
+
     test('getAttributes colorTemperatureRange', () => {
       const item = {
         metadata: {

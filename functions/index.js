@@ -18,10 +18,10 @@
  * @author Michael Krug - Rework
  *
  */
+const app = require('actions-on-google').smarthome();
 const OpenHAB = require('./openhab.js');
 const ApiHandler = require('./apihandler.js');
 const config = require('./config.js');
-const app = require('actions-on-google').smarthome();
 
 const apiHandler = new ApiHandler(config);
 const openHAB = new OpenHAB(apiHandler);

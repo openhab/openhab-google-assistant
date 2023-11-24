@@ -247,7 +247,6 @@ class DefaultCommand {
           if (shouldCheckState) {
             let currentState = this.getNormalizedState(item);
             if (targetItem !== device.id && item.members && item.members.length) {
-              // @ts-ignore
               const member = item.members.find((m) => m.name === targetItem);
               currentState = member ? this.getNormalizedState(member) : currentState;
             }

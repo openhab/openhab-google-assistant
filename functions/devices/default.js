@@ -128,10 +128,16 @@ class DefaultDevice {
     return {};
   }
 
+  /**
+   * @returns {Array<object>}
+   */
   static get supportedMembers() {
     return [];
   }
 
+  /**
+   * @returns {object}
+   */
   static getMembers(item) {
     const supportedMembers = this.supportedMembers;
     const members = {};

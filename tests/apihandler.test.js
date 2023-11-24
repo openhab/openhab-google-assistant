@@ -1,5 +1,5 @@
-const ApiHandler = require('../functions/apihandler.js');
 const nock = require('nock');
+const ApiHandler = require('../functions/apihandler.js');
 
 describe('ApiHandler', () => {
   const config = {
@@ -40,7 +40,7 @@ describe('ApiHandler', () => {
         },
         hostname: 'example.org',
         method: 'GET',
-        path: '/items/?metadata=ga,synonyms&fields=groupNames,groupType,name,label,metadata,type',
+        path: '/items/?metadata=ga,synonyms&fields=groupNames,groupType,name,label,metadata,type,state',
         port: 443
       });
     });
@@ -121,7 +121,7 @@ describe('ApiHandler', () => {
 
     test('getItems', async () => {
       const scope = nock('https://example.org')
-        .get('/items/?metadata=ga,synonyms&fields=groupNames,groupType,name,label,metadata,type')
+        .get('/items/?metadata=ga,synonyms&fields=groupNames,groupType,name,label,metadata,type,state')
         .reply(200, [{ name: 'TestItem' }]);
       const result = await apiHandler.getItems();
       expect(result).toStrictEqual([{ name: 'TestItem' }]);
@@ -130,12 +130,12 @@ describe('ApiHandler', () => {
 
     test('getItems failed', async () => {
       const scope = nock('https://example.org')
-        .get('/items/?metadata=ga,synonyms&fields=groupNames,groupType,name,label,metadata,type')
+        .get('/items/?metadata=ga,synonyms&fields=groupNames,groupType,name,label,metadata,type,state')
         .reply(400, {});
       await expect(apiHandler.getItems()).rejects.toStrictEqual({
         message:
           // eslint-disable-next-line max-len
-          'getItem - failed for path: /items/?metadata=ga,synonyms&fields=groupNames,groupType,name,label,metadata,type',
+          'getItem - failed for path: /items/?metadata=ga,synonyms&fields=groupNames,groupType,name,label,metadata,type,state',
         statusCode: 400
       });
       expect(scope.isDone()).toBe(true);
@@ -143,7 +143,7 @@ describe('ApiHandler', () => {
 
     test('getItems error', async () => {
       const scope = nock('https://example.org')
-        .get('/items/?metadata=ga,synonyms&fields=groupNames,groupType,name,label,metadata,type')
+        .get('/items/?metadata=ga,synonyms&fields=groupNames,groupType,name,label,metadata,type,state')
         .replyWithError('could not reach server');
       await expect(apiHandler.getItems()).rejects.toThrowError('could not reach server');
       expect(scope.isDone()).toBe(true);

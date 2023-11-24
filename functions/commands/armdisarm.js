@@ -84,7 +84,7 @@ class ArmDisarm extends DefaultCommand {
             return {
               ids: [device.id],
               status: 'EXCEPTIONS',
-              states: Object.assign({ online: true, currentStatusReport: report }, SecuritySystem.getState(item))
+              states: { online: true, currentStatusReport: report, ...SecuritySystem.getState(item) }
             };
           }
           throw { errorCode: 'armFailure' };

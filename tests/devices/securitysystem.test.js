@@ -61,7 +61,7 @@ describe('SecuritySystem Device', () => {
 
   describe('getState', () => {
     test('getState without armLevel', () => {
-      let device = {
+      const device = {
         type: 'Group',
         members: [
           {
@@ -88,7 +88,7 @@ describe('SecuritySystem Device', () => {
     });
 
     test('getState without armed', () => {
-      let device = {
+      const device = {
         members: [
           {
             type: 'String',
@@ -112,7 +112,7 @@ describe('SecuritySystem Device', () => {
     });
 
     test('getState with armLevel', () => {
-      let device = {
+      const device = {
         members: [
           {
             type: 'Switch',
@@ -178,7 +178,7 @@ describe('SecuritySystem Device', () => {
 
   describe('getAttributes', () => {
     test('just a switch with no config', () => {
-      let device = {
+      const device = {
         metadata: {
           ga: {
             config: {}
@@ -190,7 +190,7 @@ describe('SecuritySystem Device', () => {
     });
 
     test('no arm levels defined', () => {
-      let device = {
+      const device = {
         metadata: {
           ga: {
             config: {
@@ -205,7 +205,7 @@ describe('SecuritySystem Device', () => {
     });
 
     test('armLevels, 1 level with lang and ordered set', () => {
-      let device = {
+      const device = {
         metadata: {
           ga: {
             config: {
@@ -237,7 +237,7 @@ describe('SecuritySystem Device', () => {
     });
 
     test('armLevels, 1 level with default ordered value', () => {
-      let device = {
+      const device = {
         metadata: {
           ga: {
             config: {
@@ -253,7 +253,7 @@ describe('SecuritySystem Device', () => {
     });
 
     test('armLevels, 1 level with default lang', () => {
-      let device = {
+      const device = {
         metadata: {
           ga: {
             config: {
@@ -281,7 +281,7 @@ describe('SecuritySystem Device', () => {
     });
 
     test('armLevels, multiple levels', () => {
-      let device = {
+      const device = {
         metadata: {
           ga: {
             config: {
@@ -339,7 +339,7 @@ describe('SecuritySystem Device', () => {
     const memberErrorCode = 'securitySystemTroubleCode';
 
     test('member without ga metadata', () => {
-      let device = {
+      const device = {
         members: [
           {
             name: 'armed',
@@ -358,14 +358,14 @@ describe('SecuritySystem Device', () => {
         ]
       };
       const members = Device.getMembers(device);
-      let expectedMembers = {};
+      const expectedMembers = {};
       expectedMembers[memberArmed] = { name: 'armed', state: 'ON', config: {} };
 
       expect(members).toStrictEqual(expectedMembers);
     });
 
     test('member with ga metadata but not an alarm item', () => {
-      let device = {
+      const device = {
         members: [
           {
             name: 'armed',
@@ -379,12 +379,12 @@ describe('SecuritySystem Device', () => {
         ]
       };
       const members = Device.getMembers(device);
-      let expectedMembers = {};
+      const expectedMembers = {};
       expect(members).toStrictEqual(expectedMembers);
     });
 
     test('all possible members defined with no extra config', () => {
-      let device = {
+      const device = {
         members: [
           {
             name: 'armed',
@@ -439,7 +439,7 @@ describe('SecuritySystem Device', () => {
         ]
       };
       const members = Device.getMembers(device);
-      let expectedMembers = {};
+      const expectedMembers = {};
       expectedMembers[memberArmed] = { name: 'armed', state: 'ON', config: {} };
       expectedMembers[memberArmLevel] = { name: 'armLevel', state: 'L1', config: {} };
       expectedMembers[memberTrouble] = { name: 'trouble', state: 'OFF', config: {} };
@@ -449,7 +449,7 @@ describe('SecuritySystem Device', () => {
     });
 
     test('bare minimum members', () => {
-      let device = {
+      const device = {
         members: [
           {
             name: 'armed',
@@ -464,13 +464,13 @@ describe('SecuritySystem Device', () => {
         ]
       };
       const members = Device.getMembers(device);
-      let expectedMembers = {};
+      const expectedMembers = {};
       expectedMembers[memberArmed] = { name: 'armed', state: 'ON', config: {} };
       expect(members).toStrictEqual(expectedMembers);
     });
 
     test('zones with extra config', () => {
-      let device = {
+      const device = {
         members: [
           {
             name: 'zone1',
@@ -486,7 +486,7 @@ describe('SecuritySystem Device', () => {
         ]
       };
       const members = Device.getMembers(device);
-      let expectedMembers = {};
+      const expectedMembers = {};
       expectedMembers.zones = [{ name: 'zone1', state: 'OPEN', config: { zoneType: 'OpenClose' } }];
       expect(members).toStrictEqual(expectedMembers);
     });
@@ -498,7 +498,7 @@ describe('SecuritySystem Device', () => {
     const memberErrorCode = 'securitySystemTroubleCode';
 
     test('trouble', () => {
-      let device = {
+      const device = {
         name: 'alarm',
         members: [
           {
@@ -534,7 +534,7 @@ describe('SecuritySystem Device', () => {
     });
 
     test('zones', () => {
-      let device = {
+      const device = {
         name: 'alarm',
         members: [
           {

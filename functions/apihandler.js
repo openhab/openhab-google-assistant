@@ -27,7 +27,7 @@ class ApiHandler {
    */
   constructor(config = { host: '', path: '/rest/items/', port: 80 }) {
     if (!config.path.startsWith('/')) {
-      config.path = '/' + config.path;
+      config.path = `/${config.path}`;
     }
     if (!config.path.endsWith('/')) {
       config.path += '/';
@@ -51,13 +51,13 @@ class ApiHandler {
   getOptions(method = 'GET', itemName = '', length = 0) {
     const queryString =
       method === 'GET'
-        ? '?metadata=ga,synonyms' + (itemName ? '' : '&fields=groupNames,groupType,name,label,metadata,type')
+        ? `?metadata=ga,synonyms${itemName ? '' : '&fields=groupNames,groupType,name,label,metadata,type,state'}`
         : '';
     const options = {
       hostname: this._config.host,
       port: this._config.port,
-      path: this._config.path + (itemName ? itemName : '') + queryString,
       method: method,
+      path: this._config.path + (itemName || '') + queryString,
       headers: {
         Accept: 'application/json'
       }
@@ -66,7 +66,7 @@ class ApiHandler {
     if (this._config.userpass) {
       options.auth = this._config.userpass;
     } else if (this._authToken) {
-      options.headers['Authorization'] = 'Bearer ' + this._authToken;
+      options.headers.Authorization = `Bearer ${this._authToken}`;
     }
 
     if (method === 'POST') {
@@ -85,8 +85,8 @@ class ApiHandler {
     return new Promise((resolve, reject) => {
       const protocol = options.port === 443 ? https : http;
       const req = protocol.request(options, (response) => {
-        if (200 !== response.statusCode) {
-          reject({ statusCode: response.statusCode, message: 'getItem - failed for path: ' + options.path });
+        if (response.statusCode !== 200) {
+          reject({ statusCode: response.statusCode, message: `getItem - failed for path: ${options.path}` });
           return;
         }
 
@@ -103,7 +103,7 @@ class ApiHandler {
           } catch (e) {
             reject({
               statusCode: 415,
-              message: 'getItem - JSON parse failed for path: ' + options.path + ' - ' + e.toString()
+              message: `getItem - JSON parse failed for path: ${options.path} - ${e.toString()}`
             });
           }
         });
@@ -130,7 +130,7 @@ class ApiHandler {
       const protocol = options.port === 443 ? https : http;
       const req = protocol.request(options, (response) => {
         if (!response.statusCode || ![200, 201].includes(response.statusCode)) {
-          reject({ statusCode: response.statusCode, message: 'sendCommand - failed for path: ' + options.path });
+          reject({ statusCode: response.statusCode, message: `sendCommand - failed for path: ${options.path}` });
           return;
         }
         resolve(true);
