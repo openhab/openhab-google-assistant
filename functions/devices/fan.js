@@ -51,14 +51,15 @@ class Fan extends DefaultDevice {
   }
 
   static getState(item) {
+    const itemState = Math.round(parseFloat(item.state));
     const state = {
-      on: Number(item.state) > 0
+      on: itemState > 0
     };
     const config = this.getConfig(item);
     if (config && config.speeds) {
-      state.currentFanSpeedSetting = item.state.toString();
+      state.currentFanSpeedSetting = itemState.toString();
     } else {
-      state.currentFanSpeedPercent = Math.round(Number(item.state));
+      state.currentFanSpeedPercent = itemState;
     }
     return state;
   }

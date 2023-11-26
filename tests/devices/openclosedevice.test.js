@@ -84,7 +84,7 @@ describe('OpenCloseDevice Device', () => {
     test('getState Rollershutter', () => {
       const item = {
         type: 'Rollershutter',
-        state: '25'
+        state: '25 %'
       };
       expect(Device.getState(item)).toStrictEqual({
         openPercent: 75
