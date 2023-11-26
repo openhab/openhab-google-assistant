@@ -377,7 +377,7 @@ describe('Fan Device', () => {
                 value: 'fanSpeed'
               }
             },
-            state: '50'
+            state: '50 %'
           }
         ]
       };
@@ -437,7 +437,7 @@ describe('Fan Device', () => {
                 value: 'fanFilterLifeTime'
               }
             },
-            state: '70'
+            state: '70 h'
           }
         ]
       };
@@ -469,7 +469,7 @@ describe('Fan Device', () => {
                 value: 'fanPM25'
               }
             },
-            state: '20'
+            state: '20 ppm'
           }
         ]
       };

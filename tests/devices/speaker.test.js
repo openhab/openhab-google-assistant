@@ -57,7 +57,7 @@ describe('Speaker Device', () => {
   });
 
   test('getState', () => {
-    expect(Device.getState({ state: '10' })).toStrictEqual({
+    expect(Device.getState({ state: '10 %' })).toStrictEqual({
       currentVolume: 10
     });
     expect(Device.getState({ state: '90' })).toStrictEqual({

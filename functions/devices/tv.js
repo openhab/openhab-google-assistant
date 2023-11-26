@@ -118,7 +118,7 @@ class TV extends DefaultDevice {
           state.playbackState = members[member].state;
           break;
         case 'tvVolume':
-          state.currentVolume = Math.round(Number(members[member].state)) || 0;
+          state.currentVolume = Math.round(parseFloat(members[member].state)) || 0;
           break;
         case 'tvChannel':
           state.channelNumber = members[member].state;

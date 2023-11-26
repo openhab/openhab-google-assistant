@@ -72,7 +72,7 @@ class SpecialColorLight extends DefaultDevice {
           state.on = members[member].state === 'ON';
           break;
         case 'lightBrightness':
-          state.brightness = Math.round(Number(members[member].state)) || 0;
+          state.brightness = Math.round(parseFloat(members[member].state)) || 0;
           if (!('lightPower' in members)) {
             state.on = state.brightness > 0;
           }
@@ -101,15 +101,15 @@ class SpecialColorLight extends DefaultDevice {
             const colorUnit = this.getColorUnit(item);
             if (colorUnit === 'kelvin') {
               state.color = {
-                temperatureK: Math.round(Number(members[member].state))
+                temperatureK: Math.round(parseFloat(members[member].state))
               };
             } else if (colorUnit === 'mired') {
               state.color = {
-                temperatureK: convertMired(Math.round(Number(members[member].state)))
+                temperatureK: convertMired(Math.round(parseFloat(members[member].state)))
               };
             } else {
               const { temperatureMinK, temperatureMaxK } = this.getAttributes(item).colorTemperatureRange;
-              let percent = Number(members[member].state);
+              let percent = parseFloat(members[member].state);
               if (this.getColorTemperatureInverted(item)) {
                 percent = 100 - percent;
               }

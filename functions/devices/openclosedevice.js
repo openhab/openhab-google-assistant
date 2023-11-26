@@ -30,7 +30,7 @@ class OpenCloseDevice extends DefaultDevice {
     let state = 0;
     const itemType = item.groupType || item.type;
     if (itemType === 'Rollershutter') {
-      state = Number(item.state);
+      state = Math.round(parseFloat(item.state));
     } else {
       state = item.state === 'ON' || item.state === 'OPEN' ? 0 : 100;
     }

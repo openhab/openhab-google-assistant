@@ -335,7 +335,7 @@ describe('Charger Device', () => {
           },
           {
             name: 'CapacityRemaining',
-            state: '4000.123',
+            state: '4000.123 wh',
             type: 'Number',
             metadata: {
               ga: {

@@ -161,7 +161,7 @@ describe('ClimateSensor Device', () => {
         },
         {
           name: 'Humidity',
-          state: '59.7',
+          state: '59.7 %',
           type: 'Number',
           metadata: {
             ga: {
@@ -208,7 +208,7 @@ describe('ClimateSensor Device', () => {
       members: [
         {
           name: 'Humidity',
-          state: '30.3',
+          state: '30.3 %',
           type: 'Number',
           metadata: {
             ga: {

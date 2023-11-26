@@ -119,28 +119,29 @@ class Fan extends DefaultDevice {
     const config = this.getConfig(item);
     const itemType = item.groupType || item.type;
     if (itemType !== 'Group') {
+      const itemState = Math.round(parseFloat(item.state));
       const state = {
-        currentFanSpeedPercent: Math.round(Number(item.state)),
-        on: Number(item.state) > 0
+        currentFanSpeedPercent: itemState,
+        on: itemState > 0
       };
       if (config.fanSpeeds) {
-        state.currentFanSpeedSetting = item.state.toString();
+        state.currentFanSpeedSetting = itemState.toString();
       }
       return state;
     } else {
       const state = {};
       const config = this.getConfig(item);
       const members = this.getMembers(item);
+      if ('fanSpeed' in members) {
+        const itemState = Math.round(parseFloat(members.fanSpeed.state));
+        state.on = itemState > 0;
+        state.currentFanSpeedPercent = itemState;
+        if (config.fanSpeeds) {
+          state.currentFanSpeedSetting = itemState.toString();
+        }
+      }
       if ('fanPower' in members) {
         state.on = members.fanPower.state === 'ON';
-      } else if ('fanSpeed' in members) {
-        state.on = Number(members.fanSpeed.state) > 0;
-      }
-      if ('fanSpeed' in members) {
-        state.currentFanSpeedPercent = Number(members.fanSpeed.state);
-        if (config.fanSpeeds) {
-          state.currentFanSpeedSetting = members.fanSpeed.state.toString();
-        }
       }
       if ('fanMode' in members && config.fanModeName && config.fanModeSettings) {
         const modeNames = config.fanModeName.split(',').map((s) => s.trim());
@@ -152,7 +153,7 @@ class Fan extends DefaultDevice {
       if ('fanFilterLifeTime' in members || 'fanPM25' in members) {
         state.currentSensorStateData = [];
         if ('fanFilterLifeTime' in members) {
-          const itemState = Number(members.fanFilterLifeTime.state);
+          const itemState = parseFloat(members.fanFilterLifeTime.state);
           state.currentSensorStateData.push({
             name: 'FilterLifeTime',
             currentSensorState: this.translateFilterLifeTime(itemState),
@@ -162,7 +163,7 @@ class Fan extends DefaultDevice {
         if ('fanPM25' in members) {
           state.currentSensorStateData.push({
             name: 'PM2.5',
-            rawValue: Number(members.fanPM25.state)
+            rawValue: parseFloat(members.fanPM25.state)
           });
         }
       }

@@ -556,7 +556,7 @@ describe('TV Device', () => {
             }
           },
           {
-            state: '50',
+            state: '50 %',
             type: 'Dimmer',
             metadata: {
               ga: {

@@ -40,7 +40,7 @@ class Charger extends DefaultDevice {
           state.isPluggedIn = members[member].state === 'ON';
           break;
         case 'chargerCapacityRemaining': {
-          const capacity = Math.round(Number(members[member].state));
+          const capacity = Math.round(parseFloat(members[member].state));
           if (!config.unit || config.unit === 'PERCENTAGE') {
             let descCapacity = 'UNKNOWN';
             if (capacity <= 10) {
@@ -68,7 +68,7 @@ class Charger extends DefaultDevice {
           state.capacityUntilFull = [
             {
               unit: config.unit || 'PERCENTAGE',
-              rawValue: Math.round(Number(members[member].state))
+              rawValue: Math.round(parseFloat(members[member].state))
             }
           ];
           break;

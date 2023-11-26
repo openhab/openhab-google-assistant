@@ -97,7 +97,7 @@ describe('Sensor Device', () => {
             }
           }
         },
-        state: '10'
+        state: '10 ppm'
       };
       expect(Device.getState(item)).toStrictEqual({
         currentSensorStateData: [
@@ -105,6 +105,29 @@ describe('Sensor Device', () => {
             currentSensorState: 'good',
             name: 'Sensor',
             rawValue: 10
+          }
+        ]
+      });
+    });
+
+    test('getState with string state', () => {
+      const item = {
+        metadata: {
+          ga: {
+            config: {
+              sensorName: 'Sensor',
+              valueUnit: 'AQI',
+              states: 'good=good,moderate=moderate,poor=poor'
+            }
+          }
+        },
+        state: 'moderate'
+      };
+      expect(Device.getState(item)).toStrictEqual({
+        currentSensorStateData: [
+          {
+            currentSensorState: 'moderate',
+            name: 'Sensor'
           }
         ]
       });

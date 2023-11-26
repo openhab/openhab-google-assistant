@@ -505,7 +505,7 @@ describe('SpecialColorLight Device', () => {
         },
         members: [
           {
-            state: '0',
+            state: '0 %',
             type: 'Number',
             metadata: {
               ga: {
@@ -514,7 +514,7 @@ describe('SpecialColorLight Device', () => {
             }
           },
           {
-            state: '20',
+            state: '20 K',
             type: 'Number',
             metadata: {
               ga: {
