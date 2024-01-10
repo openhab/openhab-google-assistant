@@ -11,7 +11,7 @@ class Fan extends DefaultDevice {
 
   static getAttributes(item) {
     const config = this.getConfig(item);
-    if (!config || !config.speeds) {
+    if (!config || !(config.speeds || config.fanSpeeds)) {
       return {
         supportsFanSpeedPercent: true
       };
@@ -23,7 +23,8 @@ class Fan extends DefaultDevice {
       },
       reversible: false
     };
-    config.speeds.split(',').forEach((speedEntry) => {
+    const fanSpeeds = config.speeds || config.fanSpeeds;
+    fanSpeeds.split(',').forEach((speedEntry) => {
       try {
         const [speedName, speedSynonyms] = speedEntry
           .trim()
@@ -56,7 +57,7 @@ class Fan extends DefaultDevice {
       on: itemState > 0
     };
     const config = this.getConfig(item);
-    if (config && config.speeds) {
+    if (config && (config.speeds || config.fanSpeeds)) {
       state.currentFanSpeedSetting = itemState.toString();
     } else {
       state.currentFanSpeedPercent = itemState;

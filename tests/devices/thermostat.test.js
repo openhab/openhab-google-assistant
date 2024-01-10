@@ -394,4 +394,38 @@ describe('Thermostat Device', () => {
       });
     });
   });
+
+  describe('transition tests', () => {
+    test('getModeMap', () => {
+      const item = {
+        metadata: {
+          ga: {
+            config: {
+              thermostatModes: 'on=ON:1,off=OFF:2,auto=3'
+            }
+          }
+        }
+      };
+      expect(Device.getModeMap(item)).toStrictEqual({
+        on: ['ON', '1'],
+        off: ['OFF', '2'],
+        auto: ['3']
+      });
+    });
+
+    test('translateModeToGoogle', () => {
+      const item = {
+        metadata: {
+          ga: {
+            config: {
+              thermostatModes: 'on=ON:1,off=OFF:2,auto=3'
+            }
+          }
+        }
+      };
+      expect(Device.translateModeToGoogle(item, 'OFF')).toBe('off');
+      expect(Device.translateModeToGoogle(item, '3')).toBe('auto');
+      expect(Device.translateModeToGoogle(item, 'invalid')).toBe('on');
+    });
+  });
 });
