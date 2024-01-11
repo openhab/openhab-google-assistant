@@ -361,7 +361,7 @@ Switch { ga="AirPurifier" } # No speed control - only on/off
 When configuring a Fan (or similar device) as a group with the above listed members, you will gain more options to control the device.
 In addition to control power and speeds, you will also be able to set modes and query sensor information (if supported by Google).
 
-For more information on the `fanSpeeds` configuration option, please have a look at the simple `Fan` device type.
+For more information on the `fanSpeeds` configuration option, please take a look at the simple `Fan` device type.
 
 With the `fanModeName` and `fanModeSettings` you can control specific modes. Currently, one mode type per device is supported that you can configure with a name and a list of settings. The first entry in the names field is used internally while any other following separated by comma will be a synonym to be used in commands. The settings list is a comma-separated list of `value=name` pairs. The name can also contain synonyms separated by a colon. In the listed example you could then say "Set OperationMode to Normal".
 
@@ -385,7 +385,7 @@ Number pm25Item     (fanGroup) { ga="fanPM25" }
 | **Supported Items** | Group as `AC_Unit` with the following members:<br>(optional) Switch as `fanPower`<br>(optional) Dimmer or Number as `fanSpeed`<br>(optional) Number or String as `fanMode`<br>(optional) Number as `fanFilterLifeTime`<br>(optional) Number as `fanPM25`<br>(optional) Number as `thermostatTemperatureAmbient`<br>(optional) Number as `thermostatTemperatureSetpoint`<br>(optional) Number as `thermostatTemperatureSetpointLow`<br>(optional) Number as `thermostatTemperatureSetpointHigh`<br>(optional) Number as `thermostatHumidityAmbient`<br>(optional) String or Number or Switch as `thermostatMode` |
 | **Configuration** | (optional) `checkState=true/false`<br>(optional) `fanSpeeds="0=away:zero,50=default:standard:one,100=high:two"`<br>(optional) `fanModeName="OperationMode,Modus"`<br>(optional) `fanModeSettings="1=Low:Silent,2=Normal,3=High:Night"`<br>(optional) `useFahrenheit=true/false`<br>(optional) `thermostatTemperatureRange="10,30"`<br>(optional) `thermostatModes="off=OFF:WINDOW_OPEN,heat=COMFORT:BOOST,eco=ECO,on=ON,auto"`<br>(optional) `lang="en"`<br>(optional) `ordered=true/false` |
 
-The AC_Unit device is basically the combination of the Fan and the Thermostat device. For explanation on configuration options please have a look at both of them.
+The AC_Unit device is basically the combination of the Fan and the Thermostat device. For explanation on configuration options please take a look at both of them.
 
 ```shell
 Group  acunitGroup { ga="AC_Unit" [ fanSpeeds="0=null:off,50=slow,100=full:fast", fanModeName="OperationMode,Modus", fanModeSettings="1=Silent,2=Normal,3=Night", thermostatModes="off=OFF:WINDOW_OPEN,heat=COMFORT:BOOST,eco=ECO,on=ON,auto", thermostatTemperatureRange="10,30", useFahrenheit=false, lang="en", ordered=true ] }
