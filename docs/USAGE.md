@@ -17,7 +17,7 @@ With the Action you can voice control your openHAB items and it supports lights,
 Please be aware that the graphical user interface in the Google Home app or on Google Nest devices may not fully support interaction with some of the supported device types. We cannot influence this and rely on Google to implement user interfaces for more devices. Nevertheless, interaction via voice or in writing with Google Assistant should always work.
 :::
 
-If you have any issues, questions or an idea for additional features, please have a look at the [repository on GitHub](https://github.com/openhab/openhab-google-assistant).
+If you have any issues, questions or an idea for additional features, please take a look at the [repository on GitHub](https://github.com/openhab/openhab-google-assistant).
 
 [[toc]]
 
@@ -458,7 +458,7 @@ If your thermostat does not have a mode, you should create one and manually assi
 
 To map the [default thermostat modes of Google](https://developers.home.google.com/cloud-to-cloud/traits/temperaturesetting.html) (on, off, heat, cool, etc.) to custom ones for your specific setup, you can use the `thermostatModes` config option on the thermostat group.
 E.g. `[ thermostatModes="off=OFF:WINDOW_OPEN,heat=COMFORT:BOOST,eco=ECO,on=ON,auto" ]` will enable the following five modes in Google Home `"off, heat, eco, on, auto"` that will be translated to `"OFF, COMFORT, ECO, ON, auto"`. You can specify alternative conversions using the colon sign, so that in the former example "BOOST" in openHAB would also be translated to "heat" in Google. For the translation of Google modes to openHAB always the first option after the equal sign is used.
-By default the integration will provide `"off,heat,cool,on,heatcool,auto,eco"`.
+By default, the integration will provide `"off,heat,cool,on,heatcool,auto,eco"`.
 
 You can also set up a Thermostat for using it as a temperature sensor. To do so, create a Thermostat group and only add one item member as "thermostatTemperatureAmbient".
 However, it is recommended to prefer the `TemperatureSensor` type for simple temperature reports (but currently there is no UI support in Google Home).
