@@ -105,12 +105,12 @@ jobs:
         run: npm ci
 
       - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v2.0.0
+        uses: google-github-actions/auth@v2.1.0
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
       - name: Deploy to Google Cloud Functions
-        uses: google-github-actions/deploy-cloud-functions@v2.0.0
+        uses: google-github-actions/deploy-cloud-functions@v2.1.0
         with:
           name: ${{ github.event_name == 'release' && 'openhabGoogleAssistant' || 'openhabGoogleAssistant_test' }}
           runtime: nodejs18
