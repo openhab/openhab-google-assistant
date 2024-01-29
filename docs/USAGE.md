@@ -24,8 +24,15 @@ If you have any issues, questions or an idea for additional features, please tak
 ## Latest Changes
 
 ::: tip State of this document
-This documentation refers to release [v3.8.1](https://github.com/openhab/openhab-google-assistant/releases/tag/v3.8.1) of [openHAB Google Assistant](https://github.com/openhab/openhab-google-assistant) published on 2023-11-26
+This documentation refers to release [v3.9.0](https://github.com/openhab/openhab-google-assistant/releases/tag/v3.9.0) of [openHAB Google Assistant](https://github.com/openhab/openhab-google-assistant) published on 2024-01-29
 :::
+
+### v3.9.0
+
+- Prepared available configuration options for the upcoming rollout of v4
+- Users can start adjusting their setup to use the new configuration options:
+  - [`Thermostat`](#thermostat): `modes` has been renamed to `thermostatModes`
+  - [`Fan`](#fan-hood-airpurifier): `speeds` has been renamed to `fanSpeeds`
 
 ### v3.8.0
 
