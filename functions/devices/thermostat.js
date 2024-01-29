@@ -90,6 +90,8 @@ class Thermostat extends DefaultDevice {
     let modes = ['off', 'heat', 'cool', 'on', 'heatcool', 'auto', 'eco'];
     if ('modes' in config) {
       modes = config.modes.split(',').map((s) => s.trim());
+    } else if ('thermostatModes' in config) {
+      modes = config.thermostatModes.split(',').map((s) => s.trim());
     }
     const modeMap = {};
     modes.forEach((pair) => {

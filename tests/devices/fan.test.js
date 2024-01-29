@@ -107,4 +107,79 @@ describe('Fan Device', () => {
       on: true
     });
   });
+
+  describe('transition tests', () => {
+    test('getState', () => {
+      expect(Device.getState({ state: '50 %' })).toStrictEqual({
+        currentFanSpeedPercent: 50,
+        on: true
+      });
+      expect(
+        Device.getState({
+          state: '50 upm',
+          metadata: {
+            ga: {
+              config: {
+                ordered: true,
+                fanSpeeds: '0=null:off,50=slow,100=full:fast',
+                lang: 'en'
+              }
+            }
+          }
+        })
+      ).toStrictEqual({
+        currentFanSpeedSetting: '50',
+        on: true
+      });
+    });
+
+    test('getAttributes speeds', () => {
+      const item = {
+        metadata: {
+          ga: {
+            config: {
+              ordered: true,
+              fanSpeeds: '0=null:off,50=slow,100=full:fast',
+              lang: 'en'
+            }
+          }
+        }
+      };
+      expect(Device.getAttributes(item)).toStrictEqual({
+        availableFanSpeeds: {
+          speeds: [
+            {
+              speed_name: '0',
+              speed_values: [
+                {
+                  speed_synonym: ['null', 'off'],
+                  lang: 'en'
+                }
+              ]
+            },
+            {
+              speed_name: '50',
+              speed_values: [
+                {
+                  speed_synonym: ['slow'],
+                  lang: 'en'
+                }
+              ]
+            },
+            {
+              speed_name: '100',
+              speed_values: [
+                {
+                  speed_synonym: ['full', 'fast'],
+                  lang: 'en'
+                }
+              ]
+            }
+          ],
+          ordered: true
+        },
+        reversible: false
+      });
+    });
+  });
 });
