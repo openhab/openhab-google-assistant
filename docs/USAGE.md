@@ -32,7 +32,7 @@ This documentation refers to release [v3.9.0](https://github.com/openhab/openhab
 - Prepared available configuration options for the upcoming rollout of v4
 - Users can start adjusting their setup to use the new configuration options:
   - [`Thermostat`](#thermostat): `modes` has been renamed to `thermostatModes`
-  - [`Fan`](#fan-hood-airpurifier): `speeds` has been renamed to `fanSpeeds`
+  - [`Fan`](#fan-hood-airpurifier-only-onoff-or-fan-speed-control): `speeds` has been renamed to `fanSpeeds`
 
 ### v3.8.0
 
