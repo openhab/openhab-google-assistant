@@ -14,7 +14,7 @@ jobs:
           [[ ! "$GITHUB_REF" =~ refs/tags ]] && exit
           echo "::set-output name=tag::${GITHUB_REF#refs/tags/}"
       - name: Draft Release
-        uses: release-drafter/release-drafter@v5
+        uses: release-drafter/release-drafter@v6
         with:
           name: ${{steps.get_version_tag.outputs.tag}}
           tag: ${{steps.get_version_tag.outputs.tag}}
