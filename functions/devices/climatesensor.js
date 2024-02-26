@@ -23,6 +23,21 @@ class ClimateSensor extends DefaultDevice {
       attributes.temperatureUnitForUX = this.useFahrenheit(item) ? 'F' : 'C';
       attributes.queryOnlyTemperatureSetting = true;
       attributes.thermostatTemperatureUnit = this.useFahrenheit(item) === true ? 'F' : 'C';
+      attributes.temperatureRange = {
+        minThresholdCelsius: -100,
+        maxThresholdCelsius: 100
+      };
+
+      const config = this.getConfig(item);
+      if ('temperatureRange' in config) {
+        const [min, max] = config.temperatureRange.split(',').map((s) => parseFloat(s.trim()));
+        if (!isNaN(min) && !isNaN(max)) {
+          attributes.temperatureRange = {
+            minThresholdCelsius: min,
+            maxThresholdCelsius: max
+          };
+        }
+      }
     }
     if ('humidityAmbient' in members) {
       attributes.queryOnlyHumiditySetting = true;
@@ -30,15 +45,15 @@ class ClimateSensor extends DefaultDevice {
     return attributes;
   }
 
-  static matchesItemType(item) {
-    return item.type === 'Group' && Object.keys(this.getMembers(item)).length > 0;
+  static get requiredItemTypes() {
+    return ['Group'];
   }
 
-  static isCompatible(item = {}) {
+  static matchesDeviceType(item) {
     return (
       item.metadata &&
       item.metadata.ga &&
-      item.metadata.ga.value.toLowerCase() == 'climatesensor' &&
+      item.metadata.ga.value.toLowerCase() === 'climatesensor' &&
       Object.keys(this.getMembers(item)).length > 0
     );
   }
@@ -63,23 +78,11 @@ class ClimateSensor extends DefaultDevice {
     return state;
   }
 
-  /**
-   * @returns {object}
-   */
-  static getMembers(item) {
-    const supportedMembers = ['temperatureAmbient', 'humidityAmbient'];
-    const members = {};
-    if (item.members && item.members.length) {
-      item.members.forEach((member) => {
-        if (member.metadata && member.metadata.ga) {
-          const memberType = supportedMembers.find((m) => member.metadata.ga.value.toLowerCase() === m.toLowerCase());
-          if (memberType) {
-            members[memberType] = { name: member.name, state: member.state };
-          }
-        }
-      });
-    }
-    return members;
+  static get supportedMembers() {
+    return [
+      { name: 'temperatureAmbient', types: ['Number'] },
+      { name: 'humidityAmbient', types: ['Number'] }
+    ];
   }
 
   static useFahrenheit(item) {

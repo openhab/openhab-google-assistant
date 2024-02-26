@@ -1,47 +1,48 @@
 const Device = require('../../functions/devices/sensor.js');
 
 describe('Sensor Device', () => {
-  test('isCompatible', () => {
+  test('matchesDeviceType', () => {
     expect(
-      Device.isCompatible({
+      Device.matchesDeviceType({
         metadata: {
           ga: {
             value: 'SENSOR'
           }
         }
       })
-    ).toBe(true);
-  });
-
-  describe('matchesItemType', () => {
-    describe('matchesItemType numeric', () => {
-      const item = {
+    ).toBe(false);
+    expect(
+      Device.matchesDeviceType({
         metadata: {
           ga: {
+            value: 'SENSOR',
             config: {
               sensorName: 'Sensor',
               valueUnit: 'PERCENT'
             }
           }
         }
-      };
-      expect(Device.matchesItemType(item)).toBe(true);
-      expect(Device.matchesItemType({ type: 'Number' })).toBe(false);
-    });
-
-    describe('matchesItemType descriptive', () => {
-      const item = {
+      })
+    ).toBe(true);
+    expect(
+      Device.matchesDeviceType({
         metadata: {
           ga: {
+            value: 'SENSOR',
             config: {
               sensorName: 'Sensor',
               states: '50=good,100=bad'
             }
           }
         }
-      };
-      expect(Device.matchesItemType(item)).toBe(true);
-    });
+      })
+    ).toBe(true);
+  });
+
+  test('matchesItemType', () => {
+    expect(Device.matchesItemType({ type: 'Group' })).toBe(false);
+    expect(Device.matchesItemType({ type: 'Group', groupType: 'String' })).toBe(true);
+    expect(Device.matchesItemType({ type: 'Number' })).toBe(true);
   });
 
   describe('getAttributes', () => {

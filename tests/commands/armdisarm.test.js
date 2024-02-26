@@ -37,9 +37,10 @@ describe('ArmDisarm Command', () => {
 
   describe('getItemName', () => {
     test('getItemName SimpleSecuritySystem', () => {
-      expect(
-        Command.getItemName({ name: 'SwitchItem' }, { customData: { deviceType: 'SimpleSecuritySystem' } })
-      ).toStrictEqual('SwitchItem');
+      const device = {
+        id: 'SwitchItem'
+      };
+      expect(Command.getItemName(device)).toStrictEqual('SwitchItem');
     });
 
     describe('getItemName SecuritySystem', () => {
@@ -47,51 +48,41 @@ describe('ArmDisarm Command', () => {
       const itemNameArmLevel = 'itemNameArmLevel';
 
       test('getItemName SecuritySystem normal', () => {
-        const item = {
-          members: [
-            {
-              name: itemNameArmed,
-              metadata: { ga: { value: SecuritySystem.armedMemberName } }
-            },
-            {
-              name: itemNameArmLevel,
-              metadata: { ga: { value: SecuritySystem.armLevelMemberName } }
-            }
-          ]
+        const device = {
+          customData: {
+            deviceType: 'SecuritySystem',
+            members: {}
+          }
         };
-        expect(
-          Command.getItemName(item, { customData: { deviceType: 'SecuritySystem' } }, { arm: true })
-        ).toStrictEqual(itemNameArmed);
-        expect(
-          Command.getItemName(item, { customData: { deviceType: 'SecuritySystem' } }, { arm: true, armLevel: 'L1' })
-        ).toStrictEqual(itemNameArmLevel);
+        device.customData.members[SecuritySystem.armedMemberName] = itemNameArmed;
+        device.customData.members[SecuritySystem.armLevelMemberName] = itemNameArmLevel;
+        expect(Command.getItemName(device, { arm: true })).toStrictEqual(itemNameArmed);
+        expect(Command.getItemName(device, { arm: true, armLevel: 'L1' })).toStrictEqual(itemNameArmLevel);
       });
 
       test('getItemName SecuritySystem missing armed member', () => {
-        const item = {
-          members: [
-            {
-              name: itemNameArmLevel,
-              metadata: { ga: { value: SecuritySystem.armLevelMemberName } }
-            }
-          ]
+        const device = {
+          customData: {
+            deviceType: 'SecuritySystem',
+            members: {}
+          }
         };
+        device.customData.members[SecuritySystem.armLevelMemberName] = itemNameArmLevel;
         expect(() => {
-          Command.getItemName(item, { customData: { deviceType: 'SecuritySystem' } }, { arm: true });
+          Command.getItemName(device, { arm: true });
         }).toThrow();
       });
 
       test('getItemName SecuritySystem missing armLevel member', () => {
-        const item = {
-          members: [
-            {
-              name: itemNameArmed,
-              metadata: { ga: { value: SecuritySystem.armedMemberName } }
-            }
-          ]
+        const device = {
+          customData: {
+            deviceType: 'SecuritySystem',
+            members: {}
+          }
         };
+        device.customData.members[SecuritySystem.armedMemberName] = itemNameArmed;
         expect(() => {
-          Command.getItemName(item, { customData: { deviceType: 'SecuritySystem' } }, { arm: true, armLevel: 'L1' });
+          Command.getItemName(device, { arm: true, armLevel: 'L1' });
         }).toThrow();
       });
     });
@@ -173,9 +164,11 @@ describe('ArmDisarm Command', () => {
         name: 'itemName',
         members: [
           {
+            type: 'Switch',
             metadata: { ga: { value: SecuritySystem.armedMemberName } }
           },
           {
+            type: 'String',
             metadata: { ga: { value: SecuritySystem.armLevelMemberName } }
           }
         ]
@@ -206,9 +199,7 @@ describe('ArmDisarm Command', () => {
 
         item.members[0].state = 'ON';
         expect(
-          Command.validateUpdate({ arm: false }, item, {
-            customData: { deviceType: 'SecuritySystem', inverted: true }
-          })
+          Command.validateUpdate({ arm: false }, item, { customData: { deviceType: 'SecuritySystem', inverted: true } })
         ).toBeUndefined();
         try {
           Command.validateUpdate({ arm: true }, item, {
@@ -221,10 +212,15 @@ describe('ArmDisarm Command', () => {
         const item2 = {
           name: 'itemName',
           members: [
-            { metadata: { ga: { value: SecuritySystem.armedMemberName } } },
-            { metadata: { ga: { value: SecuritySystem.armLevelMemberName } } },
-            { name: 'trouble', metadata: { ga: { value: 'securitySystemTrouble' } }, state: 'ON' },
-            { name: 'errorCode', metadata: { ga: { value: 'securitySystemTroubleCode' } }, state: 'ErrorCode123' }
+            { type: 'Switch', metadata: { ga: { value: SecuritySystem.armedMemberName } } },
+            { type: 'String', metadata: { ga: { value: SecuritySystem.armLevelMemberName } } },
+            { type: 'Switch', name: 'trouble', metadata: { ga: { value: 'securitySystemTrouble' } }, state: 'ON' },
+            {
+              type: 'String',
+              name: 'errorCode',
+              metadata: { ga: { value: 'securitySystemTroubleCode' } },
+              state: 'ErrorCode123'
+            }
           ]
         };
         expect(

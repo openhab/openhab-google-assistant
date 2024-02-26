@@ -25,8 +25,8 @@ class DefaultDevice {
    * @param {object} item
    * @returns {boolean}
    */
-  static isCompatible(item) {
-    return (
+  static matchesDeviceType(item) {
+    return !!(
       item.metadata &&
       item.metadata.ga &&
       this.type.toLowerCase() === `action.devices.types.${item.metadata.ga.value}`.toLowerCase()
@@ -37,7 +37,7 @@ class DefaultDevice {
    * @param {object} item
    */
   static matchesItemType(item) {
-    return (
+    return !!(
       !this.requiredItemTypes.length ||
       this.requiredItemTypes.includes((item.groupType || item.type || '').split(':')[0])
     );
@@ -111,6 +111,13 @@ class DefaultDevice {
     if (config.waitForStateChange) {
       metadata.customData.waitForStateChange = parseInt(config.waitForStateChange);
     }
+    if (this.supportedMembers.length) {
+      const members = this.getMembers(item);
+      metadata.customData.members = {};
+      for (const member in members) {
+        metadata.customData.members[member] = members[member].name;
+      }
+    }
     return metadata;
   }
 
@@ -119,6 +126,35 @@ class DefaultDevice {
    */
   static getState(item) {
     return {};
+  }
+
+  /**
+   * @returns {Array<object>}
+   */
+  static get supportedMembers() {
+    return [];
+  }
+
+  /**
+   * @returns {object}
+   */
+  static getMembers(item) {
+    const supportedMembers = this.supportedMembers;
+    const members = {};
+    if (item.members && item.members.length) {
+      item.members.forEach((member) => {
+        if (member.metadata && member.metadata.ga) {
+          const memberType = supportedMembers.find((m) => {
+            const memberType = (member.groupType || member.type || '').split(':')[0];
+            return m.types.includes(memberType) && member.metadata.ga.value.toLowerCase() === m.name.toLowerCase();
+          });
+          if (memberType) {
+            members[memberType.name] = { name: member.name, state: member.state };
+          }
+        }
+      });
+    }
+    return members;
   }
 }
 

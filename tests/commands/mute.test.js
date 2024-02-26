@@ -6,54 +6,42 @@ describe('Mute Command', () => {
     expect(Command.validateParams({ mute: true })).toBe(true);
   });
 
-  test('requiresItem', () => {
-    expect(Command.requiresItem({})).toBe(false);
-    expect(Command.requiresItem({ customData: { deviceType: 'TV' } })).toBe(true);
-  });
-
   describe('getItemName', () => {
     test('getItemName', () => {
-      expect(Command.getItemName({ name: 'Item' }, {})).toBe('Item');
+      expect(Command.getItemName({ id: 'Item' })).toBe('Item');
+      expect(Command.getItemName({ id: 'Item', customData: {} })).toBe('Item');
     });
 
     test('getItemName TV no members', () => {
       expect(() => {
-        Command.getItemName({ name: 'Item' }, { customData: { deviceType: 'TV' } });
+        Command.getItemName({ id: 'Item', customData: { deviceType: 'TV' } });
       }).toThrow();
     });
 
     test('getItemName TV mute', () => {
-      const item = {
-        name: 'Item',
-        members: [
-          {
-            name: 'MuteItem',
-            metadata: {
-              ga: {
-                value: 'tvMute'
-              }
-            }
+      const device = {
+        id: 'Item',
+        customData: {
+          deviceType: 'TV',
+          members: {
+            tvMute: 'MuteItem'
           }
-        ]
+        }
       };
-      expect(Command.getItemName(item, { customData: { deviceType: 'TV' } })).toBe('MuteItem');
+      expect(Command.getItemName(device)).toBe('MuteItem');
     });
 
     test('getItemName TV volume', () => {
-      const item = {
-        name: 'Item',
-        members: [
-          {
-            name: 'VolumeItem',
-            metadata: {
-              ga: {
-                value: 'tvVolume'
-              }
-            }
+      const device = {
+        id: 'Item',
+        customData: {
+          deviceType: 'TV',
+          members: {
+            tvVolume: 'VolumeItem'
           }
-        ]
+        }
       };
-      expect(Command.getItemName(item, { customData: { deviceType: 'TV' } })).toBe('VolumeItem');
+      expect(Command.getItemName(device)).toBe('VolumeItem');
     });
   });
 
@@ -78,33 +66,19 @@ describe('Mute Command', () => {
     });
 
     test('convertParamsToValue TV mute', () => {
-      const item = {
-        members: [
-          {
-            metadata: {
-              ga: {
-                value: 'tvMute'
-              }
-            }
-          }
-        ]
-      };
-      expect(Command.convertParamsToValue({ mute: true }, item, { customData: { deviceType: 'TV' } })).toBe('ON');
+      expect(
+        Command.convertParamsToValue({ mute: true }, undefined, {
+          customData: { deviceType: 'TV', members: { tvMute: 'MuteItem' } }
+        })
+      ).toBe('ON');
     });
 
     test('convertParamsToValue TV volume', () => {
-      const item = {
-        members: [
-          {
-            metadata: {
-              ga: {
-                value: 'tvVolume'
-              }
-            }
-          }
-        ]
-      };
-      expect(Command.convertParamsToValue({ mute: true }, item, { customData: { deviceType: 'TV' } })).toBe('0');
+      expect(
+        Command.convertParamsToValue({ mute: true }, undefined, {
+          customData: { deviceType: 'TV', members: { tvVolume: 'VolumeItem' } }
+        })
+      ).toBe('0');
     });
   });
 

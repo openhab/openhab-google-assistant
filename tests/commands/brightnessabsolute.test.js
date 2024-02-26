@@ -7,30 +7,22 @@ describe('BrightnessAbsolute Command', () => {
     expect(Command.validateParams({ brightness: '100' })).toBe(false);
   });
 
-  test('requiresItem', () => {
-    expect(Command.requiresItem({})).toBe(false);
-    expect(Command.requiresItem({ customData: { deviceType: 'SpecialColorLight' } })).toBe(true);
-  });
-
   test('getItemName', () => {
-    expect(Command.getItemName({ name: 'Item' }, {})).toBe('Item');
+    expect(Command.getItemName({ id: 'Item' })).toBe('Item');
+    expect(Command.getItemName({ id: 'Item', customData: {} })).toBe('Item');
     expect(() => {
-      Command.getItemName({ name: 'Item' }, { customData: { deviceType: 'SpecialColorLight' } });
+      Command.getItemName({ id: 'Item', customData: { deviceType: 'SpecialColorLight' } });
     }).toThrow();
-    const item = {
-      name: 'Item',
-      members: [
-        {
-          name: 'BrightnessItem',
-          metadata: {
-            ga: {
-              value: 'lightBrightness'
-            }
-          }
+    const device = {
+      id: 'Item',
+      customData: {
+        deviceType: 'SpecialColorLight',
+        members: {
+          lightBrightness: 'BrightnessItem'
         }
-      ]
+      }
     };
-    expect(Command.getItemName(item, { customData: { deviceType: 'SpecialColorLight' } })).toBe('BrightnessItem');
+    expect(Command.getItemName(device)).toBe('BrightnessItem');
   });
 
   test('convertParamsToValue', () => {

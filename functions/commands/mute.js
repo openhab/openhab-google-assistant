@@ -1,5 +1,4 @@
 const DefaultCommand = require('./default.js');
-const TV = require('../devices/tv.js');
 
 class Mute extends DefaultCommand {
   static get type() {
@@ -10,32 +9,26 @@ class Mute extends DefaultCommand {
     return 'mute' in params && typeof params.mute === 'boolean';
   }
 
-  static requiresItem(device) {
-    return this.getDeviceType(device) === 'TV';
-  }
-
-  static getItemName(item, device) {
+  static getItemName(device) {
     if (this.getDeviceType(device) === 'TV') {
-      const members = TV.getMembers(item);
+      const members = this.getMembers(device);
       if ('tvMute' in members) {
-        return members.tvMute.name;
+        return members.tvMute;
       }
       if ('tvVolume' in members) {
-        return members.tvVolume.name;
+        return members.tvVolume;
       }
       throw { statusCode: 400 };
     }
-    return item.name;
+    return device.id;
   }
 
   static convertParamsToValue(params, item, device) {
     let itemType = this.getItemType(device);
     if (this.getDeviceType(device) === 'TV') {
-      const members = TV.getMembers(item);
+      const members = this.getMembers(device);
       if ('tvMute' in members) {
         itemType = 'Switch';
-      } else if ('tvVolume' in members) {
-        itemType = 'Dimmer';
       }
     }
     let mute = params.mute;

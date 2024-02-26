@@ -14,21 +14,16 @@ describe('selectChannel Command', () => {
 
   test('getItemName', () => {
     expect(() => {
-      Command.getItemName({ name: 'Item' });
+      Command.getItemName({ id: 'Item' });
     }).toThrow();
-    const item = {
-      members: [
-        {
-          name: 'ChannelItem',
-          metadata: {
-            ga: {
-              value: 'tvChannel'
-            }
-          }
+    const device = {
+      customData: {
+        members: {
+          tvChannel: 'ChannelItem'
         }
-      ]
+      }
     };
-    expect(Command.getItemName(item)).toBe('ChannelItem');
+    expect(Command.getItemName(device)).toBe('ChannelItem');
   });
 
   test('convertParamsToValue', () => {
@@ -36,13 +31,16 @@ describe('selectChannel Command', () => {
       metadata: {
         ga: {
           config: {
-            availableChannels: '1=channel1=ARD,2=channel2=ZDF'
+            availableChannels: '1=channel1=ARD,2=channel2=ZDF,3=channel3=Disney Channel'
           }
         }
       }
     };
     expect(Command.convertParamsToValue({ channelCode: 'channel1' }, item)).toBe('1');
+    expect(Command.convertParamsToValue({ channelCode: 'channel3' }, item)).toBe('3');
     expect(Command.convertParamsToValue({ channelName: 'ARD' }, item)).toBe('1');
+    expect(Command.convertParamsToValue({ channelName: 'Ard' }, item)).toBe('1');
+    expect(Command.convertParamsToValue({ channelName: 'Disney Channel' }, item)).toBe('3');
     expect(Command.convertParamsToValue({ channelNumber: '1' }, item)).toBe('1');
     expect(() => {
       Command.convertParamsToValue({ channelNumber: '0' }, item);

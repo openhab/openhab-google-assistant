@@ -21,21 +21,21 @@ class ArmDisarm extends DefaultCommand {
     return arm ? 'ON' : 'OFF';
   }
 
-  static getItemName(item, device, params) {
+  static getItemName(device, params) {
     if (this.getDeviceType(device) === 'SecuritySystem') {
-      const members = SecuritySystem.getMembers(item);
+      const members = this.getMembers(device);
       if (params.armLevel) {
         if (SecuritySystem.armLevelMemberName in members) {
-          return members[SecuritySystem.armLevelMemberName].name;
+          return members[SecuritySystem.armLevelMemberName];
         }
         throw { statusCode: 400 };
       }
       if (SecuritySystem.armedMemberName in members) {
-        return members[SecuritySystem.armedMemberName].name;
+        return members[SecuritySystem.armedMemberName];
       }
       throw { statusCode: 400 };
     }
-    return item.name;
+    return device.id;
   }
 
   static requiresItem() {
@@ -84,7 +84,7 @@ class ArmDisarm extends DefaultCommand {
             return {
               ids: [device.id],
               status: 'EXCEPTIONS',
-              states: Object.assign({ online: true, currentStatusReport: report }, SecuritySystem.getState(item))
+              states: { online: true, currentStatusReport: report, ...SecuritySystem.getState(item) }
             };
           }
           throw { errorCode: 'armFailure' };

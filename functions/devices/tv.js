@@ -6,30 +6,38 @@ class TV extends DefaultDevice {
   }
 
   static getTraits(item) {
-    const traits = [];
+    const traits = [
+      'action.devices.traits.AppSelector',
+      'action.devices.traits.InputSelector',
+      'action.devices.traits.MediaState',
+      'action.devices.traits.OnOff',
+      'action.devices.traits.TransportControl',
+      'action.devices.traits.Volume'
+    ];
     const members = this.getMembers(item);
-    if ('tvPower' in members) traits.push('action.devices.traits.OnOff');
-    if ('tvMute' in members || 'tvVolume' in members) traits.push('action.devices.traits.Volume');
     if ('tvChannel' in members) traits.push('action.devices.traits.Channel');
-    if ('tvInput' in members) traits.push('action.devices.traits.InputSelector');
-    if ('tvTransport' in members)
-      traits.push('action.devices.traits.TransportControl', 'action.devices.traits.MediaState');
-    if ('tvApplication' in members) traits.push('action.devices.traits.AppSelector');
     return traits;
   }
 
-  static matchesItemType(item) {
-    return item.type === 'Group' && Object.keys(this.getMembers(item)).length > 0;
+  static get requiredItemTypes() {
+    return ['Group'];
+  }
+
+  static matchesDeviceType(item) {
+    return super.matchesDeviceType(item) && Object.keys(this.getMembers(item)).length > 0;
   }
 
   static getAttributes(item) {
     const config = this.getConfig(item);
     const members = this.getMembers(item);
     const attributes = {
+      availableApplications: [],
+      availableInputs: [],
+      transportControlSupportedCommands: [],
+      volumeMaxLevel: 100,
       volumeCanMuteAndUnmute: 'tvMute' in members
     };
     if ('tvVolume' in members) {
-      attributes.volumeMaxLevel = 100;
       if ('volumeMaxLevel' in config) {
         attributes.volumeMaxLevel = Number(config.volumeMaxLevel);
       }
@@ -50,7 +58,6 @@ class TV extends DefaultDevice {
       }
     }
     if ('tvInput' in members && 'availableInputs' in config) {
-      attributes.availableInputs = [];
       config.availableInputs.split(',').forEach((input) => {
         const [key, synonyms] = input.split('=');
         attributes.availableInputs.push({
@@ -77,7 +84,6 @@ class TV extends DefaultDevice {
       });
     }
     if ('tvApplication' in members && 'availableApplications' in config) {
-      attributes.availableApplications = [];
       config.availableApplications.split(',').forEach((application) => {
         const [key, synonyms] = application.split('=');
         attributes.availableApplications.push({
@@ -129,20 +135,16 @@ class TV extends DefaultDevice {
     return state;
   }
 
-  static getMembers(item) {
-    const supportedMembers = ['tvApplication', 'tvChannel', 'tvVolume', 'tvInput', 'tvTransport', 'tvPower', 'tvMute'];
-    const members = {};
-    if (item.members && item.members.length) {
-      item.members.forEach((member) => {
-        if (member.metadata && member.metadata.ga) {
-          const memberType = supportedMembers.find((m) => member.metadata.ga.value.toLowerCase() === m.toLowerCase());
-          if (memberType) {
-            members[memberType] = { name: member.name, state: member.state };
-          }
-        }
-      });
-    }
-    return members;
+  static get supportedMembers() {
+    return [
+      { name: 'tvApplication', types: ['Number', 'String'] },
+      { name: 'tvChannel', types: ['Number', 'String'] },
+      { name: 'tvVolume', types: ['Number', 'Dimmer'] },
+      { name: 'tvInput', types: ['Number', 'String'] },
+      { name: 'tvTransport', types: ['Player'] },
+      { name: 'tvPower', types: ['Switch'] },
+      { name: 'tvMute', types: ['Switch'] }
+    ];
   }
 
   static getChannelMap(item) {

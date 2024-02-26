@@ -24,8 +24,12 @@ class SecuritySystem extends DefaultDevice {
     return memberArmLevel;
   }
 
-  static matchesItemType(item) {
-    return item.type === 'Group' && Object.keys(this.getMembers(item)).length > 0;
+  static get requiredItemTypes() {
+    return ['Group'];
+  }
+
+  static matchesDeviceType(item) {
+    return super.matchesDeviceType(item) && Object.keys(this.getMembers(item)).length > 0;
   }
 
   static getAttributes(item) {
@@ -56,20 +60,33 @@ class SecuritySystem extends DefaultDevice {
     return {};
   }
 
+  static get supportedMembers() {
+    return [
+      { name: memberArmed, types: ['Switch'] },
+      { name: memberArmLevel, types: ['String'] },
+      { name: memberZone, types: ['Contact'] },
+      { name: memberTrouble, types: ['Switch'] },
+      { name: memberErrorCode, types: ['String'] }
+    ];
+  }
+
   static getMembers(item) {
-    const supportedMembers = [memberArmed, memberArmLevel, memberZone, memberTrouble, memberErrorCode];
+    const supportedMembers = this.supportedMembers;
     const members = {};
     if (item.members && item.members.length) {
       item.members.forEach((member) => {
         if (member.metadata && member.metadata.ga) {
-          const memberType = supportedMembers.find((m) => member.metadata.ga.value.toLowerCase() === m.toLowerCase());
+          const memberType = supportedMembers.find((m) => {
+            const memberType = (member.groupType || member.type || '').split(':')[0];
+            return m.types.includes(memberType) && member.metadata.ga.value.toLowerCase() === m.name.toLowerCase();
+          });
           if (memberType) {
             const memberDetails = { name: member.name, state: member.state, config: this.getConfig(member) };
-            if (memberType === memberZone) {
+            if (memberType.name === memberZone) {
               members.zones = members.zones || [];
               members.zones.push(memberDetails);
             } else {
-              members[memberType] = memberDetails;
+              members[memberType.name] = memberDetails;
             }
           }
         }

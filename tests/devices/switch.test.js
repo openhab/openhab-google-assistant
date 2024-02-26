@@ -1,9 +1,9 @@
 const Device = require('../../functions/devices/switch.js');
 
 describe('Switch Device', () => {
-  test('isCompatible', () => {
+  test('matchesDeviceType', () => {
     expect(
-      Device.isCompatible({
+      Device.matchesDeviceType({
         metadata: {
           ga: {
             value: 'SWITCH'

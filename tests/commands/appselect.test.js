@@ -16,21 +16,16 @@ describe('appSelect Command', () => {
 
   test('getItemName', () => {
     expect(() => {
-      Command.getItemName({ name: 'Item' });
+      Command.getItemName({ id: 'Item' });
     }).toThrow();
-    const item = {
-      members: [
-        {
-          name: 'ApplicationItem',
-          metadata: {
-            ga: {
-              value: 'tvApplication'
-            }
-          }
+    const device = {
+      customData: {
+        members: {
+          tvApplication: 'ApplicationItem'
         }
-      ]
+      }
     };
-    expect(Command.getItemName(item)).toBe('ApplicationItem');
+    expect(Command.getItemName(device)).toBe('ApplicationItem');
   });
 
   test('convertParamsToValue', () => {
