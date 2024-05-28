@@ -56,6 +56,11 @@ class Thermostat extends DefaultDevice {
         if (member.indexOf('Temperature') > 0 && this.useFahrenheit(item)) {
           state[member] = convertFahrenheitToCelsius(state[member]);
         }
+        if (member.indexOf('Humidity') > 0) {
+          const config = this.getConfig(item);
+          const isPercent = !config.humidityUnit || config.humidityUnit.toLowerCase() === 'percent';
+          state[member] = Math.round(parseFloat(members[member].state) * (isPercent ? 1 : 100));
+        }
       }
     }
     return state;

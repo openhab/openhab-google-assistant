@@ -414,5 +414,32 @@ describe('Thermostat Device', () => {
         thermostatTemperatureAmbient: -6.7
       });
     });
+
+    test('getState only humdity with unit', () => {
+      const item = {
+        metadata: {
+          ga: {
+            config: {
+              humidityUnit: 'float'
+            }
+          }
+        },
+        members: [
+          {
+            name: 'Humidity',
+            state: '0.65',
+            type: 'Number',
+            metadata: {
+              ga: {
+                value: 'thermostatHumidityAmbient'
+              }
+            }
+          }
+        ]
+      };
+      expect(Device.getState(item)).toStrictEqual({
+        thermostatHumidityAmbient: 65
+      });
+    });
   });
 });

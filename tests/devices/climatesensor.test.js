@@ -222,5 +222,30 @@ describe('ClimateSensor Device', () => {
       humidityAmbientPercent: 30,
       humiditySetpointPercent: 30
     });
+    const item4 = {
+      metadata: {
+        ga: {
+          config: {
+            humidityUnit: 'float'
+          }
+        }
+      },
+      members: [
+        {
+          name: 'Humidity',
+          state: '0.45',
+          type: 'Number',
+          metadata: {
+            ga: {
+              value: 'humidityAmbient'
+            }
+          }
+        }
+      ]
+    };
+    expect(Device.getState(item4)).toStrictEqual({
+      humidityAmbientPercent: 45,
+      humiditySetpointPercent: 45
+    });
   });
 });

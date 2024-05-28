@@ -29,10 +29,21 @@ describe('HumiditySensor Device', () => {
     });
   });
 
-  test('getState', () => {
-    expect(Device.getState({ state: '9.6 %' })).toStrictEqual({
-      humidityAmbientPercent: 10,
-      humiditySetpointPercent: 10
+  describe('getAttributes', () => {
+    test('getState no config', () => {
+      expect(Device.getState({ state: '9.6 %' })).toStrictEqual({
+        humidityAmbientPercent: 10,
+        humiditySetpointPercent: 10
+      });
+    });
+
+    test('getState humidityUnit float', () => {
+      expect(Device.getState({ state: '0.34', metadata: { ga: { config: { humidityUnit: 'float' } } } })).toStrictEqual(
+        {
+          humidityAmbientPercent: 34,
+          humiditySetpointPercent: 34
+        }
+      );
     });
   });
 });
