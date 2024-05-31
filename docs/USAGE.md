@@ -24,8 +24,31 @@ If you have any issues, questions or an idea for additional features, please tak
 ## Latest Changes
 
 ::: tip State of this document
-This documentation refers to release [v3.9.0](https://github.com/openhab/openhab-google-assistant/releases/tag/v3.9.0) of [openHAB Google Assistant](https://github.com/openhab/openhab-google-assistant) published on 2024-01-29
+This documentation refers to release [v4.0.0](https://github.com/openhab/openhab-google-assistant/releases/tag/v4.0.0) of [openHAB Google Assistant](https://github.com/openhab/openhab-google-assistant) published on 2024-05-31
 :::
+
+### v4.0.0
+
+- **Breaking Changes**
+  - Group members are now stored in customData. This means existing (group) devices will only work after a new SYNC
+  - The `modes` configuration for Thermostats has been renamed to `thermostatModes`
+  - The `speeds` configuration for Fans will be renamed to `fanSpeeds`
+  - As item types of group members will then be validated, users might see devices disappearing in Google Home if they used an unsupported item within a group device
+  - Please take a look at [Migration Guide](https://github.com/openhab/openhab-google-assistant/discussions/558) and check your configuration against the new constraints
+- **More details and other changes**
+  - Item names for group members will be stored in customData to save a query request to openHAB when executing commands
+    - For commands that need the current state the query request is still needed (thermostat commands or relative volume)
+    - Also some other configuration options are stored in customData
+    - Item types of group members will now be validated
+  - Add a lot of new functionality to Fan devices (AirPurifier, Fan, Hood)
+    - OnOff (separate power switch if used as a group)
+    - FanSpeed (separate fan speed if used as a group)
+    - Modes (yes, for the first time modes are available)
+    - SensorState (for FilterLifeTime and PM2.5 - no clue how to query those)
+  - Add AC Unit device
+    - Basically just a combination of the extended Fan and the Thermostat with all control and config options of both
+- **Potential Issues**
+  - As customData is limited to 512 bytes it could be an issue to store very long item names e.g. for devices with a lot of members like thermostat
 
 ### v3.9.0
 
