@@ -194,7 +194,7 @@ Switch { ga="Fireplace" }
 Switch { ga="Valve" [ inverted=true ] }
 ```
 
-### Sprinkler, Vacuum
+### Sprinkler, Vacuum, Washer, Dishwasher
 
 | | |
 |---|---|
@@ -206,6 +206,8 @@ Switch { ga="Valve" [ inverted=true ] }
 ```shell
 Switch { ga="Sprinkler" [ inverted=true ] }
 Switch { ga="Vacuum" [ inverted=false ] }
+Switch { ga="Washer" [ inverted=false ] }
+Switch { ga="Dishwasher" [ inverted=false ] }
 ```
 
 ### Lock
