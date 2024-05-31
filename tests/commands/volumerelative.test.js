@@ -14,26 +14,23 @@ describe('volumeRelative Command', () => {
 
   describe('getItemName', () => {
     test('getItemName', () => {
-      expect(Command.getItemName({ name: 'Item' }, {})).toBe('Item');
+      expect(Command.getItemName({ id: 'Item' })).toBe('Item');
+      expect(Command.getItemName({ id: 'Item', customData: {} })).toBe('Item');
     });
 
     test('getItemName TV', () => {
       expect(() => {
-        Command.getItemName({ name: 'Item' }, { customData: { deviceType: 'TV' } });
+        Command.getItemName({ id: 'Item', customData: { deviceType: 'TV' } });
       }).toThrow();
-      const item = {
-        members: [
-          {
-            name: 'VolumeItem',
-            metadata: {
-              ga: {
-                value: 'tvVolume'
-              }
-            }
+      const device = {
+        customData: {
+          deviceType: 'TV',
+          members: {
+            tvVolume: 'VolumeItem'
           }
-        ]
+        }
       };
-      expect(Command.getItemName(item, { customData: { deviceType: 'TV' } })).toBe('VolumeItem');
+      expect(Command.getItemName(device)).toBe('VolumeItem');
     });
   });
 
@@ -49,6 +46,7 @@ describe('volumeRelative Command', () => {
         members: [
           {
             state: '20',
+            type: 'Number',
             metadata: {
               ga: {
                 value: 'tvVolume'

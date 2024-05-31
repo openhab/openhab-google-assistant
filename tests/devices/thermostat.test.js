@@ -1,33 +1,40 @@
 const Device = require('../../functions/devices/thermostat.js');
 
 describe('Thermostat Device', () => {
-  test('isCompatible', () => {
+  test('matchesDeviceType', () => {
     expect(
-      Device.isCompatible({
+      Device.matchesDeviceType({
         metadata: {
           ga: {
             value: 'THERMOSTAT'
           }
         }
       })
+    ).toBe(false);
+    expect(
+      Device.matchesDeviceType({
+        metadata: {
+          ga: {
+            value: 'THERMOSTAT'
+          }
+        },
+        members: [
+          {
+            type: 'Number',
+            metadata: {
+              ga: {
+                value: 'thermostatTemperatureAmbient'
+              }
+            }
+          }
+        ]
+      })
     ).toBe(true);
   });
 
   test('matchesItemType', () => {
-    const item = {
-      type: 'Group',
-      members: [
-        {
-          metadata: {
-            ga: {
-              value: 'thermostatTemperatureAmbient'
-            }
-          }
-        }
-      ]
-    };
-    expect(Device.matchesItemType(item)).toBe(true);
-    expect(Device.matchesItemType({ type: 'Group' })).toBe(false);
+    expect(Device.matchesItemType({ type: 'Number' })).toBe(false);
+    expect(Device.matchesItemType({ type: 'Group' })).toBe(true);
   });
 
   describe('useFahrenheit', () => {
@@ -72,12 +79,12 @@ describe('Thermostat Device', () => {
       });
     });
 
-    test('getAttributes modes, fahrenheit', () => {
+    test('getAttributes thermostatModes, fahrenheit', () => {
       const item = {
         metadata: {
           ga: {
             config: {
-              modes: 'on=1,off=2',
+              thermostatModes: 'on=1,off=2',
               useFahrenheit: true
             }
           }
@@ -134,6 +141,7 @@ describe('Thermostat Device', () => {
         },
         members: [
           {
+            type: 'Number',
             metadata: {
               ga: {
                 value: 'thermostatTemperatureAmbient'
@@ -158,6 +166,7 @@ describe('Thermostat Device', () => {
           {
             name: 'Mode',
             state: 'on',
+            type: 'String',
             metadata: {
               ga: {
                 value: 'thermostatMode'
@@ -167,6 +176,7 @@ describe('Thermostat Device', () => {
           {
             name: 'Setpoint',
             state: '20',
+            type: 'Number',
             metadata: {
               ga: {
                 value: 'thermostatTemperatureSetpoint'
@@ -176,6 +186,7 @@ describe('Thermostat Device', () => {
           {
             name: 'High',
             state: '25',
+            type: 'Number',
             metadata: {
               ga: {
                 value: 'thermostatTemperatureSetpointHigh'
@@ -185,6 +196,7 @@ describe('Thermostat Device', () => {
           {
             name: 'Low',
             state: '5',
+            type: 'Number',
             metadata: {
               ga: {
                 value: 'thermostatTemperatureSetpointLow'
@@ -194,6 +206,7 @@ describe('Thermostat Device', () => {
           {
             name: 'Temperature',
             state: '20',
+            type: 'Number',
             metadata: {
               ga: {
                 value: 'thermostatTemperatureAmbient'
@@ -203,6 +216,7 @@ describe('Thermostat Device', () => {
           {
             name: 'Humidity',
             state: '50',
+            type: 'Number',
             metadata: {
               ga: {
                 value: 'thermostatHumidityAmbient'
@@ -245,7 +259,7 @@ describe('Thermostat Device', () => {
       metadata: {
         ga: {
           config: {
-            modes: 'on=ON:1,off=OFF:2,auto=3'
+            thermostatModes: 'on=ON:1,off=OFF:2,auto=3'
           }
         }
       }
@@ -271,7 +285,7 @@ describe('Thermostat Device', () => {
       metadata: {
         ga: {
           config: {
-            modes: 'on=ON:1,off=OFF:2,auto=3'
+            thermostatModes: 'on=ON:1,off=OFF:2,auto=3'
           }
         }
       }
@@ -288,7 +302,7 @@ describe('Thermostat Device', () => {
       metadata: {
         ga: {
           config: {
-            modes: 'on=ON:1,off=OFF:2,auto=3'
+            thermostatModes: 'on=ON:1,off=OFF:2,auto=3'
           }
         }
       }
@@ -305,6 +319,7 @@ describe('Thermostat Device', () => {
           {
             name: 'Mode',
             state: 'on',
+            type: 'String',
             metadata: {
               ga: {
                 value: 'thermostatMode'
@@ -314,6 +329,7 @@ describe('Thermostat Device', () => {
           {
             name: 'Setpoint',
             state: '20',
+            type: 'Number',
             metadata: {
               ga: {
                 value: 'thermostatTemperatureSetpoint'
@@ -323,6 +339,7 @@ describe('Thermostat Device', () => {
           {
             name: 'High',
             state: '25',
+            type: 'Number',
             metadata: {
               ga: {
                 value: 'thermostatTemperatureSetpointHigh'
@@ -332,6 +349,7 @@ describe('Thermostat Device', () => {
           {
             name: 'Low',
             state: '5',
+            type: 'Number',
             metadata: {
               ga: {
                 value: 'thermostatTemperatureSetpointLow'
@@ -341,6 +359,7 @@ describe('Thermostat Device', () => {
           {
             name: 'Temperature',
             state: '20',
+            type: 'Number',
             metadata: {
               ga: {
                 value: 'thermostatTemperatureAmbient'
@@ -350,6 +369,7 @@ describe('Thermostat Device', () => {
           {
             name: 'Humidity',
             state: '50',
+            type: 'Number',
             metadata: {
               ga: {
                 value: 'thermostatHumidityAmbient'
@@ -381,6 +401,7 @@ describe('Thermostat Device', () => {
           {
             name: 'Temperature',
             state: '20',
+            type: 'Number',
             metadata: {
               ga: {
                 value: 'thermostatTemperatureAmbient'
@@ -393,39 +414,32 @@ describe('Thermostat Device', () => {
         thermostatTemperatureAmbient: -6.7
       });
     });
-  });
 
-  describe('transition tests', () => {
-    test('getModeMap', () => {
+    test('getState only humdity with maxHumidity', () => {
       const item = {
         metadata: {
           ga: {
             config: {
-              thermostatModes: 'on=ON:1,off=OFF:2,auto=3'
+              maxHumidity: 1
             }
           }
-        }
+        },
+        members: [
+          {
+            name: 'Humidity',
+            state: '0.65',
+            type: 'Number',
+            metadata: {
+              ga: {
+                value: 'thermostatHumidityAmbient'
+              }
+            }
+          }
+        ]
       };
-      expect(Device.getModeMap(item)).toStrictEqual({
-        on: ['ON', '1'],
-        off: ['OFF', '2'],
-        auto: ['3']
+      expect(Device.getState(item)).toStrictEqual({
+        thermostatHumidityAmbient: 65
       });
-    });
-
-    test('translateModeToGoogle', () => {
-      const item = {
-        metadata: {
-          ga: {
-            config: {
-              thermostatModes: 'on=ON:1,off=OFF:2,auto=3'
-            }
-          }
-        }
-      };
-      expect(Device.translateModeToGoogle(item, 'OFF')).toBe('off');
-      expect(Device.translateModeToGoogle(item, '3')).toBe('auto');
-      expect(Device.translateModeToGoogle(item, 'invalid')).toBe('on');
     });
   });
 });

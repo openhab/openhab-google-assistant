@@ -1,9 +1,9 @@
 const Device = require('../../functions/devices/climatesensor.js');
 
 describe('ClimateSensor Device', () => {
-  test('isCompatible', () => {
+  test('matchesDeviceType', () => {
     expect(
-      Device.isCompatible({
+      Device.matchesDeviceType({
         metadata: {
           ga: {
             value: 'climatesensor'
@@ -12,7 +12,7 @@ describe('ClimateSensor Device', () => {
       })
     ).toBe(false);
     expect(
-      Device.isCompatible({
+      Device.matchesDeviceType({
         metadata: {
           ga: {
             value: 'climatesensor'
@@ -33,23 +33,11 @@ describe('ClimateSensor Device', () => {
   });
 
   test('matchesItemType', () => {
-    const item = {
-      type: 'Group',
-      members: [
-        {
-          metadata: {
-            ga: {
-              value: 'temperatureAmbient'
-            }
-          }
-        }
-      ]
-    };
     expect(Device.matchesItemType({ type: 'Number' })).toBe(false);
     expect(Device.matchesItemType({ type: 'Number:Temperature' })).toBe(false);
     expect(Device.matchesItemType({ type: 'Dimmer' })).toBe(false);
     expect(Device.matchesItemType({ type: 'Group', groupType: 'Number' })).toBe(false);
-    expect(Device.matchesItemType(item)).toBe(true);
+    expect(Device.matchesItemType({ type: 'Group' })).toBe(true);
   });
 
   describe('getAttributes', () => {
@@ -115,7 +103,45 @@ describe('ClimateSensor Device', () => {
         queryOnlyTemperatureControl: true,
         queryOnlyTemperatureSetting: true,
         temperatureUnitForUX: 'F',
-        thermostatTemperatureUnit: 'F'
+        thermostatTemperatureUnit: 'F',
+        temperatureRange: {
+          maxThresholdCelsius: 100,
+          minThresholdCelsius: -100
+        }
+      });
+    });
+
+    test('getAttributes temperatureRange', () => {
+      const item = {
+        metadata: {
+          ga: {
+            config: {
+              temperatureRange: '0,30'
+            }
+          }
+        },
+        members: [
+          {
+            name: 'Temperature',
+            state: '20',
+            type: 'Number',
+            metadata: {
+              ga: {
+                value: 'temperatureAmbient'
+              }
+            }
+          }
+        ]
+      };
+      expect(Device.getAttributes(item)).toStrictEqual({
+        queryOnlyTemperatureControl: true,
+        queryOnlyTemperatureSetting: true,
+        temperatureUnitForUX: 'C',
+        thermostatTemperatureUnit: 'C',
+        temperatureRange: {
+          maxThresholdCelsius: 30,
+          minThresholdCelsius: 0
+        }
       });
     });
   });
@@ -195,6 +221,31 @@ describe('ClimateSensor Device', () => {
     expect(Device.getState(item3)).toStrictEqual({
       humidityAmbientPercent: 30,
       humiditySetpointPercent: 30
+    });
+    const item4 = {
+      metadata: {
+        ga: {
+          config: {
+            maxHumidity: 1
+          }
+        }
+      },
+      members: [
+        {
+          name: 'Humidity',
+          state: '0.45',
+          type: 'Number',
+          metadata: {
+            ga: {
+              value: 'humidityAmbient'
+            }
+          }
+        }
+      ]
+    };
+    expect(Device.getState(item4)).toStrictEqual({
+      humidityAmbientPercent: 45,
+      humiditySetpointPercent: 45
     });
   });
 });

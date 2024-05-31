@@ -9,8 +9,12 @@ class Charger extends DefaultDevice {
     return ['action.devices.traits.EnergyStorage'];
   }
 
-  static matchesItemType(item) {
-    return item.type === 'Group' && Object.keys(this.getMembers(item)).length > 0;
+  static get requiredItemTypes() {
+    return ['Group'];
+  }
+
+  static matchesDeviceType(item) {
+    return super.matchesDeviceType(item) && Object.keys(this.getMembers(item)).length > 0;
   }
 
   static getAttributes(item) {
@@ -74,25 +78,13 @@ class Charger extends DefaultDevice {
     return state;
   }
 
-  static getMembers(item) {
-    const supportedMembers = [
-      'chargerCharging',
-      'chargerPluggedIn',
-      'chargerCapacityRemaining',
-      'chargerCapacityUntilFull'
+  static get supportedMembers() {
+    return [
+      { name: 'chargerCharging', types: ['Switch'] },
+      { name: 'chargerPluggedIn', types: ['Switch'] },
+      { name: 'chargerCapacityRemaining', types: ['Number', 'Dimmer'] },
+      { name: 'chargerCapacityUntilFull', types: ['Number', 'Dimmer'] }
     ];
-    const members = {};
-    if (item.members && item.members.length) {
-      item.members.forEach((member) => {
-        if (member.metadata && member.metadata.ga) {
-          const memberType = supportedMembers.find((m) => member.metadata.ga.value.toLowerCase() === m.toLowerCase());
-          if (memberType) {
-            members[memberType] = { name: member.name, state: member.state };
-          }
-        }
-      });
-    }
-    return members;
   }
 }
 

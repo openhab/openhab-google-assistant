@@ -15,12 +15,10 @@ describe('StartStopSwitch Device', () => {
   describe('getState', () => {
     test('getState', () => {
       expect(Device.getState({ state: 'ON' })).toStrictEqual({
-        isRunning: true,
-        isPaused: false
+        isRunning: true
       });
       expect(Device.getState({ state: 'OFF' })).toStrictEqual({
-        isRunning: false,
-        isPaused: true
+        isRunning: false
       });
     });
 
@@ -36,13 +34,11 @@ describe('StartStopSwitch Device', () => {
         }
       };
       expect(Device.getState(item)).toStrictEqual({
-        isRunning: false,
-        isPaused: true
+        isRunning: false
       });
       item.state = 'OFF';
       expect(Device.getState(item)).toStrictEqual({
-        isRunning: true,
-        isPaused: false
+        isRunning: true
       });
     });
   });

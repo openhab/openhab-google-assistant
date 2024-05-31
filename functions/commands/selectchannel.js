@@ -18,10 +18,10 @@ class SelectChannel extends DefaultCommand {
     return true;
   }
 
-  static getItemName(item) {
-    const members = TV.getMembers(item);
+  static getItemName(device) {
+    const members = this.getMembers(device);
     if ('tvChannel' in members) {
-      return members.tvChannel.name;
+      return members.tvChannel;
     }
     throw { statusCode: 400 };
   }
@@ -33,7 +33,7 @@ class SelectChannel extends DefaultCommand {
     }
     const search = params.channelName || params.channelCode;
     for (const number in channelMap) {
-      if (channelMap[number].includes(search)) {
+      if (channelMap[number].some((name) => name.toLowerCase() === search.toLowerCase())) {
         return number;
       }
     }

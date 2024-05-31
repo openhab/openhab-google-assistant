@@ -14,10 +14,10 @@ class ThermostatSetMode extends DefaultCommand {
     return true;
   }
 
-  static getItemName(item) {
-    const members = Thermostat.getMembers(item);
+  static getItemName(device) {
+    const members = this.getMembers(device);
     if ('thermostatMode' in members) {
-      return members.thermostatMode.name;
+      return members.thermostatMode;
     }
     throw { statusCode: 400 };
   }

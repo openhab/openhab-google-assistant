@@ -19,8 +19,7 @@ class StartStopSwitch extends DefaultDevice {
       state = !state;
     }
     return {
-      isRunning: state,
-      isPaused: !state
+      isRunning: state
     };
   }
 }

@@ -19,12 +19,14 @@ class HumiditySensor extends DefaultDevice {
     return ['Number'];
   }
 
-  static isCompatible(item = {}) {
-    return item.metadata && item.metadata.ga && item.metadata.ga.value.toLowerCase() == 'humiditysensor';
+  static matchesDeviceType(item) {
+    return item.metadata && item.metadata.ga && item.metadata.ga.value.toLowerCase() === 'humiditysensor';
   }
 
   static getState(item) {
-    const state = Math.round(parseFloat(item.state));
+    const config = this.getConfig(item);
+    const maxHumidity = (config.maxHumidity && parseInt(config.maxHumidity)) || 100;
+    const state = Math.round(parseFloat(item.state) * (100 / maxHumidity));
     return {
       humidityAmbientPercent: state,
       humiditySetpointPercent: state

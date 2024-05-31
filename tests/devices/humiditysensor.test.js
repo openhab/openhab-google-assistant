@@ -1,9 +1,9 @@
 const Device = require('../../functions/devices/humiditysensor.js');
 
 describe('HumiditySensor Device', () => {
-  test('isCompatible', () => {
+  test('matchesDeviceType', () => {
     expect(
-      Device.isCompatible({
+      Device.matchesDeviceType({
         metadata: {
           ga: {
             value: 'humiditysensor'
@@ -29,10 +29,19 @@ describe('HumiditySensor Device', () => {
     });
   });
 
-  test('getState', () => {
-    expect(Device.getState({ state: '9.6 %' })).toStrictEqual({
-      humidityAmbientPercent: 10,
-      humiditySetpointPercent: 10
+  describe('getAttributes', () => {
+    test('getState no config', () => {
+      expect(Device.getState({ state: '9.6 %' })).toStrictEqual({
+        humidityAmbientPercent: 10,
+        humiditySetpointPercent: 10
+      });
+    });
+
+    test('getState maxHumidity', () => {
+      expect(Device.getState({ state: '0.34', metadata: { ga: { config: { maxHumidity: 1 } } } })).toStrictEqual({
+        humidityAmbientPercent: 34,
+        humiditySetpointPercent: 34
+      });
     });
   });
 });

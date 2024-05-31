@@ -14,15 +14,15 @@ class VolumeRelative extends DefaultCommand {
     return true;
   }
 
-  static getItemName(item, device) {
+  static getItemName(device) {
     if (this.getDeviceType(device) === 'TV') {
-      const members = TV.getMembers(item);
+      const members = this.getMembers(device);
       if ('tvVolume' in members) {
-        return members.tvVolume.name;
+        return members.tvVolume;
       }
       throw { statusCode: 400 };
     }
-    return item.name;
+    return device.id;
   }
 
   static convertParamsToValue(params, item, device) {
@@ -35,7 +35,7 @@ class VolumeRelative extends DefaultCommand {
         throw { statusCode: 400 };
       }
     }
-    let level = parseInt(state) + params.relativeSteps;
+    const level = parseInt(state) + params.relativeSteps;
     return (level < 0 ? 0 : level > 100 ? 100 : level).toString();
   }
 
