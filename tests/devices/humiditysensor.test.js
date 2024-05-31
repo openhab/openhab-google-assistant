@@ -37,13 +37,11 @@ describe('HumiditySensor Device', () => {
       });
     });
 
-    test('getState humidityUnit float', () => {
-      expect(Device.getState({ state: '0.34', metadata: { ga: { config: { humidityUnit: 'float' } } } })).toStrictEqual(
-        {
-          humidityAmbientPercent: 34,
-          humiditySetpointPercent: 34
-        }
-      );
+    test('getState maxHumidity', () => {
+      expect(Device.getState({ state: '0.34', metadata: { ga: { config: { maxHumidity: 1 } } } })).toStrictEqual({
+        humidityAmbientPercent: 34,
+        humiditySetpointPercent: 34
+      });
     });
   });
 });

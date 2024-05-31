@@ -415,12 +415,12 @@ describe('Thermostat Device', () => {
       });
     });
 
-    test('getState only humdity with unit', () => {
+    test('getState only humdity with maxHumidity', () => {
       const item = {
         metadata: {
           ga: {
             config: {
-              humidityUnit: 'float'
+              maxHumidity: 1
             }
           }
         },

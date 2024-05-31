@@ -226,7 +226,7 @@ describe('ClimateSensor Device', () => {
       metadata: {
         ga: {
           config: {
-            humidityUnit: 'float'
+            maxHumidity: 1
           }
         }
       },

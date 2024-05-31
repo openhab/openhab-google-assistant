@@ -25,8 +25,8 @@ class HumiditySensor extends DefaultDevice {
 
   static getState(item) {
     const config = this.getConfig(item);
-    const isPercent = !config.humidityUnit || config.humidityUnit.toLowerCase() === 'percent';
-    const state = Math.round(parseFloat(item.state) * (isPercent ? 1 : 100));
+    const maxHumidity = (config.maxHumidity && parseInt(config.maxHumidity)) || 100;
+    const state = Math.round(parseFloat(item.state) * (100 / maxHumidity));
     return {
       humidityAmbientPercent: state,
       humiditySetpointPercent: state
