@@ -18,10 +18,6 @@ class GetCameraStream extends DefaultCommand {
     return true;
   }
 
-  static convertParamsToValue() {
-    return null;
-  }
-
   static getResponseStates(_, item) {
     return {
       cameraStreamAccessUrl: item.state

@@ -118,19 +118,15 @@ class Fan extends DefaultDevice {
   static getState(item) {
     const config = this.getConfig(item);
     const itemType = item.groupType || item.type;
+    const state = {};
     if (itemType !== 'Group') {
       const itemState = Math.round(parseFloat(item.state));
-      const state = {
-        currentFanSpeedPercent: itemState,
-        on: itemState > 0
-      };
+      state.currentFanSpeedPercent = itemState;
+      state.on = itemState > 0;
       if (config.fanSpeeds) {
         state.currentFanSpeedSetting = itemState.toString();
       }
-      return state;
     } else {
-      const state = {};
-      const config = this.getConfig(item);
       const members = this.getMembers(item);
       if ('fanSpeed' in members) {
         const itemState = Math.round(parseFloat(members.fanSpeed.state));
@@ -167,8 +163,8 @@ class Fan extends DefaultDevice {
           });
         }
       }
-      return state;
     }
+    return state;
   }
 
   static get supportedMembers() {
