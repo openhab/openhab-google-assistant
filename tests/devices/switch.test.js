@@ -48,4 +48,25 @@ describe('Switch Device', () => {
       on: true
     });
   });
+
+  test('getAttributes', () => {
+    expect(Device.getAttributes({})).toStrictEqual({
+      queryOnlyOnOff: false
+    });
+  });
+
+  test('getAttributes queryOnly', () => {
+    const item = {
+      metadata: {
+        ga: {
+          config: {
+            queryOnly: true
+          }
+        }
+      }
+    };
+    expect(Device.getAttributes(item)).toStrictEqual({
+      queryOnlyOnOff: true
+    });
+  });
 });
