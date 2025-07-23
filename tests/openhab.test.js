@@ -77,7 +77,7 @@ describe('OpenHAB', () => {
             type: 'Switch',
             name: 'SwitchItem',
             label: 'Switch Item',
-            metadata: { ga: { value: 'Switch' } }
+            metadata: { ga: { value: 'Switch', config: { queryOnly: true } } }
           }
         ])
       );
@@ -86,7 +86,9 @@ describe('OpenHAB', () => {
       expect(result).toStrictEqual({
         devices: [
           {
-            attributes: {},
+            attributes: {
+              queryOnlyOnOff: true
+            },
             customData: {
               deviceType: 'Switch',
               itemType: 'Switch'
@@ -149,7 +151,9 @@ describe('OpenHAB', () => {
       expect(result).toStrictEqual({
         devices: [
           {
-            attributes: {},
+            attributes: {
+              queryOnlyOnOff: false
+            },
             customData: {
               deviceType: 'Switch',
               itemType: 'Switch'

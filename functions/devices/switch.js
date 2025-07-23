@@ -9,6 +9,13 @@ class Switch extends DefaultDevice {
     return ['action.devices.traits.OnOff'];
   }
 
+  static getAttributes(item) {
+    const attributes = {
+      queryOnlyOnOff: this.getConfig(item).queryOnly === true
+    };
+    return attributes;
+  }
+
   static get requiredItemTypes() {
     return ['Switch'];
   }
