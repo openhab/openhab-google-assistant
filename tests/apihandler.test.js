@@ -107,7 +107,7 @@ describe('ApiHandler', () => {
       await expect(apiHandler.getItem('TestItem')).rejects.toStrictEqual({
         message:
           // eslint-disable-next-line max-len
-          'getItem - JSON parse failed for path: /items/TestItem?metadata=ga,synonyms - SyntaxError: Unexpected token I in JSON at position 0',
+          'getItem - JSON parse failed for path: /items/TestItem?metadata=ga,synonyms - SyntaxError: Unexpected token \'I\', "INVALID" is not valid JSON',
         statusCode: 415
       });
       expect(scope.isDone()).toBe(true);
