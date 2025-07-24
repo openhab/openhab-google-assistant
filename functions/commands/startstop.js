@@ -20,6 +20,17 @@ class StartStop extends DefaultCommand {
     return params.start ? 'ON' : 'OFF';
   }
 
+  static getItemName(device) {
+    if (this.getDeviceType(device) === 'Vacuum') {
+      const members = this.getMembers(device);
+      if ('vacuumPower' in members) {
+        return members.vacuumPower;
+      }
+      throw { statusCode: 400 };
+    }
+    return device.id;
+  }
+
   static getResponseStates(params) {
     return {
       isRunning: params.start,
