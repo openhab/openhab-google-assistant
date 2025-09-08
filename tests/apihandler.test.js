@@ -145,7 +145,7 @@ describe('ApiHandler', () => {
       const scope = nock('https://example.org')
         .get('/items/?metadata=ga,synonyms&fields=groupNames,groupType,name,label,metadata,type,state')
         .replyWithError('could not reach server');
-      await expect(apiHandler.getItems()).rejects.toThrowError('could not reach server');
+      await expect(apiHandler.getItems()).rejects.toThrow('could not reach server');
       expect(scope.isDone()).toBe(true);
     });
   });
@@ -175,7 +175,7 @@ describe('ApiHandler', () => {
 
     test('sendCommand error', async () => {
       const scope = nock('https://example.org').post('/items/TestItem').replyWithError('could not reach server');
-      await expect(apiHandler.sendCommand('TestItem', 'OFF')).rejects.toThrowError('could not reach server');
+      await expect(apiHandler.sendCommand('TestItem', 'OFF')).rejects.toThrow('could not reach server');
       expect(scope.isDone()).toBe(true);
     });
   });

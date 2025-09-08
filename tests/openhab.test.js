@@ -26,7 +26,7 @@ describe('OpenHAB', () => {
       const handleSyncMock = jest.spyOn(openHAB, 'handleSync');
       handleSyncMock.mockRejectedValue(null);
       const result = await openHAB.onSync({ requestId: '1234' }, {});
-      expect(handleSyncMock).toBeCalledTimes(1);
+      expect(handleSyncMock).toHaveBeenCalledTimes(1);
       expect(result).toStrictEqual({
         requestId: '1234',
         payload: {
@@ -42,7 +42,7 @@ describe('OpenHAB', () => {
       const payload = { devices: [] };
       handleSyncMock.mockResolvedValue(payload);
       const result = await openHAB.onSync({ requestId: '1234' }, {});
-      expect(handleSyncMock).toBeCalledTimes(1);
+      expect(handleSyncMock).toHaveBeenCalledTimes(1);
       expect(result).toStrictEqual({
         requestId: '1234',
         payload: payload
@@ -226,8 +226,8 @@ describe('OpenHAB', () => {
       const handleQueryMock = jest.spyOn(openHAB, 'handleQuery');
       handleQueryMock.mockRejectedValue(null);
       const result = await openHAB.onQuery({ requestId: '1234' }, {});
-      expect(handleQueryMock).toBeCalledTimes(1);
-      expect(handleQueryMock).toBeCalledWith([]);
+      expect(handleQueryMock).toHaveBeenCalledTimes(1);
+      expect(handleQueryMock).toHaveBeenCalledWith([]);
       expect(result).toStrictEqual({
         requestId: '1234',
         payload: {
@@ -243,8 +243,8 @@ describe('OpenHAB', () => {
       const payload = { devices: {} };
       handleQueryMock.mockResolvedValue(payload);
       const result = await openHAB.onQuery({ requestId: '1234' }, {});
-      expect(handleQueryMock).toBeCalledTimes(1);
-      expect(handleQueryMock).toBeCalledWith([]);
+      expect(handleQueryMock).toHaveBeenCalledTimes(1);
+      expect(handleQueryMock).toHaveBeenCalledWith([]);
       expect(result).toStrictEqual({
         requestId: '1234',
         payload: payload
@@ -268,8 +268,8 @@ describe('OpenHAB', () => {
         ]
       };
       const result = await openHAB.onQuery(body, {});
-      expect(handleQueryMock).toBeCalledTimes(1);
-      expect(handleQueryMock).toBeCalledWith(devices);
+      expect(handleQueryMock).toHaveBeenCalledTimes(1);
+      expect(handleQueryMock).toHaveBeenCalledWith(devices);
       expect(result).toStrictEqual({
         requestId: '1234',
         payload: payload
@@ -410,8 +410,8 @@ describe('OpenHAB', () => {
       const handleExecuteMock = jest.spyOn(openHAB, 'handleExecute');
       handleExecuteMock.mockRejectedValue(null);
       const result = await openHAB.onExecute({ requestId: '1234' }, {});
-      expect(handleExecuteMock).toBeCalledTimes(1);
-      expect(handleExecuteMock).toBeCalledWith([]);
+      expect(handleExecuteMock).toHaveBeenCalledTimes(1);
+      expect(handleExecuteMock).toHaveBeenCalledWith([]);
       expect(result).toStrictEqual({
         requestId: '1234',
         payload: {
@@ -427,8 +427,8 @@ describe('OpenHAB', () => {
       const payload = { commands: [] };
       handleExecuteMock.mockResolvedValue(payload);
       const result = await openHAB.onExecute({ requestId: '1234' }, {});
-      expect(handleExecuteMock).toBeCalledTimes(1);
-      expect(handleExecuteMock).toBeCalledWith([]);
+      expect(handleExecuteMock).toHaveBeenCalledTimes(1);
+      expect(handleExecuteMock).toHaveBeenCalledWith([]);
       expect(result).toStrictEqual({
         requestId: '1234',
         payload: payload
@@ -462,8 +462,8 @@ describe('OpenHAB', () => {
         ]
       };
       const result = await openHAB.onExecute(body, {});
-      expect(handleExecuteMock).toBeCalledTimes(1);
-      expect(handleExecuteMock).toBeCalledWith(commands);
+      expect(handleExecuteMock).toHaveBeenCalledTimes(1);
+      expect(handleExecuteMock).toHaveBeenCalledWith(commands);
       expect(result).toStrictEqual({
         requestId: '1234',
         payload: payload
