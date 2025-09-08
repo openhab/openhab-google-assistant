@@ -37,6 +37,7 @@ jobs:
       uses: reviewdog/action-languagetool@v1
       with:
         github_token: ${{ secrets.github_token }}
+        patterns: '*.md docs/*.md'
 
   unit-testing:
     name: Unit Testing
