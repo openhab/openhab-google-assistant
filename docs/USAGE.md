@@ -456,6 +456,41 @@ Number setpointItemHigh (acunitGroup) { ga="thermostatTemperatureSetpointHigh" }
 String modeItem         (acunitGroup) { ga="thermostatMode" }
 ```
 
+### Humidifier
+
+| | |
+|---|---|
+| **Device Type** | [Humidifier](https://developers.home.google.com/cloud-to-cloud/guides/humidifier) |
+| **Supported Traits** | [OnOff](https://developers.home.google.com/cloud-to-cloud/traits/onoff) (all devices), [HumiditySetting](https://developers.home.google.com/cloud-to-cloud/traits/humiditysetting) (Dimmer/Number items and Groups with humidity setpoint), [FanSpeed](https://developers.home.google.com/cloud-to-cloud/traits/fanspeed) (Groups with fan speed member) |
+| **Supported Items** | Switch (on/off only), Dimmer, Number, or Group as `Humidifier` with the following members:<br>(optional) Switch as `humidifierPower`<br>(optional) Number or Dimmer as `humidifierHumiditySetpoint`<br>(optional) Number as `humidifierHumidityAmbient`<br>(optional) Number or Dimmer as `humidifierFanSpeed` |
+| **Configuration** | (optional) `inverted=true/false`<br>(optional) `checkState=true/false`<br>(optional) `maxHumidity=1-100`<br>(optional) `humidityRange="30,80"`<br>(optional) `fanSpeeds="low=Low:Slow,high=High:Fast"`<br>(optional) `ordered=true/false`<br>(optional) `lang="en"` |
+
+For simple humidifiers, you can use:
+
+- **Switch**: Basic on/off control only (no humidity percentage)
+- **Dimmer/Number**: Full humidity control with setpoint
+
+For advanced functionality, use a Group with specific members.
+
+- `maxHumidity=100` defines the maximum value of your humidity items if they don't use percentage (0-100). For example, if your sensor reports 0.0-1.0, set `maxHumidity=1`.
+- `humidityRange="30,80"` defines the supported humidity range for the setpoint (defaults to 0-100%).
+- `fanSpeeds` allows you to define named fan speeds with synonyms.
+
+Google Commands: "_Hey Google, turn on the humidifier_", "_Hey Google, set humidifier to 60 percent_" (Dimmer/Number/Group only), "_Hey Google, set humidifier fan speed to high_" (Group with fan speed only).
+
+```shell
+# Simple humidifier
+Switch { ga="Humidifier" }
+Dimmer { ga="Humidifier" [ maxHumidity=1 ] }
+
+# Advanced humidifier with humidity control and fan speed
+Group  humidifierGroup { ga="Humidifier" [ humidityRange="30,80", fanSpeeds="low=Low:Slow,high=High:Fast", maxHumidity=100 ] }
+Switch humidifierPowerItem     (humidifierGroup) { ga="humidifierPower" }
+Number humidifierSetpointItem  (humidifierGroup) { ga="humidifierHumiditySetpoint" }
+Number humidifierAmbientItem   (humidifierGroup) { ga="humidifierHumidityAmbient" }
+Dimmer humidifierFanSpeedItem  (humidifierGroup) { ga="humidifierFanSpeed" }
+```
+
 ### Awning, Blinds, Curtain, Door, Garage, Gate, Pergola, Shutter, Window
 
 | | |

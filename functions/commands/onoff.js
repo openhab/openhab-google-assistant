@@ -36,6 +36,12 @@ class OnOff extends DefaultCommand {
       }
       throw { statusCode: 400 };
     }
+    if (deviceType === 'Humidifier' && this.getItemType(device) === 'Group') {
+      if ('humidifierPower' in members) {
+        return members.humidifierPower;
+      }
+      throw { statusCode: 400 };
+    }
     return device.id;
   }
 
