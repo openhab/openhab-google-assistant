@@ -8,12 +8,7 @@ class Humidifier extends DefaultDevice {
   static getTraits(item) {
     const members = this.getMembers(item);
     const itemType = item.groupType || item.type;
-    const traits = [];
-
-    // OnOff trait - required for humidifiers
-    if (itemType !== 'Group' || 'humidifierPower' in members) {
-      traits.push('action.devices.traits.OnOff');
-    }
+    const traits = ['action.devices.traits.OnOff'];
 
     // HumiditySetting trait - only for devices that can control humidity levels
     if (itemType === 'Dimmer' || itemType === 'Number' || 'humidifierHumiditySetpoint' in members) {
