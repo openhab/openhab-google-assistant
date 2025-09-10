@@ -21,6 +21,13 @@ class SetFanSpeed extends DefaultCommand {
       }
       throw { statusCode: 400 };
     }
+    if (deviceType === 'Humidifier' && this.getItemType(device) === 'Group') {
+      const members = this.getMembers(device);
+      if ('humidifierFanSpeed' in members) {
+        return members.humidifierFanSpeed;
+      }
+      throw { statusCode: 400 };
+    }
     return device.id;
   }
 
