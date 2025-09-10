@@ -113,6 +113,38 @@ testServer.js          # Local development server
 
 ## Critical Development Notes
 
+### Google Smart Home API Compliance
+
+**STRICT ADHERENCE REQUIRED**: All device types, traits, and intents MUST follow Google's official specifications at https://developers.home.google.com/cloud-to-cloud/guides
+
+**Device Types & Traits:**
+- Use ONLY official device types (e.g., `action.devices.types.LIGHT`, `action.devices.types.THERMOSTAT`)
+- Implement ONLY supported traits for each device type (e.g., `action.devices.traits.OnOff`, `action.devices.traits.Brightness`)
+- Validate trait combinations are officially supported by Google
+
+**Attributes & States:**
+- Device attributes MUST match Google's exact specification (case-sensitive)
+- State responses MUST include all required fields for implemented traits
+- Attribute values MUST be within Google's specified ranges and formats
+- Use Google's exact attribute names (e.g., `temperatureRange`, `colorModel`, `supportedCommands`)
+
+**Commands & Parameters:**
+- Command names MUST be exactly as specified (e.g., `action.devices.commands.OnOff`, `action.devices.commands.BrightnessAbsolute`)
+- Parameter structures MUST match Google's schemas exactly
+- Required parameters MUST always be present and validated
+- Parameter types and ranges MUST conform to Google's specifications
+
+**Error Handling:**
+- Use Google's official error codes (e.g., `deviceOffline`, `valueOutOfRange`, `notSupported`)
+- Error responses MUST follow Google's error response format
+- Include appropriate `debugString` for troubleshooting
+- Handle unsupported commands gracefully with `notSupported` error
+
+**Reference Implementation:**
+- Check existing device implementations in `/functions/devices/` for compliance patterns
+- Validate against Google's trait documentation before implementing new features
+- Test with Google's Smart Home Test Suite when available
+
 ### Testing Requirements
 - **ALWAYS** run `npm install` in both root and `functions/` directories
 - Tests require >96% coverage across all metrics
