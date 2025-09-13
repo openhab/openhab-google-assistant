@@ -1,6 +1,6 @@
-const OpenCloseDevice = require('./openclosedevice.js');
+const Shutter = require('./shutter.js');
 
-class Blinds extends OpenCloseDevice {
+class Blinds extends Shutter {
   static get type() {
     return 'action.devices.types.BLINDS';
   }
