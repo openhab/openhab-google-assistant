@@ -27,6 +27,10 @@ If you have any issues, questions or an idea for additional features, please tak
 This documentation refers to release [v4.1.0](https://github.com/openhab/openhab-google-assistant/releases/tag/v4.1.0) of [openHAB Google Assistant](https://github.com/openhab/openhab-google-assistant) published on 2025-07-23
 :::
 
+### v4.2.0 (Upcoming)
+
+- Added [Rotation trait](https://developers.home.google.com/cloud-to-cloud/traits/rotation) support to Awning, Blinds, Curtain, Pergola and Shutter devices
+
 ### v4.1.0
 
 - Added `queryOnly=true` option to [`Switch`](#switch) devices indicating that the device can only be queried for state information and not be controlled
@@ -496,9 +500,9 @@ Dimmer humidifierFanSpeedItem  (humidifierGroup) { ga="humidifierFanSpeed" }
 | | |
 |---|---|
 | **Device Type** | [Awning](https://developers.home.google.com/cloud-to-cloud/guides/awning), [Blinds](https://developers.home.google.com/cloud-to-cloud/guides/blinds), [Curtain](https://developers.home.google.com/cloud-to-cloud/guides/curtain), [Door](https://developers.home.google.com/cloud-to-cloud/guides/door), [Garage](https://developers.home.google.com/cloud-to-cloud/guides/garage), [Gate](https://developers.home.google.com/cloud-to-cloud/guides/gate), [Pergola](https://developers.home.google.com/cloud-to-cloud/guides/pergola), [Shutter](https://developers.home.google.com/cloud-to-cloud/guides/shutter), [Window](https://developers.home.google.com/cloud-to-cloud/guides/window) |
-| **Supported Traits** | [OpenClose](https://developers.home.google.com/cloud-to-cloud/traits/openclose), [StartStop](https://developers.home.google.com/cloud-to-cloud/traits/startstop) |
-| **Supported Items** | Contact (no device control), Switch (no open percentage), Rollershutter |
-| **Configuration** | (optional) `discreteOnly=true/false`<br>(optional) `queryOnly=true/false`<br>(optional) `inverted=true/false`<br>(optional) `checkState=true/false` |
+| **Supported Traits** | [OpenClose](https://developers.home.google.com/cloud-to-cloud/traits/openclose), [StartStop](https://developers.home.google.com/cloud-to-cloud/traits/startstop), [Rotation](https://developers.home.google.com/cloud-to-cloud/traits/rotation) (awning, blinds, curtain, pergola, shutter - requires group configuration) |
+| **Supported Items** | Contact (no device control), Switch (no open percentage), Rollershutter, Group (for rotation support) |
+| **Configuration** | (optional) `discreteOnly=true/false`<br>(optional) `queryOnly=true/false`<br>(optional) `inverted=true/false`<br>(optional) `checkState=true/false`<br>**Rotation Support (Groups with shutterRotation only):**<br>(optional) `supportsDegrees=true/false` (default: true)<br>(optional) `supportsPercent=true/false` (default: true)<br>(optional) `supportsContinuousRotation=true/false` (default: false)<br>(optional) `rotationDegreesMin=degrees` (default: 0)<br>(optional) `rotationDegreesMax=degrees` (default: 90) |
 
 Blinds and similar devices should always use the `Rollershutter` item type for proper functionality.
 Since Google and openHAB use the opposite percentage value for "opened" and "closed", the action will translate this automatically.
@@ -507,7 +511,59 @@ If the values are still inverted in your case, you can state the `inverted=true`
 Since Google only tells the open percentage (and not the verb "close" or "down"), it can not be differentiated between saying "set blind to 100%" or "open blind".
 Therefore, it is not possible to "not invert" the verbs, if the user chooses to invert the numbers.
 
+#### Rotation Support for Awning, Blinds, Curtain, Pergola, and Shutter
+
+Awnings, blinds, curtains, pergolas, and shutters support the [Rotation trait](https://developers.home.google.com/cloud-to-cloud/traits/rotation), allowing control of slat tilt/rotation in addition to opening/closing. This feature is only available for group-based configurations with separate position and rotation controls.
+
+**Group Configuration for Rotation:**
+For devices with separate items for position and rotation control:
+
 ```shell
+Group awningGroup { ga="Awning" }
+  Rollershutter awningPosition  { ga="shutterPosition" }
+  Number        awningRotation  { ga="shutterRotation" }
+
+Group blindsGroup { ga="Blinds" }
+  Rollershutter blindsPosition  { ga="shutterPosition" }
+  Number        blindsRotation  { ga="shutterRotation" }
+```
+
+**Voice Commands:**
+
+- "Open the awning to 50%"
+- "Tilt the awning to 30 degrees"
+- "Set the blinds to 75%"
+- "Rotate the blinds to 45 degrees"
+
+**Group Members:**
+
+- `shutterPosition`: Controls the opening/closing position (Rollershutter, Dimmer, Number)
+- `shutterRotation`: Controls the slat rotation/tilt (Rollershutter, Dimmer, Number)
+
+**Configuration Options:**
+The rotation trait supports the following optional configuration parameters:
+
+- `supportsDegrees=true/false` (default: true) - Enable degree-based control
+- `supportsPercent=true/false` (default: true) - Enable percentage-based control  
+- `supportsContinuousRotation=true/false` (default: false) - Enable continuous rotation beyond limits
+- `rotationDegreesMin=degrees` (default: 0) - Minimum rotation in degrees
+- `rotationDegreesMax=degrees` (default: 90) - Maximum rotation in degrees
+
+```shell
+Group shutterGroup { ga="Shutter" [ rotationDegreesMin=-45, rotationDegreesMax=45 ] }
+  Rollershutter shutterPosition  { ga="shutterPosition" }
+  Number        shutterRotation  { ga="shutterRotation" }
+
+# Example with continuous rotation support
+Group fanGroup { ga="Pergola" [ supportsContinuousRotation=true, rotationDegreesMin=0, rotationDegreesMax=360 ] }
+  Rollershutter pergolaCover     { ga="shutterPosition" }
+  Number        pergolaRotation  { ga="shutterRotation" }
+```
+
+**Basic Examples:**
+
+```shell
+# Simple devices (no rotation)
 Rollershutter { ga="Awning" }
 Rollershutter { ga="Blinds" [ inverted=true ] }
 Rollershutter { ga="Curtain" }
@@ -517,6 +573,15 @@ Contact       { ga="Gate" }
 Rollershutter { ga="Pergola" }
 Rollershutter { ga="Shutter" }
 Rollershutter { ga="Window" }
+
+# Advanced devices with rotation support
+Group awningGroup { ga="Awning" }
+  Rollershutter awningPosition  { ga="shutterPosition" }
+  Number        awningTilt      { ga="shutterRotation" }
+
+Group blindsGroup { ga="Blinds" [ rotationDegreesMin=0, rotationDegreesMax=180 ] }
+  Rollershutter blindsPosition  { ga="shutterPosition" }
+  Rollershutter blindsSlats     { ga="shutterRotation" }
 ```
 
 ### Charger

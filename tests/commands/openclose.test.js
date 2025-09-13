@@ -45,6 +45,61 @@ describe('OpenClose Command', () => {
         Command.convertParamsToValue({}, {}, device);
       }).toThrow();
     });
+
+    test('convertParamsToValue Group with shutterPosition member', () => {
+      const device = {
+        customData: {
+          itemType: 'Group',
+          members: {
+            shutterPosition: 'TestGroup_Position'
+          }
+        }
+      };
+      // Group shutters are always treated as Rollershutter type
+      expect(Command.convertParamsToValue({ openPercent: 0 }, {}, device)).toBe('DOWN');
+      expect(Command.convertParamsToValue({ openPercent: 20 }, {}, device)).toBe('80');
+      expect(Command.convertParamsToValue({ openPercent: 100 }, {}, device)).toBe('UP');
+    });
+
+    test('convertParamsToValue Group inverted', () => {
+      const device = {
+        customData: {
+          itemType: 'Group',
+          inverted: true,
+          members: {
+            shutterPosition: 'TestGroup_Position'
+          }
+        }
+      };
+      // Group shutters are always treated as Rollershutter type
+      expect(Command.convertParamsToValue({ openPercent: 0 }, {}, device)).toBe('UP');
+      expect(Command.convertParamsToValue({ openPercent: 100 }, {}, device)).toBe('DOWN');
+    });
+  });
+
+  test('getItemName', () => {
+    // Single item case
+    expect(Command.getItemName({ id: 'TestItem' })).toBe('TestItem');
+
+    // Group with shutterPosition member
+    const groupDevice = {
+      id: 'TestGroup',
+      customData: {
+        members: {
+          shutterPosition: 'TestGroup_Position'
+        }
+      }
+    };
+    expect(Command.getItemName(groupDevice)).toBe('TestGroup_Position');
+
+    // Group without shutterPosition member
+    const groupDeviceNoMembers = {
+      id: 'TestGroup',
+      customData: {
+        members: {}
+      }
+    };
+    expect(Command.getItemName(groupDeviceNoMembers)).toBe('TestGroup');
   });
 
   test('getResponseStates', () => {
