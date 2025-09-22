@@ -237,6 +237,24 @@ Switch { ga="Washer" [ inverted=false ] }
 Switch { ga="Dishwasher" [ inverted=false ] }
 ```
 
+### Vacuum as Group with advanced functionality
+
+| | |
+|---|---|
+| **Device Type** | [Vacuum](https://developers.home.google.com/cloud-to-cloud/guides/vacuum) |
+| **Supported Traits** | [StartStop](https://developers.home.google.com/cloud-to-cloud/traits/startstop), [Dock](https://developers.home.google.com/cloud-to-cloud/traits/dock), [Locator](https://developers.home.google.com/cloud-to-cloud/traits/locator), [RunCycle](https://developers.home.google.com/cloud-to-cloud/traits/runcycle), [EnergyStorage](https://developers.home.google.com/cloud-to-cloud/traits/energystorage) |
+| **Supported Items** | Group as `Vacuum` with the following members:<br>(required) Switch as `vacuumPower`<br>(optional) Switch as `vacuumDock`<br>(optional) Switch as `vacuumLocate`<br>(optional) Number or Dimmer as `vacuumBattery`<br>(optional) String as `vacuumCurrentCycle` |
+| **Configuration** | (optional) `inverted=true/false`<br>(optional) `checkState=true/false` |
+
+```shell
+Group  vacuumRobot { ga="Vacuum" [ checkState=true ] }
+Switch vacuumPowerItem     (vacuumRobot) { ga="vacuumPower" }
+Switch vacuumDockItem      (vacuumRobot) { ga="vacuumDock" }
+Switch vacuumLocateItem    (vacuumRobot) { ga="vacuumLocate" }
+Number vacuumBatteryItem   (vacuumRobot) { ga="vacuumBattery" }
+String vacuumCycleItem     (vacuumRobot) { ga="vacuumCurrentCycle" }
+```
+
 ### Lock
 
 | | |
