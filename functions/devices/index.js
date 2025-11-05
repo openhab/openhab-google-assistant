@@ -1,24 +1,17 @@
-const fs = require('fs');
-
-const Devices = [];
-
-fs.readdirSync(__dirname).forEach((file) => {
-  if (file === 'index.js' || !file.endsWith('.js')) return;
-  const device = require(`./${file}`);
-  if (device.type) {
-    Devices.push(device);
-  }
-});
+const { DEVICE_REGISTRY } = require('./registry.js');
 
 module.exports = {
   /**
-   * @param {object} item
+   * Find the appropriate device type for an openHAB item.
+   *
+   * @param {object} item - The openHAB item with metadata
+   * @returns {class|undefined} The matching device class, or undefined if no match
    */
   getDeviceForItem: (item) => {
     return (
       item.metadata &&
       item.metadata.ga &&
-      Devices.find((device) => device.matchesItemType(item) && device.matchesDeviceType(item))
+      DEVICE_REGISTRY.find((device) => device.matchesItemType(item) && device.matchesDeviceType(item))
     );
   }
 };
