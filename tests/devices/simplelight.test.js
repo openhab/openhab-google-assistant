@@ -1,4 +1,4 @@
-const { DEVICE_REGISTRY } = require('../../functions/devices/registry.js');
+const { DEVICE_REGISTRY } = require('../../functions/deviceRegistry.js');
 
 // Find SimpleLight in the registry
 const Device = DEVICE_REGISTRY.find((d) => d.name === 'SimpleLight');

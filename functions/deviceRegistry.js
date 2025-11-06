@@ -20,34 +20,34 @@
  */
 
 // Import base device classes
-const Switch = require('./switch.js');
-const StartStopSwitch = require('./startstopswitch.js');
-const OpenCloseDevice = require('./openclosedevice.js');
-const Fan = require('./fan.js');
+const Switch = require('./devices/switch.js');
+const StartStopSwitch = require('./devices/startstopswitch.js');
+const OpenCloseDevice = require('./devices/openclosedevice.js');
+const Fan = require('./devices/fan.js');
 
 // Import complex device implementations
-const ACUnit = require('./acunit.js');
-const Camera = require('./camera.js');
-const Charger = require('./charger.js');
-const ClimateSensor = require('./climatesensor.js');
-const ColorLight = require('./colorlight.js');
-const DimmableLight = require('./dimmablelight.js');
-const DynamicModesDevice = require('./dynamicmodesdevice.js');
-const DynamicModesLight = require('./dynamicmodeslight.js');
-const HumiditySensor = require('./humiditysensor.js');
-const Lock = require('./lock.js');
-const ModesDevice = require('./modesdevice.js');
-const ModesLight = require('./modeslight.js');
-const Scene = require('./scene.js');
-const SecuritySystem = require('./securitysystem.js');
-const SimpleSecuritySystem = require('./simplesecuritysystem.js');
-const Sensor = require('./sensor.js');
-const Speaker = require('./speaker.js');
-const SpecialColorLight = require('./specialcolorlight.js');
-const TemperatureSensor = require('./temperaturesensor.js');
-const Thermostat = require('./thermostat.js');
-const TV = require('./tv.js');
-const Valve = require('./valve.js');
+const ACUnit = require('./devices/acunit.js');
+const Camera = require('./devices/camera.js');
+const Charger = require('./devices/charger.js');
+const ClimateSensor = require('./devices/climatesensor.js');
+const ColorLight = require('./devices/colorlight.js');
+const DimmableLight = require('./devices/dimmablelight.js');
+const DynamicModesDevice = require('./devices/dynamicmodesdevice.js');
+const DynamicModesLight = require('./devices/dynamicmodeslight.js');
+const HumiditySensor = require('./devices/humiditysensor.js');
+const Lock = require('./devices/lock.js');
+const ModesDevice = require('./devices/modesdevice.js');
+const ModesLight = require('./devices/modeslight.js');
+const Scene = require('./devices/scene.js');
+const SecuritySystem = require('./devices/securitysystem.js');
+const SimpleSecuritySystem = require('./devices/simplesecuritysystem.js');
+const Sensor = require('./devices/sensor.js');
+const Speaker = require('./devices/speaker.js');
+const SpecialColorLight = require('./devices/specialcolorlight.js');
+const TemperatureSensor = require('./devices/temperaturesensor.js');
+const Thermostat = require('./devices/thermostat.js');
+const TV = require('./devices/tv.js');
+const Valve = require('./devices/valve.js');
 
 /**
  * Factory function to create device type variants from a base class.
@@ -112,12 +112,11 @@ const DEVICE_REGISTRY = [
 
   // Base classes (provide fallback matching)
   Switch,
-  StartStopSwitch,
-  OpenCloseDevice,
 
   // Simple device type variants - Switch-based devices
   ...createDeviceVariants(Switch, [
     { type: 'OUTLET', name: 'Outlet' },
+    { type: 'FAN', name: 'SimpleFan' },
     { type: 'LIGHT', name: 'SimpleLight' },
     { type: 'FIREPLACE', name: 'Fireplace' },
     { type: 'COFFEE_MAKER', name: 'CoffeeMaker' },
@@ -126,7 +125,6 @@ const DEVICE_REGISTRY = [
 
   // Simple device type variants - Fan-based devices
   ...createDeviceVariants(Fan, [
-    { type: 'FAN', name: 'SimpleFan' },
     { type: 'AIRPURIFIER', name: 'AirPurifier' },
     { type: 'HOOD', name: 'Hood' }
   ]),

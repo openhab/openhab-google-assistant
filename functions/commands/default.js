@@ -197,15 +197,15 @@ class DefaultCommand {
         if (validateUpdateResponse) {
           return validateUpdateResponse;
         } else {
-          const getDeviceForItem = require('../devices').getDeviceForItem;
-          const deviceType = getDeviceForItem(item);
-          if (!deviceType) {
+          const findDeviceType = require('../deviceMatcher').findDeviceType;
+          const DeviceType = findDeviceType(item);
+          if (!DeviceType) {
             throw { statusCode: 404 };
           }
           return {
             ids: [device.id],
             status: 'SUCCESS',
-            states: Object.assign({ online: true }, deviceType.getState(item))
+            states: Object.assign({ online: true }, DeviceType.getState(item))
           };
         }
       });

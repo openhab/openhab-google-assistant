@@ -66,16 +66,19 @@ The application requires these environment variables:
 - **Configuration**: `functions/config.js` - Backend endpoint configuration
 - **API Handler**: `functions/apihandler.js` - OpenHAB communication layer
 - **OpenHAB Logic**: `functions/openhab.js` - Core business logic
+- **Device Matching**: `functions/deviceMatcher.js` - Device discovery and matching
+- **Command Matching**: `functions/commandMatcher.js` - Command discovery and matching
 
 ### Directory Layout
 ```
 /functions/           # Google Cloud Function source
-  /commands/          # Google Assistant command handlers (35+ files)
-  /devices/           # Device type implementations (~30 files)
-    registry.js       # Centralized device type registry
-    index.js          # Device discovery using registry
+  /commands/          # Google Assistant command handlers (35+ files, command classes only)
+  /devices/           # Device type implementations (device classes only)
     [base classes]    # Switch, StartStopSwitch, OpenCloseDevice, Fan
     [device types]    # Complex device implementations
+  deviceRegistry.js   # Centralized device type registry and factory functions
+  deviceMatcher.js    # Device discovery/matching logic
+  commandMatcher.js   # Command discovery/matching logic
   index.js            # Main entry point
   config.js           # Configuration
   package.json        # Cloud Function dependencies
@@ -89,14 +92,15 @@ testServer.js         # Local development server
 ### Device Architecture
 The project uses a **registry-based device architecture** for managing Google Assistant device types:
 
-- **Registry Pattern**: All devices are explicitly registered in `functions/devices/registry.js`
+- **Registry Pattern**: All devices are explicitly registered in `functions/deviceRegistry.js`
+- **Device Matching**: Device discovery logic is in `functions/deviceMatcher.js`
 - **Factory Functions**: Simple device type variants are generated from base classes using factory functions
 - **Device Categories**:
-  - **Base Classes (3)**: `Switch`, `StartStopSwitch`, `OpenCloseDevice`, `Fan`
+  - **Base Classes (4)**: `Switch`, `StartStopSwitch`, `OpenCloseDevice`, `Fan`
   - **Complex Devices (24)**: Custom implementations with unique logic (e.g., `Thermostat`, `ACUnit`, `Camera`)
   - **Generated Variants (27)**: Simple type wrappers created via `createDeviceVariant()` factory
 
-**Adding New Device Types**: Update `functions/devices/registry.js` to add entries to `DEVICE_REGISTRY`
+**Adding New Device Types**: Update `functions/deviceRegistry.js` to add entries to `DEVICE_REGISTRY`
 
 ### Configuration Files
 - `eslint.config.mjs`: ESLint 9.x flat config + Prettier (printWidth: 120, singleQuote: true)
