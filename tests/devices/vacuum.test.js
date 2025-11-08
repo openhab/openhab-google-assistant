@@ -68,7 +68,7 @@ describe('Vacuum Device', () => {
     expect(state.isRunning).toBe(true);
     expect(state.isDocked).toBe(false);
     expect(state.capacityRemaining[0].rawValue).toBe(85);
-    expect(state.descriptiveCapacityRemaining).toBe('FULL');
+    expect(state.descriptiveCapacityRemaining).toBe('HIGH');
   });
 
   test('getState - low battery', () => {
