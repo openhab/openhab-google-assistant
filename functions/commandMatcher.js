@@ -19,19 +19,7 @@
  * @author Michael Krug
  */
 
-const fs = require('fs');
-const path = require('path');
-
-const Commands = [];
-
-// Load all command handlers from the commands directory
-fs.readdirSync(path.join(__dirname, 'commands')).forEach((file) => {
-  if (file === 'index.js' || !file.endsWith('.js')) return;
-  const command = require(`./commands/${file}`);
-  if (command.type) {
-    Commands.push(command);
-  }
-});
+const { COMMAND_REGISTRY } = require('./commandRegistry.js');
 
 module.exports = {
   /**
@@ -42,6 +30,8 @@ module.exports = {
    * @returns {object|undefined} The matching command handler, or undefined if no match
    */
   findCommandHandler: (command, params) => {
-    return Commands.find((commandHandler) => command === commandHandler.type && commandHandler.validateParams(params));
+    return COMMAND_REGISTRY.find(
+      (commandHandler) => command === commandHandler.type && commandHandler.validateParams(params)
+    );
   }
 };

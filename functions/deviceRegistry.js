@@ -152,7 +152,5 @@ const DEVICE_REGISTRY = [
 ];
 
 module.exports = {
-  DEVICE_REGISTRY,
-  createDeviceVariant,
-  createDeviceVariants
+  DEVICE_REGISTRY
 };
