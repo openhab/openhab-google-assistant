@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,8 +18,8 @@
  * @author Michael Krug - Rework
  *
  */
-const getDeviceForItem = require('./devices').getDeviceForItem;
-const getCommandType = require('./commands').getCommandType;
+const findDeviceType = require('./deviceMatcher').findDeviceType;
+const findCommandHandler = require('./commandMatcher').findCommandHandler;
 
 class OpenHAB {
   /**
@@ -115,7 +115,7 @@ class OpenHAB {
       items = items.filter((item) => item.metadata && item.metadata.ga);
       items.forEach((item) => {
         item.members = items.filter((member) => member.groupNames && member.groupNames.includes(item.name));
-        const DeviceType = getDeviceForItem(item);
+        const DeviceType = findDeviceType(item);
         if (DeviceType) {
           console.log(
             `openhabGoogleAssistant - handleSync - SYNC is adding: ${item.type}:${item.name}` +
@@ -137,7 +137,7 @@ class OpenHAB {
       this._apiHandler
         .getItem(device.id)
         .then((item) => {
-          const DeviceType = getDeviceForItem(item);
+          const DeviceType = findDeviceType(item);
           if (!DeviceType) {
             throw { statusCode: 404, message: `Device type not found for item: ${item.type} ${item.name}` };
           }
@@ -172,8 +172,14 @@ class OpenHAB {
       command.execution.forEach((execution) => {
         // Special handling of ThermostatTemperatureSetRange that requires updating two values
         if (execution.command === 'action.devices.commands.ThermostatTemperatureSetRange') {
-          const SetHigh = getCommandType('action.devices.commands.ThermostatTemperatureSetpointHigh', execution.params);
-          const SetLow = getCommandType('action.devices.commands.ThermostatTemperatureSetpointLow', execution.params);
+          const SetHigh = findCommandHandler(
+            'action.devices.commands.ThermostatTemperatureSetpointHigh',
+            execution.params
+          );
+          const SetLow = findCommandHandler(
+            'action.devices.commands.ThermostatTemperatureSetpointLow',
+            execution.params
+          );
           if (SetHigh && SetLow) {
             promises.push(
               SetHigh.execute(this._apiHandler, command.devices, execution.params, execution.challenge).then(() =>
@@ -183,8 +189,8 @@ class OpenHAB {
             return;
           }
         }
-        const CommandType = getCommandType(execution.command, execution.params);
-        if (!CommandType) {
+        const CommandHandler = findCommandHandler(execution.command, execution.params);
+        if (!CommandHandler) {
           console.error(
             `openhabGoogleAssistant - handleExecute - functionNotSupported: ERROR ${JSON.stringify(execution)}`
           );
@@ -197,7 +203,7 @@ class OpenHAB {
           );
           return;
         }
-        promises.push(CommandType.execute(this._apiHandler, command.devices, execution.params, execution.challenge));
+        promises.push(CommandHandler.execute(this._apiHandler, command.devices, execution.params, execution.challenge));
       });
     });
 
