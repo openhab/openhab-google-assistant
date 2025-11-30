@@ -1,8 +1,8 @@
-const getDeviceForItem = require('../../functions/devices/index.js').getDeviceForItem;
+const findDeviceType = require('../../functions/deviceMatcher.js').findDeviceType;
 
-describe('Devices Index', () => {
-  test('getDeviceForItem', () => {
-    const device = getDeviceForItem({ type: 'Switch', metadata: { ga: { value: 'Switch' } } });
+describe('Device Matcher', () => {
+  test('findDeviceType', () => {
+    const device = findDeviceType({ type: 'Switch', metadata: { ga: { value: 'Switch' } } });
     expect(device).not.toBeUndefined();
     expect(device.name).toBe('Switch');
   });

@@ -8,13 +8,13 @@ This repository implements a Google Assistant Smart Home Action for OpenHAB, ena
 **Languages**: JavaScript (ES2020)
 **Framework**: Google Actions on Google SDK
 **Testing**: Jest with high coverage requirements (>96%)
-**Size**: Medium-sized project (~60 source files, extensive test coverage)
+**Size**: Medium-sized project (~90 source files including tests)
 
 ## Build & Development Process
 
 ### Prerequisites
 - Node.js 20.x (specified in CI/CD workflow)
-- npm 11.6.0+ (specified as packageManager)
+- npm 11.6.4+ (specified as packageManager)
 - Google Cloud SDK (for deployment)
 
 ### Essential Commands (Run in Order)
@@ -66,21 +66,65 @@ The application requires these environment variables:
 - **Configuration**: `functions/config.js` - Backend endpoint configuration
 - **API Handler**: `functions/apihandler.js` - OpenHAB communication layer
 - **OpenHAB Logic**: `functions/openhab.js` - Core business logic
+- **Device Registry**: `functions/deviceRegistry.js` - Centralized device type registry and factory functions
+- **Device Matching**: `functions/deviceMatcher.js` - Device discovery and matching logic
+- **Command Registry**: `functions/commandRegistry.js` - Centralized command registry
+- **Command Matching**: `functions/commandMatcher.js` - Command discovery and matching logic
+```
+/functions/           # Google Cloud Function source
+  /commands/          # Google Assistant command handlers (28 files, command classes only)
+  /devices/           # Device type implementations (27 files, device classes only)
+    [base classes]    # Switch, StartStopSwitch, OpenCloseDevice, Fan
+    [device types]    # Complex device implementations
+  apihandler.js       # OpenHAB communication layer
+  commandMatcher.js   # Command discovery/matching logic
+  commandRegistry.js  # Centralized command registry
+  config.js           # Configuration
+  deviceMatcher.js    # Device discovery/matching logic
+  deviceRegistry.js   # Centralized device type registry and factory functions
+  index.js            # Main entry point
+  openhab.js          # Core business logic
+  utilities.js        # Shared utility functions
+  package.json        # Cloud Function dependencies
+/tests/               # Comprehensive test suite
+  /commands/          # Command handler tests (29 files)
+  /devices/           # Device tests (29 files)
+  apihandler.test.js  # API handler tests
+  config.test.js      # Configuration tests
+  openhab.test.js     # Core logic tests
+### Device Architecture
+The project uses a **registry-based device architecture** for managing Google Assistant device types:
 
-### Directory Layout
-```
-/functions/              # Google Cloud Function source
-  /commands/            # Google Assistant command handlers (35+ files)
-  /devices/             # Device type implementations (40+ files)
-  index.js             # Main entry point
-  config.js            # Configuration
-  package.json         # Cloud Function dependencies
-/tests/                 # Comprehensive test suite
-  /commands/           # Command handler tests
-  /devices/            # Device tests
-  setenv.js           # Test environment setup
-testServer.js          # Local development server
-```
+- **Registry Pattern**: All devices are explicitly registered in `functions/deviceRegistry.js`
+- **Device Matching**: Device discovery logic is in `functions/deviceMatcher.js`
+- **Factory Functions**: Simple device type variants are generated from base classes using factory functions
+- **Device Categories**:
+  - **Base Classes (4)**: `Switch`, `StartStopSwitch`, `OpenCloseDevice`, `Fan`
+  - **Complex Devices (23)**: Custom implementations with unique logic (e.g., `Thermostat`, `ACUnit`, `Camera`)
+  - **Generated Variants (23)**: Simple type wrappers created via `createDeviceVariant()` factory
+    - 8 Switch-based variants (Outlet, SimpleFan, SimpleLight, Fireplace, CoffeeMaker, WaterHeater, SimpleAirPurifier, SimpleHood)
+    - 2 Fan-based variants (AirPurifier, Hood)
+    - 4 StartStopSwitch-based variants (Vacuum, Washer, Dishwasher, Sprinkler)
+    - 9 OpenCloseDevice-based variants (Door, Gate, Awning, Pergola, Garage, Window, Blinds, Curtain, Shutter)
+
+**Adding New Device Types**: Update `functions/deviceRegistry.js` to add entries to `DEVICE_REGISTRY`
+
+### Command Architecture
+The project uses a **registry-based command architecture** for managing Google Assistant commands:
+
+- **Registry Pattern**: All commands are explicitly registered in `functions/commandRegistry.js`
+- **Command Matching**: Command discovery logic is in `functions/commandMatcher.js`
+- **Total Commands**: 28 command implementations covering all Google Assistant Smart Home intents
+
+**Adding New Commands**: Update `functions/commandRegistry.js` to add entries to `COMMAND_REGISTRY`
+- **Device Matching**: Device discovery logic is in `functions/deviceMatcher.js`
+- **Factory Functions**: Simple device type variants are generated from base classes using factory functions
+- **Device Categories**:
+  - **Base Classes (4)**: `Switch`, `StartStopSwitch`, `OpenCloseDevice`, `Fan`
+  - **Complex Devices (24)**: Custom implementations with unique logic (e.g., `Thermostat`, `ACUnit`, `Camera`)
+  - **Generated Variants (27)**: Simple type wrappers created via `createDeviceVariant()` factory
+
+**Adding New Device Types**: Update `functions/deviceRegistry.js` to add entries to `DEVICE_REGISTRY`
 
 ### Configuration Files
 - `eslint.config.mjs`: ESLint 9.x flat config + Prettier (printWidth: 120, singleQuote: true)

@@ -12,6 +12,8 @@ const ackSupported = [
   'action.devices.commands.TemperatureRelative'
 ];
 
+const findDeviceType = require('../deviceMatcher').findDeviceType;
+
 class DefaultCommand {
   static get type() {
     return '';
@@ -90,28 +92,28 @@ class DefaultCommand {
    * @param {object} device
    */
   static getDeviceType(device) {
-    return (device.customData && device.customData.deviceType) || '';
+    return device.customData?.deviceType || '';
   }
 
   /**
    * @param {object} device
    */
   static getItemType(device) {
-    return (device.customData && device.customData.itemType) || '';
+    return device.customData?.itemType || '';
   }
 
   /**
    * @param {object} device
    */
   static getMembers(device) {
-    return (device.customData && device.customData.members) || {};
+    return device.customData?.members || {};
   }
 
   /**
    * @param {object} device
    */
   static isInverted(device) {
-    return !!(device.customData && device.customData.inverted);
+    return !!device.customData?.inverted;
   }
 
   /**
@@ -134,8 +136,8 @@ class DefaultCommand {
    * @param {object} challenge
    */
   static handleAuthPin(device, challenge, params) {
-    const pinRequired = device.customData && (device.customData.pinNeeded || device.customData.tfaPin);
-    const pinReceived = challenge && challenge.pin;
+    const pinRequired = device.customData?.pinNeeded || device.customData?.tfaPin;
+    const pinReceived = challenge?.pin;
 
     if (this.bypassPin(device, params) || !pinRequired || pinRequired === pinReceived) {
       return;
@@ -157,11 +159,7 @@ class DefaultCommand {
    * @param {object} responseStates
    */
   static handleAuthAck(device, challenge, responseStates) {
-    if (
-      !device.customData ||
-      !(device.customData.ackNeeded || device.customData.tfaAck) ||
-      (challenge && challenge.ack === true)
-    ) {
+    if (!device.customData || !(device.customData.ackNeeded || device.customData.tfaAck) || challenge?.ack === true) {
       return;
     }
     return {
@@ -176,7 +174,7 @@ class DefaultCommand {
   }
 
   static getDelayPromise(device) {
-    const secondsToWait = (device.customData && device.customData.waitForStateChange) || 0;
+    const secondsToWait = device.customData?.waitForStateChange || 0;
     if (secondsToWait === 0) {
       return Promise.resolve();
     }
@@ -197,15 +195,14 @@ class DefaultCommand {
         if (validateUpdateResponse) {
           return validateUpdateResponse;
         } else {
-          const getDeviceForItem = require('../devices').getDeviceForItem;
-          const deviceType = getDeviceForItem(item);
-          if (!deviceType) {
+          const DeviceType = findDeviceType(item);
+          if (!DeviceType) {
             throw { statusCode: 404 };
           }
           return {
             ids: [device.id],
             status: 'SUCCESS',
-            states: Object.assign({ online: true }, deviceType.getState(item))
+            states: Object.assign({ online: true }, DeviceType.getState(item))
           };
         }
       });
@@ -231,9 +228,9 @@ class DefaultCommand {
         ackSupported.includes(this.type) &&
         device.customData &&
         (device.customData.ackNeeded || device.customData.tfaAck) &&
-        !(challenge && challenge.ack);
+        !challenge?.ack;
 
-      const shouldCheckState = device.customData && device.customData.checkState;
+      const shouldCheckState = device.customData?.checkState;
 
       let getItemPromise = Promise.resolve({ name: device.id, state: null, members: [] });
       if (this.requiresItem(device) || ackWithState || shouldCheckState) {
@@ -289,9 +286,9 @@ class DefaultCommand {
             errorCode:
               typeof error.errorCode === 'string'
                 ? error.errorCode
-                : error.statusCode == 404
+                : error.statusCode === 404
                   ? 'deviceNotFound'
-                  : error.statusCode == 400
+                  : error.statusCode === 400
                     ? 'notSupported'
                     : 'deviceOffline'
           });
