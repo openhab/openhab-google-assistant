@@ -41,8 +41,8 @@ class Humidifier extends DefaultDevice {
     // HumiditySetting attributes - only for devices that can control humidity levels
     if (itemType === 'Dimmer' || itemType === 'Number' || 'humidifierHumiditySetpoint' in members) {
       attributes.humiditySetpointRange = {
-        minPercent: (config.humidityRange && parseInt(config.humidityRange.split(',')[0])) || 0,
-        maxPercent: (config.humidityRange && parseInt(config.humidityRange.split(',')[1])) || 100
+        minPercent: (config.humidityRange && parseInt(config.humidityRange.split(',')[0])) ?? 0,
+        maxPercent: (config.humidityRange && parseInt(config.humidityRange.split(',')[1])) ?? 100
       };
     }
 
@@ -104,14 +104,14 @@ class Humidifier extends DefaultDevice {
 
       // Humidity setpoint
       if ('humidifierHumiditySetpoint' in members) {
-        const maxHumidity = (config.maxHumidity && parseInt(config.maxHumidity)) || 100;
+        const maxHumidity = (config.maxHumidity && parseInt(config.maxHumidity)) ?? 100;
         const humidity = Math.round(parseFloat(members.humidifierHumiditySetpoint.state) * (100 / maxHumidity));
         state.humiditySetpointPercent = humidity;
       }
 
       // Ambient humidity (read-only)
       if ('humidifierHumidityAmbient' in members) {
-        const maxHumidity = (config.maxHumidity && parseInt(config.maxHumidity)) || 100;
+        const maxHumidity = (config.maxHumidity && parseInt(config.maxHumidity)) ?? 100;
         const humidity = Math.round(parseFloat(members.humidifierHumidityAmbient.state) * (100 / maxHumidity));
         state.humidityAmbientPercent = humidity;
       }

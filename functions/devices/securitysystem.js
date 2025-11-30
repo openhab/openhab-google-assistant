@@ -76,17 +76,17 @@ class SecuritySystem extends DefaultDevice {
     if (item.members && item.members.length) {
       item.members.forEach((member) => {
         if (member.metadata && member.metadata.ga) {
-          const memberType = supportedMembers.find((m) => {
-            const memberType = (member.groupType || member.type || '').split(':')[0];
-            return m.types.includes(memberType) && member.metadata.ga.value.toLowerCase() === m.name.toLowerCase();
-          });
-          if (memberType) {
+          const memberType = (member.groupType || member.type || '').split(':')[0];
+          const supportedMember = supportedMembers.find(
+            (m) => m.types.includes(memberType) && member.metadata.ga.value.toLowerCase() === m.name.toLowerCase()
+          );
+          if (supportedMember) {
             const memberDetails = { name: member.name, state: member.state, config: this.getConfig(member) };
-            if (memberType.name === memberZone) {
+            if (supportedMember.name === memberZone) {
               members.zones = members.zones || [];
               members.zones.push(memberDetails);
             } else {
-              members[memberType.name] = memberDetails;
+              members[supportedMember.name] = memberDetails;
             }
           }
         }
