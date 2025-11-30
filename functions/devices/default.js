@@ -158,7 +158,8 @@ class DefaultDevice {
       if (matchedType) {
         members[matchedType.name] = {
           name: member.name,
-          state: member.state
+          state: member.state,
+          type: memberType
         };
       }
     });

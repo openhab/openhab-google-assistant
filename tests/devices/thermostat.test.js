@@ -228,27 +228,33 @@ describe('Thermostat Device', () => {
       expect(Device.getMembers(item)).toStrictEqual({
         thermostatMode: {
           name: 'Mode',
-          state: 'on'
+          state: 'on',
+          type: 'String'
         },
         thermostatTemperatureSetpoint: {
           name: 'Setpoint',
-          state: '20'
+          state: '20',
+          type: 'Number'
         },
         thermostatTemperatureSetpointHigh: {
           name: 'High',
-          state: '25'
+          state: '25',
+          type: 'Number'
         },
         thermostatTemperatureSetpointLow: {
           name: 'Low',
-          state: '5'
+          state: '5',
+          type: 'Number'
         },
         thermostatTemperatureAmbient: {
           name: 'Temperature',
-          state: '20'
+          state: '20',
+          type: 'Number'
         },
         thermostatHumidityAmbient: {
           name: 'Humidity',
-          state: '50'
+          state: '50',
+          type: 'Number'
         }
       });
     });

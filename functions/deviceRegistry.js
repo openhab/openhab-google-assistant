@@ -43,6 +43,7 @@ const Scene = require('./devices/scene.js');
 const SecuritySystem = require('./devices/securitysystem.js');
 const SimpleSecuritySystem = require('./devices/simplesecuritysystem.js');
 const Sensor = require('./devices/sensor.js');
+const Shutter = require('./devices/shutter.js');
 const Speaker = require('./devices/speaker.js');
 const SpecialColorLight = require('./devices/specialcolorlight.js');
 const TemperatureSensor = require('./devices/temperaturesensor.js');
@@ -106,6 +107,7 @@ const DEVICE_REGISTRY = [
   SecuritySystem,
   SimpleSecuritySystem,
   Sensor,
+  Shutter,
   Speaker,
   SpecialColorLight,
   TemperatureSensor,
@@ -131,17 +133,20 @@ const DEVICE_REGISTRY = [
     { type: 'SPRINKLER', name: 'Sprinkler' }
   ]),
 
+  // Simple device type variants - Shutter-based devices (support rotation trait)
+  ...createDeviceVariants(Shutter, [
+    { type: 'AWNING', name: 'Awning' },
+    { type: 'BLINDS', name: 'Blinds' },
+    { type: 'CURTAIN', name: 'Curtain' },
+    { type: 'PERGOLA', name: 'Pergola' }
+  ]),
+
   // Simple device type variants - OpenCloseDevice-based devices
   ...createDeviceVariants(OpenCloseDevice, [
     { type: 'DOOR', name: 'Door' },
     { type: 'GATE', name: 'Gate' },
-    { type: 'AWNING', name: 'Awning' },
-    { type: 'PERGOLA', name: 'Pergola' },
     { type: 'GARAGE', name: 'Garage' },
-    { type: 'WINDOW', name: 'Window' },
-    { type: 'BLINDS', name: 'Blinds' },
-    { type: 'CURTAIN', name: 'Curtain' },
-    { type: 'SHUTTER', name: 'Shutter' }
+    { type: 'WINDOW', name: 'Window' }
   ]),
 
   // Simple device type variants - Switch-based devices

@@ -58,7 +58,7 @@ class Thermostat extends DefaultDevice {
         }
         if (member.indexOf('Humidity') > 0) {
           const config = this.getConfig(item);
-          const maxHumidity = (config.maxHumidity && parseInt(config.maxHumidity)) || 100;
+          const maxHumidity = parseInt(config.maxHumidity) || 100;
           state[member] = Math.round(parseFloat(members[member].state) * (100 / maxHumidity));
         }
       }
