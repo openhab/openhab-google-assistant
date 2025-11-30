@@ -120,7 +120,9 @@ const DEVICE_REGISTRY = [
     { type: 'LIGHT', name: 'SimpleLight' },
     { type: 'FIREPLACE', name: 'Fireplace' },
     { type: 'COFFEE_MAKER', name: 'CoffeeMaker' },
-    { type: 'WATERHEATER', name: 'WaterHeater' }
+    { type: 'WATERHEATER', name: 'WaterHeater' },
+    { type: 'AIRPURIFIER', name: 'SimpleAirPurifier' },
+    { type: 'HOOD', name: 'SimpleHood' }
   ]),
 
   // Simple device type variants - Fan-based devices
