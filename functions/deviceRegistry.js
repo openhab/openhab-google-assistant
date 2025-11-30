@@ -24,6 +24,8 @@ const Switch = require('./devices/switch.js');
 const StartStopSwitch = require('./devices/startstopswitch.js');
 const OpenCloseDevice = require('./devices/openclosedevice.js');
 const Fan = require('./devices/fan.js');
+const ModesDevice = require('./devices/modesdevice.js');
+const DynamicModesDevice = require('./devices/dynamicmodesdevice.js');
 
 // Import complex device implementations
 const ACUnit = require('./devices/acunit.js');
@@ -32,13 +34,9 @@ const Charger = require('./devices/charger.js');
 const ClimateSensor = require('./devices/climatesensor.js');
 const ColorLight = require('./devices/colorlight.js');
 const DimmableLight = require('./devices/dimmablelight.js');
-const DynamicModesDevice = require('./devices/dynamicmodesdevice.js');
-const DynamicModesLight = require('./devices/dynamicmodeslight.js');
 const Humidifier = require('./devices/humidifier.js');
 const HumiditySensor = require('./devices/humiditysensor.js');
 const Lock = require('./devices/lock.js');
-const ModesDevice = require('./devices/modesdevice.js');
-const ModesLight = require('./devices/modeslight.js');
 const Scene = require('./devices/scene.js');
 const SecuritySystem = require('./devices/securitysystem.js');
 const SimpleSecuritySystem = require('./devices/simplesecuritysystem.js');
@@ -95,14 +93,10 @@ const DEVICE_REGISTRY = [
   ClimateSensor,
   ColorLight,
   DimmableLight,
-  DynamicModesDevice,
-  DynamicModesLight,
   Fan,
   Humidifier,
   HumiditySensor,
   Lock,
-  ModesDevice,
-  ModesLight,
   Scene,
   SecuritySystem,
   SimpleSecuritySystem,
@@ -118,6 +112,18 @@ const DEVICE_REGISTRY = [
 
   // Base classes (provide fallback matching)
   Switch,
+
+  // Simple device type variants - ModesDevice-based lights
+  // eslint-disable-next-line prettier/prettier
+  ...createDeviceVariants(ModesDevice, [
+    { type: 'LIGHT', name: 'ModesLight' }
+  ]),
+
+  // Simple device type variants - DynamicModesDevice-based lights
+  // eslint-disable-next-line prettier/prettier
+  ...createDeviceVariants(DynamicModesDevice, [
+    { type: 'LIGHT', name: 'DynamicModesLight' }
+  ]),
 
   // Simple device type variants - Fan-based devices
   ...createDeviceVariants(Fan, [
