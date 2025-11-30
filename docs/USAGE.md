@@ -504,7 +504,7 @@ Dimmer humidifierFanSpeedItem  (humidifierGroup) { ga="humidifierFanSpeed" }
 | **Device Type** | [Awning](https://developers.home.google.com/cloud-to-cloud/guides/awning), [Blinds](https://developers.home.google.com/cloud-to-cloud/guides/blinds), [Curtain](https://developers.home.google.com/cloud-to-cloud/guides/curtain), [Door](https://developers.home.google.com/cloud-to-cloud/guides/door), [Garage](https://developers.home.google.com/cloud-to-cloud/guides/garage), [Gate](https://developers.home.google.com/cloud-to-cloud/guides/gate), [Pergola](https://developers.home.google.com/cloud-to-cloud/guides/pergola), [Shutter](https://developers.home.google.com/cloud-to-cloud/guides/shutter), [Window](https://developers.home.google.com/cloud-to-cloud/guides/window) |
 | **Supported Traits** | [OpenClose](https://developers.home.google.com/cloud-to-cloud/traits/openclose), [StartStop](https://developers.home.google.com/cloud-to-cloud/traits/startstop), [Rotation](https://developers.home.google.com/cloud-to-cloud/traits/rotation) (awning, blinds, curtain, pergola, shutter - requires group configuration) |
 | **Supported Items** | Contact (no device control), Switch (no open percentage), Rollershutter, Group (for rotation support) |
-| **Configuration** | (optional) `discreteOnly=true/false`<br>(optional) `queryOnly=true/false`<br>(optional) `inverted=true/false`<br>(optional) `checkState=true/false`<br>**Rotation Support (Groups with shutterRotation only):**<br>(optional) `supportsDegrees=true/false` (default: true)<br>(optional) `supportsContinuousRotation=true/false` (default: false)<br>(optional) `rotationDegreesMin=degrees` (default: 0)<br>(optional) `rotationDegreesMax=degrees` (default: 90) |
+| **Configuration** | (optional) `discreteOnly=true/false`<br>(optional) `queryOnly=true/false`<br>(optional) `inverted=true/false`<br>(optional) `checkState=true/false`<br>**Rotation Support (Groups with shutterRotation only):**<br>(optional) `supportsDegrees=true/false` (default: true)<br>(optional) `supportsContinuousRotation=true/false` (default: false)<br>(optional) `rotationDegreesRange="min,max"` (default: "0,90") |
 
 Blinds and similar devices should always use the `Rollershutter` item type for proper functionality.
 Since Google and openHAB use the opposite percentage value for "opened" and "closed", the action will translate this automatically.
@@ -544,20 +544,19 @@ The rotation trait supports the following optional configuration parameters:
 - `supportsDegrees=true/false` (default: true) - Enable degree-based control (percentage is always supported)
   - Set to `false` if you only want percentage-based control without degree conversion
 - `supportsContinuousRotation=true/false` (default: false) - Enable continuous rotation beyond limits
-- `rotationDegreesMin=degrees` (default: 0) - Minimum rotation in degrees (only used when supportsDegrees is true)
-- `rotationDegreesMax=degrees` (default: 90) - Maximum rotation in degrees (only used when supportsDegrees is true)
+- `rotationDegreesRange="min,max"` (default: "0,90") - Rotation range in degrees as comma-separated values (only used when supportsDegrees is true)
 
 ::: tip Note
 openHAB items always store rotation as percentages (0-100). When `supportsDegrees=true`, the percentage is converted to/from degrees using the configured range for Google Assistant commands and state responses.
 :::
 
 ```shell
-Group shutterGroup { ga="Shutter" [ rotationDegreesMin=-45, rotationDegreesMax=45 ] }
+Group shutterGroup { ga="Shutter" [ rotationDegreesRange="-45,45" ] }
   Rollershutter shutterPosition  { ga="shutterPosition" }
   Number        shutterRotation  { ga="shutterRotation" }
 
 # Example with continuous rotation support
-Group blindsGroup { ga="Blinds" [ supportsContinuousRotation=true, rotationDegreesMin=0, rotationDegreesMax=360 ] }
+Group blindsGroup { ga="Blinds" [ supportsContinuousRotation=true, rotationDegreesRange="0,360" ] }
   Rollershutter blindsCover     { ga="shutterPosition" }
   Number        blindsRotation  { ga="shutterRotation" }
 
@@ -586,7 +585,7 @@ Group shutterGroup { ga="Shutter" }
   Rollershutter ShutterPosition  { ga="shutterPosition" }
   Number        ShutterTilt      { ga="shutterRotation" }
 
-Group blindsGroup { ga="Blinds" [ rotationDegreesMin=0, rotationDegreesMax=180 ] }
+Group blindsGroup { ga="Blinds" [ rotationDegreesRange="0,180" ] }
   Rollershutter blindsPosition  { ga="shutterPosition" }
   Rollershutter blindsSlats     { ga="shutterRotation" }
 ```
