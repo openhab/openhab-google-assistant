@@ -12,6 +12,8 @@ const ackSupported = [
   'action.devices.commands.TemperatureRelative'
 ];
 
+const findDeviceType = require('../deviceMatcher').findDeviceType;
+
 class DefaultCommand {
   static get type() {
     return '';
@@ -197,7 +199,6 @@ class DefaultCommand {
         if (validateUpdateResponse) {
           return validateUpdateResponse;
         } else {
-          const findDeviceType = require('../deviceMatcher').findDeviceType;
           const DeviceType = findDeviceType(item);
           if (!DeviceType) {
             throw { statusCode: 404 };
