@@ -24,11 +24,13 @@ If you have any issues, questions or an idea for additional features, please tak
 ## Latest Changes
 
 ::: tip State of this document
-This documentation refers to release [v4.1.0](https://github.com/openhab/openhab-google-assistant/releases/tag/v4.1.0) of [openHAB Google Assistant](https://github.com/openhab/openhab-google-assistant) published on 2025-07-23
+This documentation refers to release [v5.0.0](https://github.com/openhab/openhab-google-assistant/releases/tag/v5.0.0) of [openHAB Google Assistant](https://github.com/openhab/openhab-google-assistant) published on 2025-11-30
 :::
 
-### v4.2.0 (Upcoming)
+### v5.0.0
 
+- Added [`Humidifier`](#humidifier) device type with humidity control and fan speed support
+- Added extended [`Vacuum`](#vacuum-as-group-with-advanced-functionality) device with dock, locate, battery status and cycle information
 - Added [Rotation trait](https://developers.home.google.com/cloud-to-cloud/traits/rotation) support to Awning, Blinds, Curtain, Pergola and Shutter devices
 
 ### v4.1.0
