@@ -104,14 +104,14 @@ class Humidifier extends DefaultDevice {
 
       // Humidity setpoint
       if ('humidifierHumiditySetpoint' in members) {
-        const maxHumidity = (config.maxHumidity && parseInt(config.maxHumidity)) ?? 100;
+        const maxHumidity = parseInt(config.maxHumidity) || 100;
         const humidity = Math.round(parseFloat(members.humidifierHumiditySetpoint.state) * (100 / maxHumidity));
         state.humiditySetpointPercent = humidity;
       }
 
       // Ambient humidity (read-only)
       if ('humidifierHumidityAmbient' in members) {
-        const maxHumidity = (config.maxHumidity && parseInt(config.maxHumidity)) ?? 100;
+        const maxHumidity = parseInt(config.maxHumidity) || 100;
         const humidity = Math.round(parseFloat(members.humidifierHumidityAmbient.state) * (100 / maxHumidity));
         state.humidityAmbientPercent = humidity;
       }

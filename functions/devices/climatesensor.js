@@ -72,7 +72,7 @@ class ClimateSensor extends DefaultDevice {
     }
     if ('humidityAmbient' in members) {
       const config = this.getConfig(item);
-      const maxHumidity = (config.maxHumidity && parseInt(config.maxHumidity)) ?? 100;
+      const maxHumidity = parseInt(config.maxHumidity) || 100;
       const humidity = Math.round(parseFloat(members.humidityAmbient.state) * (100 / maxHumidity));
       state.humidityAmbientPercent = humidity;
       state.humiditySetpointPercent = humidity;

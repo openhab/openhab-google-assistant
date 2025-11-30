@@ -37,7 +37,7 @@ class SetHumidity extends DefaultCommand {
 
   static convertParamsToValue(params, item, device) {
     // Get maxHumidity from device customData (pre-processed and efficient)
-    const maxHumidity = (device.customData && device.customData.maxHumidity) ?? 100;
+    const maxHumidity = (device.customData && device.customData.maxHumidity) || 100;
 
     // Convert percentage to device's expected range
     const value = (params.humidity * maxHumidity) / 100;
