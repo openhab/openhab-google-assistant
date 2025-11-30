@@ -113,18 +113,6 @@ const DEVICE_REGISTRY = [
   // Base classes (provide fallback matching)
   Switch,
 
-  // Simple device type variants - Switch-based devices
-  ...createDeviceVariants(Switch, [
-    { type: 'OUTLET', name: 'Outlet' },
-    { type: 'FAN', name: 'SimpleFan' },
-    { type: 'LIGHT', name: 'SimpleLight' },
-    { type: 'FIREPLACE', name: 'Fireplace' },
-    { type: 'COFFEE_MAKER', name: 'CoffeeMaker' },
-    { type: 'WATERHEATER', name: 'WaterHeater' },
-    { type: 'AIRPURIFIER', name: 'SimpleAirPurifier' },
-    { type: 'HOOD', name: 'SimpleHood' }
-  ]),
-
   // Simple device type variants - Fan-based devices
   ...createDeviceVariants(Fan, [
     { type: 'AIRPURIFIER', name: 'AirPurifier' },
@@ -150,6 +138,18 @@ const DEVICE_REGISTRY = [
     { type: 'BLINDS', name: 'Blinds' },
     { type: 'CURTAIN', name: 'Curtain' },
     { type: 'SHUTTER', name: 'Shutter' }
+  ]),
+
+  // Simple device type variants - Switch-based devices
+  ...createDeviceVariants(Switch, [
+    { type: 'OUTLET', name: 'Outlet' },
+    { type: 'FAN', name: 'SimpleFan' },
+    { type: 'LIGHT', name: 'SimpleLight' },
+    { type: 'FIREPLACE', name: 'Fireplace' },
+    { type: 'COFFEE_MAKER', name: 'CoffeeMaker' },
+    { type: 'WATERHEATER', name: 'WaterHeater' },
+    { type: 'AIRPURIFIER', name: 'SimpleAirPurifier' },
+    { type: 'HOOD', name: 'SimpleHood' }
   ])
 ];
 
