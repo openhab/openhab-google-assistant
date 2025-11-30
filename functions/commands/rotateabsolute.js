@@ -45,22 +45,25 @@ class RotateAbsolute extends DefaultCommand {
     return targetValue.toString();
   }
 
-  static getResponseStates(params, device) {
+  static getResponseStates(params, _, device) {
     const response = {};
+    const rotationConfig = device?.customData?.rotationConfig ?? {};
+    const supportsDegrees = rotationConfig.supportsDegrees !== false;
+    const rotationDegreesMin = rotationConfig.rotationDegreesMin ?? 0;
+    const rotationDegreesMax = rotationConfig.rotationDegreesMax ?? 90;
+    const degreeRange = rotationDegreesMax - rotationDegreesMin;
 
+    // Always include rotationPercent and optionally rotationDegrees in response
     if ('rotationPercent' in params) {
       response.rotationPercent = params.rotationPercent;
-    }
-
-    if ('rotationDegrees' in params) {
+      if (supportsDegrees) {
+        response.rotationDegrees = Math.round(rotationDegreesMin + (params.rotationPercent / 100) * degreeRange);
+      }
+    } else {
+      // rotationDegrees in params
+      const normalizedDegrees = Math.max(0, Math.min(degreeRange, params.rotationDegrees - rotationDegreesMin));
+      response.rotationPercent = Math.round((normalizedDegrees / degreeRange) * 100);
       response.rotationDegrees = params.rotationDegrees;
-    } else if ('rotationPercent' in params) {
-      // Calculate degrees from percentage using stored configuration
-      const rotationConfig = (device.customData && device.customData.rotationConfig) || {};
-      const rotationDegreesMin = rotationConfig.rotationDegreesMin ?? 0;
-      const rotationDegreesMax = rotationConfig.rotationDegreesMax ?? 90;
-      const degreeRange = rotationDegreesMax - rotationDegreesMin;
-      response.rotationDegrees = Math.round(rotationDegreesMin + (params.rotationPercent / 100) * degreeRange);
     }
 
     return response;

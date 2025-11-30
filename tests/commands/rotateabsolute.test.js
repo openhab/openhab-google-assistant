@@ -93,23 +93,16 @@ describe('RotateAbsolute Command', () => {
   describe('getResponseStates', () => {
     test('getResponseStates rotationPercent only', () => {
       const device = { customData: {} };
-      const response = Command.getResponseStates({ rotationPercent: 50 }, device);
+      const response = Command.getResponseStates({ rotationPercent: 50 }, null, device);
       expect(response.rotationPercent).toBe(50);
       expect(response.rotationDegrees).toBe(45); // 50% of default 0-90 range
     });
 
     test('getResponseStates rotationDegrees only', () => {
       const device = { customData: {} };
-      const response = Command.getResponseStates({ rotationDegrees: 30 }, device);
+      const response = Command.getResponseStates({ rotationDegrees: 30 }, null, device);
       expect(response.rotationDegrees).toBe(30);
-      expect(response.rotationPercent).toBeUndefined();
-    });
-
-    test('getResponseStates both params', () => {
-      const device = { customData: {} };
-      const response = Command.getResponseStates({ rotationPercent: 75, rotationDegrees: 60 }, device);
-      expect(response.rotationPercent).toBe(75);
-      expect(response.rotationDegrees).toBe(60);
+      expect(response.rotationPercent).toBe(33); // 30 degrees in 0-90 range = 33%
     });
 
     test('getResponseStates custom degree range', () => {
@@ -121,9 +114,36 @@ describe('RotateAbsolute Command', () => {
           }
         }
       };
-      const response = Command.getResponseStates({ rotationPercent: 50 }, device);
+      const response = Command.getResponseStates({ rotationPercent: 50 }, null, device);
       expect(response.rotationPercent).toBe(50);
       expect(response.rotationDegrees).toBe(90); // 50% of 0-180 range
+    });
+
+    test('getResponseStates with supportsDegrees disabled - percent command', () => {
+      const device = {
+        customData: {
+          rotationConfig: {
+            supportsDegrees: false
+          }
+        }
+      };
+      const response = Command.getResponseStates({ rotationPercent: 50 }, null, device);
+      expect(response.rotationPercent).toBe(50);
+      expect(response.rotationDegrees).toBeUndefined(); // Degrees not included when disabled
+    });
+
+    test('getResponseStates with supportsDegrees disabled - degrees command', () => {
+      const device = {
+        customData: {
+          rotationConfig: {
+            supportsDegrees: false
+          }
+        }
+      };
+      // Even with supportsDegrees=false, if Google sends degrees, we still respond with degrees
+      const response = Command.getResponseStates({ rotationDegrees: 45 }, null, device);
+      expect(response.rotationPercent).toBe(50); // Calculated from degrees
+      expect(response.rotationDegrees).toBe(45); // Echo back what Google sent
     });
   });
 });

@@ -198,7 +198,7 @@ describe('Shutter Device', () => {
         ]
       };
       const attributes = Device.getAttributes(item);
-      expect(attributes.supportsContinuousRotation).toBe(false);
+      expect(attributes.supportsContinuousRotation).toBeUndefined();
     });
 
     test('getState with rotation support', () => {
@@ -378,6 +378,125 @@ describe('Shutter Device', () => {
       const state = Device.getState(item);
       expect(state.rotationPercent).toBe(60); // Inverted: 100 - 40
       expect(state.rotationDegrees).toBe(54); // 60% of 0-90 range
+    });
+
+    test('getAttributes with supportsDegrees disabled', () => {
+      const item = {
+        type: 'Group',
+        members: [
+          {
+            name: 'TestShutter_Rotation',
+            type: 'Number',
+            state: '30',
+            metadata: {
+              ga: {
+                value: 'shutterRotation'
+              }
+            }
+          }
+        ],
+        metadata: {
+          ga: {
+            config: {
+              supportsDegrees: false
+            }
+          }
+        }
+      };
+      const attributes = Device.getAttributes(item);
+      expect(attributes.supportsDegrees).toBe(false);
+      expect(attributes.supportsPercent).toBe(true);
+      expect(attributes.rotationDegreesRange).toBeUndefined();
+    });
+
+    test('getState with supportsDegrees disabled', () => {
+      const item = {
+        type: 'Group',
+        state: 'NULL',
+        members: [
+          {
+            name: 'TestShutter_Rotation',
+            type: 'Number',
+            state: '30',
+            metadata: {
+              ga: {
+                value: 'shutterRotation'
+              }
+            }
+          }
+        ],
+        metadata: {
+          ga: {
+            config: {
+              supportsDegrees: false
+            }
+          }
+        }
+      };
+      const state = Device.getState(item);
+      expect(state.rotationPercent).toBe(30);
+      expect(state.rotationDegrees).toBeUndefined();
+    });
+
+    test('getMetadata with rotation config', () => {
+      const item = {
+        type: 'Group',
+        members: [
+          {
+            name: 'TestShutter_Rotation',
+            type: 'Number',
+            state: '30',
+            metadata: {
+              ga: {
+                value: 'shutterRotation'
+              }
+            }
+          }
+        ],
+        metadata: {
+          ga: {
+            config: {
+              rotationDegreesMin: 10,
+              rotationDegreesMax: 180
+            }
+          }
+        }
+      };
+      const metadata = Device.getMetadata(item);
+      expect(metadata.customData.rotationConfig).toBeDefined();
+      expect(metadata.customData.rotationConfig.supportsDegrees).toBe(true);
+      expect(metadata.customData.rotationConfig.rotationDegreesMin).toBe(10);
+      expect(metadata.customData.rotationConfig.rotationDegreesMax).toBe(180);
+    });
+
+    test('getMetadata with supportsDegrees disabled - no degree range stored', () => {
+      const item = {
+        type: 'Group',
+        members: [
+          {
+            name: 'TestShutter_Rotation',
+            type: 'Number',
+            state: '30',
+            metadata: {
+              ga: {
+                value: 'shutterRotation'
+              }
+            }
+          }
+        ],
+        metadata: {
+          ga: {
+            config: {
+              supportsDegrees: false
+            }
+          }
+        }
+      };
+      const metadata = Device.getMetadata(item);
+      expect(metadata.customData.rotationConfig).toBeDefined();
+      expect(metadata.customData.rotationConfig.supportsDegrees).toBe(false);
+      expect(metadata.customData.rotationConfig.rotationDegreesMin).toBeUndefined();
+      expect(metadata.customData.rotationConfig.rotationDegreesMax).toBeUndefined();
     });
   });
 

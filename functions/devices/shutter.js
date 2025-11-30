@@ -33,16 +33,22 @@ class Shutter extends OpenCloseDevice {
 
     // Add rotation attributes only for group items with rotation trait
     if (this.getTraits(item).includes('action.devices.traits.Rotation')) {
-      // Default rotation attributes
+      // Required attributes
       attributes.supportsDegrees = config.supportsDegrees !== false; // Default to true
-      attributes.supportsPercent = config.supportsPercent !== false; // Default to true
-      attributes.supportsContinuousRotation = config.supportsContinuousRotation === true; // Default to false
+      attributes.supportsPercent = true; // Always support percent (openHAB uses percentages)
 
-      // Rotation degree range (default for shutters is 0-90 degrees)
-      attributes.rotationDegreesRange = {
-        rotationDegreesMin: config.rotationDegreesMin ?? 0,
-        rotationDegreesMax: config.rotationDegreesMax ?? 90
-      };
+      // Optional attribute - only include when true
+      if (config.supportsContinuousRotation === true) {
+        attributes.supportsContinuousRotation = true;
+      }
+
+      // Rotation degree range - required when supportsDegrees is true
+      if (attributes.supportsDegrees) {
+        attributes.rotationDegreesRange = {
+          rotationDegreesMin: config.rotationDegreesMin ?? 0,
+          rotationDegreesMax: config.rotationDegreesMax ?? 90
+        };
+      }
     }
 
     return attributes;
@@ -60,10 +66,13 @@ class Shutter extends OpenCloseDevice {
 
     // Store only rotation configuration needed by commands in customData
     if (this.getTraits(item).includes('action.devices.traits.Rotation')) {
-      metadata.customData.rotationConfig = {
-        rotationDegreesMin: config.rotationDegreesMin ?? 0,
-        rotationDegreesMax: config.rotationDegreesMax ?? 90
-      };
+      const supportsDegrees = config.supportsDegrees !== false;
+      metadata.customData.rotationConfig = { supportsDegrees };
+      // Only store degree range if degrees are supported
+      if (supportsDegrees) {
+        metadata.customData.rotationConfig.rotationDegreesMin = config.rotationDegreesMin ?? 0;
+        metadata.customData.rotationConfig.rotationDegreesMax = config.rotationDegreesMax ?? 90;
+      }
     }
 
     return metadata;
@@ -98,9 +107,10 @@ class Shutter extends OpenCloseDevice {
         rotationPercent = 100 - rotationPercent;
       }
 
+      // Always include rotationPercent (required when supportsPercent is true)
       state.rotationPercent = Math.max(0, Math.min(100, rotationPercent));
 
-      // Calculate degrees if degrees are supported
+      // Include rotationDegrees only when supportsDegrees is enabled
       if (config.supportsDegrees !== false) {
         const rotationRange = {
           rotationDegreesMin: config.rotationDegreesMin ?? 0,
