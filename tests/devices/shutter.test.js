@@ -143,8 +143,7 @@ describe('Shutter Device', () => {
         metadata: {
           ga: {
             config: {
-              rotationDegreesMin: -45,
-              rotationDegreesMax: 45
+              rotationDegreesRange: '-45,45'
             }
           }
         }
@@ -516,8 +515,7 @@ describe('Shutter Device', () => {
         metadata: {
           ga: {
             config: {
-              rotationDegreesMin: 10,
-              rotationDegreesMax: 180
+              rotationDegreesRange: '10,180'
             }
           }
         }

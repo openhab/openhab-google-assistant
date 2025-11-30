@@ -44,9 +44,10 @@ class Shutter extends OpenCloseDevice {
 
       // Rotation degree range - required when supportsDegrees is true
       if (attributes.supportsDegrees) {
+        const [min, max] = (config.rotationDegreesRange || '0,90').split(',').map((s) => parseInt(s.trim()));
         attributes.rotationDegreesRange = {
-          rotationDegreesMin: config.rotationDegreesMin ?? 0,
-          rotationDegreesMax: config.rotationDegreesMax ?? 90
+          rotationDegreesMin: min,
+          rotationDegreesMax: max
         };
       }
     }
@@ -56,7 +57,6 @@ class Shutter extends OpenCloseDevice {
 
   static getMetadata(item) {
     const metadata = super.getMetadata(item);
-    const config = this.getConfig(item);
     const members = this.getMembers(item);
 
     // Store shutterPosition item type for command handling
@@ -66,12 +66,12 @@ class Shutter extends OpenCloseDevice {
 
     // Store only rotation configuration needed by commands in customData
     if (this.getTraits(item).includes('action.devices.traits.Rotation')) {
-      const supportsDegrees = config.supportsDegrees !== false;
-      metadata.customData.rotationConfig = { supportsDegrees };
+      const attributes = this.getAttributes(item);
+      metadata.customData.rotationConfig = { supportsDegrees: attributes.supportsDegrees };
       // Only store degree range if degrees are supported
-      if (supportsDegrees) {
-        metadata.customData.rotationConfig.rotationDegreesMin = config.rotationDegreesMin ?? 0;
-        metadata.customData.rotationConfig.rotationDegreesMax = config.rotationDegreesMax ?? 90;
+      if (attributes.supportsDegrees && attributes.rotationDegreesRange) {
+        metadata.customData.rotationConfig.rotationDegreesMin = attributes.rotationDegreesRange.rotationDegreesMin;
+        metadata.customData.rotationConfig.rotationDegreesMax = attributes.rotationDegreesRange.rotationDegreesMax;
       }
     }
 
@@ -112,14 +112,14 @@ class Shutter extends OpenCloseDevice {
 
       // Include rotationDegrees only when supportsDegrees is enabled
       if (config.supportsDegrees !== false) {
-        const rotationRange = {
-          rotationDegreesMin: config.rotationDegreesMin ?? 0,
-          rotationDegreesMax: config.rotationDegreesMax ?? 90
-        };
-        const degreeRange = rotationRange.rotationDegreesMax - rotationRange.rotationDegreesMin;
-        state.rotationDegrees = Math.round(
-          rotationRange.rotationDegreesMin + (state.rotationPercent / 100) * degreeRange
-        );
+        const attributes = this.getAttributes(item);
+        if (attributes.rotationDegreesRange) {
+          const degreeRange =
+            attributes.rotationDegreesRange.rotationDegreesMax - attributes.rotationDegreesRange.rotationDegreesMin;
+          state.rotationDegrees = Math.round(
+            attributes.rotationDegreesRange.rotationDegreesMin + (state.rotationPercent / 100) * degreeRange
+          );
+        }
       }
     }
 
