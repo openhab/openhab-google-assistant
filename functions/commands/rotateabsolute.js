@@ -30,8 +30,8 @@ class RotateAbsolute extends DefaultCommand {
     } else if ('rotationDegrees' in params) {
       // Convert degrees to percentage based on stored configuration
       const rotationConfig = (device.customData && device.customData.rotationConfig) || {};
-      const rotationDegreesMin = rotationConfig.rotationDegreesMin || 0;
-      const rotationDegreesMax = rotationConfig.rotationDegreesMax || 90;
+      const rotationDegreesMin = rotationConfig.rotationDegreesMin ?? 0;
+      const rotationDegreesMax = rotationConfig.rotationDegreesMax ?? 90;
       const degreeRange = rotationDegreesMax - rotationDegreesMin;
       const normalizedDegrees = Math.max(0, Math.min(degreeRange, params.rotationDegrees - rotationDegreesMin));
       targetValue = Math.round((normalizedDegrees / degreeRange) * 100);
@@ -57,8 +57,8 @@ class RotateAbsolute extends DefaultCommand {
     } else if ('rotationPercent' in params) {
       // Calculate degrees from percentage using stored configuration
       const rotationConfig = (device.customData && device.customData.rotationConfig) || {};
-      const rotationDegreesMin = rotationConfig.rotationDegreesMin || 0;
-      const rotationDegreesMax = rotationConfig.rotationDegreesMax || 90;
+      const rotationDegreesMin = rotationConfig.rotationDegreesMin ?? 0;
+      const rotationDegreesMax = rotationConfig.rotationDegreesMax ?? 90;
       const degreeRange = rotationDegreesMax - rotationDegreesMin;
       response.rotationDegrees = Math.round(rotationDegreesMin + (params.rotationPercent / 100) * degreeRange);
     }

@@ -45,8 +45,8 @@ class Shutter extends OpenCloseDevice {
 
       // Rotation degree range (default for shutters is 0-90 degrees)
       attributes.rotationDegreesRange = {
-        rotationDegreesMin: config.rotationDegreesMin || 0,
-        rotationDegreesMax: config.rotationDegreesMax || 90
+        rotationDegreesMin: config.rotationDegreesMin ?? 0,
+        rotationDegreesMax: config.rotationDegreesMax ?? 90
       };
     }
 
@@ -60,8 +60,8 @@ class Shutter extends OpenCloseDevice {
     // Store only rotation configuration needed by commands in customData
     if (this.getTraits(item).includes('action.devices.traits.Rotation')) {
       metadata.customData.rotationConfig = {
-        rotationDegreesMin: config.rotationDegreesMin || 0,
-        rotationDegreesMax: config.rotationDegreesMax || 90
+        rotationDegreesMin: config.rotationDegreesMin ?? 0,
+        rotationDegreesMax: config.rotationDegreesMax ?? 90
       };
     }
 
@@ -102,8 +102,8 @@ class Shutter extends OpenCloseDevice {
       // Calculate degrees if degrees are supported
       if (config.supportsDegrees !== false) {
         const rotationRange = {
-          rotationDegreesMin: config.rotationDegreesMin || 0,
-          rotationDegreesMax: config.rotationDegreesMax || 90
+          rotationDegreesMin: config.rotationDegreesMin ?? 0,
+          rotationDegreesMax: config.rotationDegreesMax ?? 90
         };
         const degreeRange = rotationRange.rotationDegreesMax - rotationRange.rotationDegreesMin;
         state.rotationDegrees = Math.round(
