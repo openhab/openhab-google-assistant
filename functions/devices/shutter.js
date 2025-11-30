@@ -45,10 +45,12 @@ class Shutter extends OpenCloseDevice {
       // Rotation degree range - required when supportsDegrees is true
       if (attributes.supportsDegrees) {
         const [min, max] = (config.rotationDegreesRange || '0,90').split(',').map((s) => parseInt(s.trim()));
-        attributes.rotationDegreesRange = {
-          rotationDegreesMin: min,
-          rotationDegreesMax: max
-        };
+        if (!isNaN(min) && !isNaN(max)) {
+          attributes.rotationDegreesRange = {
+            rotationDegreesMin: min,
+            rotationDegreesMax: max
+          };
+        }
       }
     }
 
