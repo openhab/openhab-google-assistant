@@ -29,7 +29,7 @@ This documentation refers to release [v4.1.0](https://github.com/openhab/openhab
 
 ### v4.2.0 (Upcoming)
 
-- Added [Rotation trait](https://developers.home.google.com/cloud-to-cloud/traits/rotation) support to Blinds, Pergola and Shutter devices
+- Added [Rotation trait](https://developers.home.google.com/cloud-to-cloud/traits/rotation) support to Awning, Blinds, Curtain, Pergola and Shutter devices
 
 ### v4.1.0
 
@@ -511,9 +511,9 @@ If the values are still inverted in your case, you can state the `inverted=true`
 Since Google only tells the open percentage (and not the verb "close" or "down"), it can not be differentiated between saying "set blind to 100%" or "open blind".
 Therefore, it is not possible to "not invert" the verbs, if the user chooses to invert the numbers.
 
-#### Rotation Support for Blinds, Pergola, and Shutter
+#### Rotation Support for Awning, Blinds, Curtain, Pergola, and Shutter
 
-Blinds,pergolas, and shutters support the [Rotation trait](https://developers.home.google.com/cloud-to-cloud/traits/rotation), allowing control of slat tilt/rotation in addition to opening/closing. This feature is only available for group-based configurations with separate position and rotation controls.
+Awnings, blinds, curtains, pergolas, and shutters support the [Rotation trait](https://developers.home.google.com/cloud-to-cloud/traits/rotation), allowing control of slat tilt/rotation in addition to opening/closing. This feature is only available for group-based configurations with separate position and rotation controls.
 
 **Group Configuration for Rotation:**
 For devices with separate items for position and rotation control:
@@ -551,7 +551,7 @@ Group shutterGroup { ga="Shutter" [ rotationDegreesMin=-45, rotationDegreesMax=4
   Number        shutterRotation  { ga="shutterRotation" }
 
 # Example with continuous rotation support
-Group blindsaGroup { ga="Blinds" [ supportsContinuousRotation=true, rotationDegreesMin=0, rotationDegreesMax=360 ] }
+Group blindsGroup { ga="Blinds" [ supportsContinuousRotation=true, rotationDegreesMin=0, rotationDegreesMax=360 ] }
   Rollershutter blindsCover     { ga="shutterPosition" }
   Number        blindsRotation  { ga="shutterRotation" }
 ```

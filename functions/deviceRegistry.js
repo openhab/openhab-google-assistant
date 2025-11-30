@@ -135,7 +135,9 @@ const DEVICE_REGISTRY = [
 
   // Simple device type variants - Shutter-based devices (support rotation trait)
   ...createDeviceVariants(Shutter, [
+    { type: 'AWNING', name: 'Awning' },
     { type: 'BLINDS', name: 'Blinds' },
+    { type: 'CURTAIN', name: 'Curtain' },
     { type: 'PERGOLA', name: 'Pergola' }
   ]),
 
@@ -143,10 +145,8 @@ const DEVICE_REGISTRY = [
   ...createDeviceVariants(OpenCloseDevice, [
     { type: 'DOOR', name: 'Door' },
     { type: 'GATE', name: 'Gate' },
-    { type: 'AWNING', name: 'Awning' },
     { type: 'GARAGE', name: 'Garage' },
-    { type: 'WINDOW', name: 'Window' },
-    { type: 'CURTAIN', name: 'Curtain' }
+    { type: 'WINDOW', name: 'Window' }
   ]),
 
   // Simple device type variants - Switch-based devices
