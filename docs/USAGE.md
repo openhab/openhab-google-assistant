@@ -511,18 +511,14 @@ If the values are still inverted in your case, you can state the `inverted=true`
 Since Google only tells the open percentage (and not the verb "close" or "down"), it can not be differentiated between saying "set blind to 100%" or "open blind".
 Therefore, it is not possible to "not invert" the verbs, if the user chooses to invert the numbers.
 
-#### Rotation Support for Awning, Blinds, Curtain, Pergola, and Shutter
+#### Rotation Support for Blinds, Pergola, and Shutter
 
-Awnings, blinds, curtains, pergolas, and shutters support the [Rotation trait](https://developers.home.google.com/cloud-to-cloud/traits/rotation), allowing control of slat tilt/rotation in addition to opening/closing. This feature is only available for group-based configurations with separate position and rotation controls.
+Blinds,pergolas, and shutters support the [Rotation trait](https://developers.home.google.com/cloud-to-cloud/traits/rotation), allowing control of slat tilt/rotation in addition to opening/closing. This feature is only available for group-based configurations with separate position and rotation controls.
 
 **Group Configuration for Rotation:**
 For devices with separate items for position and rotation control:
 
 ```shell
-Group awningGroup { ga="Awning" }
-  Rollershutter awningPosition  { ga="shutterPosition" }
-  Number        awningRotation  { ga="shutterRotation" }
-
 Group blindsGroup { ga="Blinds" }
   Rollershutter blindsPosition  { ga="shutterPosition" }
   Number        blindsRotation  { ga="shutterRotation" }
@@ -530,8 +526,8 @@ Group blindsGroup { ga="Blinds" }
 
 **Voice Commands:**
 
-- "Open the awning to 50%"
-- "Tilt the awning to 30 degrees"
+- "Open the shutters to 50%"
+- "Tilt the shutters to 30 degrees"
 - "Set the blinds to 75%"
 - "Rotate the blinds to 45 degrees"
 
@@ -555,9 +551,9 @@ Group shutterGroup { ga="Shutter" [ rotationDegreesMin=-45, rotationDegreesMax=4
   Number        shutterRotation  { ga="shutterRotation" }
 
 # Example with continuous rotation support
-Group fanGroup { ga="Pergola" [ supportsContinuousRotation=true, rotationDegreesMin=0, rotationDegreesMax=360 ] }
-  Rollershutter pergolaCover     { ga="shutterPosition" }
-  Number        pergolaRotation  { ga="shutterRotation" }
+Group blindsaGroup { ga="Blinds" [ supportsContinuousRotation=true, rotationDegreesMin=0, rotationDegreesMax=360 ] }
+  Rollershutter blindsCover     { ga="shutterPosition" }
+  Number        blindsRotation  { ga="shutterRotation" }
 ```
 
 **Basic Examples:**
@@ -575,9 +571,9 @@ Rollershutter { ga="Shutter" }
 Rollershutter { ga="Window" }
 
 # Advanced devices with rotation support
-Group awningGroup { ga="Awning" }
-  Rollershutter awningPosition  { ga="shutterPosition" }
-  Number        awningTilt      { ga="shutterRotation" }
+Group shutterGroup { ga="Shutter" }
+  Rollershutter ShutterPosition  { ga="shutterPosition" }
+  Number        ShutterTilt      { ga="shutterRotation" }
 
 Group blindsGroup { ga="Blinds" [ rotationDegreesMin=0, rotationDegreesMax=180 ] }
   Rollershutter blindsPosition  { ga="shutterPosition" }

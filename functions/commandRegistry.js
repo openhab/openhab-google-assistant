@@ -38,6 +38,7 @@ const COMMAND_REGISTRY = [
   require('./commands/mute.js'),
   require('./commands/onoff.js'),
   require('./commands/openclose.js'),
+  require('./commands/rotateabsolute.js'),
   require('./commands/selectchannel.js'),
   require('./commands/setfanspeed.js'),
   require('./commands/sethumidity.js'),
