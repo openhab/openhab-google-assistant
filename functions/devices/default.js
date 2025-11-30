@@ -132,24 +132,36 @@ class DefaultDevice {
   }
 
   /**
-   * @returns {object}
+   * Gets supported members from an openHAB group item
+   * @param {object} item - The openHAB item with potential members
+   * @returns {object} Mapped members with their names and states
    */
   static getMembers(item) {
     const supportedMembers = this.supportedMembers;
     const members = {};
-    if (item.members && item.members.length) {
-      item.members.forEach((member) => {
-        if (member.metadata && member.metadata.ga) {
-          const memberType = supportedMembers.find((m) => {
-            const memberType = (member.groupType || member.type || '').split(':')[0];
-            return m.types.includes(memberType) && member.metadata.ga.value.toLowerCase() === m.name.toLowerCase();
-          });
-          if (memberType) {
-            members[memberType.name] = { name: member.name, state: member.state };
-          }
-        }
-      });
+    // Early return if no members or supportedMembers
+    if (!item.members?.length || !supportedMembers.length) {
+      return members;
     }
+    item.members.forEach((member) => {
+      // Skip members without Google Assistant metadata
+      if (!member.metadata?.ga?.value) {
+        return;
+      }
+      const memberType = (member.groupType || member.type || '').split(':')[0];
+      const gaValue = member.metadata.ga.value.toLowerCase();
+      // Find matching supported member by type and name
+      const matchedType = supportedMembers.find(
+        (supportedMember) =>
+          supportedMember.types.includes(memberType) && supportedMember.name.toLowerCase() === gaValue
+      );
+      if (matchedType) {
+        members[matchedType.name] = {
+          name: member.name,
+          state: member.state
+        };
+      }
+    });
     return members;
   }
 }

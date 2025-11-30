@@ -49,4 +49,37 @@ describe('StartStop Command', () => {
       expect(e.errorCode).toBe('alreadyStopped');
     }
   });
+
+  describe('getItemName', () => {
+    test('getItemName - simple device', () => {
+      const device = { id: 'SimpleDevice' };
+      expect(Command.getItemName(device)).toBe('SimpleDevice');
+    });
+
+    test('getItemName - Vacuum with vacuumPower member', () => {
+      const device = {
+        id: 'VacuumGroup',
+        customData: {
+          deviceType: 'Vacuum',
+          members: {
+            vacuumPower: 'VacuumPowerSwitch'
+          }
+        }
+      };
+      expect(Command.getItemName(device)).toBe('VacuumPowerSwitch');
+    });
+
+    test('getItemName - Vacuum without vacuumPower member', () => {
+      const device = {
+        id: 'VacuumGroup',
+        customData: {
+          deviceType: 'Vacuum',
+          members: {}
+        }
+      };
+      expect(() => {
+        Command.getItemName(device);
+      }).toThrow();
+    });
+  });
 });
