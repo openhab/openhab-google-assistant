@@ -40,6 +40,7 @@ const COMMAND_REGISTRY = [
   require('./commands/openclose.js'),
   require('./commands/selectchannel.js'),
   require('./commands/setfanspeed.js'),
+  require('./commands/sethumidity.js'),
   require('./commands/setinput.js'),
   require('./commands/setmodes.js'),
   require('./commands/setvolume.js'),

@@ -34,6 +34,7 @@ const ColorLight = require('./devices/colorlight.js');
 const DimmableLight = require('./devices/dimmablelight.js');
 const DynamicModesDevice = require('./devices/dynamicmodesdevice.js');
 const DynamicModesLight = require('./devices/dynamicmodeslight.js');
+const Humidifier = require('./devices/humidifier.js');
 const HumiditySensor = require('./devices/humiditysensor.js');
 const Lock = require('./devices/lock.js');
 const ModesDevice = require('./devices/modesdevice.js');
@@ -96,6 +97,7 @@ const DEVICE_REGISTRY = [
   DynamicModesDevice,
   DynamicModesLight,
   Fan,
+  Humidifier,
   HumiditySensor,
   Lock,
   ModesDevice,
