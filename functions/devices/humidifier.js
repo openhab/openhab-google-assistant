@@ -41,8 +41,8 @@ class Humidifier extends DefaultDevice {
     // HumiditySetting attributes - only for devices that can control humidity levels
     if (itemType === 'Dimmer' || itemType === 'Number' || 'humidifierHumiditySetpoint' in members) {
       attributes.humiditySetpointRange = {
-        minPercent: (config.humidityRange && parseInt(config.humidityRange.split(',')[0])) ?? 0,
-        maxPercent: (config.humidityRange && parseInt(config.humidityRange.split(',')[1])) ?? 100
+        minPercent: (config.humidityRange && parseInt(config.humidityRange.split(',')[0])) || 0,
+        maxPercent: (config.humidityRange && parseInt(config.humidityRange.split(',')[1])) || 100
       };
     }
 
