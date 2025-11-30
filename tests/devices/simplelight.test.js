@@ -20,4 +20,14 @@ describe('SimpleLight Device', () => {
       })
     ).toBe(true);
   });
+
+  test('getMetadata', () => {
+    const metadata = Device.getMetadata({
+      type: 'Switch',
+      name: 'TestLight',
+      label: 'Test Light',
+      metadata: { ga: { value: 'LIGHT' } }
+    });
+    expect(metadata.customData.deviceType).toBe('SimpleLight');
+  });
 });
