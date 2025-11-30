@@ -94,6 +94,60 @@ describe('OnOff Command', () => {
       };
       expect(Command.getItemName(device)).toBe('PowerItem');
     });
+
+    test('getItemName AirPurifier', () => {
+      expect(() => {
+        Command.getItemName({ name: 'Item', customData: { deviceType: 'AirPurifier', itemType: 'Group' } });
+      }).toThrow();
+      const device = {
+        id: 'Item',
+        customData: {
+          deviceType: 'AirPurifier',
+          itemType: 'Group',
+          members: {
+            fanPower: 'PowerItem'
+          }
+        }
+      };
+      expect(Command.getItemName(device)).toBe('PowerItem');
+    });
+
+    test('getItemName Hood', () => {
+      expect(() => {
+        Command.getItemName({ name: 'Item', customData: { deviceType: 'Hood', itemType: 'Group' } });
+      }).toThrow();
+      const device = {
+        id: 'Item',
+        customData: {
+          deviceType: 'Hood',
+          itemType: 'Group',
+          members: {
+            fanPower: 'PowerItem'
+          }
+        }
+      };
+      expect(Command.getItemName(device)).toBe('PowerItem');
+    });
+
+    test('getItemName Humidifier', () => {
+      expect(() => {
+        Command.getItemName({ name: 'Item', customData: { deviceType: 'Humidifier', itemType: 'Group' } });
+      }).toThrow();
+      const device = {
+        id: 'Item',
+        customData: {
+          deviceType: 'Humidifier',
+          itemType: 'Group',
+          members: {
+            humidifierPower: 'PowerItem'
+          }
+        }
+      };
+      expect(Command.getItemName(device)).toBe('PowerItem');
+      expect(Command.getItemName({ id: 'Item', customData: { deviceType: 'Humidifier', itemType: 'Switch' } })).toBe(
+        'Item'
+      );
+    });
   });
 
   describe('convertParamsToValue', () => {
