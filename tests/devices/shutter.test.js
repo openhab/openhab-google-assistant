@@ -291,6 +291,11 @@ describe('Shutter Device', () => {
     test('matchesDeviceType group with members', () => {
       const item = {
         type: 'Group',
+        metadata: {
+          ga: {
+            value: 'SHUTTER'
+          }
+        },
         members: [
           {
             name: 'TestShutter_Position',

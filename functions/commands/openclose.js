@@ -26,9 +26,8 @@ class OpenClose extends DefaultCommand {
     // Determine the actual item type to work with
     let actualItemType = itemType;
     if (itemType === 'Group' && 'shutterPosition' in members) {
-      // For group shutters, assume Rollershutter as the default type for shutterPosition member
-      // This is the most common configuration for shutter groups
-      actualItemType = 'Rollershutter';
+      // For group shutters, use the stored shutterPosition item type from customData
+      actualItemType = device.customData?.shutterPositionItemType || 'Rollershutter';
     }
 
     if (actualItemType === 'Contact') {

@@ -24,12 +24,7 @@ class Shutter extends OpenCloseDevice {
 
   static matchesDeviceType(item) {
     const itemType = item.groupType || item.type;
-    if (itemType === 'Group') {
-      // For groups, require at least one supported member or open/close member
-      const members = this.getMembers(item);
-      return Object.keys(members).length > 0;
-    }
-    return super.matchesDeviceType(item);
+    return super.matchesDeviceType(item) && (itemType !== 'Group' || Object.keys(this.getMembers(item)).length > 0);
   }
 
   static getAttributes(item) {
@@ -56,6 +51,12 @@ class Shutter extends OpenCloseDevice {
   static getMetadata(item) {
     const metadata = super.getMetadata(item);
     const config = this.getConfig(item);
+    const members = this.getMembers(item);
+
+    // Store shutterPosition item type for command handling
+    if ('shutterPosition' in members) {
+      metadata.customData.shutterPositionItemType = members.shutterPosition.type;
+    }
 
     // Store only rotation configuration needed by commands in customData
     if (this.getTraits(item).includes('action.devices.traits.Rotation')) {
