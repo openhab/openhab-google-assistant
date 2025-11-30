@@ -438,6 +438,66 @@ describe('Shutter Device', () => {
       expect(state.rotationDegrees).toBeUndefined();
     });
 
+    test('getMetadata with shutterPosition - stores item type', () => {
+      const item = {
+        type: 'Group',
+        members: [
+          {
+            name: 'TestShutter_Position',
+            type: 'Rollershutter',
+            state: '50',
+            metadata: {
+              ga: {
+                value: 'shutterPosition'
+              }
+            }
+          }
+        ]
+      };
+      const metadata = Device.getMetadata(item);
+      expect(metadata.customData.shutterPositionItemType).toBe('Rollershutter');
+    });
+
+    test('getMetadata with shutterPosition using Dimmer type', () => {
+      const item = {
+        type: 'Group',
+        members: [
+          {
+            name: 'TestShutter_Position',
+            type: 'Dimmer',
+            state: '50',
+            metadata: {
+              ga: {
+                value: 'shutterPosition'
+              }
+            }
+          }
+        ]
+      };
+      const metadata = Device.getMetadata(item);
+      expect(metadata.customData.shutterPositionItemType).toBe('Dimmer');
+    });
+
+    test('getMetadata with shutterPosition using Number:Dimensionless type', () => {
+      const item = {
+        type: 'Group',
+        members: [
+          {
+            name: 'TestShutter_Position',
+            type: 'Number:Dimensionless',
+            state: '50',
+            metadata: {
+              ga: {
+                value: 'shutterPosition'
+              }
+            }
+          }
+        ]
+      };
+      const metadata = Device.getMetadata(item);
+      expect(metadata.customData.shutterPositionItemType).toBe('Number');
+    });
+
     test('getMetadata with rotation config', () => {
       const item = {
         type: 'Group',

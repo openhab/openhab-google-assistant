@@ -155,15 +155,18 @@ describe('Charger Device', () => {
     expect(Device.getMembers(item)).toStrictEqual({
       chargerCharging: {
         name: 'Charging',
-        state: 'ON'
+        state: 'ON',
+        type: 'Switch'
       },
       chargerCapacityRemaining: {
         name: 'CapacityRemaining',
-        state: '40'
+        state: '40',
+        type: 'Number'
       },
       chargerCapacityUntilFull: {
         name: 'CapacityUntilFull',
-        state: '60'
+        state: '60',
+        type: 'Number'
       }
     });
   });

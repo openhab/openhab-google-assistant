@@ -469,31 +469,38 @@ describe('TV Device', () => {
     expect(Device.getMembers(item)).toStrictEqual({
       tvChannel: {
         name: 'Channel',
-        state: '1'
+        state: '1',
+        type: 'Number'
       },
       tvInput: {
         name: 'Input',
-        state: 'input1'
+        state: 'input1',
+        type: 'String'
       },
       tvMute: {
         name: 'Mute',
-        state: 'OFF'
+        state: 'OFF',
+        type: 'Switch'
       },
       tvPower: {
         name: 'Power',
-        state: 'ON'
+        state: 'ON',
+        type: 'Switch'
       },
       tvTransport: {
         name: 'Transport',
-        state: 'PLAY'
+        state: 'PLAY',
+        type: 'Player'
       },
       tvVolume: {
         name: 'Volume',
-        state: '50'
+        state: '50',
+        type: 'Dimmer'
       },
       tvApplication: {
         name: 'Application',
-        state: 'youtube'
+        state: 'youtube',
+        type: 'String'
       }
     });
   });

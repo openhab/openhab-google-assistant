@@ -47,13 +47,13 @@ describe('RotateAbsolute Command', () => {
   describe('convertParamsToValue', () => {
     test('convertParamsToValue rotationPercent', () => {
       const device = { customData: {} };
-      expect(Command.convertParamsToValue({ rotationPercent: 50 }, device)).toBe('50');
+      expect(Command.convertParamsToValue({ rotationPercent: 50 }, null, device)).toBe('50');
     });
 
     test('convertParamsToValue rotationDegrees default range', () => {
       const device = { customData: {} };
       // Default range is 0-90 degrees, so 45 degrees = 50%
-      expect(Command.convertParamsToValue({ rotationDegrees: 45 }, device)).toBe('50');
+      expect(Command.convertParamsToValue({ rotationDegrees: 45 }, null, device)).toBe('50');
     });
 
     test('convertParamsToValue rotationDegrees custom range', () => {
@@ -66,12 +66,12 @@ describe('RotateAbsolute Command', () => {
         }
       };
       // Range is 0-180 degrees, so 90 degrees = 50%
-      expect(Command.convertParamsToValue({ rotationDegrees: 90 }, device)).toBe('50');
+      expect(Command.convertParamsToValue({ rotationDegrees: 90 }, null, device)).toBe('50');
     });
 
     test('convertParamsToValue inverted', () => {
       const device = { customData: { inverted: true } };
-      expect(Command.convertParamsToValue({ rotationPercent: 30 }, device)).toBe('70');
+      expect(Command.convertParamsToValue({ rotationPercent: 30 }, null, device)).toBe('70');
     });
 
     test('convertParamsToValue degrees out of range', () => {
@@ -84,9 +84,9 @@ describe('RotateAbsolute Command', () => {
         }
       };
       // 120 degrees should be clamped to 90 degrees = 100%
-      expect(Command.convertParamsToValue({ rotationDegrees: 120 }, device)).toBe('100');
+      expect(Command.convertParamsToValue({ rotationDegrees: 120 }, null, device)).toBe('100');
       // -10 degrees should be clamped to 0 degrees = 0%
-      expect(Command.convertParamsToValue({ rotationDegrees: -10 }, device)).toBe('0');
+      expect(Command.convertParamsToValue({ rotationDegrees: -10 }, null, device)).toBe('0');
     });
   });
 

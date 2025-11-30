@@ -22,7 +22,7 @@ class RotateAbsolute extends DefaultCommand {
     return device.id;
   }
 
-  static convertParamsToValue(params, device) {
+  static convertParamsToValue(params, _, device) {
     let targetValue;
 
     if ('rotationPercent' in params) {
