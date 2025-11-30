@@ -47,6 +47,7 @@ const SpecialColorLight = require('./devices/specialcolorlight.js');
 const TemperatureSensor = require('./devices/temperaturesensor.js');
 const Thermostat = require('./devices/thermostat.js');
 const TV = require('./devices/tv.js');
+const Vacuum = require('./devices/vacuum.js');
 const Valve = require('./devices/valve.js');
 
 /**
@@ -108,6 +109,7 @@ const DEVICE_REGISTRY = [
   TemperatureSensor,
   Thermostat,
   TV,
+  Vacuum,
   Valve,
 
   // Base classes (provide fallback matching)
@@ -121,7 +123,7 @@ const DEVICE_REGISTRY = [
 
   // Simple device type variants - StartStopSwitch-based devices
   ...createDeviceVariants(StartStopSwitch, [
-    { type: 'VACUUM', name: 'Vacuum' },
+    { type: 'VACUUM', name: 'SimpleVacuum' },
     { type: 'WASHER', name: 'Washer' },
     { type: 'DISHWASHER', name: 'Dishwasher' },
     { type: 'SPRINKLER', name: 'Sprinkler' }
