@@ -1,6 +1,6 @@
 {
   "name": "openhab.google-assistant-smarthome",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "description": "A Google Assistant, Actions on Google based implementation for openHAB",
   "main": "functions/index.js",
   "repository": {

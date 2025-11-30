@@ -24,10 +24,10 @@ If you have any issues, questions or an idea for additional features, please tak
 ## Latest Changes
 
 ::: tip State of this document
-This documentation refers to release [v5.0.0](https://github.com/openhab/openhab-google-assistant/releases/tag/v5.0.0) of [openHAB Google Assistant](https://github.com/openhab/openhab-google-assistant) published on 2025-11-30
+This documentation refers to release [v5.0.1](https://github.com/openhab/openhab-google-assistant/releases/tag/v5.0.1) of [openHAB Google Assistant](https://github.com/openhab/openhab-google-assistant) published on 2025-11-30
 :::
 
-### v5.0.0
+### v5.0.1
 
 - Added [`Humidifier`](#humidifier) device type with humidity control and fan speed support
 - Added extended [`Vacuum`](#vacuum-as-group-with-advanced-functionality) device with dock, locate, battery status and cycle information
