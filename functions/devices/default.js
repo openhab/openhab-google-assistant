@@ -27,8 +27,7 @@ class DefaultDevice {
    */
   static matchesDeviceType(item) {
     return !!(
-      item.metadata?.ga &&
-      this.type.toLowerCase() === `action.devices.types.${item.metadata.ga.value}`.toLowerCase()
+      item.metadata?.ga && this.type.toLowerCase() === `action.devices.types.${item.metadata.ga.value}`.toLowerCase()
     );
   }
 
