@@ -103,6 +103,38 @@ describe('Vacuum Device', () => {
     expect(state.descriptiveCapacityRemaining).toBe('CRITICALLY_LOW');
   });
 
+  test('getState - medium battery', () => {
+    const item = {
+      type: 'Group',
+      members: [
+        {
+          name: 'VacuumBattery',
+          state: '50',
+          type: 'Number',
+          metadata: { ga: { value: 'vacuumBattery' } }
+        }
+      ]
+    };
+    const state = Device.getState(item);
+    expect(state.descriptiveCapacityRemaining).toBe('MEDIUM');
+  });
+
+  test('getState - full battery', () => {
+    const item = {
+      type: 'Group',
+      members: [
+        {
+          name: 'VacuumBattery',
+          state: '100',
+          type: 'Number',
+          metadata: { ga: { value: 'vacuumBattery' } }
+        }
+      ]
+    };
+    const state = Device.getState(item);
+    expect(state.descriptiveCapacityRemaining).toBe('FULL');
+  });
+
   test('getAttributes', () => {
     const attributes = Device.getAttributes({});
     expect(attributes.pausable).toBe(false);

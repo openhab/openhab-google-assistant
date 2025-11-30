@@ -72,7 +72,6 @@ class Vacuum extends DefaultDevice {
 
         case 'vacuumBattery': {
           const batteryLevel = parseInt(members[member].state) || 0;
-          state.descriptiveCapacityRemaining = 'FULL';
           state.capacityRemaining = [{ unit: 'PERCENTAGE', rawValue: batteryLevel }];
           if (batteryLevel <= 10) {
             state.descriptiveCapacityRemaining = 'CRITICALLY_LOW';
@@ -82,7 +81,7 @@ class Vacuum extends DefaultDevice {
             state.descriptiveCapacityRemaining = 'MEDIUM';
           } else if (batteryLevel < 100) {
             state.descriptiveCapacityRemaining = 'HIGH';
-          } else if (batteryLevel === 100) {
+          } else {
             state.descriptiveCapacityRemaining = 'FULL';
           }
           break;
