@@ -27,8 +27,7 @@ class DefaultDevice {
    */
   static matchesDeviceType(item) {
     return !!(
-      item.metadata &&
-      item.metadata.ga &&
+      item.metadata?.ga &&
       this.type.toLowerCase() === `action.devices.types.${item.metadata.ga.value}`.toLowerCase()
     );
   }
@@ -54,7 +53,7 @@ class DefaultDevice {
    * @param {object} item
    */
   static getConfig(item) {
-    return (item && item.metadata && item.metadata.ga && item.metadata.ga.config) || {};
+    return item?.metadata?.ga?.config || {};
   }
 
   /**
@@ -73,9 +72,7 @@ class DefaultDevice {
         defaultNames: [deviceName],
         nicknames: [
           deviceName,
-          ...(item.metadata && item.metadata.synonyms
-            ? item.metadata.synonyms.value.split(',').map((s) => s.trim())
-            : [])
+          ...(item.metadata?.synonyms ? item.metadata.synonyms.value.split(',').map((s) => s.trim()) : [])
         ]
       },
       willReportState: false,
