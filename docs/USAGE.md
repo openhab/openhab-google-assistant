@@ -29,7 +29,7 @@ This documentation refers to release [v4.1.0](https://github.com/openhab/openhab
 
 ### v4.2.0 (Upcoming)
 
-- Added [Rotation trait](https://developers.home.google.com/cloud-to-cloud/traits/rotation) support to Awning, Blinds, Curtain, Pergola and Shutter devices
+- Added [Rotation trait](https://developers.home.google.com/cloud-to-cloud/traits/rotation) support to Blinds, Pergola and Shutter devices
 
 ### v4.1.0
 
