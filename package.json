@@ -33,7 +33,7 @@
   },
   "homepage": "https://github.com/openhab/openhab-google-assistant",
   "dependencies": {
-    "express": "^5.1.0"
+    "express": "^5.2.0"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
