@@ -72,6 +72,7 @@ class ApiHandler {
     if (method === 'POST') {
       options.headers['Content-Type'] = 'text/plain';
       options.headers['Content-Length'] = length;
+      options.headers['X-OpenHAB-Source'] = 'org.openhab.googleassistant';
     }
 
     return options;

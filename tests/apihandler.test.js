@@ -64,7 +64,8 @@ describe('ApiHandler', () => {
           Accept: 'application/json',
           Authorization: 'Bearer token',
           'Content-Length': 10,
-          'Content-Type': 'text/plain'
+          'Content-Type': 'text/plain',
+          'X-OpenHAB-Source': 'org.openhab.googleassistant'
         },
         hostname: 'example.org',
         method: 'POST',
