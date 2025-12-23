@@ -261,6 +261,24 @@ Number vacuumBatteryItem   (vacuumRobot) { ga="vacuumBattery" }
 String vacuumCycleItem     (vacuumRobot) { ga="vacuumCurrentCycle" }
 ```
 
+### Washer and Dishwasher as Group with cycle information
+
+| | |
+|---|---|
+| **Device Type** | [Washer](https://developers.home.google.com/cloud-to-cloud/guides/washer), [Dishwasher](https://developers.home.google.com/cloud-to-cloud/guides/dishwasher) |
+| **Supported Traits** | [StartStop](https://developers.home.google.com/cloud-to-cloud/traits/startstop), [RunCycle](https://developers.home.google.com/cloud-to-cloud/traits/runcycle) |
+| **Supported Items** | Group as `Washer` or `Dishwasher` with the following members:<br>(optional) Switch as `washerPower`<br>(optional) Number as `washerTimerRemaining`<br>(optional) String as `washerCurrentCycle` |
+| **Configuration** | (optional) `inverted=true/false`<br>(optional) `checkState=true/false` |
+
+```shell
+Group  washerDevice { ga="Washer" [ checkState=true ] }
+Switch washerPowerItem          (washerDevice) { ga="washerPower" }
+Number washerTimerRemainingItem (washerDevice) { ga="washerTimerRemaining" }
+String washerCurrentCycleItem   (washerDevice) { ga="washerCurrentCycle" }
+```
+
+You can configure a dishwasher the same way; just change the group metadata to `ga="Dishwasher"` while keeping the same member tags (`washerPower`, `washerTimerRemaining`, `washerCurrentCycle`).
+
 ### Lock
 
 | | |
