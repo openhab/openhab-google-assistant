@@ -48,6 +48,7 @@ const TemperatureSensor = require('./devices/temperaturesensor.js');
 const Thermostat = require('./devices/thermostat.js');
 const TV = require('./devices/tv.js');
 const Vacuum = require('./devices/vacuum.js');
+const Washer = require('./devices/washer.js');
 const Valve = require('./devices/valve.js');
 
 /**
@@ -108,6 +109,7 @@ const DEVICE_REGISTRY = [
   Thermostat,
   TV,
   Vacuum,
+  Washer,
   Valve,
 
   // Base classes (provide fallback matching)
@@ -131,11 +133,17 @@ const DEVICE_REGISTRY = [
     { type: 'HOOD', name: 'Hood' }
   ]),
 
+  // Simple device type variants - Washer-based devices
+  // eslint-disable-next-line prettier/prettier
+  ...createDeviceVariants(Washer,  [
+    { type: 'DISHWASHER', name: 'Dishwasher' }
+  ]),
+
   // Simple device type variants - StartStopSwitch-based devices
   ...createDeviceVariants(StartStopSwitch, [
     { type: 'VACUUM', name: 'SimpleVacuum' },
-    { type: 'WASHER', name: 'Washer' },
-    { type: 'DISHWASHER', name: 'Dishwasher' },
+    { type: 'WASHER', name: 'SimpleWasher' },
+    { type: 'DISHWASHER', name: 'SimpleDishwasher' },
     { type: 'SPRINKLER', name: 'Sprinkler' }
   ]),
 
