@@ -289,8 +289,7 @@ describe('Default Command', () => {
           },
           errorCode: 'challengeNeeded',
           states: {
-            on: true,
-            online: true
+            on: true
           },
           status: 'ERROR'
         }
@@ -310,8 +309,7 @@ describe('Default Command', () => {
           },
           errorCode: 'challengeNeeded',
           states: {
-            on: true,
-            online: true
+            on: true
           },
           status: 'ERROR'
         }
