@@ -19,6 +19,20 @@ describe('RotateAbsolute Command', () => {
       expect(Command.validateParams({ rotationPercent: 'invalid' })).toBe(false);
       expect(Command.validateParams({ rotationDegrees: 'invalid' })).toBe(false);
       expect(Command.validateParams({ someOtherParam: 50 })).toBe(false);
+
+      // Test out of range rotationPercent
+      expect(Command.validateParams({ rotationPercent: -1 })).toBe(false);
+      expect(Command.validateParams({ rotationPercent: 101 })).toBe(false);
+
+      // Test out of range rotationDegrees
+      expect(Command.validateParams({ rotationDegrees: -1 })).toBe(false);
+      expect(Command.validateParams({ rotationDegrees: 361 })).toBe(false);
+
+      // Test valid boundary values
+      expect(Command.validateParams({ rotationPercent: 0 })).toBe(true);
+      expect(Command.validateParams({ rotationPercent: 100 })).toBe(true);
+      expect(Command.validateParams({ rotationDegrees: 0 })).toBe(true);
+      expect(Command.validateParams({ rotationDegrees: 360 })).toBe(true);
     });
   });
 

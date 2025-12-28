@@ -11,6 +11,31 @@ describe('ColorAbsolute Command', () => {
     expect(Command.validateParams({})).toBe(false);
     expect(Command.validateParams({ color: {} })).toBe(false);
     expect(Command.validateParams(params)).toBe(true);
+
+    // Test invalid hue values
+    expect(Command.validateParams({ color: { spectrumHSV: { hue: -1, saturation: 0.5, value: 0.5 } } })).toBe(false);
+    expect(Command.validateParams({ color: { spectrumHSV: { hue: 361, saturation: 0.5, value: 0.5 } } })).toBe(false);
+    expect(Command.validateParams({ color: { spectrumHSV: { hue: 'invalid', saturation: 0.5, value: 0.5 } } })).toBe(
+      false
+    );
+
+    // Test invalid saturation values
+    expect(Command.validateParams({ color: { spectrumHSV: { hue: 180, saturation: -0.1, value: 0.5 } } })).toBe(false);
+    expect(Command.validateParams({ color: { spectrumHSV: { hue: 180, saturation: 1.1, value: 0.5 } } })).toBe(false);
+    expect(Command.validateParams({ color: { spectrumHSV: { hue: 180, saturation: 'invalid', value: 0.5 } } })).toBe(
+      false
+    );
+
+    // Test invalid value values
+    expect(Command.validateParams({ color: { spectrumHSV: { hue: 180, saturation: 0.5, value: -0.1 } } })).toBe(false);
+    expect(Command.validateParams({ color: { spectrumHSV: { hue: 180, saturation: 0.5, value: 1.1 } } })).toBe(false);
+    expect(Command.validateParams({ color: { spectrumHSV: { hue: 180, saturation: 0.5, value: 'invalid' } } })).toBe(
+      false
+    );
+
+    // Test valid boundary values
+    expect(Command.validateParams({ color: { spectrumHSV: { hue: 0, saturation: 0, value: 0 } } })).toBe(true);
+    expect(Command.validateParams({ color: { spectrumHSV: { hue: 360, saturation: 1, value: 1 } } })).toBe(true);
   });
 
   test('getItemName', () => {

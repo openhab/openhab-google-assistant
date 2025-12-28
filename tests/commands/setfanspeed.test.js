@@ -60,9 +60,9 @@ describe('SetFanSpeed Command', () => {
         }
       };
       expect(Command.getItemName(device)).toBe('HumidifierSpeedItem');
-      expect(
-        Command.getItemName({ id: 'Item', customData: { deviceType: 'Humidifier', itemType: 'Dimmer' } })
-      ).toBe('Item');
+      expect(Command.getItemName({ id: 'Item', customData: { deviceType: 'Humidifier', itemType: 'Dimmer' } })).toBe(
+        'Item'
+      );
     });
   });
 

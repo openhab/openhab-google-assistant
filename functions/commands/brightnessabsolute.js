@@ -33,6 +33,17 @@ class BrightnessAbsolute extends DefaultCommand {
       brightness: params.brightness
     };
   }
+
+  static checkCurrentState(target, state, params) {
+    const targetBrightness = parseInt(target);
+    const currentBrightness = parseInt(state);
+
+    if (!isNaN(targetBrightness) && !isNaN(currentBrightness)) {
+      if (Math.abs(targetBrightness - currentBrightness) < 1) {
+        throw new GoogleAssistantError(ERROR_CODES.ALREADY_IN_STATE, `Brightness is already at ${params.brightness}%`);
+      }
+    }
+  }
 }
 
 module.exports = BrightnessAbsolute;
