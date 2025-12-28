@@ -52,6 +52,26 @@ class SetHumidity extends DefaultCommand {
     const deviceType = this.getDeviceType(device);
     const itemType = this.getItemType(device);
 
+    // Validate humidity range if configured
+    const requestedHumidity = params.humidity;
+    const humidityRange = device.customData?.humiditySetpointRange;
+    if (humidityRange) {
+      const min = humidityRange.minPercent;
+      const max = humidityRange.maxPercent;
+      if (typeof min === 'number' && requestedHumidity < min) {
+        throw new GoogleAssistantError(
+          ERROR_CODES.VALUE_OUT_OF_RANGE,
+          `Humidity ${requestedHumidity}% is below minimum ${min}%`
+        );
+      }
+      if (typeof max === 'number' && requestedHumidity > max) {
+        throw new GoogleAssistantError(
+          ERROR_CODES.VALUE_OUT_OF_RANGE,
+          `Humidity ${requestedHumidity}% is above maximum ${max}%`
+        );
+      }
+    }
+
     if (deviceType === 'Humidifier' && itemType === 'Group' && item) {
       // For Group devices, use current state from item
       const Humidifier = require('../devices/humidifier.js');
