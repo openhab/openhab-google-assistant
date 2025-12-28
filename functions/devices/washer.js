@@ -68,8 +68,9 @@ class Washer extends DefaultDevice {
       if ('washerTimerRemaining' in members) {
         const remaining = parseInt(members.washerTimerRemaining.state);
         if (!isNaN(remaining)) {
-          state.currentTotalRemainingTime = remaining;
-          state.currentCycleRemainingTime = remaining;
+          const clamped = Math.max(0, remaining);
+          state.currentTotalRemainingTime = clamped;
+          state.currentCycleRemainingTime = clamped;
         }
       }
     }
