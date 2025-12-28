@@ -133,5 +133,86 @@ describe('Washer Device', () => {
     expect(state.currentCycleRemainingTime).toBe(600);
     expect(state.currentRunCycle[0].currentCycle).toBe('spin');
     expect(state.isRunning).toBe(true);
+    expect(state.isPaused).toBe(false);
+  });
+
+  test('getState - Power inverted', () => {
+    const item = {
+      type: 'Group',
+      metadata: {
+        ga: {
+          value: 'WASHER',
+          config: { inverted: true }
+        }
+      },
+      members: [
+        {
+          name: 'WasherPower',
+          state: 'ON',
+          type: 'Switch',
+          metadata: { ga: { value: 'washerPower' } }
+        }
+      ]
+    };
+
+    expect(Washer.getState(item)).toStrictEqual({ isRunning: false, isPaused: false });
+
+    item.members[0].state = 'OFF';
+    expect(Washer.getState(item)).toStrictEqual({ isRunning: true, isPaused: false });
+  });
+
+  test('getState - Timer invalid values ignored', () => {
+    const item = {
+      type: 'Group',
+      members: [
+        {
+          name: 'WasherTimerRemaining',
+          state: 'not-a-number',
+          type: 'Number',
+          metadata: { ga: { value: 'washerTimerRemaining' } }
+        }
+      ]
+    };
+    const state = Washer.getState(item);
+    expect(state.currentTotalRemainingTime).toBeUndefined();
+    expect(state.currentCycleRemainingTime).toBeUndefined();
+    expect(state.currentRunCycle[0].currentCycle).toBe('unknown');
+  });
+
+  test('getState - Timer zero and negative accepted', () => {
+    const zeroItem = {
+      type: 'Group',
+      members: [
+        {
+          name: 'WasherTimerRemaining',
+          state: '0',
+          type: 'Number',
+          metadata: { ga: { value: 'washerTimerRemaining' } }
+        }
+      ]
+    };
+    const zeroState = Washer.getState(zeroItem);
+    expect(zeroState.currentTotalRemainingTime).toBe(0);
+    expect(zeroState.currentCycleRemainingTime).toBe(0);
+
+    const negativeItem = {
+      type: 'Group',
+      members: [
+        {
+          name: 'WasherTimerRemaining',
+          state: '-10',
+          type: 'Number',
+          metadata: { ga: { value: 'washerTimerRemaining' } }
+        }
+      ]
+    };
+    const negativeState = Washer.getState(negativeItem);
+    expect(negativeState.currentTotalRemainingTime).toBe(0);
+    expect(negativeState.currentCycleRemainingTime).toBe(0);
+    expect(negativeState.currentRunCycle[0].currentCycle).toBe('unknown');
+  });
+
+  test('getAttributes - pausable false', () => {
+    expect(Washer.getAttributes()).toStrictEqual({ pausable: false });
   });
 });
