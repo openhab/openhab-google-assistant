@@ -135,7 +135,7 @@ const DEVICE_REGISTRY = [
 
   // Simple device type variants - Washer-based devices
   // eslint-disable-next-line prettier/prettier
-  ...createDeviceVariants(Washer,  [
+  ...createDeviceVariants(Washer, [
     { type: 'DISHWASHER', name: 'Dishwasher' }
   ]),
 
