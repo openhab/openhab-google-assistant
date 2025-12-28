@@ -7,12 +7,34 @@ class ColorAbsolute extends DefaultCommand {
   }
 
   static validateParams(params) {
-    return (
-      'color' in params &&
-      typeof params.color === 'object' &&
-      'spectrumHSV' in params.color &&
-      typeof params.color.spectrumHSV === 'object'
-    );
+    if (
+      !('color' in params) ||
+      typeof params.color !== 'object' ||
+      !('spectrumHSV' in params.color) ||
+      typeof params.color.spectrumHSV !== 'object'
+    ) {
+      return false;
+    }
+
+    const hsv = params.color.spectrumHSV;
+
+    // Validate HSV ranges per Google Smart Home spec
+    // Hue: 0.0 - 360.0 degrees
+    if (typeof hsv.hue !== 'number' || hsv.hue < 0 || hsv.hue > 360) {
+      return false;
+    }
+
+    // Saturation: 0.0 - 1.0
+    if (typeof hsv.saturation !== 'number' || hsv.saturation < 0 || hsv.saturation > 1) {
+      return false;
+    }
+
+    // Value: 0.0 - 1.0
+    if (typeof hsv.value !== 'number' || hsv.value < 0 || hsv.value > 1) {
+      return false;
+    }
+
+    return true;
   }
 
   static getItemName(device) {
