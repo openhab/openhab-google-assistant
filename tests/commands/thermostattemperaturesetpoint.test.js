@@ -54,4 +54,36 @@ describe('ThermostatTemperatureSetpoint Command', () => {
     };
     expect(Command.getResponseStates(params, item)).toStrictEqual({ thermostatTemperatureSetpoint: 20 });
   });
+
+  describe('checkCurrentState', () => {
+    test('throws TARGET_ALREADY_REACHED when within tolerance', () => {
+      expect(() => {
+        Command.checkCurrentState('20', '20.3', params);
+      }).toThrow('Already at target temperature 20°C');
+    });
+
+    test('throws TARGET_ALREADY_REACHED when exactly at target', () => {
+      expect(() => {
+        Command.checkCurrentState('20', '20', params);
+      }).toThrow('Already at target temperature 20°C');
+    });
+
+    test('does not throw when outside tolerance', () => {
+      expect(() => {
+        Command.checkCurrentState('20', '22', params);
+      }).not.toThrow();
+    });
+
+    test('does not throw when difference is at boundary', () => {
+      expect(() => {
+        Command.checkCurrentState('20', '20.5', params);
+      }).not.toThrow();
+    });
+
+    test('does not throw for invalid numeric values', () => {
+      expect(() => {
+        Command.checkCurrentState('invalid', 'NaN', params);
+      }).not.toThrow();
+    });
+  });
 });

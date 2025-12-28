@@ -45,6 +45,25 @@ describe('SetFanSpeed Command', () => {
       };
       expect(Command.getItemName(device)).toBe('SpeedItem');
     });
+
+    test('getItemName Humidifier', () => {
+      expect(() => {
+        Command.getItemName({ id: 'Item', customData: { deviceType: 'Humidifier', itemType: 'Group' } });
+      }).toThrow('Humidifier has no humidifierFanSpeed member configured');
+      const device = {
+        customData: {
+          deviceType: 'Humidifier',
+          itemType: 'Group',
+          members: {
+            humidifierFanSpeed: 'HumidifierSpeedItem'
+          }
+        }
+      };
+      expect(Command.getItemName(device)).toBe('HumidifierSpeedItem');
+      expect(
+        Command.getItemName({ id: 'Item', customData: { deviceType: 'Humidifier', itemType: 'Dimmer' } })
+      ).toBe('Item');
+    });
   });
 
   test('convertParamsToValue', () => {
@@ -59,6 +78,50 @@ describe('SetFanSpeed Command', () => {
     });
     expect(Command.getResponseStates({ fanSpeedPercent: 50 })).toStrictEqual({
       currentFanSpeedPercent: 50
+    });
+  });
+
+  describe('checkCurrentState', () => {
+    test('throws MAX_SPEED_REACHED when at max speed', () => {
+      expect(() => {
+        Command.checkCurrentState('100', '100', { fanSpeedPercent: 100 });
+      }).toThrow('Fan speed is already at the requested level');
+    });
+
+    test('throws MIN_SPEED_REACHED when at min speed', () => {
+      expect(() => {
+        Command.checkCurrentState('0', '0', { fanSpeedPercent: 0 });
+      }).toThrow('Fan speed is already at the requested level');
+    });
+
+    test('throws ALREADY_IN_STATE for numeric values within tolerance', () => {
+      expect(() => {
+        Command.checkCurrentState('50', '50.5', { fanSpeedPercent: 50 });
+      }).toThrow('Fan speed is already at the requested level');
+    });
+
+    test('does not throw for numeric values outside tolerance', () => {
+      expect(() => {
+        Command.checkCurrentState('50', '52', { fanSpeedPercent: 50 });
+      }).not.toThrow();
+    });
+
+    test('throws ALREADY_IN_STATE for matching string settings', () => {
+      expect(() => {
+        Command.checkCurrentState('medium', 'medium', { fanSpeed: 'medium' });
+      }).toThrow('Fan speed is already at the requested setting');
+    });
+
+    test('does not throw for different string settings', () => {
+      expect(() => {
+        Command.checkCurrentState('high', 'medium', { fanSpeed: 'high' });
+      }).not.toThrow();
+    });
+
+    test('does not throw for invalid numeric values', () => {
+      expect(() => {
+        Command.checkCurrentState('invalid', 'NaN', { fanSpeedPercent: 50 });
+      }).not.toThrow();
     });
   });
 });
