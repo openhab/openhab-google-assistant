@@ -1,4 +1,5 @@
 const DefaultCommand = require('./default.js');
+const { ERROR_CODES, GoogleAssistantError } = require('../googleErrorCodes.js');
 
 class Locate extends DefaultCommand {
   static get type() {
@@ -15,7 +16,7 @@ class Locate extends DefaultCommand {
       if ('vacuumLocate' in members) {
         return members.vacuumLocate;
       }
-      throw { statusCode: 400 };
+      throw new GoogleAssistantError(ERROR_CODES.NOT_SUPPORTED, 'Vacuum has no vacuumLocate member configured');
     }
     return device.id;
   }

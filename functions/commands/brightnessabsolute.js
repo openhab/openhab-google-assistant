@@ -1,4 +1,5 @@
 const DefaultCommand = require('./default.js');
+const { ERROR_CODES, GoogleAssistantError } = require('../googleErrorCodes.js');
 
 class BrightnessAbsolute extends DefaultCommand {
   static get type() {
@@ -15,7 +16,10 @@ class BrightnessAbsolute extends DefaultCommand {
       if ('lightBrightness' in members) {
         return members.lightBrightness;
       }
-      throw { statusCode: 400 };
+      throw new GoogleAssistantError(
+        ERROR_CODES.NOT_SUPPORTED,
+        'SpecialColorLight has no lightBrightness member configured'
+      );
     }
     return device.id;
   }

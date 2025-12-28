@@ -1,6 +1,7 @@
 const DefaultCommand = require('./default.js');
 const Thermostat = require('../devices/thermostat.js');
 const convertCelsiusToFahrenheit = require('../utilities.js').convertCelsiusToFahrenheit;
+const { ERROR_CODES, GoogleAssistantError } = require('../googleErrorCodes.js');
 
 class ThermostatTemperatureSetpointLow extends DefaultCommand {
   static get type() {
@@ -20,7 +21,10 @@ class ThermostatTemperatureSetpointLow extends DefaultCommand {
     if ('thermostatTemperatureSetpointLow' in members) {
       return members.thermostatTemperatureSetpointLow;
     }
-    throw { statusCode: 400 };
+    throw new GoogleAssistantError(
+      ERROR_CODES.NOT_SUPPORTED,
+      'Thermostat has no thermostatTemperatureSetpointLow member configured'
+    );
   }
 
   static convertParamsToValue(params, item) {

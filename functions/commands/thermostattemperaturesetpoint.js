@@ -1,6 +1,7 @@
 const DefaultCommand = require('./default.js');
 const Thermostat = require('../devices/thermostat.js');
 const convertCelsiusToFahrenheit = require('../utilities.js').convertCelsiusToFahrenheit;
+const { ERROR_CODES, GoogleAssistantError } = require('../googleErrorCodes.js');
 
 class ThermostatTemperatureSetpoint extends DefaultCommand {
   static get type() {
@@ -20,7 +21,10 @@ class ThermostatTemperatureSetpoint extends DefaultCommand {
     if ('thermostatTemperatureSetpoint' in members) {
       return members.thermostatTemperatureSetpoint;
     }
-    throw { statusCode: 400 };
+    throw new GoogleAssistantError(
+      ERROR_CODES.NOT_SUPPORTED,
+      'Thermostat has no thermostatTemperatureSetpoint member configured'
+    );
   }
 
   static convertParamsToValue(params, item) {
@@ -35,6 +39,19 @@ class ThermostatTemperatureSetpoint extends DefaultCommand {
     const states = Thermostat.getState(item);
     states.thermostatTemperatureSetpoint = params.thermostatTemperatureSetpoint;
     return states;
+  }
+
+  static checkCurrentState(target, state, params) {
+    const targetTemp = parseFloat(target);
+    const currentTemp = parseFloat(state);
+    if (!isNaN(targetTemp) && !isNaN(currentTemp)) {
+      if (Math.abs(targetTemp - currentTemp) < 0.5) {
+        throw new GoogleAssistantError(
+          ERROR_CODES.TARGET_ALREADY_REACHED,
+          `Already at target temperature ${params.thermostatTemperatureSetpoint}°C`
+        );
+      }
+    }
   }
 }
 

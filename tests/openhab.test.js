@@ -397,6 +397,23 @@ describe('OpenHAB', () => {
         }
       });
     });
+
+    test('handleQuery error with errorCode and debugString', async () => {
+      getItemMock.mockRejectedValue({
+        errorCode: 'valueOutOfRange',
+        debugString: 'Temperature exceeds maximum supported range'
+      });
+      const result = await openHAB.handleQuery([{ id: 'TestItem' }]);
+      expect(result).toStrictEqual({
+        devices: {
+          TestItem: {
+            status: 'ERROR',
+            errorCode: 'valueOutOfRange',
+            debugString: 'Temperature exceeds maximum supported range'
+          }
+        }
+      });
+    });
   });
 
   describe('onExecute', () => {
@@ -659,6 +676,78 @@ describe('OpenHAB', () => {
             status: 'SUCCESS'
           }
         ]
+      });
+    });
+  });
+});
+
+describe('Error Code Propagation', () => {
+  const getItemMock = jest.fn();
+  const sendCommandMock = jest.fn();
+
+  const apiHandler = {
+    getItem: getItemMock,
+    sendCommand: sendCommandMock
+  };
+
+  const openHAB = new OpenHAB(apiHandler);
+
+  beforeEach(() => {
+    getItemMock.mockReset();
+    sendCommandMock.mockReset();
+  });
+
+  describe('QUERY error handling', () => {
+    test('propagates errorCode from device/command', async () => {
+      getItemMock.mockRejectedValue({
+        errorCode: 'notSupported',
+        debugString: 'Device does not support this operation'
+      });
+      const result = await openHAB.handleQuery([{ id: 'TestItem' }]);
+      expect(result.devices.TestItem).toStrictEqual({
+        status: 'ERROR',
+        errorCode: 'notSupported',
+        debugString: 'Device does not support this operation'
+      });
+    });
+
+    test('maps statusCode 404 to deviceNotFound', async () => {
+      getItemMock.mockRejectedValue({ statusCode: 404 });
+      const result = await openHAB.handleQuery([{ id: 'TestItem' }]);
+      expect(result.devices.TestItem.errorCode).toBe('deviceNotFound');
+    });
+
+    test('maps statusCode 406 to deviceNotReady', async () => {
+      getItemMock.mockRejectedValue({ statusCode: 406 });
+      const result = await openHAB.handleQuery([{ id: 'TestItem' }]);
+      expect(result.devices.TestItem.errorCode).toBe('deviceNotReady');
+    });
+
+    test('defaults unmapped errors to deviceOffline', async () => {
+      getItemMock.mockRejectedValue({ statusCode: 500, message: 'Unknown error' });
+      const result = await openHAB.handleQuery([{ id: 'TestItem' }]);
+      expect(result.devices.TestItem.errorCode).toBe('deviceOffline');
+    });
+  });
+
+  describe('EXECUTE error handling', () => {
+    test('returns functionNotSupported for unknown command', async () => {
+      const commands = [
+        {
+          devices: [{ id: 'TestItem', customData: {} }],
+          execution: [
+            {
+              command: 'action.devices.commands.UnknownCommand',
+              params: {}
+            }
+          ]
+        }
+      ];
+      const result = await openHAB.handleExecute(commands);
+      expect(result.commands[0]).toStrictEqual({
+        ids: ['TestItem'],
+        status: 'ERROR',
+        errorCode: 'functionNotSupported'
       });
     });
   });

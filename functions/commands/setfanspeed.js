@@ -1,4 +1,5 @@
 const DefaultCommand = require('./default.js');
+const { ERROR_CODES, GoogleAssistantError } = require('../googleErrorCodes.js');
 
 class SetFanSpeed extends DefaultCommand {
   static get type() {
@@ -19,14 +20,17 @@ class SetFanSpeed extends DefaultCommand {
       if ('fanSpeed' in members) {
         return members.fanSpeed;
       }
-      throw { statusCode: 400 };
+      throw new GoogleAssistantError(ERROR_CODES.NOT_SUPPORTED, 'Device has no fanSpeed member configured');
     }
     if (deviceType === 'Humidifier' && this.getItemType(device) === 'Group') {
       const members = this.getMembers(device);
       if ('humidifierFanSpeed' in members) {
         return members.humidifierFanSpeed;
       }
-      throw { statusCode: 400 };
+      throw new GoogleAssistantError(
+        ERROR_CODES.NOT_SUPPORTED,
+        'Humidifier has no humidifierFanSpeed member configured'
+      );
     }
     return device.id;
   }
@@ -43,6 +47,25 @@ class SetFanSpeed extends DefaultCommand {
       states.currentFanSpeedSetting = params.fanSpeed;
     }
     return states;
+  }
+
+  static checkCurrentState(target, state) {
+    const targetNum = parseFloat(target);
+    const stateNum = parseFloat(state);
+
+    if (!isNaN(targetNum) && !isNaN(stateNum)) {
+      if (Math.abs(targetNum - stateNum) < 1) {
+        let errorCode = ERROR_CODES.ALREADY_IN_STATE;
+        if (stateNum >= 100) errorCode = ERROR_CODES.MAX_SPEED_REACHED;
+        else if (stateNum <= 0) errorCode = ERROR_CODES.MIN_SPEED_REACHED;
+        throw new GoogleAssistantError(errorCode, 'Fan speed is already at the requested level');
+      }
+      return;
+    }
+
+    if (typeof target === 'string' && typeof state === 'string' && target === state) {
+      throw new GoogleAssistantError(ERROR_CODES.ALREADY_IN_STATE, 'Fan speed is already at the requested setting');
+    }
   }
 }
 
