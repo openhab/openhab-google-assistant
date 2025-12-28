@@ -311,6 +311,7 @@ describe('OpenHAB', () => {
       expect(result).toStrictEqual({
         devices: {
           TestItem: {
+            debugString: 'Device type not found for item: undefined TestItem',
             errorCode: 'deviceNotFound',
             status: 'ERROR'
           }
@@ -333,6 +334,7 @@ describe('OpenHAB', () => {
       expect(result).toStrictEqual({
         devices: {
           TestItem: {
+            debugString: 'Item state is NULL: Group TestItem',
             errorCode: 'deviceNotReady',
             status: 'ERROR'
           }

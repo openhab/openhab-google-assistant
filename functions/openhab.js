@@ -20,7 +20,7 @@
  */
 const findDeviceType = require('./deviceMatcher').findDeviceType;
 const findCommandHandler = require('./commandMatcher').findCommandHandler;
-const { ERROR_CODES } = require('./googleErrorCodes');
+const { ERROR_CODES, GoogleAssistantError } = require('./googleErrorCodes');
 
 class OpenHAB {
   /**
@@ -67,8 +67,7 @@ class OpenHAB {
    * @param {object} headers
    */
   async onQuery(body, headers) {
-    const devices =
-      (body && body.inputs && body.inputs[0] && body.inputs[0].payload && body.inputs[0].payload.devices) || [];
+    const devices = body?.inputs?.[0]?.payload?.devices || [];
 
     console.log(`openhabGoogleAssistant - onQuery - devices: ${JSON.stringify(devices)}`);
 
@@ -91,8 +90,7 @@ class OpenHAB {
    * @param {object} headers
    */
   async onExecute(body, headers) {
-    const commands =
-      (body && body.inputs && body.inputs[0] && body.inputs[0].payload && body.inputs[0].payload.commands) || [];
+    const commands = body?.inputs?.[0]?.payload?.commands || [];
 
     console.log(`openhabGoogleAssistant - onExecute - commands: ${JSON.stringify(commands)}`);
 
@@ -140,10 +138,16 @@ class OpenHAB {
         .then((item) => {
           const DeviceType = findDeviceType(item);
           if (!DeviceType) {
-            throw { statusCode: 404, message: `Device type not found for item: ${item.type} ${item.name}` };
+            throw new GoogleAssistantError(
+              ERROR_CODES.DEVICE_NOT_FOUND,
+              `Device type not found for item: ${item.type} ${item.name}`
+            );
           }
           if (item.state === 'NULL' && !DeviceType.supportedMembers.length) {
-            throw { statusCode: 406, message: `Item state is NULL: ${item.type} ${item.name}` };
+            throw new GoogleAssistantError(
+              ERROR_CODES.DEVICE_NOT_READY,
+              `Item state is NULL: ${item.type} ${item.name}`
+            );
           }
           payload.devices[device.id] = { status: 'SUCCESS', online: true, ...DeviceType.getState(item) };
         })
