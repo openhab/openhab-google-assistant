@@ -37,6 +37,31 @@ class ThermostatTemperatureSetpointLow extends DefaultCommand {
 
   static getResponseStates(params, item) {
     const states = Thermostat.getState(item);
+    const newLow = params.thermostatTemperatureSetpointLow;
+    const currentHigh = states.thermostatTemperatureSetpointHigh;
+    if (typeof currentHigh === 'number' && !isNaN(currentHigh)) {
+      if (newLow >= currentHigh) {
+        throw new GoogleAssistantError(
+          ERROR_CODES.LOCKED_TO_RANGE,
+          'Low setpoint must be below the current high setpoint'
+        );
+      }
+      if (currentHigh - newLow < 0.5) {
+        throw new GoogleAssistantError(ERROR_CODES.RANGE_TOO_CLOSE, 'Setpoint range is too close to adjust');
+      }
+    }
+    const attrs = Thermostat.getAttributes(item);
+    const range = attrs.thermostatTemperatureRange;
+    if (range) {
+      const min = range.minThresholdCelsius;
+      const max = range.maxThresholdCelsius;
+      if (typeof min === 'number' && newLow < min) {
+        throw new GoogleAssistantError(ERROR_CODES.VALUE_OUT_OF_RANGE, 'Temperature below minimum allowed');
+      }
+      if (typeof max === 'number' && newLow > max) {
+        throw new GoogleAssistantError(ERROR_CODES.VALUE_OUT_OF_RANGE, 'Temperature above maximum allowed');
+      }
+    }
     states.thermostatTemperatureSetpointLow = params.thermostatTemperatureSetpointLow;
     return states;
   }
