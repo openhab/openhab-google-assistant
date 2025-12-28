@@ -252,9 +252,6 @@ class DefaultCommand {
           }
 
           const responseStates = this.getResponseStates(params, item, device);
-          if (Object.keys(responseStates).length) {
-            responseStates.online = true;
-          }
 
           const authAckResponse = this.handleAuthAck(device, challenge, responseStates);
           if (authAckResponse) {
@@ -271,6 +268,9 @@ class DefaultCommand {
             if (this.requiresUpdateValidation) {
               commandsResponse.push(await this.handleUpdateValidation(apiHandler, device, params));
             } else {
+              if (Object.keys(responseStates).length) {
+                responseStates.online = true;
+              }
               commandsResponse.push({
                 ids: [device.id],
                 status: 'SUCCESS',
