@@ -452,6 +452,7 @@ describe('Default Command', () => {
         expect(result).toStrictEqual([
           {
             errorCode: 'alreadyInState',
+            debugString: 'Device is already in the requested state',
             ids: ['Item1'],
             status: 'ERROR'
           }
@@ -478,6 +479,7 @@ describe('Default Command', () => {
         expect(result).toStrictEqual([
           {
             errorCode: 'alreadyInState',
+            debugString: 'Device is already in the requested state',
             ids: ['Item1'],
             status: 'ERROR'
           }

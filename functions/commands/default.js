@@ -13,6 +13,7 @@ const ackSupported = [
 ];
 
 const findDeviceType = require('../deviceMatcher').findDeviceType;
+const { ERROR_CODES, CHALLENGE_TYPES, GoogleAssistantError } = require('../googleErrorCodes.js');
 
 class DefaultCommand {
   static get type() {
@@ -35,7 +36,7 @@ class DefaultCommand {
    */
   static checkCurrentState(target, state, params) {
     if (target === state) {
-      throw { errorCode: 'alreadyInState' };
+      throw new GoogleAssistantError(ERROR_CODES.ALREADY_IN_STATE, 'Device is already in the requested state');
     }
   }
 
@@ -146,9 +147,9 @@ class DefaultCommand {
     return {
       ids: [device.id],
       status: 'ERROR',
-      errorCode: 'challengeNeeded',
+      errorCode: ERROR_CODES.CHALLENGE_NEEDED,
       challengeNeeded: {
-        type: !challenge || !challenge.pin ? 'pinNeeded' : 'challengeFailedPinNeeded'
+        type: !challenge || !challenge.pin ? CHALLENGE_TYPES.PIN_NEEDED : CHALLENGE_TYPES.CHALLENGE_FAILED_PIN_NEEDED
       }
     };
   }
@@ -166,9 +167,9 @@ class DefaultCommand {
       ids: [device.id],
       status: 'ERROR',
       states: responseStates,
-      errorCode: 'challengeNeeded',
+      errorCode: ERROR_CODES.CHALLENGE_NEEDED,
       challengeNeeded: {
-        type: 'ackNeeded'
+        type: CHALLENGE_TYPES.ACK_NEEDED
       }
     };
   }
@@ -287,10 +288,11 @@ class DefaultCommand {
               typeof error.errorCode === 'string'
                 ? error.errorCode
                 : error.statusCode === 404
-                  ? 'deviceNotFound'
+                  ? ERROR_CODES.DEVICE_NOT_FOUND
                   : error.statusCode === 400
-                    ? 'notSupported'
-                    : 'deviceOffline'
+                    ? ERROR_CODES.NOT_SUPPORTED
+                    : ERROR_CODES.DEVICE_OFFLINE,
+            ...(error.debugString && { debugString: error.debugString })
           });
         });
     });

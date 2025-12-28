@@ -1,4 +1,5 @@
 const DefaultCommand = require('./default.js');
+const { ERROR_CODES, GoogleAssistantError } = require('../googleErrorCodes.js');
 
 class MediaNext extends DefaultCommand {
   static get type() {
@@ -10,7 +11,7 @@ class MediaNext extends DefaultCommand {
     if ('tvTransport' in members) {
       return members.tvTransport;
     }
-    throw { statusCode: 400 };
+    throw new GoogleAssistantError(ERROR_CODES.NOT_SUPPORTED, 'TV has no tvTransport member configured');
   }
 
   static convertParamsToValue() {

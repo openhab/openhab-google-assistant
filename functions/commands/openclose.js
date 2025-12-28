@@ -1,4 +1,5 @@
 const DefaultCommand = require('./default.js');
+const { ERROR_CODES, GoogleAssistantError } = require('../googleErrorCodes.js');
 
 class OpenClose extends DefaultCommand {
   static get type() {
@@ -31,7 +32,7 @@ class OpenClose extends DefaultCommand {
     }
 
     if (actualItemType === 'Contact') {
-      throw { statusCode: 400 };
+      throw new GoogleAssistantError(ERROR_CODES.NOT_SUPPORTED, 'Contact items cannot be used with OpenClose command');
     }
 
     let openPercent = params.openPercent;
@@ -57,7 +58,10 @@ class OpenClose extends DefaultCommand {
   static checkCurrentState(target, state, params) {
     const adjustedTarget = target === 'DOWN' ? '100' : target === 'UP' ? '0' : target;
     if (adjustedTarget === state) {
-      throw { errorCode: params.openPercent === 0 ? 'alreadyClosed' : 'alreadyOpen' };
+      throw new GoogleAssistantError(
+        params.openPercent === 0 ? ERROR_CODES.ALREADY_CLOSED : ERROR_CODES.ALREADY_OPEN,
+        `Device is already ${params.openPercent === 0 ? 'closed' : 'open'}`
+      );
     }
   }
 }

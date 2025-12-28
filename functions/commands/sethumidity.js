@@ -1,4 +1,5 @@
 const DefaultCommand = require('./default.js');
+const { ERROR_CODES, GoogleAssistantError } = require('../googleErrorCodes.js');
 
 class SetHumidity extends DefaultCommand {
   static get type() {
@@ -28,7 +29,10 @@ class SetHumidity extends DefaultCommand {
       if ('humidifierHumiditySetpoint' in members) {
         return members.humidifierHumiditySetpoint;
       }
-      throw { statusCode: 400 };
+      throw new GoogleAssistantError(
+        ERROR_CODES.NOT_SUPPORTED,
+        'Humidifier has no humidifierHumiditySetpoint member configured'
+      );
     }
 
     // For simple humidifier devices (non-group)
@@ -70,7 +74,10 @@ class SetHumidity extends DefaultCommand {
 
     // Allow small tolerance for humidity values
     if (Math.abs(targetHumidity - currentHumidity) < 1) {
-      throw { errorCode: 'alreadyAtTarget', debugString: `Already at target humidity ${params.humidity}%` };
+      throw new GoogleAssistantError(
+        ERROR_CODES.TARGET_ALREADY_REACHED,
+        `Already at target humidity ${params.humidity}%`
+      );
     }
   }
 }

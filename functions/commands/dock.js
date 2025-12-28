@@ -1,4 +1,5 @@
 const DefaultCommand = require('./default.js');
+const { ERROR_CODES, GoogleAssistantError } = require('../googleErrorCodes.js');
 
 class Dock extends DefaultCommand {
   static get type() {
@@ -15,7 +16,7 @@ class Dock extends DefaultCommand {
       if ('vacuumDock' in members) {
         return members.vacuumDock;
       }
-      throw { statusCode: 400 };
+      throw new GoogleAssistantError(ERROR_CODES.NOT_SUPPORTED, 'Vacuum has no vacuumDock member configured');
     }
     return device.id;
   }
@@ -34,7 +35,7 @@ class Dock extends DefaultCommand {
 
   static checkCurrentState(target, state) {
     if (target === state) {
-      throw { errorCode: 'alreadyDocked' };
+      throw new GoogleAssistantError(ERROR_CODES.ALREADY_DOCKED, 'Device is already docked');
     }
   }
 }
