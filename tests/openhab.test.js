@@ -311,6 +311,7 @@ describe('OpenHAB', () => {
       expect(result).toStrictEqual({
         devices: {
           TestItem: {
+            debugString: 'Device type not found for item: undefined TestItem',
             errorCode: 'deviceNotFound',
             status: 'ERROR'
           }
@@ -333,6 +334,7 @@ describe('OpenHAB', () => {
       expect(result).toStrictEqual({
         devices: {
           TestItem: {
+            debugString: 'Item state is NULL: Group TestItem',
             errorCode: 'deviceNotReady',
             status: 'ERROR'
           }
@@ -393,6 +395,23 @@ describe('OpenHAB', () => {
             brightness: 50,
             on: true,
             online: true
+          }
+        }
+      });
+    });
+
+    test('handleQuery error with errorCode and debugString', async () => {
+      getItemMock.mockRejectedValue({
+        errorCode: 'valueOutOfRange',
+        debugString: 'Temperature exceeds maximum supported range'
+      });
+      const result = await openHAB.handleQuery([{ id: 'TestItem' }]);
+      expect(result).toStrictEqual({
+        devices: {
+          TestItem: {
+            status: 'ERROR',
+            errorCode: 'valueOutOfRange',
+            debugString: 'Temperature exceeds maximum supported range'
           }
         }
       });
@@ -659,6 +678,322 @@ describe('OpenHAB', () => {
             status: 'SUCCESS'
           }
         ]
+      });
+    });
+  });
+});
+
+describe('Error Code Propagation', () => {
+  const getItemMock = jest.fn();
+  const sendCommandMock = jest.fn();
+
+  const apiHandler = {
+    getItem: getItemMock,
+    sendCommand: sendCommandMock
+  };
+
+  const openHAB = new OpenHAB(apiHandler);
+
+  beforeEach(() => {
+    getItemMock.mockReset();
+    sendCommandMock.mockReset();
+  });
+
+  describe('QUERY error handling', () => {
+    test('propagates errorCode from device/command', async () => {
+      getItemMock.mockRejectedValue({
+        errorCode: 'notSupported',
+        debugString: 'Device does not support this operation'
+      });
+      const result = await openHAB.handleQuery([{ id: 'TestItem' }]);
+      expect(result.devices.TestItem).toStrictEqual({
+        status: 'ERROR',
+        errorCode: 'notSupported',
+        debugString: 'Device does not support this operation'
+      });
+    });
+
+    test('maps statusCode 404 to deviceNotFound', async () => {
+      getItemMock.mockRejectedValue({ statusCode: 404 });
+      const result = await openHAB.handleQuery([{ id: 'TestItem' }]);
+      expect(result.devices.TestItem.errorCode).toBe('deviceNotFound');
+    });
+
+    test('maps statusCode 406 to deviceNotReady', async () => {
+      getItemMock.mockRejectedValue({ statusCode: 406 });
+      const result = await openHAB.handleQuery([{ id: 'TestItem' }]);
+      expect(result.devices.TestItem.errorCode).toBe('deviceNotReady');
+    });
+
+    test('defaults unmapped errors to deviceOffline', async () => {
+      getItemMock.mockRejectedValue({ statusCode: 500, message: 'Unknown error' });
+      const result = await openHAB.handleQuery([{ id: 'TestItem' }]);
+      expect(result.devices.TestItem.errorCode).toBe('deviceOffline');
+    });
+  });
+
+  describe('EXECUTE error handling', () => {
+    test('returns functionNotSupported for unknown command', async () => {
+      const commands = [
+        {
+          devices: [{ id: 'TestItem', customData: {} }],
+          execution: [
+            {
+              command: 'action.devices.commands.UnknownCommand',
+              params: {}
+            }
+          ]
+        }
+      ];
+      const result = await openHAB.handleExecute(commands);
+      expect(result.commands[0]).toStrictEqual({
+        ids: ['TestItem'],
+        status: 'ERROR',
+        errorCode: 'functionNotSupported'
+      });
+    });
+
+    test('propagates GoogleAssistantError from command handler with debugString', async () => {
+      getItemMock.mockResolvedValue({
+        name: 'TestItem',
+        type: 'Switch',
+        state: 'ON',
+        metadata: { ga: { value: 'Switch' } }
+      });
+      const commands = [
+        {
+          devices: [
+            {
+              id: 'TestItem',
+              customData: {
+                checkState: true
+              }
+            }
+          ],
+          execution: [
+            {
+              command: 'action.devices.commands.OnOff',
+              params: { on: true }
+            }
+          ]
+        }
+      ];
+      const result = await openHAB.handleExecute(commands);
+      expect(getItemMock).toHaveBeenCalledTimes(1);
+      expect(sendCommandMock).toHaveBeenCalledTimes(0);
+      expect(result.commands[0]).toStrictEqual({
+        ids: ['TestItem'],
+        status: 'ERROR',
+        errorCode: 'alreadyOn',
+        debugString: 'Device is already on'
+      });
+    });
+
+    test('propagates error without debugString when not provided', async () => {
+      const { GoogleAssistantError, ERROR_CODES } = require('../functions/googleErrorCodes.js');
+      sendCommandMock.mockRejectedValue(new GoogleAssistantError(ERROR_CODES.VALUE_OUT_OF_RANGE));
+      const commands = [
+        {
+          devices: [{ id: 'TestItem', customData: {} }],
+          execution: [
+            {
+              command: 'action.devices.commands.OnOff',
+              params: { on: true }
+            }
+          ]
+        }
+      ];
+      const result = await openHAB.handleExecute(commands);
+      expect(result.commands[0]).toStrictEqual({
+        ids: ['TestItem'],
+        status: 'ERROR',
+        errorCode: 'valueOutOfRange'
+      });
+    });
+
+    test('sendCommand errors default to deviceOffline when no specific error code', async () => {
+      sendCommandMock.mockRejectedValue(new Error('Network failure'));
+      const commands = [
+        {
+          devices: [{ id: 'TestItem', customData: {} }],
+          execution: [
+            {
+              command: 'action.devices.commands.OnOff',
+              params: { on: false }
+            }
+          ]
+        }
+      ];
+      const result = await openHAB.handleExecute(commands);
+      expect(result.commands[0]).toStrictEqual({
+        ids: ['TestItem'],
+        status: 'ERROR',
+        errorCode: 'deviceOffline'
+      });
+    });
+  });
+
+  describe('Challenge handling (PIN and ACK)', () => {
+    test('returns PIN challenge when pinNeeded without pin provided', async () => {
+      const commands = [
+        {
+          devices: [
+            {
+              id: 'TestItem',
+              customData: { pinNeeded: '1234' }
+            }
+          ],
+          execution: [
+            {
+              command: 'action.devices.commands.OnOff',
+              params: { on: true }
+            }
+          ]
+        }
+      ];
+      const result = await openHAB.handleExecute(commands);
+      expect(getItemMock).toHaveBeenCalledTimes(0);
+      expect(sendCommandMock).toHaveBeenCalledTimes(0);
+      expect(result.commands[0]).toStrictEqual({
+        ids: ['TestItem'],
+        status: 'ERROR',
+        errorCode: 'challengeNeeded',
+        challengeNeeded: {
+          type: 'pinNeeded'
+        }
+      });
+    });
+
+    test('executes successfully when correct PIN provided', async () => {
+      sendCommandMock.mockResolvedValue(null);
+      const commands = [
+        {
+          devices: [
+            {
+              id: 'TestItem',
+              customData: { pinNeeded: '1234' }
+            }
+          ],
+          execution: [
+            {
+              command: 'action.devices.commands.OnOff',
+              params: { on: true },
+              challenge: { pin: '1234' }
+            }
+          ]
+        }
+      ];
+      const result = await openHAB.handleExecute(commands);
+      expect(sendCommandMock).toHaveBeenCalledTimes(1);
+      expect(result.commands[0]).toStrictEqual({
+        ids: ['TestItem'],
+        status: 'SUCCESS',
+        states: {
+          on: true,
+          online: true
+        }
+      });
+    });
+
+    test('returns challenge failed when wrong PIN provided', async () => {
+      const commands = [
+        {
+          devices: [
+            {
+              id: 'TestItem',
+              customData: { pinNeeded: '1234' }
+            }
+          ],
+          execution: [
+            {
+              command: 'action.devices.commands.OnOff',
+              params: { on: true },
+              challenge: { pin: '5678' }
+            }
+          ]
+        }
+      ];
+      const result = await openHAB.handleExecute(commands);
+      expect(getItemMock).toHaveBeenCalledTimes(0);
+      expect(sendCommandMock).toHaveBeenCalledTimes(0);
+      expect(result.commands[0]).toStrictEqual({
+        ids: ['TestItem'],
+        status: 'ERROR',
+        errorCode: 'challengeNeeded',
+        challengeNeeded: {
+          type: 'challengeFailedPinNeeded'
+        }
+      });
+    });
+
+    test('returns ACK challenge when ackNeeded without ack provided', async () => {
+      getItemMock.mockResolvedValue({
+        name: 'TestItem',
+        type: 'Switch',
+        state: 'OFF',
+        metadata: { ga: { value: 'Switch' } }
+      });
+      const commands = [
+        {
+          devices: [
+            {
+              id: 'TestItem',
+              customData: { ackNeeded: true }
+            }
+          ],
+          execution: [
+            {
+              command: 'action.devices.commands.OnOff',
+              params: { on: true }
+            }
+          ]
+        }
+      ];
+      const result = await openHAB.handleExecute(commands);
+      expect(getItemMock).toHaveBeenCalledTimes(1);
+      expect(sendCommandMock).toHaveBeenCalledTimes(0);
+      expect(result.commands[0]).toStrictEqual({
+        ids: ['TestItem'],
+        status: 'ERROR',
+        errorCode: 'challengeNeeded',
+        states: {
+          on: true
+        },
+        challengeNeeded: {
+          type: 'ackNeeded'
+        }
+      });
+    });
+
+    test('executes successfully when ack provided', async () => {
+      sendCommandMock.mockResolvedValue(null);
+      const commands = [
+        {
+          devices: [
+            {
+              id: 'TestItem',
+              customData: { ackNeeded: true }
+            }
+          ],
+          execution: [
+            {
+              command: 'action.devices.commands.OnOff',
+              params: { on: true },
+              challenge: { ack: true }
+            }
+          ]
+        }
+      ];
+      const result = await openHAB.handleExecute(commands);
+      expect(getItemMock).toHaveBeenCalledTimes(0); // No item fetch when ack is provided
+      expect(sendCommandMock).toHaveBeenCalledTimes(1);
+      expect(result.commands[0]).toStrictEqual({
+        ids: ['TestItem'],
+        status: 'SUCCESS',
+        states: {
+          on: true,
+          online: true
+        }
       });
     });
   });

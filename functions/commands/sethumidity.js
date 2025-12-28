@@ -1,4 +1,5 @@
 const DefaultCommand = require('./default.js');
+const { ERROR_CODES, GoogleAssistantError } = require('../googleErrorCodes.js');
 
 class SetHumidity extends DefaultCommand {
   static get type() {
@@ -28,7 +29,10 @@ class SetHumidity extends DefaultCommand {
       if ('humidifierHumiditySetpoint' in members) {
         return members.humidifierHumiditySetpoint;
       }
-      throw { statusCode: 400 };
+      throw new GoogleAssistantError(
+        ERROR_CODES.NOT_SUPPORTED,
+        'Humidifier has no humidifierHumiditySetpoint member configured'
+      );
     }
 
     // For simple humidifier devices (non-group)
@@ -47,6 +51,26 @@ class SetHumidity extends DefaultCommand {
   static getResponseStates(params, item, device) {
     const deviceType = this.getDeviceType(device);
     const itemType = this.getItemType(device);
+
+    // Validate humidity range if configured
+    const requestedHumidity = params.humidity;
+    const humidityRange = device.customData?.humiditySetpointRange;
+    if (humidityRange) {
+      const min = humidityRange.minPercent;
+      const max = humidityRange.maxPercent;
+      if (typeof min === 'number' && requestedHumidity < min) {
+        throw new GoogleAssistantError(
+          ERROR_CODES.VALUE_OUT_OF_RANGE,
+          `Humidity ${requestedHumidity}% is below minimum ${min}%`
+        );
+      }
+      if (typeof max === 'number' && requestedHumidity > max) {
+        throw new GoogleAssistantError(
+          ERROR_CODES.VALUE_OUT_OF_RANGE,
+          `Humidity ${requestedHumidity}% is above maximum ${max}%`
+        );
+      }
+    }
 
     if (deviceType === 'Humidifier' && itemType === 'Group' && item) {
       // For Group devices, use current state from item
@@ -70,7 +94,10 @@ class SetHumidity extends DefaultCommand {
 
     // Allow small tolerance for humidity values
     if (Math.abs(targetHumidity - currentHumidity) < 1) {
-      throw { errorCode: 'alreadyAtTarget', debugString: `Already at target humidity ${params.humidity}%` };
+      throw new GoogleAssistantError(
+        ERROR_CODES.TARGET_ALREADY_REACHED,
+        `Already at target humidity ${params.humidity}%`
+      );
     }
   }
 }

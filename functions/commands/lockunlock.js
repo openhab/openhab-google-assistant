@@ -1,4 +1,5 @@
 const DefaultCommand = require('./default.js');
+const { ERROR_CODES, GoogleAssistantError } = require('../googleErrorCodes.js');
 
 class LockUnlock extends DefaultCommand {
   static get type() {
@@ -11,7 +12,7 @@ class LockUnlock extends DefaultCommand {
 
   static convertParamsToValue(params, _, device) {
     if (this.getItemType(device) === 'Contact') {
-      throw { statusCode: 400 };
+      throw new GoogleAssistantError(ERROR_CODES.NOT_SUPPORTED, 'LockUnlock is not supported for Contact items');
     }
     let lock = params.lock;
     if (this.isInverted(device)) {
@@ -28,7 +29,10 @@ class LockUnlock extends DefaultCommand {
 
   static checkCurrentState(target, state, params) {
     if (target === state) {
-      throw { errorCode: params.lock ? 'alreadyLocked' : 'alreadyUnlocked' };
+      throw new GoogleAssistantError(
+        params.lock ? ERROR_CODES.ALREADY_LOCKED : ERROR_CODES.ALREADY_UNLOCKED,
+        `Device is already ${params.lock ? 'locked' : 'unlocked'}`
+      );
     }
   }
 }

@@ -1,4 +1,5 @@
 const DefaultCommand = require('./default.js');
+const { ERROR_CODES, GoogleAssistantError } = require('../googleErrorCodes.js');
 
 class SetInput extends DefaultCommand {
   static get type() {
@@ -14,7 +15,7 @@ class SetInput extends DefaultCommand {
     if ('tvInput' in members) {
       return members.tvInput;
     }
-    throw { statusCode: 400 };
+    throw new GoogleAssistantError(ERROR_CODES.NOT_SUPPORTED, 'TV has no tvInput member configured');
   }
 
   static convertParamsToValue(params) {
