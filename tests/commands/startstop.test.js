@@ -81,5 +81,57 @@ describe('StartStop Command', () => {
         Command.getItemName(device);
       }).toThrow();
     });
+
+    test('getItemName - Washer with washerPower member', () => {
+      const device = {
+        id: 'WasherGroup',
+        customData: {
+          deviceType: 'Washer',
+          members: {
+            washerPower: 'WasherPowerSwitch'
+          }
+        }
+      };
+      expect(Command.getItemName(device)).toBe('WasherPowerSwitch');
+    });
+
+    test('getItemName - Washer without washerPower member', () => {
+      const device = {
+        id: 'WasherGroup',
+        customData: {
+          deviceType: 'Washer',
+          members: {}
+        }
+      };
+      expect(() => {
+        Command.getItemName(device);
+      }).toThrow();
+    });
+
+    test('getItemName - Dishwasher with washerPower member', () => {
+      const device = {
+        id: 'DishwasherGroup',
+        customData: {
+          deviceType: 'Dishwasher',
+          members: {
+            washerPower: 'DishwasherPowerSwitch'
+          }
+        }
+      };
+      expect(Command.getItemName(device)).toBe('DishwasherPowerSwitch');
+    });
+
+    test('getItemName - Dishwasher without washerPower member', () => {
+      const device = {
+        id: 'DishwasherGroup',
+        customData: {
+          deviceType: 'Dishwasher',
+          members: {}
+        }
+      };
+      expect(() => {
+        Command.getItemName(device);
+      }).toThrow();
+    });
   });
 });
