@@ -19,6 +19,20 @@ describe('RotateAbsolute Command', () => {
       expect(Command.validateParams({ rotationPercent: 'invalid' })).toBe(false);
       expect(Command.validateParams({ rotationDegrees: 'invalid' })).toBe(false);
       expect(Command.validateParams({ someOtherParam: 50 })).toBe(false);
+
+      // Test out of range rotationPercent
+      expect(Command.validateParams({ rotationPercent: -1 })).toBe(false);
+      expect(Command.validateParams({ rotationPercent: 101 })).toBe(false);
+
+      // Test out of range rotationDegrees
+      expect(Command.validateParams({ rotationDegrees: -1 })).toBe(false);
+      expect(Command.validateParams({ rotationDegrees: 361 })).toBe(false);
+
+      // Test valid boundary values
+      expect(Command.validateParams({ rotationPercent: 0 })).toBe(true);
+      expect(Command.validateParams({ rotationPercent: 100 })).toBe(true);
+      expect(Command.validateParams({ rotationDegrees: 0 })).toBe(true);
+      expect(Command.validateParams({ rotationDegrees: 360 })).toBe(true);
     });
   });
 
@@ -144,6 +158,74 @@ describe('RotateAbsolute Command', () => {
       const response = Command.getResponseStates({ rotationDegrees: 45 }, null, device);
       expect(response.rotationPercent).toBe(50); // Calculated from degrees
       expect(response.rotationDegrees).toBe(45); // Echo back what Google sent
+    });
+  });
+
+  describe('checkCurrentState', () => {
+    const { ERROR_CODES, GoogleAssistantError } = require('../../functions/googleErrorCodes.js');
+
+    test('checkCurrentState throws when already at target with rotationPercent', () => {
+      try {
+        Command.checkCurrentState('50', '50', { rotationPercent: 50 });
+        throw new Error('Expected GoogleAssistantError to be thrown');
+      } catch (error) {
+        expect(error).toBeInstanceOf(GoogleAssistantError);
+        expect(error.errorCode).toBe(ERROR_CODES.ALREADY_IN_STATE);
+        expect(error.message).toBe('Rotation is already at 50%');
+      }
+    });
+
+    test('checkCurrentState throws when already at target with rotationDegrees', () => {
+      try {
+        Command.checkCurrentState('45', '45', { rotationDegrees: 45 });
+        throw new Error('Expected GoogleAssistantError to be thrown');
+      } catch (error) {
+        expect(error).toBeInstanceOf(GoogleAssistantError);
+        expect(error.errorCode).toBe(ERROR_CODES.ALREADY_IN_STATE);
+        expect(error.message).toBe('Rotation is already at 45°');
+      }
+    });
+
+    test('checkCurrentState does not throw when rotation differs', () => {
+      expect(() => {
+        Command.checkCurrentState('50', '40', { rotationPercent: 50 });
+      }).not.toThrow();
+    });
+
+    test('checkCurrentState does not throw when close but within tolerance', () => {
+      // Difference is exactly 0.5, which is < 1
+      expect(() => {
+        Command.checkCurrentState('50', '49.6', { rotationPercent: 50 });
+      }).not.toThrow();
+    });
+
+    test('checkCurrentState does not throw with invalid numbers', () => {
+      expect(() => {
+        Command.checkCurrentState('invalid', '50', { rotationPercent: 50 });
+      }).not.toThrow();
+      expect(() => {
+        Command.checkCurrentState('50', 'invalid', { rotationPercent: 50 });
+      }).not.toThrow();
+    });
+
+    test('checkCurrentState throws at exact match boundary', () => {
+      try {
+        Command.checkCurrentState('0', '0', { rotationPercent: 0 });
+        throw new Error('Expected GoogleAssistantError to be thrown');
+      } catch (error) {
+        expect(error).toBeInstanceOf(GoogleAssistantError);
+        expect(error.errorCode).toBe(ERROR_CODES.ALREADY_IN_STATE);
+      }
+    });
+
+    test('checkCurrentState throws at 100 percent boundary', () => {
+      try {
+        Command.checkCurrentState('100', '100', { rotationPercent: 100 });
+        throw new Error('Expected GoogleAssistantError to be thrown');
+      } catch (error) {
+        expect(error).toBeInstanceOf(GoogleAssistantError);
+        expect(error.errorCode).toBe(ERROR_CODES.ALREADY_IN_STATE);
+      }
     });
   });
 });

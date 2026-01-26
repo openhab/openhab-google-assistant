@@ -136,4 +136,64 @@ describe('SetHumidity Command', () => {
       Command.checkCurrentState('65', '65', params);
     }).toThrow();
   });
+
+  test('getResponseStates throws valueOutOfRange when below min', () => {
+    const device = {
+      customData: {
+        deviceType: 'Humidifier',
+        itemType: 'Dimmer',
+        humiditySetpointRange: {
+          minPercent: 30,
+          maxPercent: 80
+        }
+      }
+    };
+    expect(() => {
+      Command.getResponseStates({ humidity: 25 }, null, device);
+    }).toThrow('Humidity 25% is below minimum 30%');
+  });
+
+  test('getResponseStates throws valueOutOfRange when above max', () => {
+    const device = {
+      customData: {
+        deviceType: 'Humidifier',
+        itemType: 'Dimmer',
+        humiditySetpointRange: {
+          minPercent: 30,
+          maxPercent: 80
+        }
+      }
+    };
+    expect(() => {
+      Command.getResponseStates({ humidity: 85 }, null, device);
+    }).toThrow('Humidity 85% is above maximum 80%');
+  });
+
+  test('getResponseStates succeeds with valid range', () => {
+    const device = {
+      customData: {
+        deviceType: 'Humidifier',
+        itemType: 'Dimmer',
+        humiditySetpointRange: {
+          minPercent: 30,
+          maxPercent: 80
+        }
+      }
+    };
+    const result = Command.getResponseStates({ humidity: 50 }, null, device);
+    expect(result.humiditySetpointPercent).toBe(50);
+    expect(result.on).toBe(true);
+  });
+
+  test('getResponseStates succeeds without range config', () => {
+    const device = {
+      customData: {
+        deviceType: 'Humidifier',
+        itemType: 'Dimmer'
+      }
+    };
+    const result = Command.getResponseStates({ humidity: 95 }, null, device);
+    expect(result.humiditySetpointPercent).toBe(95);
+    expect(result.on).toBe(true);
+  });
 });

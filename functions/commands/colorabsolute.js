@@ -1,4 +1,5 @@
 const DefaultCommand = require('./default.js');
+const { ERROR_CODES, GoogleAssistantError } = require('../googleErrorCodes.js');
 
 class ColorAbsolute extends DefaultCommand {
   static get type() {
@@ -6,12 +7,34 @@ class ColorAbsolute extends DefaultCommand {
   }
 
   static validateParams(params) {
-    return (
-      'color' in params &&
-      typeof params.color === 'object' &&
-      'spectrumHSV' in params.color &&
-      typeof params.color.spectrumHSV === 'object'
-    );
+    if (
+      !('color' in params) ||
+      typeof params.color !== 'object' ||
+      !('spectrumHSV' in params.color) ||
+      typeof params.color.spectrumHSV !== 'object'
+    ) {
+      return false;
+    }
+
+    const hsv = params.color.spectrumHSV;
+
+    // Validate HSV ranges per Google Smart Home spec
+    // Hue: 0.0 - 360.0 degrees
+    if (typeof hsv.hue !== 'number' || hsv.hue < 0 || hsv.hue > 360) {
+      return false;
+    }
+
+    // Saturation: 0.0 - 1.0
+    if (typeof hsv.saturation !== 'number' || hsv.saturation < 0 || hsv.saturation > 1) {
+      return false;
+    }
+
+    // Value: 0.0 - 1.0
+    if (typeof hsv.value !== 'number' || hsv.value < 0 || hsv.value > 1) {
+      return false;
+    }
+
+    return true;
   }
 
   static getItemName(device) {
@@ -20,14 +43,17 @@ class ColorAbsolute extends DefaultCommand {
       if ('lightColor' in members) {
         return members.lightColor;
       }
-      throw { statusCode: 400 };
+      throw new GoogleAssistantError(
+        ERROR_CODES.NOT_SUPPORTED,
+        'SpecialColorLight has no lightColor member configured'
+      );
     }
     return device.id;
   }
 
   static convertParamsToValue(params, _, device) {
     if (this.getDeviceType(device) !== 'ColorLight' && this.getDeviceType(device) !== 'SpecialColorLight') {
-      throw { statusCode: 400 };
+      throw new GoogleAssistantError(ERROR_CODES.NOT_SUPPORTED, 'Device does not support color control');
     }
     const hsv = params.color.spectrumHSV;
     return [hsv.hue, hsv.saturation * 100, hsv.value * 100].join(',');

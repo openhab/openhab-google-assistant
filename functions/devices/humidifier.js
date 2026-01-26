@@ -138,6 +138,12 @@ class Humidifier extends DefaultDevice {
       metadata.customData.maxHumidity = parseInt(config.maxHumidity);
     }
 
+    // Copy humiditySetpointRange to customData for validation in commands
+    const attributes = this.getAttributes(item);
+    if (attributes.humiditySetpointRange) {
+      metadata.customData.humiditySetpointRange = attributes.humiditySetpointRange;
+    }
+
     return metadata;
   }
 

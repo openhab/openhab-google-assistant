@@ -1,5 +1,6 @@
 const DefaultCommand = require('./default.js');
 const TV = require('../devices/tv.js');
+const { ERROR_CODES, GoogleAssistantError } = require('../googleErrorCodes.js');
 
 class AppSelect extends DefaultCommand {
   static get type() {
@@ -22,7 +23,7 @@ class AppSelect extends DefaultCommand {
     if ('tvApplication' in members) {
       return members.tvApplication;
     }
-    throw { statusCode: 400 };
+    throw new GoogleAssistantError(ERROR_CODES.NOT_SUPPORTED, 'TV has no tvApplication member configured');
   }
 
   static convertParamsToValue(params, item) {
@@ -36,7 +37,7 @@ class AppSelect extends DefaultCommand {
         return key;
       }
     }
-    throw { errorCode: 'noAvailableApp' };
+    throw new GoogleAssistantError(ERROR_CODES.NO_AVAILABLE_APP, 'Application not found in configured application map');
   }
 
   static getResponseStates(params, item) {

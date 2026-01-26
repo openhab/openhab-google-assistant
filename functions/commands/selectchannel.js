@@ -1,5 +1,6 @@
 const DefaultCommand = require('./default.js');
 const TV = require('../devices/tv.js');
+const { ERROR_CODES, GoogleAssistantError } = require('../googleErrorCodes.js');
 
 class SelectChannel extends DefaultCommand {
   static get type() {
@@ -23,7 +24,7 @@ class SelectChannel extends DefaultCommand {
     if ('tvChannel' in members) {
       return members.tvChannel;
     }
-    throw { statusCode: 400 };
+    throw new GoogleAssistantError(ERROR_CODES.NOT_SUPPORTED, 'TV has no tvChannel member configured');
   }
 
   static convertParamsToValue(params, item) {
@@ -37,7 +38,10 @@ class SelectChannel extends DefaultCommand {
         return number;
       }
     }
-    throw { errorCode: 'noAvailableChannel' };
+    throw new GoogleAssistantError(
+      ERROR_CODES.NO_AVAILABLE_CHANNEL,
+      'Requested channel is not available for this device'
+    );
   }
 
   static getResponseStates(params, item) {
