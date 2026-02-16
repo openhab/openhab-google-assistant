@@ -3,6 +3,9 @@ import prettier from 'eslint-config-prettier';
 import prettierPlugin from 'eslint-plugin-prettier';
 
 export default [
+  {
+    ignores: ['node_modules/', 'coverage/', '.eslintcache']
+  },
   js.configs.recommended,
   prettier,
   {
@@ -62,7 +65,11 @@ export default [
           tabWidth: 2,
           ignoreUrls: true
         }
-      ]
+      ],
+      'prefer-const': 'error',
+      'no-var': 'error',
+      'eqeqeq': 'error',
+      'no-debugger': 'error'
     }
   },
   {
