@@ -261,6 +261,24 @@ Number vacuumBatteryItem   (vacuumRobot) { ga="vacuumBattery" }
 String vacuumCycleItem     (vacuumRobot) { ga="vacuumCurrentCycle" }
 ```
 
+### Washer and Dishwasher as Group with cycle information
+
+| | |
+|---|---|
+| **Device Type** | [Washer](https://developers.home.google.com/cloud-to-cloud/guides/washer), [Dishwasher](https://developers.home.google.com/cloud-to-cloud/guides/dishwasher) |
+| **Supported Traits** | [StartStop](https://developers.home.google.com/cloud-to-cloud/traits/startstop), [RunCycle](https://developers.home.google.com/cloud-to-cloud/traits/runcycle) |
+| **Supported Items** | Group as `Washer` or `Dishwasher` with the following members:<br>(optional) Switch as `washerPower`<br>(optional) Number as `washerTimerRemaining`<br>(optional) String as `washerCurrentCycle` |
+| **Configuration** | (optional) `inverted=true/false`<br>(optional) `checkState=true/false` |
+
+```shell
+Group  washerDevice { ga="Washer" [ checkState=true ] }
+Switch washerPowerItem          (washerDevice) { ga="washerPower" }
+Number washerTimerRemainingItem (washerDevice) { ga="washerTimerRemaining" }
+String washerCurrentCycleItem   (washerDevice) { ga="washerCurrentCycle" }
+```
+
+You can configure a dishwasher the same way; just change the group metadata to `ga="Dishwasher"` while keeping the same member tags (`washerPower`, `washerTimerRemaining`, `washerCurrentCycle`).
+
 ### Lock
 
 | | |
@@ -414,7 +432,7 @@ Switch { ga="AirPurifier" } # No speed control - only on/off
 | | |
 |---|---|
 | **Device Type** | [Fan](https://developers.google.com/assistant/smarthome/guides/fan), [Hood](https://developers.google.com/assistant/smarthome/guides/hood), [AirPurifier](https://developers.google.com/assistant/smarthome/guides/airpurifier) |
-| **Supported Traits** | [OnOff](https://developers.google.com/assistant/smarthome/traits/OnOff), [FanSpeed](https://developers.google.com/assistant/smarthome/traits/fanspeed), [Modes](https://developers.google.com/assistant/smarthome/traits/modes),  [SensorState](https://developers.google.com/assistant/smarthome/traits/sensorstate) |
+| **Supported Traits** | [OnOff](https://developers.google.com/assistant/smarthome/traits/OnOff), [FanSpeed](https://developers.google.com/assistant/smarthome/traits/fanspeed), [Modes](https://developers.google.com/assistant/smarthome/traits/modes), [SensorState](https://developers.google.com/assistant/smarthome/traits/sensorstate) |
 | **Supported Items** | Group as `Fan`, `Hood` or `AirPurifier` with the following members:<br>(optional) Switch as `fanPower`<br>(optional) Dimmer or Number as `fanSpeed`<br>(optional) Number or String as `fanMode`<br>(optional) Number as `fanFilterLifeTime`<br>(optional) Number as `fanPM25` |
 | **Configuration** | (optional) `checkState=true/false`<br>(optional) `fanSpeeds="0=away:zero,50=default:standard:one,100=high:two"`<br>(optional) `fanModeName="OperationMode,Modus"`<br>(optional) `fanModeSettings="1=Low:Silent,2=Normal,3=High:Night"`<br>(optional) `lang="en"`<br>(optional) `ordered=true/false` |
 
@@ -441,7 +459,7 @@ Number pm25Item     (fanGroup) { ga="fanPM25" }
 | | |
 |---|---|
 | **Device Type** | [AC_Unit](https://developers.google.com/assistant/smarthome/guides/acunit) |
-| **Supported Traits** | [OnOff](https://developers.google.com/assistant/smarthome/traits/OnOff), [FanSpeed](https://developers.google.com/assistant/smarthome/traits/fanspeed), [TemperatureSetting](https://developers.google.com/assistant/smarthome/traits/temperaturesetting), [Modes](https://developers.google.com/assistant/smarthome/traits/modes),  [SensorState](https://developers.google.com/assistant/smarthome/traits/sensorstate) |
+| **Supported Traits** | [OnOff](https://developers.google.com/assistant/smarthome/traits/OnOff), [FanSpeed](https://developers.google.com/assistant/smarthome/traits/fanspeed), [TemperatureSetting](https://developers.google.com/assistant/smarthome/traits/temperaturesetting), [Modes](https://developers.google.com/assistant/smarthome/traits/modes), [SensorState](https://developers.google.com/assistant/smarthome/traits/sensorstate) |
 | **Supported Items** | Group as `AC_Unit` with the following members:<br>(optional) Switch as `fanPower`<br>(optional) Dimmer or Number as `fanSpeed`<br>(optional) Number or String as `fanMode`<br>(optional) Number as `fanFilterLifeTime`<br>(optional) Number as `fanPM25`<br>(optional) Number as `thermostatTemperatureAmbient`<br>(optional) Number as `thermostatTemperatureSetpoint`<br>(optional) Number as `thermostatTemperatureSetpointLow`<br>(optional) Number as `thermostatTemperatureSetpointHigh`<br>(optional) Number as `thermostatHumidityAmbient`<br>(optional) String or Number or Switch as `thermostatMode` |
 | **Configuration** | (optional) `checkState=true/false`<br>(optional) `fanSpeeds="0=away:zero,50=default:standard:one,100=high:two"`<br>(optional) `fanModeName="OperationMode,Modus"`<br>(optional) `fanModeSettings="1=Low:Silent,2=Normal,3=High:Night"`<br>(optional) `useFahrenheit=true/false`<br>(optional) `maxHumidity=1-100`<br>(optional) `thermostatTemperatureRange="10,30"`<br>(optional) `thermostatModes="off=OFF:WINDOW_OPEN,heat=COMFORT:BOOST,eco=ECO,on=ON,auto"`<br>(optional) `lang="en"`<br>(optional) `ordered=true/false` |
 
