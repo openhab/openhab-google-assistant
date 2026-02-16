@@ -27,7 +27,7 @@ class OpenCloseDevice extends DefaultDevice {
   }
 
   static getState(item) {
-    let state = 0;
+    let state;
     const itemType = item.groupType || item.type;
     if (itemType === 'Rollershutter') {
       state = Math.round(parseFloat(item.state));
