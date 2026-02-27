@@ -1,4 +1,5 @@
 const DefaultCommand = require('./default.js');
+const { ERROR_CODES, GoogleAssistantError } = require('../googleErrorCodes.js');
 
 class SetModes extends DefaultCommand {
   static get type() {
@@ -16,13 +17,13 @@ class SetModes extends DefaultCommand {
       if ('modesCurrentMode' in members) {
         return members.modesCurrentMode;
       }
-      throw { statusCode: 400 };
+      throw new GoogleAssistantError(ERROR_CODES.NOT_SUPPORTED, 'Device has no modesCurrentMode member configured');
     }
     if (['AirPurifier', 'Fan', 'Hood', 'ACUnit'].includes(deviceType)) {
       if ('fanMode' in members) {
         return members.fanMode;
       }
-      throw { statusCode: 400 };
+      throw new GoogleAssistantError(ERROR_CODES.NOT_SUPPORTED, 'Device has no fanMode member configured');
     }
     return device.id;
   }

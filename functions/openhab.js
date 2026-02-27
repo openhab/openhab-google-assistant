@@ -20,6 +20,7 @@
  */
 const findDeviceType = require('./deviceMatcher').findDeviceType;
 const findCommandHandler = require('./commandMatcher').findCommandHandler;
+const { ERROR_CODES, GoogleAssistantError } = require('./googleErrorCodes');
 
 class OpenHAB {
   /**
@@ -50,7 +51,7 @@ class OpenHAB {
     this.setTokenFromHeader(headers);
 
     const payload = await this.handleSync().catch(() => ({
-      errorCode: 'actionNotAvailable',
+      errorCode: ERROR_CODES.ACTION_NOT_AVAILABLE,
       status: 'ERROR',
       devices: []
     }));
@@ -66,15 +67,14 @@ class OpenHAB {
    * @param {object} headers
    */
   async onQuery(body, headers) {
-    const devices =
-      (body && body.inputs && body.inputs[0] && body.inputs[0].payload && body.inputs[0].payload.devices) || [];
+    const devices = body?.inputs?.[0]?.payload?.devices || [];
 
     console.log(`openhabGoogleAssistant - onQuery - devices: ${JSON.stringify(devices)}`);
 
     this.setTokenFromHeader(headers);
 
     const payload = await this.handleQuery(devices).catch(() => ({
-      errorCode: 'actionNotAvailable',
+      errorCode: ERROR_CODES.ACTION_NOT_AVAILABLE,
       status: 'ERROR',
       devices: {}
     }));
@@ -90,15 +90,14 @@ class OpenHAB {
    * @param {object} headers
    */
   async onExecute(body, headers) {
-    const commands =
-      (body && body.inputs && body.inputs[0] && body.inputs[0].payload && body.inputs[0].payload.commands) || [];
+    const commands = body?.inputs?.[0]?.payload?.commands || [];
 
     console.log(`openhabGoogleAssistant - onExecute - commands: ${JSON.stringify(commands)}`);
 
     this.setTokenFromHeader(headers);
 
     const payload = await this.handleExecute(commands).catch(() => ({
-      errorCode: 'actionNotAvailable',
+      errorCode: ERROR_CODES.ACTION_NOT_AVAILABLE,
       status: 'ERROR',
       commands: []
     }));
@@ -139,24 +138,34 @@ class OpenHAB {
         .then((item) => {
           const DeviceType = findDeviceType(item);
           if (!DeviceType) {
-            throw { statusCode: 404, message: `Device type not found for item: ${item.type} ${item.name}` };
+            throw new GoogleAssistantError(
+              ERROR_CODES.DEVICE_NOT_FOUND,
+              `Device type not found for item: ${item.type} ${item.name}`
+            );
           }
           if (item.state === 'NULL' && !DeviceType.supportedMembers.length) {
-            throw { statusCode: 406, message: `Item state is NULL: ${item.type} ${item.name}` };
+            throw new GoogleAssistantError(
+              ERROR_CODES.DEVICE_NOT_READY,
+              `Item state is NULL: ${item.type} ${item.name}`
+            );
           }
           payload.devices[device.id] = { status: 'SUCCESS', online: true, ...DeviceType.getState(item) };
         })
         .catch((error) => {
           console.error(`openhabGoogleAssistant - handleQuery - getItem: ERROR ${JSON.stringify(error)}`);
+          let errorCode = error.errorCode || ERROR_CODES.DEVICE_OFFLINE;
+          if (error.statusCode === 404) {
+            errorCode = ERROR_CODES.DEVICE_NOT_FOUND;
+          } else if (error.statusCode === 406) {
+            errorCode = ERROR_CODES.DEVICE_NOT_READY;
+          }
           payload.devices[device.id] = {
             status: 'ERROR',
-            errorCode:
-              error.statusCode === 404
-                ? 'deviceNotFound'
-                : error.statusCode === 406
-                  ? 'deviceNotReady'
-                  : 'deviceOffline'
+            errorCode
           };
+          if (error.debugString) {
+            payload.devices[device.id].debugString = error.debugString;
+          }
         })
     );
 
@@ -182,9 +191,24 @@ class OpenHAB {
           );
           if (SetHigh && SetLow) {
             promises.push(
-              SetHigh.execute(this._apiHandler, command.devices, execution.params, execution.challenge).then(() =>
-                SetLow.execute(this._apiHandler, command.devices, execution.params, execution.challenge)
-              )
+              SetHigh.execute(this._apiHandler, command.devices, execution.params, execution.challenge)
+                .then(() => SetLow.execute(this._apiHandler, command.devices, execution.params, execution.challenge))
+                .catch((error) => {
+                  if (error.challengeNeeded) {
+                    return {
+                      ids: command.devices.map((device) => device.id),
+                      status: 'ERROR',
+                      errorCode: ERROR_CODES.CHALLENGE_NEEDED,
+                      challengeNeeded: error.challengeNeeded
+                    };
+                  }
+                  return {
+                    ids: command.devices.map((device) => device.id),
+                    status: 'ERROR',
+                    errorCode: error.errorCode || ERROR_CODES.DEVICE_OFFLINE,
+                    ...(error.debugString && { debugString: error.debugString })
+                  };
+                })
             );
             return;
           }
@@ -198,12 +222,31 @@ class OpenHAB {
             Promise.resolve({
               ids: command.devices.map((device) => device.id),
               status: 'ERROR',
-              errorCode: 'functionNotSupported'
+              errorCode: ERROR_CODES.FUNCTION_NOT_SUPPORTED
             })
           );
           return;
         }
-        promises.push(CommandHandler.execute(this._apiHandler, command.devices, execution.params, execution.challenge));
+        promises.push(
+          CommandHandler.execute(this._apiHandler, command.devices, execution.params, execution.challenge).catch(
+            (error) => {
+              if (error.challengeNeeded) {
+                return {
+                  ids: command.devices.map((device) => device.id),
+                  status: 'ERROR',
+                  errorCode: ERROR_CODES.CHALLENGE_NEEDED,
+                  challengeNeeded: error.challengeNeeded
+                };
+              }
+              return {
+                ids: command.devices.map((device) => device.id),
+                status: 'ERROR',
+                errorCode: error.errorCode || ERROR_CODES.DEVICE_OFFLINE,
+                ...(error.debugString && { debugString: error.debugString })
+              };
+            }
+          )
+        );
       });
     });
 

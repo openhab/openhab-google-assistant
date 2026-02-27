@@ -1,5 +1,6 @@
 const DefaultCommand = require('./default.js');
 const { convertMired, convertRgbToHsv, convertKelvinToRgb } = require('../utilities.js');
+const { ERROR_CODES, GoogleAssistantError } = require('../googleErrorCodes.js');
 
 class ColorAbsoluteTemperature extends DefaultCommand {
   static get type() {
@@ -25,7 +26,10 @@ class ColorAbsoluteTemperature extends DefaultCommand {
       if ('lightColorTemperature' in members) {
         return members.lightColorTemperature;
       }
-      throw { statusCode: 400 };
+      throw new GoogleAssistantError(
+        ERROR_CODES.NOT_SUPPORTED,
+        'SpecialColorLight has no lightColorTemperature member configured'
+      );
     }
     return device.id;
   }
