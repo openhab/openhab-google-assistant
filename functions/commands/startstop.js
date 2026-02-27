@@ -28,6 +28,13 @@ class StartStop extends DefaultCommand {
       }
       throw { statusCode: 400 };
     }
+    if (['Washer', 'Dishwasher'].includes(this.getDeviceType(device))) {
+      const members = this.getMembers(device);
+      if ('washerPower' in members) {
+        return members.washerPower;
+      }
+      throw { statusCode: 400 };
+    }
     return device.id;
   }
 
