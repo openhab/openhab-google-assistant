@@ -139,9 +139,8 @@ class Humidifier extends DefaultDevice {
     }
 
     // Copy humiditySetpointRange to customData for validation in commands
-    const attributes = this.getAttributes(item);
-    if (attributes.humiditySetpointRange) {
-      metadata.customData.humiditySetpointRange = attributes.humiditySetpointRange;
+    if (metadata.attributes?.humiditySetpointRange) {
+      metadata.customData.humiditySetpointRange = metadata.attributes.humiditySetpointRange;
     }
 
     return metadata;
