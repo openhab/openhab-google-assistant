@@ -24,8 +24,14 @@ If you have any issues, questions or an idea for additional features, please tak
 ## Latest Changes
 
 ::: tip State of this document
-This documentation refers to release [v5.0.2](https://github.com/openhab/openhab-google-assistant/releases/tag/v5.0.2) of [openHAB Google Assistant](https://github.com/openhab/openhab-google-assistant) published on 2025-12-21
+This documentation refers to release [v5.1.0](https://github.com/openhab/openhab-google-assistant/releases/tag/v5.1.0) of [openHAB Google Assistant](https://github.com/openhab/openhab-google-assistant) published on 2026-03-21
 :::
+
+### v5.1.0
+
+- Added [`Washer`](#washer-and-dishwasher-as-group-with-cycle-information) support, including advanced group configuration with cycle information
+- Improved command validation and state checks (including humidity, rotation and thermostat flows)
+- Standardized Google error propagation with `GoogleAssistantError` across command handling
 
 ### v5.0.1
 
