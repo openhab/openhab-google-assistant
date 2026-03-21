@@ -199,7 +199,10 @@ class OpenHAB {
           if (SetHigh && SetLow) {
             promises.push(
               SetHigh.execute(this._apiHandler, command.devices, execution.params, execution.challenge)
-                .then(() => SetLow.execute(this._apiHandler, command.devices, execution.params, execution.challenge))
+                .then((highResponses) => {
+                  if (highResponses.some((r) => r.status !== 'SUCCESS')) return highResponses;
+                  return SetLow.execute(this._apiHandler, command.devices, execution.params, execution.challenge);
+                })
                 .catch((error) => {
                   if (error.challengeNeeded) {
                     return {

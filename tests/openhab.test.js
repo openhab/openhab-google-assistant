@@ -778,6 +778,61 @@ describe('OpenHAB', () => {
         ]
       });
     });
+
+    test('handleExecute ThermostatTemperatureSetRange short-circuits on SetHigh error', async () => {
+      getItemMock.mockResolvedValue({
+        name: 'TestItem',
+        type: 'Group',
+        metadata: { ga: { value: 'Thermostat' } },
+        members: [
+          { name: 'High', state: '25', type: 'Number', metadata: { ga: { value: 'thermostatTemperatureSetpointHigh' } } },
+          { name: 'Low', state: '5', type: 'Number', metadata: { ga: { value: 'thermostatTemperatureSetpointLow' } } }
+        ]
+      });
+      sendCommandMock.mockResolvedValue(null);
+      const commands = [
+        {
+          devices: [
+            {
+              id: 'TestItem',
+              customData: {
+                ackNeeded: true,
+                members: {
+                  thermostatTemperatureSetpointHigh: 'Test1',
+                  thermostatTemperatureSetpointLow: 'Test2'
+                }
+              }
+            }
+          ],
+          execution: [
+            {
+              command: 'action.devices.commands.ThermostatTemperatureSetRange',
+              params: {
+                thermostatTemperatureSetpointLow: 10,
+                thermostatTemperatureSetpointHigh: 20
+              }
+            }
+          ]
+        }
+      ];
+      const result = await openHAB.handleExecute(commands);
+      // SetHigh requires ack — SetLow must not be called
+      expect(sendCommandMock).not.toHaveBeenCalled();
+      expect(result).toStrictEqual({
+        commands: [
+          {
+            ids: ['TestItem'],
+            status: 'ERROR',
+            errorCode: 'challengeNeeded',
+            challengeNeeded: { type: 'ackNeeded' },
+            states: {
+              thermostatTemperatureSetpointHigh: 20,
+              thermostatTemperatureSetpointLow: 5
+            }
+          }
+        ]
+      });
+    });
   });
 });
 
