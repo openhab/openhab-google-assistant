@@ -149,7 +149,14 @@ class OpenHAB {
               `Item state is NULL: ${item.type} ${item.name}`
             );
           }
-          payload.devices[device.id] = { status: 'SUCCESS', online: true, ...DeviceType.getState(item) };
+          const states = DeviceType.getState(item);
+          const hasBlockingStatusReport =
+            Array.isArray(states.currentStatusReport) && states.currentStatusReport.some((report) => report.blocking);
+          payload.devices[device.id] = {
+            status: hasBlockingStatusReport ? 'EXCEPTIONS' : 'SUCCESS',
+            online: true,
+            ...states
+          };
         })
         .catch((error) => {
           console.error(`openhabGoogleAssistant - handleQuery - getItem: ERROR ${JSON.stringify(error)}`);

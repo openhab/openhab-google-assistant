@@ -497,7 +497,7 @@ describe('SecuritySystem Device', () => {
     const memberTrouble = 'securitySystemTrouble';
     const memberErrorCode = 'securitySystemTroubleCode';
 
-    test('trouble', () => {
+    test('trouble with invalid code falls back to supported code', () => {
       const device = {
         name: 'alarm',
         members: [
@@ -528,7 +528,43 @@ describe('SecuritySystem Device', () => {
           blocking: false,
           deviceTarget: 'alarm',
           priority: 0,
-          statusCode: 'ErrorCode123'
+          statusCode: 'securityRestriction'
+        }
+      ]);
+    });
+
+    test('trouble with valid code is preserved', () => {
+      const device = {
+        name: 'alarm',
+        members: [
+          {
+            name: 'trouble',
+            type: 'Switch',
+            metadata: {
+              ga: {
+                value: memberTrouble
+              }
+            },
+            state: 'ON'
+          },
+          {
+            name: 'errorCode',
+            type: 'String',
+            metadata: {
+              ga: {
+                value: memberErrorCode
+              }
+            },
+            state: 'lowBattery'
+          }
+        ]
+      };
+      expect(Device.getStatusReport(device, Device.getMembers(device))).toStrictEqual([
+        {
+          blocking: false,
+          deviceTarget: 'alarm',
+          priority: 0,
+          statusCode: 'lowBattery'
         }
       ]);
     });
@@ -594,6 +630,37 @@ describe('SecuritySystem Device', () => {
           deviceTarget: 'zone2',
           priority: 1,
           statusCode: 'motionDetected'
+        }
+      ]);
+    });
+
+    test('zone with unknown type falls back to supported code', () => {
+      const device = {
+        name: 'alarm',
+        members: [
+          {
+            name: 'zone1',
+            type: 'Contact',
+            metadata: {
+              ga: {
+                value: memberZone,
+                config: {
+                  zoneType: 'UnknownType',
+                  blocking: true
+                }
+              }
+            },
+            state: 'OPEN'
+          }
+        ]
+      };
+
+      expect(Device.getStatusReport(device, Device.getMembers(device))).toStrictEqual([
+        {
+          blocking: true,
+          deviceTarget: 'zone1',
+          priority: 1,
+          statusCode: 'securityRestriction'
         }
       ]);
     });

@@ -93,6 +93,39 @@ const CHALLENGE_TYPES = {
   ACK_NEEDED: 'ackNeeded'
 };
 
+// StatusReport codes for action.devices.traits.StatusReport exceptions
+const STATUS_REPORT_CODES = {
+  BAG_FULL: 'bagFull',
+  BIN_FULL: 'binFull',
+  CARBON_MONOXIDE_DETECTED: 'carbonMonoxideDetected',
+  DEVICE_AT_EXTREME_TEMPERATURE: 'deviceAtExtremeTemperature',
+  DEVICE_JAMMING_DETECTED: 'deviceJammingDetected',
+  DEVICE_MOVED: 'deviceMoved',
+  DEVICE_OPEN: 'deviceOpen',
+  DEVICE_TAMPERED: 'deviceTampered',
+  DEVICE_UNPLUGGED: 'deviceUnplugged',
+  FLOOR_UNREACHABLE: 'floorUnreachable',
+  HARDWARE_FAILURE: 'hardwareFailure',
+  IN_SOFTWARE_UPDATE: 'inSoftwareUpdate',
+  IS_BYPASSED: 'isBypassed',
+  LOW_BATTERY: 'lowBattery',
+  MOTION_DETECTED: 'motionDetected',
+  NEEDS_PADS: 'needsPads',
+  NEEDS_SOFTWARE_UPDATE: 'needsSoftwareUpdate',
+  NEEDS_WATER: 'needsWater',
+  NETWORK_JAMMING_DETECTED: 'networkJammingDetected',
+  NO_ISSUES_REPORTED: 'noIssuesReported',
+  ROOMS_ON_DIFFERENT_FLOORS: 'roomsOnDifferentFloors',
+  RUN_CYCLE_FINISHED: 'runCycleFinished',
+  SECURITY_RESTRICTION: 'securityRestriction',
+  SMOKE_DETECTED: 'smokeDetected',
+  TANK_EMPTY: 'tankEmpty',
+  USING_CELLULAR_BACKUP: 'usingCellularBackup',
+  WATER_LEAK_DETECTED: 'waterLeakDetected'
+};
+
+const VALID_STATUS_REPORT_CODES = new Set(Object.values(STATUS_REPORT_CODES));
+
 /**
  * Custom error class for Google Assistant errors.
  * Extends Error to include Google Smart Home error properties.
@@ -118,4 +151,10 @@ class GoogleAssistantError extends Error {
   }
 }
 
-module.exports = { ERROR_CODES, CHALLENGE_TYPES, GoogleAssistantError };
+module.exports = {
+  ERROR_CODES,
+  CHALLENGE_TYPES,
+  STATUS_REPORT_CODES,
+  VALID_STATUS_REPORT_CODES,
+  GoogleAssistantError
+};

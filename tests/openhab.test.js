@@ -416,6 +416,104 @@ describe('OpenHAB', () => {
         }
       });
     });
+
+    test('handleQuery SecuritySystem with blocking status report returns EXCEPTIONS', async () => {
+      getItemMock.mockReturnValue(
+        Promise.resolve({
+          name: 'AlarmItem',
+          type: 'Group',
+          state: 'ON',
+          metadata: { ga: { value: 'SecuritySystem' } },
+          members: [
+            {
+              name: 'armed',
+              type: 'Switch',
+              metadata: { ga: { value: 'securitySystemArmed' } },
+              state: 'ON'
+            },
+            {
+              name: 'zone1',
+              type: 'Contact',
+              metadata: {
+                ga: {
+                  value: 'securitySystemZone',
+                  config: { zoneType: 'OpenClose', blocking: true }
+                }
+              },
+              state: 'OPEN'
+            }
+          ]
+        })
+      );
+      const result = await openHAB.handleQuery([{ id: 'AlarmItem' }]);
+      expect(getItemMock).toHaveBeenCalledTimes(1);
+      expect(result).toStrictEqual({
+        devices: {
+          AlarmItem: {
+            status: 'EXCEPTIONS',
+            isArmed: true,
+            online: true,
+            currentStatusReport: [
+              {
+                blocking: true,
+                deviceTarget: 'zone1',
+                priority: 1,
+                statusCode: 'deviceOpen'
+              }
+            ]
+          }
+        }
+      });
+    });
+
+    test('handleQuery SecuritySystem with non-blocking status report returns SUCCESS', async () => {
+      getItemMock.mockReturnValue(
+        Promise.resolve({
+          name: 'AlarmItem',
+          type: 'Group',
+          state: 'ON',
+          metadata: { ga: { value: 'SecuritySystem' } },
+          members: [
+            {
+              name: 'armed',
+              type: 'Switch',
+              metadata: { ga: { value: 'securitySystemArmed' } },
+              state: 'ON'
+            },
+            {
+              name: 'zone1',
+              type: 'Contact',
+              metadata: {
+                ga: {
+                  value: 'securitySystemZone',
+                  config: { zoneType: 'Motion', blocking: false }
+                }
+              },
+              state: 'OPEN'
+            }
+          ]
+        })
+      );
+      const result = await openHAB.handleQuery([{ id: 'AlarmItem' }]);
+      expect(getItemMock).toHaveBeenCalledTimes(1);
+      expect(result).toStrictEqual({
+        devices: {
+          AlarmItem: {
+            status: 'SUCCESS',
+            isArmed: true,
+            online: true,
+            currentStatusReport: [
+              {
+                blocking: false,
+                deviceTarget: 'zone1',
+                priority: 1,
+                statusCode: 'motionDetected'
+              }
+            ]
+          }
+        }
+      });
+    });
   });
 
   describe('onExecute', () => {

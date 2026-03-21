@@ -202,6 +202,7 @@ gcloud beta functions logs read openhabGoogleAssistant
 
 * Sometimes the Account Linkage needs to be done twice and repeated
 * Google Assistant does not respond to querying the current brightness of an item
+* Report State (`reportStateAndNotification`) is not implemented yet; devices currently advertise `willReportState: false`
 
 ## References
 
