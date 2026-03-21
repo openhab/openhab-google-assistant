@@ -267,7 +267,7 @@ String vacuumCycleItem     (vacuumRobot) { ga="vacuumCurrentCycle" }
 |---|---|
 | **Device Type** | [Washer](https://developers.home.google.com/cloud-to-cloud/guides/washer), [Dishwasher](https://developers.home.google.com/cloud-to-cloud/guides/dishwasher) |
 | **Supported Traits** | [StartStop](https://developers.home.google.com/cloud-to-cloud/traits/startstop), [RunCycle](https://developers.home.google.com/cloud-to-cloud/traits/runcycle) |
-| **Supported Items** | Group as `Washer` or `Dishwasher` with the following members:<br>(optional) Switch as `washerPower`<br>(optional) Number as `washerTimerRemaining`<br>(optional) String as `washerCurrentCycle` |
+| **Supported Items** | Group as `Washer` or `Dishwasher` with at least one of the following members:<br>(optional) Switch as `washerPower`<br>(optional) Number as `washerTimerRemaining`<br>(optional) String as `washerCurrentCycle` |
 | **Configuration** | (optional) `inverted=true/false`<br>(optional) `checkState=true/false` |
 
 ```shell
