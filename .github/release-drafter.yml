@@ -15,6 +15,10 @@ categories:
   - title: '📖 Documentation'
     labels:
       - 'documentation'
+sort-by: 'merged_at'
+sort-direction: 'descending'
+change-template: '- $TITLE ([#$NUMBER]($URL)) @$AUTHOR'
+no-changes-template: '- No changes'
 template: |
   ## Changes
 
