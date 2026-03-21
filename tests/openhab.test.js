@@ -785,7 +785,12 @@ describe('OpenHAB', () => {
         type: 'Group',
         metadata: { ga: { value: 'Thermostat' } },
         members: [
-          { name: 'High', state: '25', type: 'Number', metadata: { ga: { value: 'thermostatTemperatureSetpointHigh' } } },
+          {
+            name: 'High',
+            state: '25',
+            type: 'Number',
+            metadata: { ga: { value: 'thermostatTemperatureSetpointHigh' } }
+          },
           { name: 'Low', state: '5', type: 'Number', metadata: { ga: { value: 'thermostatTemperatureSetpointLow' } } }
         ]
       });
