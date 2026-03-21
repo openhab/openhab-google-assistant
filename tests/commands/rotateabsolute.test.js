@@ -192,11 +192,15 @@ describe('RotateAbsolute Command', () => {
       }).not.toThrow();
     });
 
-    test('checkCurrentState does not throw when close but within tolerance', () => {
-      // Difference is exactly 0.5, which is < 1
-      expect(() => {
+    test('checkCurrentState throws when close and within tolerance', () => {
+      try {
         Command.checkCurrentState('50', '49.6', { rotationPercent: 50 });
-      }).not.toThrow();
+        throw new Error('Expected GoogleAssistantError to be thrown');
+      } catch (error) {
+        expect(error).toBeInstanceOf(GoogleAssistantError);
+        expect(error.errorCode).toBe(ERROR_CODES.ALREADY_IN_STATE);
+        expect(error.message).toBe('Rotation is already at 50%');
+      }
     });
 
     test('checkCurrentState does not throw with invalid numbers', () => {

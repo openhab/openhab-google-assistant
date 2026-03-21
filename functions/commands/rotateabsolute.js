@@ -90,8 +90,8 @@ class RotateAbsolute extends DefaultCommand {
   }
 
   static checkCurrentState(target, state, params) {
-    const targetRotation = parseInt(target);
-    const currentRotation = parseInt(state);
+    const targetRotation = parseFloat(target);
+    const currentRotation = parseFloat(state);
 
     if (!isNaN(targetRotation) && !isNaN(currentRotation)) {
       if (Math.abs(targetRotation - currentRotation) < 1) {
