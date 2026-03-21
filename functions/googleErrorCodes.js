@@ -21,7 +21,6 @@
 const ERROR_CODES = {
   // Device state errors
   DEVICE_OFFLINE: 'deviceOffline',
-  OFFLINE: 'offline', // Alias for deviceOffline
   DEVICE_NOT_FOUND: 'deviceNotFound',
   DEVICE_NOT_READY: 'deviceNotReady',
 
