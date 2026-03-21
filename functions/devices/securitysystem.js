@@ -1,4 +1,5 @@
 const DefaultDevice = require('./default.js');
+const { STATUS_REPORT_CODES, VALID_STATUS_REPORT_CODES } = require('../googleErrorCodes.js');
 
 const memberArmed = 'securitySystemArmed';
 const memberArmLevel = 'securitySystemArmLevel';
@@ -6,6 +7,7 @@ const memberZone = 'securitySystemZone';
 const memberTrouble = 'securitySystemTrouble';
 const memberErrorCode = 'securitySystemTroubleCode';
 const zoneStateActive = ['ON', 'OPEN'];
+const defaultStatusCode = STATUS_REPORT_CODES.SECURITY_RESTRICTION;
 
 class SecuritySystem extends DefaultDevice {
   static get type() {
@@ -116,36 +118,41 @@ class SecuritySystem extends DefaultDevice {
     return state;
   }
 
+  static getValidStatusCode(statusCode, fallback = defaultStatusCode) {
+    return VALID_STATUS_REPORT_CODES.has(statusCode) ? statusCode : fallback;
+  }
+
   static getStatusReport(item, members) {
     const report = [];
     const isTrouble = memberTrouble in members && members[memberTrouble].state === 'ON';
 
     if (isTrouble) {
+      const reportedStatusCode = memberErrorCode in members ? members[memberErrorCode].state : defaultStatusCode;
       report.push({
         blocking: false,
         deviceTarget: item.name,
         priority: 0,
-        statusCode: (memberErrorCode in members && members[memberErrorCode].state) || 'noIssuesReported'
+        statusCode: this.getValidStatusCode(reportedStatusCode)
       });
     }
 
     if (members.zones) {
       for (const zone of members.zones) {
         if (zoneStateActive.includes(zone.state)) {
-          let statusCode = 'notSupported';
+          let statusCode = defaultStatusCode;
           switch (zone.config.zoneType) {
             case 'OpenClose':
-              statusCode = 'deviceOpen';
+              statusCode = STATUS_REPORT_CODES.DEVICE_OPEN;
               break;
             case 'Motion':
-              statusCode = 'motionDetected';
+              statusCode = STATUS_REPORT_CODES.MOTION_DETECTED;
               break;
           }
           report.push({
             blocking: zone.config.blocking === true,
             deviceTarget: zone.name,
             priority: 1,
-            statusCode: statusCode
+            statusCode: this.getValidStatusCode(statusCode)
           });
         }
       }

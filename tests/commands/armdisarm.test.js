@@ -233,7 +233,7 @@ describe('ArmDisarm Command', () => {
                 blocking: false,
                 deviceTarget: 'itemName',
                 priority: 0,
-                statusCode: 'ErrorCode123'
+                statusCode: 'securityRestriction'
               }
             ],
             isArmed: false,

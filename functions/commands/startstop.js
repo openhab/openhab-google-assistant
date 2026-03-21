@@ -1,4 +1,5 @@
 const DefaultCommand = require('./default.js');
+const { ERROR_CODES, GoogleAssistantError } = require('../googleErrorCodes.js');
 
 class StartStop extends DefaultCommand {
   static get type() {
@@ -12,7 +13,7 @@ class StartStop extends DefaultCommand {
   static convertParamsToValue(params, _, device) {
     const itemType = this.getItemType(device);
     if (itemType === 'Contact') {
-      throw { statusCode: 400 };
+      throw new GoogleAssistantError(ERROR_CODES.NOT_SUPPORTED, 'Contact items cannot be used with StartStop command');
     }
     if (itemType === 'Rollershutter') {
       return params.start ? 'MOVE' : 'STOP';
@@ -26,14 +27,17 @@ class StartStop extends DefaultCommand {
       if ('vacuumPower' in members) {
         return members.vacuumPower;
       }
-      throw { statusCode: 400 };
+      throw new GoogleAssistantError(ERROR_CODES.NOT_SUPPORTED, 'Vacuum has no vacuumPower member configured');
     }
     if (['Washer', 'Dishwasher'].includes(this.getDeviceType(device))) {
       const members = this.getMembers(device);
       if ('washerPower' in members) {
         return members.washerPower;
       }
-      throw { statusCode: 400 };
+      throw new GoogleAssistantError(
+        ERROR_CODES.NOT_SUPPORTED,
+        `${this.getDeviceType(device)} has no washerPower member configured`
+      );
     }
     return device.id;
   }
@@ -47,7 +51,10 @@ class StartStop extends DefaultCommand {
 
   static checkCurrentState(target, state, params) {
     if (target === state) {
-      throw { errorCode: params.start ? 'alreadyStarted' : 'alreadyStopped' };
+      throw new GoogleAssistantError(
+        params.start ? ERROR_CODES.ALREADY_STARTED : ERROR_CODES.ALREADY_STOPPED,
+        `Device is already ${params.start ? 'started' : 'stopped'}`
+      );
     }
   }
 }

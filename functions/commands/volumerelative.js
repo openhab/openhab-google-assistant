@@ -1,5 +1,6 @@
 const DefaultCommand = require('./default.js');
 const TV = require('../devices/tv.js');
+const { ERROR_CODES, GoogleAssistantError } = require('../googleErrorCodes.js');
 
 class VolumeRelative extends DefaultCommand {
   static get type() {
@@ -20,7 +21,7 @@ class VolumeRelative extends DefaultCommand {
       if ('tvVolume' in members) {
         return members.tvVolume;
       }
-      throw { statusCode: 400 };
+      throw new GoogleAssistantError(ERROR_CODES.NOT_SUPPORTED, 'TV has no tvVolume member configured');
     }
     return device.id;
   }
@@ -32,7 +33,7 @@ class VolumeRelative extends DefaultCommand {
       if ('tvVolume' in members) {
         state = members.tvVolume.state;
       } else {
-        throw { statusCode: 400 };
+        throw new GoogleAssistantError(ERROR_CODES.NOT_SUPPORTED, 'TV has no tvVolume member configured');
       }
     }
     const level = parseInt(state) + params.relativeSteps;
@@ -47,9 +48,19 @@ class VolumeRelative extends DefaultCommand {
 
   static checkCurrentState(target, state) {
     if (target === state) {
-      throw {
-        errorCode: state === '100' ? 'volumeAlreadyMax' : state === '0' ? 'volumeAlreadyMin' : 'alreadyInState'
-      };
+      const errorCode =
+        state === '100'
+          ? ERROR_CODES.VOLUME_ALREADY_MAX
+          : state === '0'
+            ? ERROR_CODES.VOLUME_ALREADY_MIN
+            : ERROR_CODES.ALREADY_IN_STATE;
+      const message =
+        state === '100'
+          ? 'Volume is already at maximum'
+          : state === '0'
+            ? 'Volume is already at minimum'
+            : 'Volume is already at target level';
+      throw new GoogleAssistantError(errorCode, message);
     }
   }
 }

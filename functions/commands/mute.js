@@ -1,4 +1,5 @@
 const DefaultCommand = require('./default.js');
+const { ERROR_CODES, GoogleAssistantError } = require('../googleErrorCodes.js');
 
 class Mute extends DefaultCommand {
   static get type() {
@@ -18,7 +19,7 @@ class Mute extends DefaultCommand {
       if ('tvVolume' in members) {
         return members.tvVolume;
       }
-      throw { statusCode: 400 };
+      throw new GoogleAssistantError(ERROR_CODES.NOT_SUPPORTED, 'TV has no tvMute or tvVolume member configured');
     }
     return device.id;
   }

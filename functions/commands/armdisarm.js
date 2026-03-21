@@ -1,5 +1,6 @@
 const DefaultCommand = require('./default.js');
 const SecuritySystem = require('../devices/securitysystem.js');
+const { ERROR_CODES, GoogleAssistantError } = require('../googleErrorCodes.js');
 
 class ArmDisarm extends DefaultCommand {
   static get type() {
@@ -28,12 +29,12 @@ class ArmDisarm extends DefaultCommand {
         if (SecuritySystem.armLevelMemberName in members) {
           return members[SecuritySystem.armLevelMemberName];
         }
-        throw { statusCode: 400 };
+        throw new GoogleAssistantError(ERROR_CODES.NOT_SUPPORTED, 'SecuritySystem has no armLevel member configured');
       }
       if (SecuritySystem.armedMemberName in members) {
         return members[SecuritySystem.armedMemberName];
       }
-      throw { statusCode: 400 };
+      throw new GoogleAssistantError(ERROR_CODES.NOT_SUPPORTED, 'SecuritySystem has no armed member configured');
     }
     return device.id;
   }
@@ -62,7 +63,17 @@ class ArmDisarm extends DefaultCommand {
 
   static checkCurrentState(target, state, params) {
     if (target === state) {
-      throw { errorCode: params.armLevel ? 'alreadyInState' : params.arm ? 'alreadyArmed' : 'alreadyDisarmed' };
+      const errorCode = params.armLevel
+        ? ERROR_CODES.ALREADY_IN_STATE
+        : params.arm
+          ? ERROR_CODES.ALREADY_ARMED
+          : ERROR_CODES.ALREADY_DISARMED;
+      const message = params.armLevel
+        ? 'Security system is already in the requested state'
+        : params.arm
+          ? 'Security system is already armed'
+          : 'Security system is already disarmed';
+      throw new GoogleAssistantError(errorCode, message);
     }
   }
 
@@ -77,7 +88,7 @@ class ArmDisarm extends DefaultCommand {
       const armLevelSuccessful = params.armLevel ? params.armLevel === currentLevel : true;
       if (!armStatusSuccessful || !armLevelSuccessful) {
         if (!params.arm) {
-          throw { errorCode: 'disarmFailure' };
+          throw new GoogleAssistantError(ERROR_CODES.DISARM_FAILURE, 'Failed to disarm security system');
         } else {
           const report = SecuritySystem.getStatusReport(item, members);
           if (report.length) {
@@ -87,12 +98,15 @@ class ArmDisarm extends DefaultCommand {
               states: { online: true, currentStatusReport: report, ...SecuritySystem.getState(item) }
             };
           }
-          throw { errorCode: 'armFailure' };
+          throw new GoogleAssistantError(ERROR_CODES.ARM_FAILURE, 'Failed to arm security system');
         }
       }
     } else {
       if (params.arm !== (item.state === (this.isInverted(device) ? 'OFF' : 'ON'))) {
-        throw { errorCode: params.arm ? 'armFailure' : 'disarmFailure' };
+        throw new GoogleAssistantError(
+          params.arm ? ERROR_CODES.ARM_FAILURE : ERROR_CODES.DISARM_FAILURE,
+          params.arm ? 'Failed to arm security system' : 'Failed to disarm security system'
+        );
       }
     }
   }

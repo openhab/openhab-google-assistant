@@ -1,5 +1,6 @@
 const DefaultCommand = require('./default.js');
 const Charger = require('../devices/charger.js');
+const { ERROR_CODES, GoogleAssistantError } = require('../googleErrorCodes.js');
 
 class Charge extends DefaultCommand {
   static get type() {
@@ -15,7 +16,7 @@ class Charge extends DefaultCommand {
     if ('chargerCharging' in members) {
       return members.chargerCharging;
     }
-    throw { statusCode: 400 };
+    throw new GoogleAssistantError(ERROR_CODES.NOT_SUPPORTED, 'Charger has no chargerCharging member configured');
   }
 
   static convertParamsToValue(params, _, device) {

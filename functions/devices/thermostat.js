@@ -1,5 +1,6 @@
 const DefaultDevice = require('./default.js');
 const convertFahrenheitToCelsius = require('../utilities.js').convertFahrenheitToCelsius;
+const { ERROR_CODES, GoogleAssistantError } = require('../googleErrorCodes.js');
 
 class Thermostat extends DefaultDevice {
   static get type() {
@@ -101,7 +102,7 @@ class Thermostat extends DefaultDevice {
     if (mode in modeMap) {
       return modeMap[mode][0];
     }
-    throw { statusCode: 400 };
+    throw new GoogleAssistantError(ERROR_CODES.NOT_SUPPORTED, `Unsupported thermostat mode: ${mode}`);
   }
 
   static translateModeToGoogle(item, mode) {
