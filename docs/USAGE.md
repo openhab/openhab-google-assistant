@@ -361,7 +361,7 @@ The `Switch` and the `Group` configuration support the following configuration p
 When configured as a group, you can add arm levels as well as report errors and get details of zones causing the system to not arm.
 
 `armLevels="Key=Label"` - The label is used for commanding Google Assistant, the key is the matching value sent to openHAB.
-`ordered=true` - When set together with `armLevels`, marks the arm levels as ordered so Google understands their relative ranking.
+`ordered=true` - When set together with `armLevels`, marks the arm levels as ordered, so Google understands their relative ranking.
 
 Google Command: "_Hey Google, set House Alarm to Level 1_" (L1 sent to item).
 
