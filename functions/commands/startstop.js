@@ -34,7 +34,10 @@ class StartStop extends DefaultCommand {
       if ('washerPower' in members) {
         return members.washerPower;
       }
-      throw { statusCode: 400 };
+      throw new GoogleAssistantError(
+        ERROR_CODES.NOT_SUPPORTED,
+        `${this.getDeviceType(device)} has no washerPower member configured`
+      );
     }
     return device.id;
   }

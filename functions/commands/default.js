@@ -198,7 +198,7 @@ class DefaultCommand {
         } else {
           const DeviceType = findDeviceType(item);
           if (!DeviceType) {
-            throw { statusCode: 404 };
+            throw new GoogleAssistantError(ERROR_CODES.DEVICE_NOT_FOUND, 'Device type could not be resolved for item');
           }
           return {
             ids: [device.id],

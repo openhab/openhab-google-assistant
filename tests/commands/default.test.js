@@ -1,4 +1,5 @@
 const Command = require('../../functions/commands/default.js');
+const { ERROR_CODES, GoogleAssistantError } = require('../../functions/googleErrorCodes.js');
 
 class TestCommand1 extends Command {
   static get type() {
@@ -32,7 +33,7 @@ class TestCommand3 extends TestCommand1 {
 
 class TestCommand4 extends TestCommand1 {
   static convertParamsToValue() {
-    throw { statusCode: 400 };
+    throw new GoogleAssistantError(ERROR_CODES.NOT_SUPPORTED, 'Test command does not support this operation');
   }
 }
 
@@ -363,6 +364,7 @@ describe('Default Command', () => {
       expect(sendCommandMock).toHaveBeenCalledTimes(0);
       expect(result).toStrictEqual([
         {
+          debugString: 'Test command does not support this operation',
           errorCode: 'notSupported',
           ids: ['Item1'],
           status: 'ERROR'
@@ -517,6 +519,7 @@ describe('Default Command', () => {
         expect(validateUpdateSpy).toHaveBeenCalledWith({ on: true }, { name: 'InvalidItem' }, devices[0]);
         expect(result).toStrictEqual([
           {
+            debugString: 'Device type could not be resolved for item',
             errorCode: 'deviceNotFound',
             ids: ['Item1'],
             status: 'ERROR'

@@ -21,7 +21,7 @@ class VolumeRelative extends DefaultCommand {
       if ('tvVolume' in members) {
         return members.tvVolume;
       }
-      throw { statusCode: 400 };
+      throw new GoogleAssistantError(ERROR_CODES.NOT_SUPPORTED, 'TV has no tvVolume member configured');
     }
     return device.id;
   }
@@ -33,7 +33,7 @@ class VolumeRelative extends DefaultCommand {
       if ('tvVolume' in members) {
         state = members.tvVolume.state;
       } else {
-        throw { statusCode: 400 };
+        throw new GoogleAssistantError(ERROR_CODES.NOT_SUPPORTED, 'TV has no tvVolume member configured');
       }
     }
     const level = parseInt(state) + params.relativeSteps;
