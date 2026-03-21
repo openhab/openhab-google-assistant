@@ -47,10 +47,10 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v6
 
-    - name: Use Node.js 20.x
+    - name: Use Node.js 22.x
       uses: actions/setup-node@v6
       with:
-        node-version: 20.x
+        node-version: 22.x
         cache: 'npm'
 
     - name: Install dependencies
@@ -94,10 +94,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Use Node.js 20.x
+      - name: Use Node.js 22.x
         uses: actions/setup-node@v6
         with:
-          node-version: 20.x
+          node-version: 22.x
           cache: 'npm'
           cache-dependency-path: 'functions/package-lock.json'
 
@@ -114,7 +114,7 @@ jobs:
         uses: google-github-actions/deploy-cloud-functions@v2.1.0
         with:
           name: ${{ github.event_name == 'release' && 'openhabGoogleAssistant' || 'openhabGoogleAssistant_test' }}
-          runtime: nodejs20
+          runtime: nodejs22
           source_dir: ./functions
           entry_point: openhabGoogleAssistant
           region: us-central1

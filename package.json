@@ -11,7 +11,7 @@
   "contributors": [
     "Michael Krug"
   ],
-  "packageManager": "npm@11.7.0",
+  "packageManager": "npm@11.12.1",
   "scripts": {
     "start": "node testServer.js",
     "test": "jest --silent --coverage",
@@ -28,6 +28,9 @@
     ]
   },
   "license": "EPL-2.0",
+  "engines": {
+    "node": ">=22"
+  },
   "bugs": {
     "url": "https://github.com/openhab/openhab-google-assistant/issues"
   },

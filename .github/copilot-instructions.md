@@ -13,7 +13,7 @@ This repository implements a Google Assistant Smart Home Action for OpenHAB, ena
 ## Build & Development Process
 
 ### Prerequisites
-- Node.js 20.x (specified in CI/CD workflow)
+- Node.js 22.x (specified in CI/CD workflow)
 - npm 11.6.4+ (specified as packageManager)
 - Google Cloud SDK (for deployment)
 
@@ -128,7 +128,7 @@ The project uses a **registry-based command architecture** for managing Google A
 
 ### GitHub Workflows
 1. **Markdown Checks** (PRs only): Linting, spell check, grammar check
-2. **Unit Testing**: Node.js 20.x, install deps, lint, test with coverage
+2. **Unit Testing**: Node.js 22.x, install deps, lint, test with coverage
 3. **Code Analysis**: CodeQL security scanning
 4. **Deployment**: Auto-deploy to Google Cloud Functions on tags/releases
 
@@ -137,10 +137,10 @@ The project uses a **registry-based command architecture** for managing Google A
 2. `npm run lint` (ESLint validation)
 3. `npm run test-ci` (Jest with coverage)
 4. Coverage upload to artifacts
-5. Google Cloud Functions deployment (nodejs20 runtime)
+5. Google Cloud Functions deployment (nodejs22 runtime)
 
 ### Deployment Configuration
-- **Runtime**: nodejs20
+- **Runtime**: nodejs22
 - **Entry Point**: openhabGoogleAssistant
 - **Region**: us-central1
 - **Memory**: 256MB

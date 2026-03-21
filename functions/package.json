@@ -11,6 +11,9 @@
     "Michael Krug"
   ],
   "license": "EPL-2.0",
+  "engines": {
+    "node": ">=22"
+  },
   "dependencies": {
     "actions-on-google": "^3.0.0"
   }
