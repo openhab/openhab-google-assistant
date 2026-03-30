@@ -14,7 +14,7 @@ This repository implements a Google Assistant Smart Home Action for OpenHAB, ena
 
 ### Prerequisites
 - Node.js 22.x (specified in CI/CD workflow)
-- npm 11.6.4+ (specified as packageManager)
+- npm 11.12.1+ (specified as packageManager)
 - Google Cloud SDK (for deployment)
 
 ### Essential Commands (Run in Order)
