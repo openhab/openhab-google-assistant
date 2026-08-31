@@ -59,11 +59,10 @@ describe('ApiHandler', () => {
     });
 
     test('getOptions POST', () => {
-      expect(apiHandler.getOptions('POST', 'TestItem', 10)).toStrictEqual({
+      expect(apiHandler.getOptions('POST', 'TestItem')).toStrictEqual({
         headers: {
           Accept: 'application/json',
           Authorization: 'Bearer token',
-          'Content-Length': 10,
           'Content-Type': 'text/plain',
           'X-OpenHAB-Source': 'org.openhab.googleassistant'
         },
@@ -77,9 +76,9 @@ describe('ApiHandler', () => {
     test('getOptions GET userpass', () => {
       apiHandler._config.userpass = 'tester:test';
       expect(apiHandler.getOptions('GET', 'TestItem', 0)).toStrictEqual({
-        auth: 'tester:test',
         headers: {
-          Accept: 'application/json'
+          Accept: 'application/json',
+          Authorization: `Basic ${Buffer.from('tester:test').toString('base64')}`
         },
         hostname: 'example.org',
         method: 'GET',
