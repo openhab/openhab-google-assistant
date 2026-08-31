@@ -182,6 +182,19 @@ describe('ApiHandler', () => {
       expect(scope.isDone()).toBe(true);
     });
 
+    test('getItems rejects on 201', async () => {
+      const scope = nock('https://example.org')
+        .get('/items/?metadata=ga,synonyms&fields=groupNames,groupType,name,label,metadata,type,state')
+        .reply(201, [{ name: 'TestItem' }]);
+      await expect(apiHandler.getItems()).rejects.toStrictEqual({
+        message:
+          // eslint-disable-next-line max-len
+          'getItem - failed for path: /items/?metadata=ga,synonyms&fields=groupNames,groupType,name,label,metadata,type,state',
+        statusCode: 201
+      });
+      expect(scope.isDone()).toBe(true);
+    });
+
     test('getItems error', async () => {
       const scope = nock('https://example.org')
         .get('/items/?metadata=ga,synonyms&fields=groupNames,groupType,name,label,metadata,type,state')

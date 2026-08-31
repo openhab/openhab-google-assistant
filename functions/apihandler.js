@@ -96,9 +96,14 @@ class ApiHandler {
       });
     } catch (error) {
       console.error(`openhabGoogleAssistant - getItem: ERROR ${JSON.stringify(error)}`);
+      // fetch (unlike the old http.request) refuses the Fetch Standard's forbidden ports (e.g. 6000, 6667)
+      if (error.cause?.message === 'bad port') {
+        throw { statusCode: 400, message: `getItem - port ${options.port} is not allowed by fetch: ${options.path}` };
+      }
       throw error.cause || error;
     }
     if (response.status !== 200) {
+      await response.body?.cancel();
       throw { statusCode: response.status, message: `getItem - failed for path: ${options.path}` };
     }
     try {
@@ -135,9 +140,16 @@ class ApiHandler {
       });
     } catch (error) {
       console.error(`openhabGoogleAssistant - sendCommand: ERROR ${JSON.stringify(error)}`);
+      if (error.cause?.message === 'bad port') {
+        throw {
+          statusCode: 400,
+          message: `sendCommand - port ${options.port} is not allowed by fetch: ${options.path}`
+        };
+      }
       throw error.cause || error;
     }
     if (response.status !== 200) {
+      await response.body?.cancel();
       throw { statusCode: response.status, message: `sendCommand - failed for path: ${options.path}` };
     }
     return true;
