@@ -18,20 +18,15 @@
  * @author Michael Krug - Rework
  *
  */
-const http = require('http');
-const https = require('https');
+const REQUEST_TIMEOUT_MS = 10000;
 
 class ApiHandler {
   /**
    * @param {object} config
    */
   constructor(config = { host: '', path: '/rest/items/', port: 80 }) {
-    if (!config.path.startsWith('/')) {
-      config.path = `/${config.path}`;
-    }
-    if (!config.path.endsWith('/')) {
-      config.path += '/';
-    }
+    const trimmed = config.path.replace(/^\/|\/$/g, '');
+    config.path = trimmed ? `/${trimmed}/` : '/';
     this._config = config;
     this._authToken = '';
   }
@@ -46,9 +41,8 @@ class ApiHandler {
   /**
    * @param {string} method
    * @param {string} itemName
-   * @param {number} length
    */
-  getOptions(method = 'GET', itemName = '', length = 0) {
+  getOptions(method = 'GET', itemName = '') {
     const queryString =
       method === 'GET'
         ? `?metadata=ga,synonyms${itemName ? '' : '&fields=groupNames,groupType,name,label,metadata,type,state'}`
@@ -64,14 +58,13 @@ class ApiHandler {
     };
 
     if (this._config.userpass) {
-      options.auth = this._config.userpass;
+      options.headers.Authorization = `Basic ${Buffer.from(this._config.userpass).toString('base64')}`;
     } else if (this._authToken) {
       options.headers.Authorization = `Bearer ${this._authToken}`;
     }
 
     if (method === 'POST') {
       options.headers['Content-Type'] = 'text/plain';
-      options.headers['Content-Length'] = length;
       options.headers['X-OpenHAB-Source'] = 'org.openhab.googleassistant';
     }
 
@@ -79,42 +72,51 @@ class ApiHandler {
   }
 
   /**
+   * @param {object} options
+   * @returns {string}
+   */
+  getUrl(options) {
+    const protocol = options.port === 443 ? 'https' : 'http';
+    const hostname =
+      options.hostname.includes(':') && !options.hostname.startsWith('[') ? `[${options.hostname}]` : options.hostname;
+    return `${protocol}://${hostname}:${options.port}${options.path}`;
+  }
+
+  /**
    * @param {string} itemName
    */
-  getItem(itemName = '') {
+  async getItem(itemName = '') {
     const options = this.getOptions('GET', itemName);
-    return new Promise((resolve, reject) => {
-      const protocol = options.port === 443 ? https : http;
-      const req = protocol.request(options, (response) => {
-        if (response.statusCode !== 200) {
-          reject({ statusCode: response.statusCode, message: `getItem - failed for path: ${options.path}` });
-          return;
-        }
-
-        response.setEncoding('utf8');
-        let data = '';
-
-        response.on('data', (chunk) => {
-          data += chunk;
-        });
-
-        response.on('end', () => {
-          try {
-            resolve(JSON.parse(data));
-          } catch (e) {
-            reject({
-              statusCode: 415,
-              message: `getItem - JSON parse failed for path: ${options.path} - ${e.toString()}`
-            });
-          }
-        });
+    let response;
+    try {
+      response = await fetch(this.getUrl(options), {
+        headers: options.headers,
+        redirect: 'manual',
+        signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
       });
-      req.on('error', (error) => {
-        console.error(`openhabGoogleAssistant - getItem: ERROR ${JSON.stringify(error)}`);
-        reject(error);
-      });
-      req.end();
-    });
+    } catch (error) {
+      console.error(`openhabGoogleAssistant - getItem: ERROR ${JSON.stringify(error)}`);
+      // fetch (unlike the old http.request) refuses the Fetch Standard's forbidden ports (e.g. 6000, 6667)
+      if (error.cause?.message === 'bad port') {
+        throw { statusCode: 400, message: `getItem - port ${options.port} is not allowed by fetch: ${options.path}` };
+      }
+      throw error.cause || error;
+    }
+    if (response.status !== 200) {
+      await response.body?.cancel();
+      throw { statusCode: response.status, message: `getItem - failed for path: ${options.path}` };
+    }
+    try {
+      return await response.json();
+    } catch (e) {
+      if (e.name !== 'SyntaxError') {
+        throw e;
+      }
+      throw {
+        statusCode: 415,
+        message: `getItem - JSON parse failed for path: ${options.path} - ${e.toString()}`
+      };
+    }
   }
 
   getItems() {
@@ -125,24 +127,32 @@ class ApiHandler {
    * @param {string} itemName
    * @param {string} payload
    */
-  sendCommand(itemName, payload) {
-    const options = this.getOptions('POST', itemName, payload.length);
-    return new Promise((resolve, reject) => {
-      const protocol = options.port === 443 ? https : http;
-      const req = protocol.request(options, (response) => {
-        if (!response.statusCode || ![200, 201].includes(response.statusCode)) {
-          reject({ statusCode: response.statusCode, message: `sendCommand - failed for path: ${options.path}` });
-          return;
-        }
-        resolve(true);
+  async sendCommand(itemName, payload) {
+    const options = this.getOptions('POST', itemName);
+    let response;
+    try {
+      response = await fetch(this.getUrl(options), {
+        method: 'POST',
+        headers: options.headers,
+        body: payload,
+        redirect: 'manual',
+        signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
       });
-      req.on('error', (error) => {
-        console.error(`openhabGoogleAssistant - sendCommand: ERROR ${JSON.stringify(error)}`);
-        reject(error);
-      });
-      req.write(payload);
-      req.end();
-    });
+    } catch (error) {
+      console.error(`openhabGoogleAssistant - sendCommand: ERROR ${JSON.stringify(error)}`);
+      if (error.cause?.message === 'bad port') {
+        throw {
+          statusCode: 400,
+          message: `sendCommand - port ${options.port} is not allowed by fetch: ${options.path}`
+        };
+      }
+      throw error.cause || error;
+    }
+    if (response.status !== 200) {
+      await response.body?.cancel();
+      throw { statusCode: response.status, message: `sendCommand - failed for path: ${options.path}` };
+    }
+    return true;
   }
 }
 

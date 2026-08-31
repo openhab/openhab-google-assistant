@@ -26,6 +26,11 @@ describe('ApiHandler', () => {
     expect(apiHandler._authToken).toBe('token');
   });
 
+  test('constructor root path stays a single slash', () => {
+    const apiHandler2 = new ApiHandler({ path: '/' });
+    expect(apiHandler2._config.path).toBe('/');
+  });
+
   test('authToken', () => {
     apiHandler.authToken = '1234';
     expect(apiHandler._authToken).toBe('1234');
@@ -59,11 +64,10 @@ describe('ApiHandler', () => {
     });
 
     test('getOptions POST', () => {
-      expect(apiHandler.getOptions('POST', 'TestItem', 10)).toStrictEqual({
+      expect(apiHandler.getOptions('POST', 'TestItem')).toStrictEqual({
         headers: {
           Accept: 'application/json',
           Authorization: 'Bearer token',
-          'Content-Length': 10,
           'Content-Type': 'text/plain',
           'X-OpenHAB-Source': 'org.openhab.googleassistant'
         },
@@ -77,15 +81,31 @@ describe('ApiHandler', () => {
     test('getOptions GET userpass', () => {
       apiHandler._config.userpass = 'tester:test';
       expect(apiHandler.getOptions('GET', 'TestItem', 0)).toStrictEqual({
-        auth: 'tester:test',
         headers: {
-          Accept: 'application/json'
+          Accept: 'application/json',
+          Authorization: `Basic ${Buffer.from('tester:test').toString('base64')}`
         },
         hostname: 'example.org',
         method: 'GET',
         path: '/items/TestItem?metadata=ga,synonyms',
         port: 443
       });
+    });
+  });
+
+  describe('getUrl', () => {
+    test('bare hostname', () => {
+      expect(apiHandler.getUrl({ hostname: 'example.org', port: 443, path: '/items/' })).toBe(
+        'https://example.org:443/items/'
+      );
+    });
+
+    test('brackets a raw IPv6 hostname', () => {
+      expect(apiHandler.getUrl({ hostname: '::1', port: 8080, path: '/items/' })).toBe('http://[::1]:8080/items/');
+    });
+
+    test('does not double-bracket an already-bracketed IPv6 hostname', () => {
+      expect(apiHandler.getUrl({ hostname: '[::1]', port: 8080, path: '/items/' })).toBe('http://[::1]:8080/items/');
     });
   });
 
@@ -113,6 +133,26 @@ describe('ApiHandler', () => {
       });
       expect(scope.isDone()).toBe(true);
     });
+
+    test('getItem does not follow redirects', async () => {
+      const scope = nock('https://example.org')
+        .get('/items/TestItem?metadata=ga,synonyms')
+        .reply(302, undefined, { Location: 'https://example.org/items/Other' });
+      await expect(apiHandler.getItem('TestItem')).rejects.toStrictEqual({
+        statusCode: 302,
+        message: 'getItem - failed for path: /items/TestItem?metadata=ga,synonyms'
+      });
+      expect(scope.isDone()).toBe(true);
+    });
+
+    test('getItem propagates a body-read failure unchanged', async () => {
+      const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValue({
+        status: 200,
+        json: () => Promise.reject(new Error('stream terminated'))
+      });
+      await expect(apiHandler.getItem('TestItem')).rejects.toThrow('stream terminated');
+      fetchSpy.mockRestore();
+    });
   });
 
   describe('getItems', () => {
@@ -138,6 +178,19 @@ describe('ApiHandler', () => {
           // eslint-disable-next-line max-len
           'getItem - failed for path: /items/?metadata=ga,synonyms&fields=groupNames,groupType,name,label,metadata,type,state',
         statusCode: 400
+      });
+      expect(scope.isDone()).toBe(true);
+    });
+
+    test('getItems rejects on 201', async () => {
+      const scope = nock('https://example.org')
+        .get('/items/?metadata=ga,synonyms&fields=groupNames,groupType,name,label,metadata,type,state')
+        .reply(201, [{ name: 'TestItem' }]);
+      await expect(apiHandler.getItems()).rejects.toStrictEqual({
+        message:
+          // eslint-disable-next-line max-len
+          'getItem - failed for path: /items/?metadata=ga,synonyms&fields=groupNames,groupType,name,label,metadata,type,state',
+        statusCode: 201
       });
       expect(scope.isDone()).toBe(true);
     });
@@ -177,6 +230,17 @@ describe('ApiHandler', () => {
     test('sendCommand error', async () => {
       const scope = nock('https://example.org').post('/items/TestItem').replyWithError('could not reach server');
       await expect(apiHandler.sendCommand('TestItem', 'OFF')).rejects.toThrow('could not reach server');
+      expect(scope.isDone()).toBe(true);
+    });
+
+    test('sendCommand does not follow redirects', async () => {
+      const scope = nock('https://example.org')
+        .post('/items/TestItem')
+        .reply(302, undefined, { Location: 'https://example.org/items/Other' });
+      await expect(apiHandler.sendCommand('TestItem', 'OFF')).rejects.toStrictEqual({
+        statusCode: 302,
+        message: 'sendCommand - failed for path: /items/TestItem'
+      });
       expect(scope.isDone()).toBe(true);
     });
   });

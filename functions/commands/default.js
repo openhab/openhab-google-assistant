@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-vars */
 const ackSupported = [
   'action.devices.commands.ArmDisarm',
-  'action.devices.commands.Fill',
   'action.devices.commands.LockUnlock',
   'action.devices.commands.OnOff',
   'action.devices.commands.OpenClose',

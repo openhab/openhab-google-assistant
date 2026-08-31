@@ -30,7 +30,9 @@ export default [
         setInterval: 'readonly',
         clearInterval: 'readonly',
         setImmediate: 'readonly',
-        clearImmediate: 'readonly'
+        clearImmediate: 'readonly',
+        fetch: 'readonly',
+        AbortSignal: 'readonly'
       }
     },
     plugins: {
