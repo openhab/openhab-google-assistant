@@ -25,7 +25,8 @@ class ApiHandler {
    * @param {object} config
    */
   constructor(config = { host: '', path: '/rest/items/', port: 80 }) {
-    config.path = `/${config.path.replace(/^\/|\/$/g, '')}/`;
+    const trimmed = config.path.replace(/^\/|\/$/g, '');
+    config.path = trimmed ? `/${trimmed}/` : '/';
     this._config = config;
     this._authToken = '';
   }
@@ -76,7 +77,9 @@ class ApiHandler {
    */
   getUrl(options) {
     const protocol = options.port === 443 ? 'https' : 'http';
-    return `${protocol}://${options.hostname}:${options.port}${options.path}`;
+    const hostname =
+      options.hostname.includes(':') && !options.hostname.startsWith('[') ? `[${options.hostname}]` : options.hostname;
+    return `${protocol}://${hostname}:${options.port}${options.path}`;
   }
 
   /**
@@ -88,6 +91,7 @@ class ApiHandler {
     try {
       response = await fetch(this.getUrl(options), {
         headers: options.headers,
+        redirect: 'manual',
         signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
       });
     } catch (error) {
@@ -100,6 +104,9 @@ class ApiHandler {
     try {
       return await response.json();
     } catch (e) {
+      if (e.name !== 'SyntaxError') {
+        throw e;
+      }
       throw {
         statusCode: 415,
         message: `getItem - JSON parse failed for path: ${options.path} - ${e.toString()}`
@@ -123,6 +130,7 @@ class ApiHandler {
         method: 'POST',
         headers: options.headers,
         body: payload,
+        redirect: 'manual',
         signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
       });
     } catch (error) {
