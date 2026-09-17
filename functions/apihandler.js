@@ -19,6 +19,9 @@
  *
  */
 const REQUEST_TIMEOUT_MS = 10000;
+// Caps concurrent outbound requests per instance to protect against request
+// flooding exhausting function execution time, memory, or connection limits.
+const MAX_CONCURRENT_REQUESTS = 20;
 
 class ApiHandler {
   /**
@@ -29,6 +32,7 @@ class ApiHandler {
     config.path = trimmed ? `/${trimmed}/` : '/';
     this._config = config;
     this._authToken = '';
+    this._activeRequests = 0;
   }
 
   /**
@@ -86,6 +90,10 @@ class ApiHandler {
    * @param {string} itemName
    */
   async getItem(itemName = '') {
+    if (this._activeRequests >= MAX_CONCURRENT_REQUESTS) {
+      throw { statusCode: 429, message: 'getItem - too many concurrent requests' };
+    }
+    this._activeRequests++;
     const options = this.getOptions('GET', itemName);
     let response;
     try {
@@ -101,6 +109,8 @@ class ApiHandler {
         throw { statusCode: 400, message: `getItem - port ${options.port} is not allowed by fetch: ${options.path}` };
       }
       throw error.cause || error;
+    } finally {
+      this._activeRequests--;
     }
     if (response.status !== 200) {
       await response.body?.cancel();
@@ -128,6 +138,10 @@ class ApiHandler {
    * @param {string} payload
    */
   async sendCommand(itemName, payload) {
+    if (this._activeRequests >= MAX_CONCURRENT_REQUESTS) {
+      throw { statusCode: 429, message: 'sendCommand - too many concurrent requests' };
+    }
+    this._activeRequests++;
     const options = this.getOptions('POST', itemName);
     let response;
     try {
@@ -147,6 +161,8 @@ class ApiHandler {
         };
       }
       throw error.cause || error;
+    } finally {
+      this._activeRequests--;
     }
     if (response.status !== 200) {
       await response.body?.cancel();
