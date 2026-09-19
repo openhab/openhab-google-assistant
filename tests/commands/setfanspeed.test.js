@@ -87,6 +87,10 @@ describe('SetFanSpeed Command', () => {
       currentFanSpeedPercent: 50,
       currentFanSpeedSetting: '50'
     });
+    // An empty fanSpeed is falsy, so convertParamsToValue falls back to fanSpeedPercent — response must match
+    expect(Command.getResponseStates({ fanSpeedPercent: 50, fanSpeed: '' })).toStrictEqual({
+      currentFanSpeedPercent: 50
+    });
   });
 
   describe('checkCurrentState', () => {
