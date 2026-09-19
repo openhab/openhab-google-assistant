@@ -9,8 +9,10 @@ class ColorAbsolute extends DefaultCommand {
   static validateParams(params) {
     if (
       !('color' in params) ||
+      params.color === null ||
       typeof params.color !== 'object' ||
       !('spectrumHSV' in params.color) ||
+      params.color.spectrumHSV === null ||
       typeof params.color.spectrumHSV !== 'object'
     ) {
       return false;

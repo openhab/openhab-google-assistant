@@ -297,6 +297,7 @@ test('method behavior', async () => {
 ## Advanced Patterns
 
 ### State Checking with `checkCurrentState`
+
 Commands can validate current device state before executing to prevent redundant operations:
 
 **Usage:**
@@ -306,6 +307,7 @@ Commands can validate current device state before executing to prevent redundant
 - Useful for commands like `OnOff`, `RotateAbsolute` to improve user experience
 
 **Example Implementation:**
+
 ```javascript
 static checkCurrentState(target, state, params) {
   if (target === state) {
@@ -318,6 +320,7 @@ static checkCurrentState(target, state, params) {
 ```
 
 ### Challenge Handling (PIN and ACK)
+
 Supports Google Assistant challenge flows for security-sensitive operations:
 
 **PIN Challenge:**

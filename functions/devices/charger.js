@@ -41,6 +41,9 @@ class Charger extends DefaultDevice {
           break;
         case 'chargerCapacityRemaining': {
           const capacity = Math.round(parseFloat(members[member].state));
+          if (!Number.isFinite(capacity)) {
+            break;
+          }
           if (!config.unit || config.unit === 'PERCENTAGE') {
             let descCapacity;
             if (capacity <= 10) {

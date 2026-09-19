@@ -247,7 +247,7 @@ class DefaultCommand {
               const member = item.members.find((m) => m.name === targetItem);
               currentState = member ? this.getNormalizedState(member) : currentState;
             }
-            this.checkCurrentState(targetValue, currentState, params);
+            this.checkCurrentState(targetValue, currentState, params, item);
           }
 
           const responseStates = this.getResponseStates(params, item, device);

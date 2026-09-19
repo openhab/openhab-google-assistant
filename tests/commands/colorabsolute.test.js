@@ -36,6 +36,10 @@ describe('ColorAbsolute Command', () => {
     // Test valid boundary values
     expect(Command.validateParams({ color: { spectrumHSV: { hue: 0, saturation: 0, value: 0 } } })).toBe(true);
     expect(Command.validateParams({ color: { spectrumHSV: { hue: 360, saturation: 1, value: 1 } } })).toBe(true);
+
+    // Test null color and null spectrumHSV are rejected rather than throwing
+    expect(Command.validateParams({ color: null })).toBe(false);
+    expect(Command.validateParams({ color: { spectrumHSV: null } })).toBe(false);
   });
 
   test('getItemName', () => {

@@ -302,6 +302,17 @@ describe('Charger Device', () => {
         descriptiveCapacityRemaining: 'FULL',
         isCharging: true
       });
+
+      item.members[1].state = 'INVALID';
+      expect(Device.getState(item)).toStrictEqual({
+        capacityUntilFull: [
+          {
+            rawValue: 40,
+            unit: 'PERCENTAGE'
+          }
+        ],
+        isCharging: true
+      });
     });
 
     test('getState KILOWATT_HOURS unit', () => {

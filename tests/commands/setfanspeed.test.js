@@ -79,6 +79,18 @@ describe('SetFanSpeed Command', () => {
     expect(Command.getResponseStates({ fanSpeedPercent: 50 })).toStrictEqual({
       currentFanSpeedPercent: 50
     });
+    expect(Command.getResponseStates({ fanSpeedPercent: 0 })).toStrictEqual({
+      currentFanSpeedPercent: 0
+    });
+    // When both are present, response must match convertParamsToValue's fanSpeed-wins precedence
+    expect(Command.getResponseStates({ fanSpeedPercent: 0, fanSpeed: '50' })).toStrictEqual({
+      currentFanSpeedPercent: 50,
+      currentFanSpeedSetting: '50'
+    });
+    // An empty fanSpeed is falsy, so convertParamsToValue falls back to fanSpeedPercent — response must match
+    expect(Command.getResponseStates({ fanSpeedPercent: 50, fanSpeed: '' })).toStrictEqual({
+      currentFanSpeedPercent: 50
+    });
   });
 
   describe('checkCurrentState', () => {
