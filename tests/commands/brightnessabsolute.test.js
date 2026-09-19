@@ -67,5 +67,14 @@ describe('BrightnessAbsolute Command', () => {
         Command.checkCurrentState('invalid', 'NaN', { brightness: 50 });
       }).not.toThrow();
     });
+
+    test('does not throw for null/empty state even when target is 0', () => {
+      expect(() => {
+        Command.checkCurrentState('0', null, { brightness: 0 });
+      }).not.toThrow();
+      expect(() => {
+        Command.checkCurrentState('0', '', { brightness: 0 });
+      }).not.toThrow();
+    });
   });
 });

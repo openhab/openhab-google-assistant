@@ -40,8 +40,9 @@ class SetFanSpeed extends DefaultCommand {
   }
 
   static getResponseStates(params) {
+    // Match convertParamsToValue's precedence: fanSpeed wins when both are present
     const states = {
-      currentFanSpeedPercent: params.fanSpeedPercent ?? Number(params.fanSpeed)
+      currentFanSpeedPercent: 'fanSpeed' in params ? Number(params.fanSpeed) : params.fanSpeedPercent
     };
     if ('fanSpeed' in params) {
       states.currentFanSpeedSetting = params.fanSpeed;

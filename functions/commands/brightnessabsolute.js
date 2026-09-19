@@ -35,6 +35,9 @@ class BrightnessAbsolute extends DefaultCommand {
   }
 
   static checkCurrentState(target, state, params) {
+    if (target === null || target === '' || state === null || state === '') {
+      return;
+    }
     const targetBrightness = Number(target);
     const currentBrightness = Number(state);
 
