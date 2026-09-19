@@ -41,11 +41,12 @@ class ThermostatTemperatureSetpoint extends DefaultCommand {
     return states;
   }
 
-  static checkCurrentState(target, state, params) {
+  static checkCurrentState(target, state, params, item) {
     const targetTemp = parseFloat(target);
     const currentTemp = parseFloat(state);
+    const tolerance = Thermostat.useFahrenheit(item) ? 0.9 : 0.5;
     if (!isNaN(targetTemp) && !isNaN(currentTemp)) {
-      if (Math.abs(targetTemp - currentTemp) < 0.5) {
+      if (Math.abs(targetTemp - currentTemp) < tolerance) {
         throw new GoogleAssistantError(
           ERROR_CODES.TARGET_ALREADY_REACHED,
           `Already at target temperature ${params.thermostatTemperatureSetpoint}°C`

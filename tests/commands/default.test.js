@@ -415,26 +415,25 @@ describe('Default Command', () => {
         const devices = [{ id: 'Item1', customData: { checkState: true } }];
         const result = await TestCommand1.execute(apiHandler, devices, { on: true }, {});
         expect(checkCurrentStateSpy).toHaveBeenCalledTimes(1);
-        expect(checkCurrentStateSpy).toHaveBeenCalledWith('ON', 'OFF', { on: true });
+        expect(checkCurrentStateSpy).toHaveBeenCalledWith('ON', 'OFF', { on: true }, item);
         expect(getItemMock).toHaveBeenCalledTimes(1);
         expect(sendCommandMock).toHaveBeenCalledTimes(1);
         expect(result).toStrictEqual([successResponse]);
       });
 
       test('execute with successful checkCurrentState with members', async () => {
-        getItemMock.mockReturnValue(
-          Promise.resolve({
-            name: 'Item1',
-            type: 'Group',
-            state: 'NULL',
-            metadata: { ga: { value: 'TV' } },
-            members: [{ name: 'PowerItem', type: 'Switch', state: 'OFF', metadata: { ga: { value: 'tvPower' } } }]
-          })
-        );
+        const groupItem = {
+          name: 'Item1',
+          type: 'Group',
+          state: 'NULL',
+          metadata: { ga: { value: 'TV' } },
+          members: [{ name: 'PowerItem', type: 'Switch', state: 'OFF', metadata: { ga: { value: 'tvPower' } } }]
+        };
+        getItemMock.mockReturnValue(Promise.resolve(groupItem));
         const devices = [{ id: 'Item1', customData: { checkState: true, members: { tvPower: 'Item1' } } }];
         const result = await TestCommand2.execute(apiHandler, devices, { on: true }, {});
         expect(checkCurrentStateSpy).toHaveBeenCalledTimes(1);
-        expect(checkCurrentStateSpy).toHaveBeenCalledWith('ON', 'OFF', { on: true });
+        expect(checkCurrentStateSpy).toHaveBeenCalledWith('ON', 'OFF', { on: true }, groupItem);
         expect(getItemMock).toHaveBeenCalledTimes(1);
         expect(sendCommandMock).toHaveBeenCalledTimes(1);
         expect(result).toStrictEqual([successResponse]);
@@ -446,7 +445,7 @@ describe('Default Command', () => {
         const devices = [{ id: 'Item1', customData: { checkState: true } }];
         const result = await TestCommand1.execute(apiHandler, devices, { on: true }, {});
         expect(checkCurrentStateSpy).toHaveBeenCalledTimes(1);
-        expect(checkCurrentStateSpy).toHaveBeenCalledWith('ON', 'ON', { on: true });
+        expect(checkCurrentStateSpy).toHaveBeenCalledWith('ON', 'ON', { on: true }, item);
         expect(getItemMock).toHaveBeenCalledTimes(1);
         expect(sendCommandMock).toHaveBeenCalledTimes(0);
         expect(result).toStrictEqual([
@@ -473,7 +472,7 @@ describe('Default Command', () => {
         const devices = [{ id: 'Item1', customData: { checkState: true } }];
         const result = await TestCommand2.execute(apiHandler, devices, { on: true }, {});
         expect(checkCurrentStateSpy).toHaveBeenCalledTimes(1);
-        expect(checkCurrentStateSpy).toHaveBeenCalledWith('ON', 'ON', { on: true });
+        expect(checkCurrentStateSpy).toHaveBeenCalledWith('ON', 'ON', { on: true }, groupItem);
         expect(getItemMock).toHaveBeenCalledTimes(1);
         expect(sendCommandMock).toHaveBeenCalledTimes(0);
         expect(result).toStrictEqual([
