@@ -79,6 +79,9 @@ describe('SetFanSpeed Command', () => {
     expect(Command.getResponseStates({ fanSpeedPercent: 50 })).toStrictEqual({
       currentFanSpeedPercent: 50
     });
+    expect(Command.getResponseStates({ fanSpeedPercent: 0 })).toStrictEqual({
+      currentFanSpeedPercent: 0
+    });
   });
 
   describe('checkCurrentState', () => {

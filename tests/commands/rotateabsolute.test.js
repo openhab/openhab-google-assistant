@@ -33,6 +33,11 @@ describe('RotateAbsolute Command', () => {
       expect(Command.validateParams({ rotationPercent: 100 })).toBe(true);
       expect(Command.validateParams({ rotationDegrees: 0 })).toBe(true);
       expect(Command.validateParams({ rotationDegrees: 360 })).toBe(true);
+
+      // Test NaN is rejected even alongside a valid other field
+      expect(Command.validateParams({ rotationPercent: NaN })).toBe(false);
+      expect(Command.validateParams({ rotationDegrees: NaN })).toBe(false);
+      expect(Command.validateParams({ rotationPercent: NaN, rotationDegrees: 45 })).toBe(false);
     });
   });
 

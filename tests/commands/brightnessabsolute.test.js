@@ -48,6 +48,14 @@ describe('BrightnessAbsolute Command', () => {
       }).toThrow('Brightness is already at 50%');
     });
 
+    test('throws ALREADY_IN_STATE for fractional values within tolerance', () => {
+      // parseInt would truncate 50.5/51.1 to 50/51 (diff 1, not within tolerance);
+      // Number preserves the fractional diff of 0.6
+      expect(() => {
+        Command.checkCurrentState('50.5', '51.1', { brightness: 50 });
+      }).toThrow('Brightness is already at 50%');
+    });
+
     test('does not throw when brightness differs', () => {
       expect(() => {
         Command.checkCurrentState('50', '52', { brightness: 50 });

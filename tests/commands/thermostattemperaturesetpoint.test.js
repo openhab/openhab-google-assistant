@@ -85,5 +85,23 @@ describe('ThermostatTemperatureSetpoint Command', () => {
         Command.checkCurrentState('invalid', 'NaN', params);
       }).not.toThrow();
     });
+
+    test('uses 0.9°F tolerance for Fahrenheit-configured items', () => {
+      const fahrenheitItem = {
+        metadata: {
+          ga: {
+            config: {
+              useFahrenheit: true
+            }
+          }
+        }
+      };
+      expect(() => {
+        Command.checkCurrentState('68', '68.8', params, fahrenheitItem);
+      }).toThrow('Already at target temperature 20°C');
+      expect(() => {
+        Command.checkCurrentState('68', '69', params, fahrenheitItem);
+      }).not.toThrow();
+    });
   });
 });

@@ -8,10 +8,10 @@ class RotateAbsolute extends DefaultCommand {
 
   static validateParams(params) {
     // Reject if a present rotation field is non-numeric, even if the other field is valid
-    if ('rotationPercent' in params && typeof params.rotationPercent !== 'number') {
+    if ('rotationPercent' in params && !Number.isFinite(params.rotationPercent)) {
       return false;
     }
-    if ('rotationDegrees' in params && typeof params.rotationDegrees !== 'number') {
+    if ('rotationDegrees' in params && !Number.isFinite(params.rotationDegrees)) {
       return false;
     }
 
