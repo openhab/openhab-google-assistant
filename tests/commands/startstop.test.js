@@ -133,5 +133,31 @@ describe('StartStop Command', () => {
         Command.getItemName(device);
       }).toThrow();
     });
+
+    test('getItemName - Oven with ovenRunning member', () => {
+      const device = {
+        id: 'OvenGroup',
+        customData: {
+          deviceType: 'Oven',
+          members: {
+            ovenRunning: 'OvenRunningSwitch'
+          }
+        }
+      };
+      expect(Command.getItemName(device)).toBe('OvenRunningSwitch');
+    });
+
+    test('getItemName - Oven without ovenRunning member', () => {
+      const device = {
+        id: 'OvenGroup',
+        customData: {
+          deviceType: 'Oven',
+          members: {}
+        }
+      };
+      expect(() => {
+        Command.getItemName(device);
+      }).toThrow();
+    });
   });
 });

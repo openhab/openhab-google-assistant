@@ -29,6 +29,7 @@ This documentation refers to release [v5.2.0](https://github.com/openhab/openhab
 
 ### v5.2.0
 
+- Added [`Oven`](#oven) support (`OnOff`, `StartStop`, `TemperatureControl`)
 - Internal improvements and dependency updates, no user-facing changes
 
 ### v5.1.0
@@ -315,6 +316,29 @@ String washerCurrentCycleItem   (washerDevice) { ga="washerCurrentCycle" }
 ```
 
 You can configure a dishwasher the same way; just change the group metadata to `ga="Dishwasher"` while keeping the same member tags (`washerPower`, `washerTimerRemaining`, `washerCurrentCycle`).
+
+### Oven
+
+| | |
+|---|---|
+| **Device Type** | [Oven](https://developers.home.google.com/cloud-to-cloud/guides/oven) |
+| **Supported Traits** | [OnOff](https://developers.home.google.com/cloud-to-cloud/traits/onoff), [StartStop](https://developers.home.google.com/cloud-to-cloud/traits/startstop), [TemperatureControl](https://developers.home.google.com/cloud-to-cloud/traits/temperaturecontrol) |
+| **Supported Items** | Switch as `Oven` (power only), or Group as `Oven` with at least one of the following members:<br>(optional) Switch as `ovenPower`<br>(optional) Switch as `ovenRunning`<br>(optional) Number as `ovenTemperatureTarget`<br>(optional) Number as `ovenTemperatureAmbient` |
+| **Configuration** | (optional) `inverted=true/false`<br>(optional) `checkState=true/false`<br>(optional) `useFahrenheit=true/false`<br>(optional) `temperatureRange=min,max` (Celsius, default `0,300`)<br>(optional) `temperatureStep=<number>` (Celsius, default `1`) |
+
+```shell
+Switch { ga="Oven" [ inverted=true ] }
+```
+
+```shell
+Group  ovenDevice { ga="Oven" [ checkState=true ] }
+Switch ovenPowerItem              (ovenDevice) { ga="ovenPower" }
+Switch ovenRunningItem            (ovenDevice) { ga="ovenRunning" }
+Number ovenTemperatureTargetItem  (ovenDevice) { ga="ovenTemperatureTarget" }
+Number ovenTemperatureAmbientItem (ovenDevice) { ga="ovenTemperatureAmbient" }
+```
+
+`Cook` and `Timer` traits are not supported yet.
 
 ### Lock
 

@@ -39,6 +39,13 @@ class StartStop extends DefaultCommand {
         `${this.getDeviceType(device)} has no washerPower member configured`
       );
     }
+    if (this.getDeviceType(device) === 'Oven') {
+      const members = this.getMembers(device);
+      if ('ovenRunning' in members) {
+        return members.ovenRunning;
+      }
+      throw new GoogleAssistantError(ERROR_CODES.NOT_SUPPORTED, 'Oven has no ovenRunning member configured');
+    }
     return device.id;
   }
 
