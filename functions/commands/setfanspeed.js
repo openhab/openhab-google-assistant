@@ -41,7 +41,7 @@ class SetFanSpeed extends DefaultCommand {
 
   static getResponseStates(params) {
     const states = {
-      currentFanSpeedPercent: params.fanSpeedPercent || Number(params.fanSpeed)
+      currentFanSpeedPercent: params.fanSpeedPercent ?? Number(params.fanSpeed)
     };
     if ('fanSpeed' in params) {
       states.currentFanSpeedSetting = params.fanSpeed;

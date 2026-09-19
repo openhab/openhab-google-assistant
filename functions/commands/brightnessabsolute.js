@@ -35,8 +35,8 @@ class BrightnessAbsolute extends DefaultCommand {
   }
 
   static checkCurrentState(target, state, params) {
-    const targetBrightness = parseInt(target);
-    const currentBrightness = parseInt(state);
+    const targetBrightness = Number(target);
+    const currentBrightness = Number(state);
 
     if (!isNaN(targetBrightness) && !isNaN(currentBrightness)) {
       if (Math.abs(targetBrightness - currentBrightness) < 1) {

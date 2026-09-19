@@ -7,9 +7,16 @@ class RotateAbsolute extends DefaultCommand {
   }
 
   static validateParams(params) {
-    // Validate that at least one rotation parameter exists and is a number
-    const hasRotationPercent = 'rotationPercent' in params && typeof params.rotationPercent === 'number';
-    const hasRotationDegrees = 'rotationDegrees' in params && typeof params.rotationDegrees === 'number';
+    // Reject if a present rotation field is non-numeric, even if the other field is valid
+    if ('rotationPercent' in params && typeof params.rotationPercent !== 'number') {
+      return false;
+    }
+    if ('rotationDegrees' in params && typeof params.rotationDegrees !== 'number') {
+      return false;
+    }
+
+    const hasRotationPercent = 'rotationPercent' in params;
+    const hasRotationDegrees = 'rotationDegrees' in params;
 
     if (!hasRotationPercent && !hasRotationDegrees) {
       return false;
