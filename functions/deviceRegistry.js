@@ -38,6 +38,7 @@ const Humidifier = require('./devices/humidifier.js');
 const HumiditySensor = require('./devices/humiditysensor.js');
 const Lock = require('./devices/lock.js');
 const Oven = require('./devices/oven.js');
+const PressureCooker = require('./devices/pressurecooker.js');
 const Scene = require('./devices/scene.js');
 const SecuritySystem = require('./devices/securitysystem.js');
 const SimpleSecuritySystem = require('./devices/simplesecuritysystem.js');
@@ -100,6 +101,7 @@ const DEVICE_REGISTRY = [
   HumiditySensor,
   Lock,
   Oven,
+  PressureCooker,
   Scene,
   SecuritySystem,
   SimpleSecuritySystem,
@@ -174,6 +176,7 @@ const DEVICE_REGISTRY = [
     { type: 'COFFEE_MAKER', name: 'CoffeeMaker' },
     { type: 'WATERHEATER', name: 'WaterHeater' },
     { type: 'OVEN', name: 'SimpleOven' },
+    { type: 'PRESSURECOOKER', name: 'SimplePressureCooker' },
     { type: 'AIRPURIFIER', name: 'SimpleAirPurifier' },
     { type: 'HOOD', name: 'SimpleHood' }
   ])

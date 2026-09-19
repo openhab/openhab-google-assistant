@@ -159,5 +159,31 @@ describe('StartStop Command', () => {
         Command.getItemName(device);
       }).toThrow();
     });
+
+    test('getItemName - PressureCooker with pressureCookerRunning member', () => {
+      const device = {
+        id: 'PressureCookerGroup',
+        customData: {
+          deviceType: 'PressureCooker',
+          members: {
+            pressureCookerRunning: 'PressureCookerRunningSwitch'
+          }
+        }
+      };
+      expect(Command.getItemName(device)).toBe('PressureCookerRunningSwitch');
+    });
+
+    test('getItemName - PressureCooker without pressureCookerRunning member', () => {
+      const device = {
+        id: 'PressureCookerGroup',
+        customData: {
+          deviceType: 'PressureCooker',
+          members: {}
+        }
+      };
+      expect(() => {
+        Command.getItemName(device);
+      }).toThrow();
+    });
   });
 });

@@ -46,6 +46,16 @@ class StartStop extends DefaultCommand {
       }
       throw new GoogleAssistantError(ERROR_CODES.NOT_SUPPORTED, 'Oven has no ovenRunning member configured');
     }
+    if (this.getDeviceType(device) === 'PressureCooker') {
+      const members = this.getMembers(device);
+      if ('pressureCookerRunning' in members) {
+        return members.pressureCookerRunning;
+      }
+      throw new GoogleAssistantError(
+        ERROR_CODES.NOT_SUPPORTED,
+        'PressureCooker has no pressureCookerRunning member configured'
+      );
+    }
     return device.id;
   }
 

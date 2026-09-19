@@ -30,6 +30,7 @@ This documentation refers to release [v5.2.0](https://github.com/openhab/openhab
 ### v5.2.0
 
 - Added [`Oven`](#oven) support (`OnOff`, `StartStop`, `TemperatureControl`)
+- Added [`PressureCooker`](#pressurecooker) support (`OnOff`, `StartStop`)
 - Internal improvements and dependency updates, no user-facing changes
 
 ### v5.1.0
@@ -336,6 +337,27 @@ Switch ovenPowerItem              (ovenDevice) { ga="ovenPower" }
 Switch ovenRunningItem            (ovenDevice) { ga="ovenRunning" }
 Number ovenTemperatureTargetItem  (ovenDevice) { ga="ovenTemperatureTarget" }
 Number ovenTemperatureAmbientItem (ovenDevice) { ga="ovenTemperatureAmbient" }
+```
+
+`Cook` and `Timer` traits are not supported yet.
+
+### PressureCooker
+
+| | |
+|---|---|
+| **Device Type** | [PressureCooker](https://developers.home.google.com/cloud-to-cloud/guides/pressurecooker) |
+| **Supported Traits** | [OnOff](https://developers.home.google.com/cloud-to-cloud/traits/onoff), [StartStop](https://developers.home.google.com/cloud-to-cloud/traits/startstop) |
+| **Supported Items** | Switch as `PressureCooker` (power only), or Group as `PressureCooker` with at least one of the following members:<br>(optional) Switch as `pressureCookerPower`<br>(optional) Switch as `pressureCookerRunning` |
+| **Configuration** | (optional) `inverted=true/false`<br>(optional) `checkState=true/false` |
+
+```shell
+Switch { ga="PressureCooker" [ inverted=true ] }
+```
+
+```shell
+Group  pressureCookerDevice { ga="PressureCooker" [ checkState=true ] }
+Switch pressureCookerPowerItem   (pressureCookerDevice) { ga="pressureCookerPower" }
+Switch pressureCookerRunningItem (pressureCookerDevice) { ga="pressureCookerRunning" }
 ```
 
 `Cook` and `Timer` traits are not supported yet.
