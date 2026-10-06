@@ -196,6 +196,30 @@ describe('Oven Device', () => {
       });
     });
 
+    test('invalid (inverted or equal) temperature range falls back to default', () => {
+      const item = {
+        metadata: { ga: { config: { temperatureRange: '300,50' } } },
+        members: [
+          { name: 'OvenTemperatureTarget', type: 'Number', metadata: { ga: { value: 'ovenTemperatureTarget' } } }
+        ]
+      };
+      expect(Oven.getAttributes(item).temperatureRange).toStrictEqual({
+        minThresholdCelsius: 0,
+        maxThresholdCelsius: 300
+      });
+
+      const equalItem = {
+        metadata: { ga: { config: { temperatureRange: '50,50' } } },
+        members: [
+          { name: 'OvenTemperatureTarget', type: 'Number', metadata: { ga: { value: 'ovenTemperatureTarget' } } }
+        ]
+      };
+      expect(Oven.getAttributes(equalItem).temperatureRange).toStrictEqual({
+        minThresholdCelsius: 0,
+        maxThresholdCelsius: 300
+      });
+    });
+
     test('temperature ambient only is query-only', () => {
       const item = {
         metadata: { ga: { config: {} } },

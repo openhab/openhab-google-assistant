@@ -7,7 +7,7 @@ This repository implements a Google Assistant Smart Home Action for OpenHAB, ena
 **Architecture**: Node.js serverless application (Google Cloud Functions) with Express.js test server
 **Languages**: JavaScript (ES2020)
 **Framework**: Google Actions on Google SDK
-**Testing**: Jest with high coverage requirements (>96%)
+**Testing**: Jest with high coverage (collected, not threshold-enforced — see Build Validation below)
 **Size**: Medium-sized project (~150 `.js` files across `functions/` and `tests/`)
 
 ## Build & Development Process

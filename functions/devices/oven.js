@@ -57,7 +57,7 @@ class Oven extends DefaultDevice {
       };
       if ('temperatureRange' in config) {
         const [min, max] = config.temperatureRange.split(',').map((s) => parseFloat(s.trim()));
-        if (!isNaN(min) && !isNaN(max)) {
+        if (!isNaN(min) && !isNaN(max) && min < max) {
           attributes.temperatureRange = {
             minThresholdCelsius: min,
             maxThresholdCelsius: max
