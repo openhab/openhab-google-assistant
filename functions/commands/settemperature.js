@@ -25,6 +25,17 @@ class SetTemperature extends DefaultCommand {
   }
 
   static convertParamsToValue(params, item) {
+    const { minThresholdCelsius, maxThresholdCelsius } = Oven.getAttributes(item).temperatureRange || {};
+    if (
+      (typeof minThresholdCelsius === 'number' && params.temperature < minThresholdCelsius) ||
+      (typeof maxThresholdCelsius === 'number' && params.temperature > maxThresholdCelsius)
+    ) {
+      throw new GoogleAssistantError(
+        ERROR_CODES.VALUE_OUT_OF_RANGE,
+        `Temperature ${params.temperature}°C is outside the configured range`
+      );
+    }
+
     let value = params.temperature;
     if (Oven.useFahrenheit(item)) {
       value = convertCelsiusToFahrenheit(value);

@@ -16,7 +16,7 @@ class Oven extends DefaultDevice {
     if ('ovenRunning' in members) {
       traits.push('action.devices.traits.StartStop');
     }
-    if ('ovenTemperatureTarget' in members) {
+    if ('ovenTemperatureTarget' in members || 'ovenTemperatureAmbient' in members) {
       traits.push('action.devices.traits.TemperatureControl');
     }
 
@@ -48,7 +48,7 @@ class Oven extends DefaultDevice {
       attributes.pausable = false;
     }
 
-    if ('ovenTemperatureTarget' in members) {
+    if ('ovenTemperatureTarget' in members || 'ovenTemperatureAmbient' in members) {
       const config = this.getConfig(item);
       attributes.temperatureUnitForUX = this.useFahrenheit(item) ? 'F' : 'C';
       attributes.temperatureRange = {
@@ -64,8 +64,12 @@ class Oven extends DefaultDevice {
           };
         }
       }
-      const step = parseFloat(config.temperatureStep);
-      attributes.temperatureStepCelsius = !isNaN(step) ? step : 1;
+      if (!('ovenTemperatureTarget' in members)) {
+        attributes.queryOnlyTemperatureControl = true;
+      } else {
+        const step = parseFloat(config.temperatureStep);
+        attributes.temperatureStepCelsius = !isNaN(step) ? step : 1;
+      }
     }
 
     return attributes;

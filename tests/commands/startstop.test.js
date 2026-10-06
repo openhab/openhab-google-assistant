@@ -25,6 +25,12 @@ describe('StartStop Command', () => {
         Command.convertParamsToValue({}, {}, device);
       }).toThrow();
     });
+
+    test('convertParamsToValue inverted', () => {
+      const device = { customData: { inverted: true } };
+      expect(Command.convertParamsToValue({ start: true }, {}, device)).toBe('OFF');
+      expect(Command.convertParamsToValue({ start: false }, {}, device)).toBe('ON');
+    });
   });
 
   test('getResponseStates', () => {

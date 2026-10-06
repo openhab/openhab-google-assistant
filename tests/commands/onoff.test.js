@@ -148,6 +148,38 @@ describe('OnOff Command', () => {
         'Item'
       );
     });
+
+    test('getItemName Oven', () => {
+      expect(() => {
+        Command.getItemName({ name: 'Item', customData: { deviceType: 'Oven' } });
+      }).toThrow();
+      const device = {
+        id: 'Item',
+        customData: {
+          deviceType: 'Oven',
+          members: {
+            ovenPower: 'PowerItem'
+          }
+        }
+      };
+      expect(Command.getItemName(device)).toBe('PowerItem');
+    });
+
+    test('getItemName PressureCooker', () => {
+      expect(() => {
+        Command.getItemName({ name: 'Item', customData: { deviceType: 'PressureCooker' } });
+      }).toThrow();
+      const device = {
+        id: 'Item',
+        customData: {
+          deviceType: 'PressureCooker',
+          members: {
+            pressureCookerPower: 'PowerItem'
+          }
+        }
+      };
+      expect(Command.getItemName(device)).toBe('PowerItem');
+    });
   });
 
   describe('convertParamsToValue', () => {

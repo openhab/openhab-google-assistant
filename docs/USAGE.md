@@ -27,10 +27,13 @@ If you have any issues, questions or an idea for additional features, please tak
 This documentation refers to release [v5.2.0](https://github.com/openhab/openhab-google-assistant/releases/tag/v5.2.0) of [openHAB Google Assistant](https://github.com/openhab/openhab-google-assistant) published on 2026-08-31
 :::
 
-### v5.2.0
+### Unreleased
 
 - Added [`Oven`](#oven) support (`OnOff`, `StartStop`, `TemperatureControl`)
 - Added [`PressureCooker`](#pressurecooker) support (`OnOff`, `StartStop`)
+
+### v5.2.0
+
 - Internal improvements and dependency updates, no user-facing changes
 
 ### v5.1.0
@@ -338,6 +341,8 @@ Switch ovenRunningItem            (ovenDevice) { ga="ovenRunning" }
 Number ovenTemperatureTargetItem  (ovenDevice) { ga="ovenTemperatureTarget" }
 Number ovenTemperatureAmbientItem (ovenDevice) { ga="ovenTemperatureAmbient" }
 ```
+
+_Hint: `TemperatureControl` is settable when `ovenTemperatureTarget` is configured; with only `ovenTemperatureAmbient` it is exposed as query-only (read current temperature, no target to set)._
 
 `Cook` and `Timer` traits are not supported yet.
 

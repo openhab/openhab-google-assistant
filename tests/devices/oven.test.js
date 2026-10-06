@@ -53,6 +53,16 @@ describe('Oven Device', () => {
       expect(Oven.getTraits(item)).toStrictEqual(['action.devices.traits.TemperatureControl']);
     });
 
+    test('Temperature ambient only', () => {
+      const item = {
+        type: 'Group',
+        members: [
+          { name: 'OvenTemperatureAmbient', type: 'Number', metadata: { ga: { value: 'ovenTemperatureAmbient' } } }
+        ]
+      };
+      expect(Oven.getTraits(item)).toStrictEqual(['action.devices.traits.TemperatureControl']);
+    });
+
     test('All members', () => {
       const item = {
         type: 'Group',
@@ -183,6 +193,20 @@ describe('Oven Device', () => {
         temperatureUnitForUX: 'C',
         temperatureRange: { minThresholdCelsius: 50, maxThresholdCelsius: 260 },
         temperatureStepCelsius: 5
+      });
+    });
+
+    test('temperature ambient only is query-only', () => {
+      const item = {
+        metadata: { ga: { config: {} } },
+        members: [
+          { name: 'OvenTemperatureAmbient', type: 'Number', metadata: { ga: { value: 'ovenTemperatureAmbient' } } }
+        ]
+      };
+      expect(Oven.getAttributes(item)).toStrictEqual({
+        temperatureUnitForUX: 'C',
+        temperatureRange: { minThresholdCelsius: 0, maxThresholdCelsius: 300 },
+        queryOnlyTemperatureControl: true
       });
     });
   });

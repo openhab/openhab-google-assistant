@@ -40,6 +40,26 @@ describe('SetTemperature Command', () => {
     expect(Command.convertParamsToValue(params, {})).toBe('180');
   });
 
+  test('convertParamsToValue rejects out-of-range temperature', () => {
+    const item = {
+      metadata: {
+        ga: {
+          config: {
+            temperatureRange: '50,260'
+          }
+        }
+      },
+      members: [{ name: 'TargetItem', type: 'Number', metadata: { ga: { value: 'ovenTemperatureTarget' } } }]
+    };
+    expect(() => {
+      Command.convertParamsToValue({ temperature: 300 }, item);
+    }).toThrow();
+    expect(() => {
+      Command.convertParamsToValue({ temperature: 10 }, item);
+    }).toThrow();
+    expect(Command.convertParamsToValue({ temperature: 200 }, item)).toBe('200');
+  });
+
   test('getResponseStates', () => {
     const item = {
       members: [

@@ -18,7 +18,11 @@ class StartStop extends DefaultCommand {
     if (itemType === 'Rollershutter') {
       return params.start ? 'MOVE' : 'STOP';
     }
-    return params.start ? 'ON' : 'OFF';
+    let start = params.start;
+    if (this.isInverted(device)) {
+      start = !start;
+    }
+    return start ? 'ON' : 'OFF';
   }
 
   static getItemName(device) {
