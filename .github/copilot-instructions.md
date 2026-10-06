@@ -1,3 +1,350 @@
 # OpenHAB Google Assistant Copilot Instructions
 
-See [AGENTS.md](../AGENTS.md) at the repository root for build/test/lint commands, architecture, and conventions.
+## Repository Overview
+
+This repository implements a Google Assistant Smart Home Action for OpenHAB, enabling voice control of IoT devices through Google Assistant. It's a Node.js serverless application using Google Cloud Functions that connects Google Assistant to OpenHAB instances via OpenHAB Cloud service.
+
+**Architecture**: Node.js serverless application (Google Cloud Functions) with Express.js test server
+**Languages**: JavaScript (ES2020)
+**Framework**: Google Actions on Google SDK
+**Testing**: Jest with high coverage requirements (>96%)
+**Size**: Medium-sized project (~90 source files including tests)
+
+## Build & Development Process
+
+### Prerequisites
+- Node.js 22.x (specified in CI/CD workflow)
+- npm 11.12.1+ (specified as packageManager)
+- Google Cloud SDK (for deployment)
+
+### Essential Commands (Run in Order)
+
+1. **Install Dependencies** (ALWAYS run first):
+   ```bash
+   npm install
+   cd functions && npm install && cd ..
+   ```
+
+2. **Lint Code** (run before any commits):
+   ```bash
+   npm run lint
+   ```
+
+3. **Fix Linting Issues**:
+   ```bash
+   npm run fix
+   ```
+
+4. **Run Tests** (required for CI):
+   ```bash
+   npm test
+   # OR for CI environment:
+   npm run test-ci
+   ```
+
+5. **Start Development Server**:
+   ```bash
+   npm start
+   # Server listens on port 3000 (configurable via OH_SERVER_PORT)
+   ```
+
+### Build Validation
+- **Tests**: Must pass with >96% coverage across all metrics (statements, branches, functions, lines)
+- **Linting**: Uses ESLint with Prettier, must pass with zero errors
+- **Time Requirements**: Tests complete in ~2-3 seconds, linting is fast
+
+### Environment Configuration
+The application requires these environment variables:
+- `OH_HOST`: OpenHAB Cloud host (default: test.host in tests)
+- `OH_PORT`: Port (default: 443, test: 1234)
+- `OH_PATH`: REST API path (default: /rest/items/)
+
+## Project Structure & Key Files
+
+### Core Architecture
+- **Entry Point**: `functions/index.js` - Main Google Assistant handler
+- **Configuration**: `functions/config.js` - Backend endpoint configuration
+- **API Handler**: `functions/apihandler.js` - OpenHAB communication layer
+- **OpenHAB Logic**: `functions/openhab.js` - Core business logic
+- **Device Registry**: `functions/deviceRegistry.js` - Centralized device type registry and factory functions
+- **Device Matching**: `functions/deviceMatcher.js` - Device discovery and matching logic
+- **Command Registry**: `functions/commandRegistry.js` - Centralized command registry
+- **Command Matching**: `functions/commandMatcher.js` - Command discovery and matching logic
+```
+/functions/           # Google Cloud Function source
+  /commands/          # Google Assistant command handlers (28 files, command classes only)
+  /devices/           # Device type implementations (27 files, device classes only)
+    [base classes]    # Switch, StartStopSwitch, OpenCloseDevice, Fan
+    [device types]    # Complex device implementations
+  apihandler.js       # OpenHAB communication layer
+  commandMatcher.js   # Command discovery/matching logic
+  commandRegistry.js  # Centralized command registry
+  config.js           # Configuration
+  deviceMatcher.js    # Device discovery/matching logic
+  deviceRegistry.js   # Centralized device type registry and factory functions
+  index.js            # Main entry point
+  openhab.js          # Core business logic
+  utilities.js        # Shared utility functions
+  package.json        # Cloud Function dependencies
+/tests/               # Comprehensive test suite
+  /commands/          # Command handler tests (29 files)
+  /devices/           # Device tests (29 files)
+  apihandler.test.js  # API handler tests
+  config.test.js      # Configuration tests
+  openhab.test.js     # Core logic tests
+### Device Architecture
+The project uses a **registry-based device architecture** for managing Google Assistant device types:
+
+- **Registry Pattern**: All devices are explicitly registered in `functions/deviceRegistry.js`
+- **Device Matching**: Device discovery logic is in `functions/deviceMatcher.js`
+- **Factory Functions**: Simple device type variants are generated from base classes using factory functions
+- **Device Categories**:
+  - **Base Classes (4)**: `Switch`, `StartStopSwitch`, `OpenCloseDevice`, `Fan`
+  - **Complex Devices (23)**: Custom implementations with unique logic (e.g., `Thermostat`, `ACUnit`, `Camera`)
+  - **Generated Variants (23)**: Simple type wrappers created via `createDeviceVariant()` factory
+    - 8 Switch-based variants (Outlet, SimpleFan, SimpleLight, Fireplace, CoffeeMaker, WaterHeater, SimpleAirPurifier, SimpleHood)
+    - 2 Fan-based variants (AirPurifier, Hood)
+    - 4 StartStopSwitch-based variants (Vacuum, Washer, Dishwasher, Sprinkler)
+    - 9 OpenCloseDevice-based variants (Door, Gate, Awning, Pergola, Garage, Window, Blinds, Curtain, Shutter)
+
+**Adding New Device Types**: Update `functions/deviceRegistry.js` to add entries to `DEVICE_REGISTRY`
+
+### Command Architecture
+The project uses a **registry-based command architecture** for managing Google Assistant commands:
+
+- **Registry Pattern**: All commands are explicitly registered in `functions/commandRegistry.js`
+- **Command Matching**: Command discovery logic is in `functions/commandMatcher.js`
+- **Total Commands**: 28 command implementations covering all Google Assistant Smart Home intents
+
+**Adding New Commands**: Update `functions/commandRegistry.js` to add entries to `COMMAND_REGISTRY`
+
+### Configuration Files
+- `eslint.config.mjs`: ESLint 9.x flat config + Prettier (printWidth: 120, singleQuote: true)
+- `.markdownlint.yaml`: Markdown linting (MD013, MD025, MD033, MD040 disabled)
+- `package.json`: Root dependencies (Express for dev server)
+- `functions/package.json`: Cloud Function dependencies (actions-on-google)
+
+## CI/CD Pipeline & Validation
+
+### GitHub Workflows
+1. **Markdown Checks** (PRs only): Linting, spell check, grammar check
+2. **Unit Testing**: Node.js 22.x, install deps, lint, test with coverage
+3. **Code Analysis**: CodeQL security scanning
+4. **Deployment**: Auto-deploy to Google Cloud Functions on tags/releases
+
+### Validation Steps
+1. `npm ci` (install dependencies)
+2. `npm run lint` (ESLint validation)
+3. `npm run test-ci` (Jest with coverage)
+4. Coverage upload to artifacts
+5. Google Cloud Functions deployment (nodejs22 runtime)
+
+### Deployment Configuration
+- **Runtime**: nodejs22
+- **Entry Point**: openhabGoogleAssistant
+- **Region**: us-central1
+- **Memory**: 256MB
+- **Timeout**: 180s
+- **Instances**: 1-20 (min-max)
+
+## Critical Development Notes
+
+### Google Smart Home API Compliance
+
+**STRICT ADHERENCE REQUIRED**: All device types, traits, and intents MUST follow Google's official specifications at https://developers.home.google.com/cloud-to-cloud/guides
+
+**Device Types & Traits:**
+- Use ONLY official device types (e.g., `action.devices.types.LIGHT`, `action.devices.types.THERMOSTAT`)
+- Implement ONLY supported traits for each device type (e.g., `action.devices.traits.OnOff`, `action.devices.traits.Brightness`)
+- Validate trait combinations are officially supported by Google
+
+**Attributes & States:**
+- Device attributes MUST match Google's exact specification (case-sensitive)
+- State responses MUST include all required fields for implemented traits
+- Attribute values MUST be within Google's specified ranges and formats
+- Use Google's exact attribute names (e.g., `temperatureRange`, `colorModel`, `supportedCommands`)
+
+**Commands & Parameters:**
+- Command names MUST be exactly as specified (e.g., `action.devices.commands.OnOff`, `action.devices.commands.BrightnessAbsolute`)
+- Parameter structures MUST match Google's schemas exactly
+- Required parameters MUST always be present and validated
+- Parameter types and ranges MUST conform to Google's specifications
+
+**Error Handling:**
+- Use `GoogleAssistantError` class for all error propagation (located in `functions/googleErrorCodes.js`)
+- Use Google's official error codes (e.g., `deviceOffline`, `valueOutOfRange`, `notSupported`)
+- Include human-readable message as second parameter to GoogleAssistantError for debugString
+- Error responses MUST follow Google's error response format
+- Include appropriate `debugString` for troubleshooting
+- Handle unsupported commands gracefully with `notSupported` error
+- Example: `throw new GoogleAssistantError(ERROR_CODES.DEVICE_NOT_FOUND, 'Device not found')`
+
+**Reference Implementation:**
+- Check existing device implementations in `/functions/devices/` for compliance patterns
+- Validate against Google's trait documentation before implementing new features
+- Test with Google's Smart Home Test Suite when available
+
+### Testing Requirements
+- **ALWAYS** run `npm install` in both root and `functions/` directories
+- Tests require >96% coverage across all metrics (currently 637+ tests)
+- Test environment uses mock OpenHAB host (test.host:1234)
+- Jest setup file: `tests/setenv.js` configures test environment
+- **Integration Tests**: Full command flow tests in `tests/openhab.test.js` verify error propagation, state checking, and challenge handling
+- **Unit Tests**: Individual component tests verify specific functionality and edge cases
+
+### Code Standards
+- **Line Length**: 120 characters max
+- **Style**: Prettier with single quotes, no trailing commas
+- **ES Version**: ES2020 with Node.js modules
+- **Optional Chaining**: Prefer `?.` over long conditional chains (e.g., `obj?.prop?.nested || fallback`)
+- **Error Handling**: Use `GoogleAssistantError` class for consistent error propagation; empty catch blocks allowed (allowEmptyCatch: true)
+- **ESLint**: v9.x with flat config format (`eslint.config.mjs`)
+- **Unused Variables**: Allowed in catch blocks (`caughtErrors: 'none'`)
+
+### Deployment Gotchas
+- Two separate package.json files (root for dev, functions/ for runtime)
+- Google Cloud deployment uses only `functions/` directory
+- Environment variables injected via Cloud Functions configuration
+- Test vs production function names (openhabGoogleAssistant vs openhabGoogleAssistant_test)
+
+### Common Workflow Issues
+- **Dependency Installation**: Must install in both root AND functions/ directories
+- **Coverage Failures**: Coverage thresholds are strict (>96%), failing tests will block CI
+- **Linting**: Prettier formatting is enforced, run `npm run fix` to auto-format
+- **Port Conflicts**: Dev server uses port 3000 by default (configurable)
+
+## Writing Tests
+
+### Test Structure & Patterns
+Tests use Jest framework with comprehensive mocking. Follow these established patterns:
+
+**File Organization:**
+- Device tests: `tests/devices/[devicename].test.js`
+- Command tests: `tests/commands/[commandname].test.js`
+- Core logic tests: `tests/[module].test.js`
+
+**Basic Test Structure:**
+```javascript
+const Device = require('../../functions/devices/[device].js');
+// or
+const Command = require('../../functions/commands/[command].js');
+
+describe('[ComponentName]', () => {
+  test('[functionality]', () => {
+    expect(Component.method(params)).toBe(expectedResult);
+  });
+});
+```
+
+### Common Test Patterns
+
+**Device Type Validation:**
+```javascript
+test('matchesDeviceType', () => {
+  expect(Device.matchesDeviceType({
+    type: 'Dimmer',
+    metadata: { ga: { value: 'LIGHT' } }
+  })).toBe(true);
+});
+```
+
+**Command Parameter Validation:**
+```javascript
+test('validateParams', () => {
+  expect(Command.validateParams({})).toBe(false);
+  expect(Command.validateParams({ on: true })).toBe(true);
+});
+```
+
+**HTTP Mocking with Nock:**
+```javascript
+const nock = require('nock');
+
+afterEach(() => {
+  nock.cleanAll();
+});
+
+test('API call', async () => {
+  const scope = nock('https://example.org')
+    .get('/items/TestItem')
+    .reply(200, { name: 'TestItem' });
+  
+  const result = await apiHandler.getItem('TestItem');
+  expect(result).toEqual({ name: 'TestItem' });
+});
+```
+
+**Method Mocking with Jest:**
+```javascript
+beforeEach(() => {
+  jest.spyOn(openHAB, 'handleSync').mockReset();
+});
+
+test('method behavior', async () => {
+  const mockFn = jest.spyOn(openHAB, 'handleSync');
+  mockFn.mockResolvedValue({ devices: [] });
+  
+  const result = await openHAB.onSync({ requestId: '1234' }, {});
+  expect(mockFn).toHaveBeenCalledTimes(1);
+});
+```
+
+### Test Environment Setup
+- Environment variables set in `tests/setenv.js` (auto-loaded by Jest)
+- Mock OpenHAB host: `test.host:1234`
+- Use `nock.cleanAll()` in `afterEach()` for HTTP mocks
+
+## Advanced Patterns
+
+### State Checking with `checkCurrentState`
+
+Commands can validate current device state before executing to prevent redundant operations:
+
+**Usage:**
+- Add `checkState: true` to device's `customData` in sync response
+- Command's `checkCurrentState(target, currentState, params)` is called during execute
+- Throws `GoogleAssistantError` if state is already at target (e.g., light already on)
+- Useful for commands like `OnOff`, `RotateAbsolute` to improve user experience
+
+**Example Implementation:**
+
+```javascript
+static checkCurrentState(target, state, params) {
+  if (target === state) {
+    throw new GoogleAssistantError(
+      ERROR_CODES.ALREADY_IN_STATE,
+      `Device is already at target state`
+    );
+  }
+}
+```
+
+### Challenge Handling (PIN and ACK)
+
+Supports Google Assistant challenge flows for security-sensitive operations:
+
+**PIN Challenge:**
+- Set `pinNeeded: '1234'` in device's `customData`
+- Google sends challenge with PIN, command validates and proceeds if correct
+- Returns `challengeNeeded: { type: 'pinNeeded' }` if PIN not provided
+- Returns `challengeNeeded: { type: 'challengeFailedPinNeeded' }` if wrong PIN provided
+
+**ACK Challenge:**
+- Set `ackNeeded: true` in device's `customData`
+- Command fetches item state and includes it in challenge response
+- Google prompts user for acknowledgment
+- Returns `challengeNeeded: { type: 'ackNeeded' }` with current state
+- Executes only when `challenge?.ack === true`
+
+**Bypass PIN:**
+- Override `bypassPin(device, params)` to return `true` for selective bypass
+- Example: Security system may bypass PIN for arming but require for disarming
+
+## Trust These Instructions
+
+These instructions are comprehensive and validated. Only search for additional information if:
+1. Commands fail with specific error messages not covered here
+2. New files or configurations are discovered that aren't documented
+3. Environment-specific issues arise that require investigation
+
+The build process is well-established and stable. Follow the documented command sequence for reliable results.
