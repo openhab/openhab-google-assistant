@@ -25,6 +25,12 @@ describe('StartStop Command', () => {
         Command.convertParamsToValue({}, {}, device);
       }).toThrow();
     });
+
+    test('convertParamsToValue inverted', () => {
+      const device = { customData: { inverted: true } };
+      expect(Command.convertParamsToValue({ start: true }, {}, device)).toBe('OFF');
+      expect(Command.convertParamsToValue({ start: false }, {}, device)).toBe('ON');
+    });
   });
 
   test('getResponseStates', () => {
@@ -126,6 +132,58 @@ describe('StartStop Command', () => {
         id: 'DishwasherGroup',
         customData: {
           deviceType: 'Dishwasher',
+          members: {}
+        }
+      };
+      expect(() => {
+        Command.getItemName(device);
+      }).toThrow();
+    });
+
+    test('getItemName - Oven with ovenRunning member', () => {
+      const device = {
+        id: 'OvenGroup',
+        customData: {
+          deviceType: 'Oven',
+          members: {
+            ovenRunning: 'OvenRunningSwitch'
+          }
+        }
+      };
+      expect(Command.getItemName(device)).toBe('OvenRunningSwitch');
+    });
+
+    test('getItemName - Oven without ovenRunning member', () => {
+      const device = {
+        id: 'OvenGroup',
+        customData: {
+          deviceType: 'Oven',
+          members: {}
+        }
+      };
+      expect(() => {
+        Command.getItemName(device);
+      }).toThrow();
+    });
+
+    test('getItemName - PressureCooker with pressureCookerRunning member', () => {
+      const device = {
+        id: 'PressureCookerGroup',
+        customData: {
+          deviceType: 'PressureCooker',
+          members: {
+            pressureCookerRunning: 'PressureCookerRunningSwitch'
+          }
+        }
+      };
+      expect(Command.getItemName(device)).toBe('PressureCookerRunningSwitch');
+    });
+
+    test('getItemName - PressureCooker without pressureCookerRunning member', () => {
+      const device = {
+        id: 'PressureCookerGroup',
+        customData: {
+          deviceType: 'PressureCooker',
           members: {}
         }
       };

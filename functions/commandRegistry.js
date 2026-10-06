@@ -44,6 +44,7 @@ const COMMAND_REGISTRY = [
   require('./commands/sethumidity.js'),
   require('./commands/setinput.js'),
   require('./commands/setmodes.js'),
+  require('./commands/settemperature.js'),
   require('./commands/setvolume.js'),
   require('./commands/startstop.js'),
   require('./commands/thermostatsetmode.js'),

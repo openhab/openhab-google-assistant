@@ -43,6 +43,21 @@ class OnOff extends DefaultCommand {
       }
       throw new GoogleAssistantError(ERROR_CODES.NOT_SUPPORTED, 'Humidifier has no power member configured');
     }
+    if (deviceType === 'Oven') {
+      if ('ovenPower' in members) {
+        return members.ovenPower;
+      }
+      throw new GoogleAssistantError(ERROR_CODES.NOT_SUPPORTED, 'Oven has no ovenPower member configured');
+    }
+    if (deviceType === 'PressureCooker') {
+      if ('pressureCookerPower' in members) {
+        return members.pressureCookerPower;
+      }
+      throw new GoogleAssistantError(
+        ERROR_CODES.NOT_SUPPORTED,
+        'PressureCooker has no pressureCookerPower member configured'
+      );
+    }
     return device.id;
   }
 

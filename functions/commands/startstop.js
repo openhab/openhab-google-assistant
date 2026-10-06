@@ -18,7 +18,11 @@ class StartStop extends DefaultCommand {
     if (itemType === 'Rollershutter') {
       return params.start ? 'MOVE' : 'STOP';
     }
-    return params.start ? 'ON' : 'OFF';
+    let start = params.start;
+    if (this.isInverted(device)) {
+      start = !start;
+    }
+    return start ? 'ON' : 'OFF';
   }
 
   static getItemName(device) {
@@ -37,6 +41,23 @@ class StartStop extends DefaultCommand {
       throw new GoogleAssistantError(
         ERROR_CODES.NOT_SUPPORTED,
         `${this.getDeviceType(device)} has no washerPower member configured`
+      );
+    }
+    if (this.getDeviceType(device) === 'Oven') {
+      const members = this.getMembers(device);
+      if ('ovenRunning' in members) {
+        return members.ovenRunning;
+      }
+      throw new GoogleAssistantError(ERROR_CODES.NOT_SUPPORTED, 'Oven has no ovenRunning member configured');
+    }
+    if (this.getDeviceType(device) === 'PressureCooker') {
+      const members = this.getMembers(device);
+      if ('pressureCookerRunning' in members) {
+        return members.pressureCookerRunning;
+      }
+      throw new GoogleAssistantError(
+        ERROR_CODES.NOT_SUPPORTED,
+        'PressureCooker has no pressureCookerRunning member configured'
       );
     }
     return device.id;
